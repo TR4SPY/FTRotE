@@ -35,6 +35,17 @@ namespace PLAYERTWO.ARPGProject
         public CharacterQuests quests;
         public CharacterScenes scenes;
 
+        // Logi i statystyki gracza
+        public int playerDeaths = 0;
+        public int enemiesDefeated = 0;
+        public float totalCombatTime = 0f;
+        public int potionsUsed = 0;
+        public int difficultyMultiplier = 0;
+        public int zonesDiscovered = 0;
+        public int npcInteractions = 0;
+        public int questsCompleted = 0;
+        public int waypointsDiscovered = 0;
+
         protected Entity m_entity;
 
         public Vector3 currentPosition => m_entity ? m_entity.position : initialPosition;
@@ -82,6 +93,33 @@ namespace PLAYERTWO.ARPGProject
             }
         }
 
+        // Metoda do sprawdzania, czy waypoint został odwiedzony
+        public bool HasActivatedWaypoint(int waypointID) => activatedWaypoints.Contains(waypointID);
+
+        // Metoda do oznaczania waypointu jako odwiedzonego
+        public void MarkWaypointAsActivated(int waypointID)
+        {
+            if (!activatedWaypoints.Contains(waypointID))
+            {
+                activatedWaypoints.Add(waypointID);
+                waypointsDiscovered++; // Aktualizuj licznik waypointów
+                Debug.Log($"Waypoint '{waypointID}' marked as visited for character '{name}'.");
+            }
+        }
+
+        // Metoda do sprawdzania, czy strefa została odwiedzona
+        public bool HasVisitedZone(string zoneId) => visitedZones.Contains(zoneId);
+
+        // Metoda do oznaczania strefy jako odwiedzonej
+        public void MarkZoneAsVisited(string zoneId)
+        {
+            if (!visitedZones.Contains(zoneId))
+            {
+                visitedZones.Add(zoneId);
+                Debug.Log($"Zone '{zoneId}' marked as visited for character '{name}'.");
+            }
+        }
+
         /// <summary>
         /// Instantiates a new Entity from this Character Instance data.
         /// </summary>
@@ -117,7 +155,28 @@ namespace PLAYERTWO.ARPGProject
                 inventory = CharacterInventory.CreateFromSerializer(serializer.inventory),
                 skills = CharacterSkills.CreateFromSerializer(serializer.skills),
                 quests = CharacterQuests.CreateFromSerializer(serializer.quests),
-                scenes = CharacterScenes.CreateFromSerializer(serializer.scenes)
+                scenes = CharacterScenes.CreateFromSerializer(serializer.scenes),
+
+                // Wczytaj logi
+                playerDeaths = serializer.playerDeaths,
+                enemiesDefeated = serializer.enemiesDefeated,
+                totalCombatTime = serializer.totalCombatTime,
+                potionsUsed = serializer.potionsUsed,
+                difficultyMultiplier = serializer.difficultyMultiplier,
+                zonesDiscovered = serializer.zonesDiscovered,
+                npcInteractions = serializer.npcInteractions,
+                questsCompleted = serializer.questsCompleted,
+                waypointsDiscovered = serializer.waypointsDiscovered, // Dodaj wczytywanie waypointów
+
+                // Wczytaj odwiedzone strefy
+                visitedZones = serializer.visitedZones != null
+                    ? new HashSet<string>(serializer.visitedZones)
+                    : new HashSet<string>(),
+
+                // Wczytaj odwiedzone waypointy
+                activatedWaypoints = serializer.activatedWaypoints != null
+                    ? new HashSet<int>(serializer.activatedWaypoints)
+                    : new HashSet<int>()
             };
 
             // Wczytaj mnożniki trudności
