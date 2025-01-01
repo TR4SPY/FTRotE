@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fadb75505e90364e88de4f2b82a4d09, type: 3}
+  m_Name: Head To The Village
+  m_EditorClassIdentifier: 
+  title: Head to The Village
+  description: Brave Hero, we're expecting your arrive! Our village has been invaded
+    by the underworld creatures. Our fields have been consumed by their plagues.
+    You are our only hope to survive. Please, reach the old village and talk to the
+    commander. He'll guide you thourgh your journey.
+  objective: Reach the village
+  targetProgress: 0
+  completingMode: 2
+  experience: 1000
+  coins: 0
+  items: []
+  destinationScene: 
+  progressKey: 

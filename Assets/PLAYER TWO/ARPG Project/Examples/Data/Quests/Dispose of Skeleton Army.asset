@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fadb75505e90364e88de4f2b82a4d09, type: 3}
+  m_Name: Dispose of Skeleton Army
+  m_EditorClassIdentifier: 
+  title: Dispose of Skeleton Army
+  description: The skeletons had taken control over the path to the city. My mans
+    were able to dispose most of the creatures. Some of us died. but there's still
+    some of these things to go. Please, eliminate the rest of the creatures and liberate
+    the path.
+  objective: Eliminate 10 skeletons
+  targetProgress: 10
+  completingMode: 1
+  experience: 2500
+  coins: 3500
+  items: []
+  destinationScene: 
+  progressKey: skeleton

@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 14eb328de4b8eb245bb7cea29e4ac00b
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 251134
+  packageName: ARPG Project
+  packageVersion: 1.4.0
+  assetPath: Assets/PLAYER TWO/ARPG Project/Examples/TextMesh Pro/Shaders/TMP_SDF
+    SSD.shader
+  uploadId: 704322

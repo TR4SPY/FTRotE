@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80b64166c49c702499c334434aa31dfe, type: 3}
+  m_Name: Chest LVL 4
+  m_EditorClassIdentifier: 
+  lootChance: 1
+  loopCount: 5
+  randomPosition: 1
+  randomPositionMaxRadius: 3
+  randomPositionMinRadius: 1.5
+  generateAttributes: 1
+  minAttributes: 2
+  maxAttributes: 4
+  items:
+  - {fileID: 11400000, guid: a9d3393a671f7c441a74af4a81c00896, type: 2}
+  - {fileID: 11400000, guid: 7de6cdd817a59a0418b75bf32982c2a3, type: 2}
+  - {fileID: 11400000, guid: 5cf83e0ed05e81641bdc02abc92de27f, type: 2}
+  moneyChance: 0.6
+  minMoneyAmount: 2500
+  maxMoneyAmount: 5000

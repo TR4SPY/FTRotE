@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fadb75505e90364e88de4f2b82a4d09, type: 3}
+  m_Name: Lilith's Flowers
+  m_EditorClassIdentifier: 
+  title: Lilith's Flowers
+  description: You are a skilled adventurer summoned by a small village that has
+    been impacted by the ongoing war. The village's soldiers are wounded and in dire
+    need of healing, and the villagers have heard of a rare and powerful plant known
+    as Lilith's Flowers that can heal any wound, no matter how severe.
+  objective: Collect 5 Lilith's Flowers
+  targetProgress: 5
+  completingMode: 1
+  hasReward: 1
+  experience: 2500
+  coins: 2000
+  items: []
+  destinationScene: 
+  progressKey: lilith flower

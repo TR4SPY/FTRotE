@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fadb75505e90364e88de4f2b82a4d09, type: 3}
+  m_Name: Dispose the Dead
+  m_EditorClassIdentifier: 
+  title: Dispose the Dead
+  description: After a brutal battle, I tragically lost many of my comrades. However,
+    to my horror, their lifeless bodies have been resurrected as an undead army.
+    I am in desperate need of your assistance in putting an end to this abomination,
+    so that my fallen soldiers can finally rest in peace.
+  objective: Defeat 10 zombies
+  targetProgress: 10
+  completingMode: 1
+  hasReward: 1
+  experience: 1500
+  coins: 2500
+  items: []
+  destinationScene: 
+  progressKey: zombie

@@ -1,0 +1,41 @@
+# Systemowe pliki i foldery
+.DS_Store
+Thumbs.db
+
+# Konfiguracje edytorów
+.vscode/
+.idea/
+
+# Pliki projektu generowane automatycznie
+*.csproj
+*.sln
+*.userprefs
+
+# Unity Cache/Build
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Uu]serSettings/
+Logs/
+*.booproj
+*.pidb
+*.svd
+*.unityproj
+*.manifest
+*.tmp
+MemoryCaptures/
+
+# Wykluczenie dużych plików binarnych
+*.unitypackage
+*.exe
+*.dll
+*.zip
+*.rar
+
+# Assety wrażliwe na miejsce
+Gaia Pro 2023/
+# Wyklucz instalatory Gaia Pro
+Assets/Procedural Worlds/
+Assets/Gaia User Data
