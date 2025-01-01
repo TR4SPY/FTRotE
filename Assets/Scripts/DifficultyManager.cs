@@ -46,7 +46,7 @@ namespace AI_DDA.Assets.Scripts
                 return;
             }
 
-            if (logger.playerDeaths >= 3)
+            if (logger.playerDeaths >= 3 && logger.playerDeaths % 3 == 0)
             {
                 CurrentDexterityMultiplier *= 0.9f;
                 CurrentStrengthMultiplier *= 0.8f;
@@ -56,7 +56,7 @@ namespace AI_DDA.Assets.Scripts
                 return;
             }
 
-            if (logger.enemiesDefeated >= 10 && logger.enemiesDefeated % 10 == 0 && logger.playerDeaths == 0)
+            if (logger.difficultyMultiplier >= 10 && logger.difficultyMultiplier % 10 == 0)
             {
                 CurrentDexterityMultiplier *= 1.1f;
                 CurrentStrengthMultiplier *= 1.2f;

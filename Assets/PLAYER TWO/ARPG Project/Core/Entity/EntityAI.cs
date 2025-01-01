@@ -265,7 +265,8 @@ namespace PLAYERTWO.ARPGProject
             var playerLogger = Object.FindFirstObjectByType<PlayerBehaviorLogger>();
             if (playerLogger != null)
             {
-                playerLogger.LogEnemyDefeated();
+                playerLogger.LogDifficultyMultiplier();
+                playerLogger.LogEnemiesDefeated();
             }
         }
 

@@ -47,6 +47,7 @@ namespace AI_DDA.Assets.Scripts
         }
 
     public int playerDeaths = 0;  // Licznik śmierci gracza
+    public int difficultyMultiplier = 0;  // Mnożnik trudności (domyślnie bazuje na wzorze enemiesDefeated % 10)
     public int enemiesDefeated = 0;  // Licznik pokonanych wrogów
     public float totalCombatTime = 0f;  // Łączny czas walki
     public int potionsUsed = 0;  // Licznik użytych mikstur
@@ -80,23 +81,28 @@ namespace AI_DDA.Assets.Scripts
             /// <summary>
     /// Zaloguj pokonanie wroga.
     /// </summary>
-    public void LogEnemyDefeated()
+    public void LogDifficultyMultiplier()
     {
-        enemiesDefeated++;
-        Debug.Log($"Enemies defeated: {enemiesDefeated}");
+        difficultyMultiplier++;
 
         // Reset flagi po osiągnięciu kolejnego progu 10
-        if (enemiesDefeated % 10 != 0)
+        if (difficultyMultiplier % 10 != 0)
         {
             difficultyAdjusted = false;
         }
 
         // Wywołaj AdjustDifficulty tylko przy wielokrotności 10 i gdy trudność jeszcze nie została dostosowana
-        if (enemiesDefeated % 10 == 0 && !difficultyAdjusted)
+        if (difficultyMultiplier % 10 == 0 && !difficultyAdjusted)
         {
             DifficultyManager.Instance.AdjustDifficulty(this);
             difficultyAdjusted = true; // Flaga oznaczająca, że trudność została dostosowana
+            Debug.Log($"Difficulty Multiplier is now: {difficultyMultiplier}");
         }
+    }
+    public void LogEnemiesDefeated()
+    {
+        enemiesDefeated++;
+        Debug.Log($"Enemies defeated: {enemiesDefeated}");
     }
 
         /// <summary>
@@ -147,7 +153,8 @@ namespace AI_DDA.Assets.Scripts
         {
             Debug.Log("Resetting logs...");
             playerDeaths = 0;
-            enemiesDefeated = 0;
+            difficultyMultiplier = 0;
+            //enemiesDefeated = 0;
             totalCombatTime = 0f;
             potionsUsed = 0;
             difficultyAdjusted = false;
