@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
+using PLAYERTWO.ARPGProject;
 
 namespace AI_DDA.Assets.Scripts
 {
@@ -24,10 +25,10 @@ namespace AI_DDA.Assets.Scripts
                     _instance = Object.FindObjectOfType<PlayerBehaviorLogger>();
                     #endif
 
-                    if (_instance == null)
+                   /* if (_instance == null)
                     {
                         Debug.LogError("PlayerBehaviorLogger.Instance was accessed, but no instance exists in the scene.");
-                    }
+                    } */
                 }
                 return _instance;
             }
@@ -144,6 +145,24 @@ namespace AI_DDA.Assets.Scripts
         {
             questsCompleted++;
             Debug.Log($"Quest completed! Total: {questsCompleted}");
+        }
+
+        public void LoadLogs(CharacterInstance characterInstance)
+        {
+            if (characterInstance == null)
+            {
+                Debug.LogError("CharacterInstance is null. Cannot load logs.");
+                return;
+            }
+
+            playerDeaths = characterInstance.playerDeaths;
+            enemiesDefeated = characterInstance.enemiesDefeated;
+            totalCombatTime = characterInstance.totalCombatTime;
+            npcInteractions = characterInstance.npcInteractions;
+
+            Debug.Log($"Loaded Player Behavior Logs for {characterInstance.name}: " +
+                    $"Deaths={playerDeaths}, Defeated={enemiesDefeated}, " +
+                    $"CombatTime={totalCombatTime}, NPCInteractions={npcInteractions}");
         }
 
         /// <summary>

@@ -76,6 +76,12 @@ namespace PLAYERTWO.ARPGProject
             //npcInteractions = character.npcInteractions;
             //questsCompleted = character.questsCompleted;
 
+            // Save logs
+            playerDeaths = character.playerDeaths;
+            enemiesDefeated = character.enemiesDefeated;
+            totalCombatTime = character.totalCombatTime;
+            npcInteractions = character.npcInteractions;
+
             // Waypointy
             waypointsDiscovered = character.waypointsDiscovered;
             visitedZones = character.visitedZones != null ? new List<string>(character.visitedZones) : new List<string>();

@@ -112,8 +112,10 @@ namespace PLAYERTWO.ARPGProject
                 var character = m_characters[m_currentCharacterId].character;
 
                 GameSave.instance.LoadDifficultyForCharacter(character);
-
                 Debug.Log($"Difficulty loaded for character: {character.name}");
+
+              //  GameSave.instance.LoadLogsForCharacter(character);
+              //  Debug.Log($"Logs loaded for character: {character.name}");
             }
 
             characterActions.SetActive(false);
@@ -156,8 +158,18 @@ namespace PLAYERTWO.ARPGProject
 
             // Wczytaj dane trudności z GameSave
             GameSave.instance.LoadDifficultyForCharacter(selectedCharacter);
-
             Debug.Log($"Difficulty loaded for selected character: {selectedCharacter.name}");
+
+            // Wczytaj logi gracza z GameSave
+           //     if (PlayerBehaviorLogger.Instance != null)
+           //     {
+           //         GameSave.instance.LoadLogsForCharacter(selectedCharacter);
+           //         Debug.Log($"Logs loaded for selected character: {selectedCharacter.name}");
+           //     }
+           //     else
+           //     {
+           //         Debug.LogError("PlayerBehaviorLogger.Instance is null. Make sure the player prefab is instantiated.");
+           //     }
         }
 
         public virtual void SelectFirstCharacter()

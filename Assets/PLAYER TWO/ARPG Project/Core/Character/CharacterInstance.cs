@@ -184,6 +184,11 @@ namespace PLAYERTWO.ARPGProject
             characterInstance.SetMultiplier("Strength", serializer.strengthMultiplier);
             characterInstance.SetMultiplier("Speed", serializer.speedMultiplier);
 
+            characterInstance.playerDeaths = serializer.playerDeaths;
+            characterInstance.enemiesDefeated = serializer.enemiesDefeated;
+            characterInstance.totalCombatTime = serializer.totalCombatTime;
+            characterInstance.npcInteractions = serializer.npcInteractions;
+
             return characterInstance;
         }
     }

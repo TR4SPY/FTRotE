@@ -40,6 +40,7 @@ namespace PLAYERTWO.ARPGProject
             if (m_currentCharacter != null)
             {
                 SaveDifficultyForCharacter(m_currentCharacter);
+                SaveLogsForCharacter(m_currentCharacter);
             }
 
             switch (mode)
@@ -137,6 +138,26 @@ namespace PLAYERTWO.ARPGProject
                       $"Speed={DifficultyManager.Instance.CurrentSpeedMultiplier}");
         }
 
+        public void LoadLogsForCharacter(CharacterInstance character)
+        {
+            if (PlayerBehaviorLogger.Instance == null)
+            {
+                Debug.LogWarning("PlayerBehaviorLogger.Instance is null. Skipping logs load.");
+                return;
+            }
+
+            PlayerBehaviorLogger.Instance.playerDeaths = character.playerDeaths;
+            PlayerBehaviorLogger.Instance.enemiesDefeated = character.enemiesDefeated;
+            PlayerBehaviorLogger.Instance.totalCombatTime = character.totalCombatTime;
+            PlayerBehaviorLogger.Instance.npcInteractions = character.npcInteractions;
+
+            Debug.Log($"Loaded Player Behavior Logs for {character.name}: " +
+                    $"Deaths={PlayerBehaviorLogger.Instance.playerDeaths}, " +
+                    $"Defeated={PlayerBehaviorLogger.Instance.enemiesDefeated}, " +
+                    $"CombatTime={PlayerBehaviorLogger.Instance.totalCombatTime}, " +
+                    $"NPCInteractions={PlayerBehaviorLogger.Instance.npcInteractions}");
+        }
+
         public void SaveDifficultyForCharacter(CharacterInstance character)
         {
             if (DifficultyManager.Instance == null)
@@ -153,6 +174,22 @@ namespace PLAYERTWO.ARPGProject
                     $"Dexterity={character.GetMultiplier("Dexterity")}, " +
                     $"Strength={character.GetMultiplier("Strength")}, " +
                     $"Speed={character.GetMultiplier("Speed")}");
+        }
+
+        public void SaveLogsForCharacter(CharacterInstance character)
+        {
+                if (PlayerBehaviorLogger.Instance == null)
+            {
+                Debug.LogWarning("PlayerBehaviorLogger.Instance is null. Skipping player behavior logs save.");
+                return;
+            }
+
+            character.playerDeaths = PlayerBehaviorLogger.Instance.playerDeaths;
+            character.enemiesDefeated = PlayerBehaviorLogger.Instance.enemiesDefeated;
+            character.totalCombatTime = PlayerBehaviorLogger.Instance.totalCombatTime;
+            character.npcInteractions = PlayerBehaviorLogger.Instance.npcInteractions;
+
+            Debug.Log($"Saved Player Behavior Logs for {character.name}: Deaths={character.playerDeaths}, Defeated={character.enemiesDefeated}, CombatTime={character.totalCombatTime}, NPCInteractions={character.npcInteractions}");
         }
 
         protected virtual void SaveJSON()

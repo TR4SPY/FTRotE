@@ -7,6 +7,9 @@ namespace PLAYERTWO.ARPGProject
     public class GUIStatsManager : MonoBehaviour
     {
         [Header("GUI Texts")]
+      //  [Tooltip("A reference to the Text component that represents the player's name.")]
+       // public Text characterNameText;
+
         [Tooltip("A reference to the Text component that represents the Stats level.")]
         public Text levelText;
 
@@ -49,6 +52,7 @@ namespace PLAYERTWO.ARPGProject
 
         [Tooltip("A reference to the GUI Stats Attributes representing energy points.")]
         public GUIStatsAttribute energy;
+        public CharacterInstance characterInstance;
 
         protected Entity m_entity;
 
@@ -88,6 +92,7 @@ namespace PLAYERTWO.ARPGProject
         {
             levelText.text = m_entity.stats.level.ToString();
             availablePointsText.text = m_availablePoints.ToString();
+          //  characterNameText.text = m_entity.stats.gameObject.name; // Ustaw nazwę postaci
         }
 
         /// <summary>
@@ -104,6 +109,7 @@ namespace PLAYERTWO.ARPGProject
             levelText.text = m_entity.stats.level.ToString();
             currentExpText.text = m_entity.stats.experience.ToString();
             nextLevelExp.text = m_entity.stats.nextLevelExp.ToString();
+            //characterNameText.text = m_entity.stats.gameObject.name; // Dodane
             damageText.text = $"{m_entity.stats.minDamage} - {m_entity.stats.maxDamage}";
             defenseText.text = m_entity.stats.defense.ToString();
             attackSpeedText.text = $"{m_entity.stats.attackSpeed.ToString()} / {Game.instance.maxAttackSpeed}";
