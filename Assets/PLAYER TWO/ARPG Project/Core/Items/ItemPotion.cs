@@ -1,4 +1,5 @@
 using UnityEngine;
+using AI_DDA.Assets.Scripts;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -21,6 +22,17 @@ namespace PLAYERTWO.ARPGProject
 
             if (manaAmount > 0)
                 entity.stats.mana += manaAmount;
+
+            // Log the potion usage in PlayerBehaviorLogger
+            if (PlayerBehaviorLogger.Instance != null)
+            {
+                PlayerBehaviorLogger.Instance.potionsUsed++;
+                Debug.Log("Potion consumed. Total potions used: " + PlayerBehaviorLogger.Instance.potionsUsed);
+            }
+            else
+            {
+                Debug.LogWarning("PlayerBehaviorLogger instance not found. Potion usage not logged.");
+            }
         }
     }
 }

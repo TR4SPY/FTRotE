@@ -183,11 +183,11 @@ namespace AI_DDA.Assets.Scripts
         public void ResetLogs()
         {
             Debug.Log("Resetting logs...");
-            playerDeaths = 0;
+            //playerDeaths = 0;
             difficultyMultiplier = 0;
             //enemiesDefeated = 0;
-            totalCombatTime = 0f;
-            potionsUsed = 0;
+            //totalCombatTime = 0f;
+            //potionsUsed = 0;
             difficultyAdjusted = false;
         }
     }
