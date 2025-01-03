@@ -147,6 +147,12 @@ namespace AI_DDA.Assets.Scripts
             Debug.Log($"Quest completed! Total: {questsCompleted}");
         }
 
+        public void LogPotionsUsed()
+        {
+            potionsUsed++;
+            Debug.Log($"Potion used! Total: {potionsUsed}");
+        }
+
         public void LoadLogs(CharacterInstance characterInstance)
         {
             if (characterInstance == null)
@@ -159,10 +165,16 @@ namespace AI_DDA.Assets.Scripts
             enemiesDefeated = characterInstance.enemiesDefeated;
             totalCombatTime = characterInstance.totalCombatTime;
             npcInteractions = characterInstance.npcInteractions;
+            waypointsDiscovered = characterInstance.waypointsDiscovered;
+            questsCompleted = characterInstance.questsCompleted;
+            potionsUsed = characterInstance.potionsUsed;
+            zonesDiscovered = characterInstance.zonesDiscovered;
 
             Debug.Log($"Loaded Player Behavior Logs for {characterInstance.name}: " +
                     $"Deaths={playerDeaths}, Defeated={enemiesDefeated}, " +
-                    $"CombatTime={totalCombatTime}, NPCInteractions={npcInteractions}");
+                    $"CombatTime={totalCombatTime}, NPCInteractions={npcInteractions}, " +
+                    $"WaypointsDiscovered={waypointsDiscovered}, QuestsCompleted={questsCompleted}, " +
+                    $"PotionsUsed={potionsUsed}, ZonesDiscovered={zonesDiscovered}");
         }
 
         /// <summary>

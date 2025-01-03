@@ -13,6 +13,9 @@ TagManager:
   - PW - Nature
   - PW - Prop
   - PW - Building
+  - Synty Medium Farm
+  - Synty Tree
+  - Synty Small Farm
   layers:
   - Default
   - TransparentFX
@@ -28,7 +31,7 @@ TagManager:
   - PW_Object_Small
   - PW_Object_Medium
   - PW_Object_Large
-  - 
+  - Objects/Buildings
   - 
   - 
   - 

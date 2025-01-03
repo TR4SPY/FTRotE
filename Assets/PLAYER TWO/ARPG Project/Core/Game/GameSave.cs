@@ -151,11 +151,20 @@ namespace PLAYERTWO.ARPGProject
             PlayerBehaviorLogger.Instance.totalCombatTime = character.totalCombatTime;
             PlayerBehaviorLogger.Instance.npcInteractions = character.npcInteractions;
 
+            PlayerBehaviorLogger.Instance.waypointsDiscovered = character.waypointsDiscovered;
+            PlayerBehaviorLogger.Instance.questsCompleted = character.questsCompleted;
+            PlayerBehaviorLogger.Instance.potionsUsed = character.potionsUsed;
+            PlayerBehaviorLogger.Instance.zonesDiscovered = character.zonesDiscovered;
+
             Debug.Log($"Loaded Player Behavior Logs for {character.name}: " +
                     $"Deaths={PlayerBehaviorLogger.Instance.playerDeaths}, " +
                     $"Defeated={PlayerBehaviorLogger.Instance.enemiesDefeated}, " +
                     $"CombatTime={PlayerBehaviorLogger.Instance.totalCombatTime}, " +
-                    $"NPCInteractions={PlayerBehaviorLogger.Instance.npcInteractions}");
+                    $"NPCInteractions={PlayerBehaviorLogger.Instance.npcInteractions}" +
+                    $"WaypointsDiscovered={PlayerBehaviorLogger.Instance.waypointsDiscovered}" +
+                    $"QuestsCompleted={PlayerBehaviorLogger.Instance.questsCompleted}" +
+                    $"PotionsUsed={PlayerBehaviorLogger.Instance.potionsUsed}" +
+                    $"ZonesDiscovered={PlayerBehaviorLogger.Instance.zonesDiscovered}");
         }
 
         public void SaveDifficultyForCharacter(CharacterInstance character)
@@ -188,8 +197,12 @@ namespace PLAYERTWO.ARPGProject
             character.enemiesDefeated = PlayerBehaviorLogger.Instance.enemiesDefeated;
             character.totalCombatTime = PlayerBehaviorLogger.Instance.totalCombatTime;
             character.npcInteractions = PlayerBehaviorLogger.Instance.npcInteractions;
+            character.waypointsDiscovered = PlayerBehaviorLogger.Instance.waypointsDiscovered;
+            character.questsCompleted = PlayerBehaviorLogger.Instance.questsCompleted;
+            character.potionsUsed = PlayerBehaviorLogger.Instance.potionsUsed;
+            character.zonesDiscovered = PlayerBehaviorLogger.Instance.zonesDiscovered;
 
-            Debug.Log($"Saved Player Behavior Logs for {character.name}: Deaths={character.playerDeaths}, Defeated={character.enemiesDefeated}, CombatTime={character.totalCombatTime}, NPCInteractions={character.npcInteractions}");
+            Debug.Log($"Saved Player Behavior Logs for {character.name}: Deaths={character.playerDeaths}, Defeated={character.enemiesDefeated}, CombatTime={character.totalCombatTime}, NPCInteractions={character.npcInteractions}, WaypointsDiscovered={character.waypointsDiscovered}, QuestsCompleted={character.questsCompleted}, PotionsUsed={character.potionsUsed}, ZonesDiscovered={character.zonesDiscovered}");
         }
 
         protected virtual void SaveJSON()

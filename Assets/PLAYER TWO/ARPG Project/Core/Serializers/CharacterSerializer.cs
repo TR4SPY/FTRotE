@@ -66,28 +66,21 @@ namespace PLAYERTWO.ARPGProject
             strengthMultiplier = character.GetMultiplier("Strength");
             speedMultiplier = character.GetMultiplier("Speed");
 
-                        // Logi
-           // playerDeaths = character.playerDeaths;
-           // enemiesDefeated = character.enemiesDefeated;
-           //totalCombatTime = character.totalCombatTime;
-            //potionsUsed = character.potionsUsed;
-            //difficultyMultiplier = character.difficultyMultiplier;
-            //zonesDiscovered = character.zonesDiscovered;
-            //npcInteractions = character.npcInteractions;
-            //questsCompleted = character.questsCompleted;
-
             // Save logs
             playerDeaths = character.playerDeaths;
             enemiesDefeated = character.enemiesDefeated;
             totalCombatTime = character.totalCombatTime;
             npcInteractions = character.npcInteractions;
-
-            // Waypointy
+            questsCompleted = character.questsCompleted;
+            potionsUsed = character.potionsUsed;
             waypointsDiscovered = character.waypointsDiscovered;
+            zonesDiscovered = character.zonesDiscovered;
+
+            // Waypoints and Zones lists
             visitedZones = character.visitedZones != null ? new List<string>(character.visitedZones) : new List<string>();
             activatedWaypoints = character.activatedWaypoints != null ? new List<int>(character.activatedWaypoints) : new List<int>();
 
-            Debug.Log($"Character '{name}' serialized with visited zones: {string.Join(", ", visitedZones)}, activated waypoints: {string.Join(", ", activatedWaypoints)}, and logs: PlayerDeaths={playerDeaths}, EnemiesDefeated={enemiesDefeated}");
+           // Debug.Log($"Character '{name}' serialized with visited zones: {string.Join(", ", visitedZones)}, activated waypoints: {string.Join(", ", activatedWaypoints)}, and logs: PlayerDeaths={playerDeaths}, EnemiesDefeated={enemiesDefeated}");
         }
 
         public virtual string ToJson() => JsonUtility.ToJson(this);

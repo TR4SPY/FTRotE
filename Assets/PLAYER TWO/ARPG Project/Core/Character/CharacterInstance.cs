@@ -188,6 +188,10 @@ namespace PLAYERTWO.ARPGProject
             characterInstance.enemiesDefeated = serializer.enemiesDefeated;
             characterInstance.totalCombatTime = serializer.totalCombatTime;
             characterInstance.npcInteractions = serializer.npcInteractions;
+            characterInstance.questsCompleted = serializer.questsCompleted;
+            characterInstance.potionsUsed = serializer.potionsUsed;
+            characterInstance.waypointsDiscovered = serializer.waypointsDiscovered;
+            characterInstance.zonesDiscovered = serializer.zonesDiscovered;
 
             return characterInstance;
         }
