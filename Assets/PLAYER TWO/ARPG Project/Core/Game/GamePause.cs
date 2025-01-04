@@ -14,6 +14,10 @@ namespace PLAYERTWO.ARPGProject
         /// Sets the pause value of the game.
         /// </summary>
         /// <param name="value">If true, the game will be paused.</param>
-        public virtual void Pause(bool value) => Time.timeScale = value ? 0 : 1;
+        public virtual void Pause(bool value)
+        {
+            Time.timeScale = value ? 0 : 1;
+            Debug.Log($"GamePause: Paused={value}");
+        }
     }
 }

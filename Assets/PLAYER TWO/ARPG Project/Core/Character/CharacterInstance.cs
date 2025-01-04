@@ -45,6 +45,8 @@ namespace PLAYERTWO.ARPGProject
         public int npcInteractions = 0;
         public int questsCompleted = 0;
         public int waypointsDiscovered = 0;
+        public bool questionnaireCompleted = false;
+        public string playerType = "Undefined";
 
         protected Entity m_entity;
 
@@ -167,6 +169,8 @@ namespace PLAYERTWO.ARPGProject
                 npcInteractions = serializer.npcInteractions,
                 questsCompleted = serializer.questsCompleted,
                 waypointsDiscovered = serializer.waypointsDiscovered, // Dodaj wczytywanie waypointów
+                questionnaireCompleted = serializer.questionnaireCompleted,
+                playerType = serializer.playerType,
 
                 // Wczytaj odwiedzone strefy
                 visitedZones = serializer.visitedZones != null
@@ -192,6 +196,8 @@ namespace PLAYERTWO.ARPGProject
             characterInstance.potionsUsed = serializer.potionsUsed;
             characterInstance.waypointsDiscovered = serializer.waypointsDiscovered;
             characterInstance.zonesDiscovered = serializer.zonesDiscovered;
+            characterInstance.questionnaireCompleted = serializer.questionnaireCompleted;
+            characterInstance.playerType = serializer.playerType;
 
             return characterInstance;
         }

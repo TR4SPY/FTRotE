@@ -146,6 +146,21 @@ namespace PLAYERTWO.ARPGProject
                 return;
             }
 
+            if (character == null)
+            {
+                Debug.LogWarning("Character is null. Cannot load logs.");
+                return;
+            }
+
+            if (QuestionnaireManager.Instance != null)
+            {
+                QuestionnaireManager.Instance.playerType = character.playerType;
+                if (QuestionnaireManager.Instance.playerTypeAttributeText != null)
+                {
+                    QuestionnaireManager.Instance.playerTypeAttributeText.text = character.playerType;
+                }
+            }
+
             PlayerBehaviorLogger.Instance.playerDeaths = character.playerDeaths;
             PlayerBehaviorLogger.Instance.enemiesDefeated = character.enemiesDefeated;
             PlayerBehaviorLogger.Instance.totalCombatTime = character.totalCombatTime;
@@ -155,6 +170,7 @@ namespace PLAYERTWO.ARPGProject
             PlayerBehaviorLogger.Instance.questsCompleted = character.questsCompleted;
             PlayerBehaviorLogger.Instance.potionsUsed = character.potionsUsed;
             PlayerBehaviorLogger.Instance.zonesDiscovered = character.zonesDiscovered;
+            QuestionnaireManager.Instance.playerType = character.playerType;
 
             Debug.Log($"Loaded Player Behavior Logs for {character.name}: " +
                     $"Deaths={PlayerBehaviorLogger.Instance.playerDeaths}, " +
@@ -164,7 +180,8 @@ namespace PLAYERTWO.ARPGProject
                     $"WaypointsDiscovered={PlayerBehaviorLogger.Instance.waypointsDiscovered}" +
                     $"QuestsCompleted={PlayerBehaviorLogger.Instance.questsCompleted}" +
                     $"PotionsUsed={PlayerBehaviorLogger.Instance.potionsUsed}" +
-                    $"ZonesDiscovered={PlayerBehaviorLogger.Instance.zonesDiscovered}");
+                    $"ZonesDiscovered={PlayerBehaviorLogger.Instance.zonesDiscovered}" +
+                    $"PlayerTypez={QuestionnaireManager.Instance.playerType}");
         }
 
         public void SaveDifficultyForCharacter(CharacterInstance character)
@@ -201,8 +218,10 @@ namespace PLAYERTWO.ARPGProject
             character.questsCompleted = PlayerBehaviorLogger.Instance.questsCompleted;
             character.potionsUsed = PlayerBehaviorLogger.Instance.potionsUsed;
             character.zonesDiscovered = PlayerBehaviorLogger.Instance.zonesDiscovered;
+            //character.playerType = QuestionnaireManager.Instance.playerType;
+            character.playerType = QuestionnaireManager.Instance?.playerType ?? "Undefined";
 
-            Debug.Log($"Saved Player Behavior Logs for {character.name}: Deaths={character.playerDeaths}, Defeated={character.enemiesDefeated}, CombatTime={character.totalCombatTime}, NPCInteractions={character.npcInteractions}, WaypointsDiscovered={character.waypointsDiscovered}, QuestsCompleted={character.questsCompleted}, PotionsUsed={character.potionsUsed}, ZonesDiscovered={character.zonesDiscovered}");
+            Debug.Log($"Saved Player Behavior Logs for {character.name}: Deaths={character.playerDeaths}, Defeated={character.enemiesDefeated}, CombatTime={character.totalCombatTime}, NPCInteractions={character.npcInteractions}, WaypointsDiscovered={character.waypointsDiscovered}, QuestsCompleted={character.questsCompleted}, PotionsUsed={character.potionsUsed}, ZonesDiscovered={character.zonesDiscovered}, PlayerType={character.playerType}");
         }
 
         protected virtual void SaveJSON()

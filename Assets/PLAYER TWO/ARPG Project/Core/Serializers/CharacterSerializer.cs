@@ -37,6 +37,8 @@ namespace PLAYERTWO.ARPGProject
         public int zonesDiscovered;
         public int npcInteractions;
         public int questsCompleted;
+        public bool questionnaireCompleted = false;
+        public string playerType;
 
         // Lista odwiedzonych stref
         public List<string> visitedZones = new List<string>();
@@ -75,7 +77,10 @@ namespace PLAYERTWO.ARPGProject
             potionsUsed = character.potionsUsed;
             waypointsDiscovered = character.waypointsDiscovered;
             zonesDiscovered = character.zonesDiscovered;
+            playerType = character.playerType;
 
+            // Save questionnaire completion status
+           questionnaireCompleted = character.questionnaireCompleted;
             // Waypoints and Zones lists
             visitedZones = character.visitedZones != null ? new List<string>(character.visitedZones) : new List<string>();
             activatedWaypoints = character.activatedWaypoints != null ? new List<int>(character.activatedWaypoints) : new List<int>();
