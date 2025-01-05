@@ -1,6 +1,7 @@
 //  - DODANO 29 GRUDNIA 2024 - 0001
 
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -36,6 +37,8 @@ namespace AI_DDA.Assets.Scripts
 
         private void Awake()
         {
+            lastUpdateTime = Time.time;
+
             if (_instance == null)
             {
                 _instance = this;
@@ -57,9 +60,11 @@ namespace AI_DDA.Assets.Scripts
     public int questsCompleted = 0;
     public int waypointsDiscovered = 0;
     public string currentDynamicPlayerType = "Unknown";
+    public float lastUpdateTime;
     private bool difficultyAdjusted = false; // Flaga dla wielokrotności 10
     private HashSet<string> discoveredZones = new HashSet<string>();
     private HashSet<int> discoveredWaypoints = new HashSet<int>();
+    public bool isLoggingEnabled { get; set; } = true;
 
     private void Start()
         {
@@ -233,6 +238,82 @@ namespace AI_DDA.Assets.Scripts
             if (maxScore == killer) return "Killer";
 
             return "Undefined";
+        }
+
+        public void SaveLogsToFile()
+        {
+            string directoryPath = Path.Combine(Application.persistentDataPath, "Logs");
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+
+            // Pobierz aktualną instancję postaci z Game.instance
+            var characterInstance = Game.instance?.currentCharacter;
+            if (characterInstance == null)
+            {
+                Debug.LogWarning("No character instance found. Skipping log save.");
+                return;
+            }
+
+            string timestamp = System.DateTime.Now.ToString("yyyy-MM-dd_HH:mm:ss");
+            string fileName = $"Research_{characterInstance.name}.log";
+            string filePath = Path.Combine(directoryPath, fileName);
+
+            using (StreamWriter writer = new StreamWriter(filePath))
+            {
+                writer.WriteLine($"=== Player Behavior Logs as of {timestamp}===");
+                writer.WriteLine($"Character Name: {characterInstance.name}");
+                writer.WriteLine($"Total Play Time: {FormatPlayTime(Game.instance.currentCharacter.totalPlayTime)}");
+                writer.WriteLine($"Player Deaths: {playerDeaths}");
+                writer.WriteLine($"Enemies Defeated: {enemiesDefeated}");
+                writer.WriteLine($"Total Combat Time: {totalCombatTime} seconds");
+                writer.WriteLine($"NPC Interactions: {npcInteractions}");
+                writer.WriteLine($"Potions Used: {potionsUsed}");
+                writer.WriteLine($"Zones Discovered: {zonesDiscovered}");
+                writer.WriteLine($"Quests Completed: {questsCompleted}");
+                writer.WriteLine($"Waypoints Discovered: {waypointsDiscovered}");
+                writer.WriteLine($"Current Difficulty Multiplier: {difficultyMultiplier}");
+                writer.WriteLine($"Player Type based on questionnaire: {characterInstance.playerType}");
+                writer.WriteLine($"Current Dynamic Player Type: {currentDynamicPlayerType}");
+            }
+
+            Debug.Log($"Logs saved to: {filePath}");
+        }
+
+        public void ApplySettingsFromGameSettings()
+        {
+            if (GameSettings.instance != null)
+            {
+                isLoggingEnabled = GameSettings.instance.GetSaveLogs();
+                Debug.Log($"PlayerBehaviorLogger: Logging is {(isLoggingEnabled ? "Enabled" : "Disabled")} from settings.");
+            }
+        }
+
+        private void Update()
+        {
+            if (Game.instance.currentCharacter != null)
+            {
+                float deltaTime = Time.time - lastUpdateTime;
+                Game.instance.currentCharacter.totalPlayTime += deltaTime;
+                lastUpdateTime = Time.time;
+            }
+        }
+        public static string FormatPlayTime(float totalSeconds)
+        {
+            int days = (int)(totalSeconds / 86400); // 1 dzień = 86400 sekund
+            int hours = (int)((totalSeconds % 86400) / 3600);
+            int minutes = (int)((totalSeconds % 3600) / 60);
+            int seconds = (int)(totalSeconds % 60);
+
+            if (days > 0)
+                return $"{days}d {hours}h {minutes}m {seconds}s";
+            else if (hours > 0)
+                return $"{hours}h {minutes}m {seconds}s";
+            else if (minutes > 0)
+                return $"{minutes}m {seconds}s";
+            else
+                return $"{seconds}s";
         }
 
         /// <summary>

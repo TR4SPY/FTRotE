@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using AI_DDA.Assets.Scripts;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -16,6 +17,9 @@ namespace PLAYERTWO.ARPGProject
 
         [Tooltip("References the toggle that controls the post-processing state.")]
         public Toggle postProcessing;
+
+        [Tooltip("References the toggle that controls saving of the logs.")]
+        public Toggle saveLogsToggle;
 
         [Tooltip("References the music volume slider.")]
         public Slider musicVolume;
@@ -38,6 +42,8 @@ namespace PLAYERTWO.ARPGProject
             InitializeMusicVolume();
             InitializeEffectsVolume();
             InitializeUIEffectsVolume();
+            InitializeSaveLogs(); // Dodajemy obsługę logów
+            saveLogsToggle.onValueChanged.AddListener(OnSaveLogsToggleChanged);
         }
 
         protected virtual void OnDisable() => m_settings?.Save();
@@ -87,6 +93,24 @@ namespace PLAYERTWO.ARPGProject
         {
             uiVolume.value = m_settings.GetUIEffectsVolume();
             uiVolume.onValueChanged.AddListener(m_settings.SetUIEffectsVolume);
+        }
+
+        protected virtual void InitializeSaveLogs()
+        {
+            saveLogsToggle.isOn = m_settings.GetSaveLogs();
+            saveLogsToggle.onValueChanged.AddListener(OnSaveLogsToggleChanged);
+        }
+
+        private void OnSaveLogsToggleChanged(bool isOn)
+        {
+            m_settings.SetSaveLogs(isOn);
+
+            if (PlayerBehaviorLogger.Instance != null)
+            {
+                PlayerBehaviorLogger.Instance.isLoggingEnabled = isOn;
+            }
+
+            Debug.Log($"Save Logs is now: {(isOn ? "Enabled" : "Disabled")}");
         }
     }
 }

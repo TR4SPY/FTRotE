@@ -32,6 +32,19 @@ namespace PLAYERTWO.ARPGProject
 
         protected GameAudio m_audio => GameAudio.instance;
 
+        private const string SaveLogsKey = "SaveLogs";
+
+        public bool GetSaveLogs()
+        {
+            return PlayerPrefs.GetInt(SaveLogsKey, 1) == 1; // Domyślnie włączone (1)
+        }
+
+        public void SetSaveLogs(bool isEnabled)
+        {
+            PlayerPrefs.SetInt(SaveLogsKey, isEnabled ? 1 : 0);
+            PlayerPrefs.Save();
+        }
+
         // Zabezpieczenie przed brakiem PostProcessToggler
         protected PostProcessToggler m_postProcess
         {

@@ -41,6 +41,7 @@ namespace PLAYERTWO.ARPGProject
             {
                 SaveDifficultyForCharacter(m_currentCharacter);
                 SaveLogsForCharacter(m_currentCharacter);
+                SaveLogsIfEnabled();
             }
 
             switch (mode)
@@ -161,6 +162,13 @@ namespace PLAYERTWO.ARPGProject
                 }
             }
 
+            // Wczytaj całkowity czas gry
+            if (Game.instance.currentCharacter != null)
+            {
+                Game.instance.currentCharacter.totalPlayTime = character.totalPlayTime;
+            }
+            
+
             PlayerBehaviorLogger.Instance.playerDeaths = character.playerDeaths;
             PlayerBehaviorLogger.Instance.enemiesDefeated = character.enemiesDefeated;
             PlayerBehaviorLogger.Instance.totalCombatTime = character.totalCombatTime;
@@ -173,6 +181,9 @@ namespace PLAYERTWO.ARPGProject
             QuestionnaireManager.Instance.playerType = character.playerType;
             PlayerBehaviorLogger.Instance.currentDynamicPlayerType = character.currentDynamicPlayerType;
 
+             // Wczytaj łączny czas gry
+            PlayerBehaviorLogger.Instance.lastUpdateTime = Time.time; // Inicjalizacja czasu
+
             Debug.Log($"Loaded Player Behavior Logs for {character.name}: " +
                     $"Deaths={PlayerBehaviorLogger.Instance.playerDeaths}, " +
                     $"Defeated={PlayerBehaviorLogger.Instance.enemiesDefeated}, " +
@@ -183,7 +194,8 @@ namespace PLAYERTWO.ARPGProject
                     $"PotionsUsed={PlayerBehaviorLogger.Instance.potionsUsed}" +
                     $"ZonesDiscovered={PlayerBehaviorLogger.Instance.zonesDiscovered}" +
                     $"PlayerType={QuestionnaireManager.Instance.playerType}" +
-                    $"CurrentDynamicPlayerType={PlayerBehaviorLogger.Instance.currentDynamicPlayerType}");
+                    $"CurrentDynamicPlayerType={PlayerBehaviorLogger.Instance.currentDynamicPlayerType}" +
+                    $"PlayTime={character.totalPlayTime}");
         }
 
         public void SaveDifficultyForCharacter(CharacterInstance character)
@@ -211,6 +223,12 @@ namespace PLAYERTWO.ARPGProject
                 Debug.LogWarning("PlayerBehaviorLogger.Instance is null. Skipping player behavior logs save.");
                 return;
             }
+
+            // Zapisz całkowity czas gry
+            //character.totalPlayTime = Game.instance.currentCharacter.totalPlayTime;
+            // Zapisz łączny czas gry
+            character.totalPlayTime += Time.time - PlayerBehaviorLogger.Instance.lastUpdateTime;
+
 
             character.playerDeaths = PlayerBehaviorLogger.Instance.playerDeaths;
             character.enemiesDefeated = PlayerBehaviorLogger.Instance.enemiesDefeated;
@@ -280,6 +298,20 @@ namespace PLAYERTWO.ARPGProject
             var saveKey = GetSaveKey();
             var extension = mode == Mode.JSON ? k_jsonExtension : k_binaryExtension;
             return Path.Combine(Application.persistentDataPath, $"{saveKey}.{extension}");
+        }
+
+        public void SaveLogsIfEnabled()
+        {
+            if (PlayerBehaviorLogger.Instance == null)
+            {
+                Debug.LogWarning("PlayerBehaviorLogger.Instance is null. Skipping log save.");
+                return;
+            }
+
+            if (PlayerBehaviorLogger.Instance.isLoggingEnabled)
+            {
+                PlayerBehaviorLogger.Instance.SaveLogsToFile();
+            }
         }
 
         protected virtual void UpdateSceneData()

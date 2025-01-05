@@ -48,6 +48,7 @@ namespace PLAYERTWO.ARPGProject
         public bool questionnaireCompleted = false;
         public string playerType = "Undefined";
         public string currentDynamicPlayerType = "Unknown";
+        public float totalPlayTime = 0f; // Łączny czas gry w sekundach
         protected Entity m_entity;
 
         public Vector3 currentPosition => m_entity ? m_entity.position : initialPosition;
@@ -172,6 +173,7 @@ namespace PLAYERTWO.ARPGProject
                 questionnaireCompleted = serializer.questionnaireCompleted,
                 playerType = serializer.playerType,
                 currentDynamicPlayerType = serializer.currentDynamicPlayerType,
+                totalPlayTime = serializer.totalPlayTime,
 
                 // Wczytaj odwiedzone strefy
                 visitedZones = serializer.visitedZones != null
@@ -200,6 +202,7 @@ namespace PLAYERTWO.ARPGProject
             characterInstance.questionnaireCompleted = serializer.questionnaireCompleted;
             characterInstance.playerType = serializer.playerType;
             characterInstance.currentDynamicPlayerType = serializer.currentDynamicPlayerType;
+            characterInstance.totalPlayTime = serializer.totalPlayTime;
 
             return characterInstance;
         }
