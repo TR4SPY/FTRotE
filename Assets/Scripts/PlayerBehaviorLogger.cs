@@ -56,9 +56,15 @@ namespace AI_DDA.Assets.Scripts
     public int npcInteractions = 0;
     public int questsCompleted = 0;
     public int waypointsDiscovered = 0;
+    public string currentDynamicPlayerType = "Unknown";
     private bool difficultyAdjusted = false; // Flaga dla wielokrotności 10
     private HashSet<string> discoveredZones = new HashSet<string>();
     private HashSet<int> discoveredWaypoints = new HashSet<int>();
+
+    private void Start()
+        {
+            UpdatePlayerType();
+        }
 
     private float combatStartTime;
 
@@ -77,6 +83,7 @@ namespace AI_DDA.Assets.Scripts
         {
             totalCombatTime += Time.time - combatStartTime;
             Debug.Log($"Combat Time: {totalCombatTime}");
+            UpdatePlayerType(); // Recalculate player type
         }
 
             /// <summary>
@@ -104,6 +111,7 @@ namespace AI_DDA.Assets.Scripts
     {
         enemiesDefeated++;
         Debug.Log($"Enemies defeated: {enemiesDefeated}");
+        UpdatePlayerType(); // Recalculate player type
     }
 
         /// <summary>
@@ -114,6 +122,7 @@ namespace AI_DDA.Assets.Scripts
             playerDeaths++;
             Debug.Log($"Player deaths: {playerDeaths}");
             DifficultyManager.Instance.AdjustDifficulty(this);
+            UpdatePlayerType(); // Recalculate player type
         }
 
         public void LogAreaDiscovered(string zoneName)
@@ -123,6 +132,7 @@ namespace AI_DDA.Assets.Scripts
                 discoveredZones.Add(zoneName);
                 zonesDiscovered++;
                 Debug.Log($"Discovered new area: {zoneName}");
+                UpdatePlayerType(); // Recalculate player type
             }
         }
 
@@ -133,6 +143,7 @@ namespace AI_DDA.Assets.Scripts
                 discoveredWaypoints.Add(waypointID);
                 waypointsDiscovered++;
                 Debug.Log($"Discovered new waypoint: {waypointID}");
+                UpdatePlayerType(); // Recalculate player type
             }
         }
 
@@ -140,17 +151,25 @@ namespace AI_DDA.Assets.Scripts
         {
             npcInteractions++;
             Debug.Log($"NPC interaction! Total: {npcInteractions}");
+            UpdatePlayerType(); // Recalculate player type
         }
         public void LogQuestCompleted()
         {
             questsCompleted++;
             Debug.Log($"Quest completed! Total: {questsCompleted}");
+            UpdatePlayerType(); // Recalculate player type
         }
 
         public void LogPotionsUsed()
         {
             potionsUsed++;
             Debug.Log($"Potion used! Total: {potionsUsed}");
+            UpdatePlayerType(); // Recalculate player type
+        }
+
+        public void LogCurrentDynamicPlayerType()
+        {
+            Debug.Log($"Current Dynamic Player Type: {currentDynamicPlayerType}");
         }
 
         public void LoadLogs(CharacterInstance characterInstance)
@@ -169,12 +188,51 @@ namespace AI_DDA.Assets.Scripts
             questsCompleted = characterInstance.questsCompleted;
             potionsUsed = characterInstance.potionsUsed;
             zonesDiscovered = characterInstance.zonesDiscovered;
+            currentDynamicPlayerType = characterInstance.currentDynamicPlayerType;
 
             Debug.Log($"Loaded Player Behavior Logs for {characterInstance.name}: " +
                     $"Deaths={playerDeaths}, Defeated={enemiesDefeated}, " +
                     $"CombatTime={totalCombatTime}, NPCInteractions={npcInteractions}, " +
                     $"WaypointsDiscovered={waypointsDiscovered}, QuestsCompleted={questsCompleted}, " +
-                    $"PotionsUsed={potionsUsed}, ZonesDiscovered={zonesDiscovered}");
+                    $"PotionsUsed={potionsUsed}, ZonesDiscovered={zonesDiscovered}, " +
+                    $"currentDynamicPlayerType={currentDynamicPlayerType}");
+        }
+
+        /// <summary>
+        /// Updates the player's type based on current metrics.
+        /// </summary>
+        public void UpdatePlayerType()
+        {
+            // Scoring logic
+            int achieverScore = questsCompleted + waypointsDiscovered;
+            int explorerScore = zonesDiscovered + waypointsDiscovered;
+            int socializerScore = npcInteractions;
+            int killerScore = enemiesDefeated + (int)(totalCombatTime / 60);
+
+            // Determine dominant type
+            string newPlayerType = DetermineDominantType(achieverScore, explorerScore, socializerScore, killerScore);
+
+            // Update if changed
+            if (newPlayerType != currentDynamicPlayerType)
+            {
+                Debug.Log($"Player type updated: {currentDynamicPlayerType} -> {newPlayerType}");
+                currentDynamicPlayerType = newPlayerType;
+            }
+        }
+
+        /// <summary>
+        /// Determines the dominant player type.
+        /// </summary>
+        private string DetermineDominantType(int achiever, int explorer, int socializer, int killer)
+        {
+            int maxScore = Mathf.Max(achiever, explorer, socializer, killer);
+
+            if (maxScore == achiever) return "Achiever";
+            if (maxScore == explorer) return "Explorer";
+            if (maxScore == socializer) return "Socializer";
+            if (maxScore == killer) return "Killer";
+
+            return "Undefined";
         }
 
         /// <summary>

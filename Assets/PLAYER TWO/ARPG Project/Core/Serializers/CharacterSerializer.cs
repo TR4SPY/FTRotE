@@ -39,6 +39,7 @@ namespace PLAYERTWO.ARPGProject
         public int questsCompleted;
         public bool questionnaireCompleted = false;
         public string playerType;
+        public string currentDynamicPlayerType;
 
         // Lista odwiedzonych stref
         public List<string> visitedZones = new List<string>();
@@ -78,6 +79,7 @@ namespace PLAYERTWO.ARPGProject
             waypointsDiscovered = character.waypointsDiscovered;
             zonesDiscovered = character.zonesDiscovered;
             playerType = character.playerType;
+            currentDynamicPlayerType = character.currentDynamicPlayerType;
 
             // Save questionnaire completion status
            questionnaireCompleted = character.questionnaireCompleted;

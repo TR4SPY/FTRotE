@@ -47,7 +47,7 @@ namespace PLAYERTWO.ARPGProject
         public int waypointsDiscovered = 0;
         public bool questionnaireCompleted = false;
         public string playerType = "Undefined";
-
+        public string currentDynamicPlayerType = "Unknown";
         protected Entity m_entity;
 
         public Vector3 currentPosition => m_entity ? m_entity.position : initialPosition;
@@ -171,6 +171,7 @@ namespace PLAYERTWO.ARPGProject
                 waypointsDiscovered = serializer.waypointsDiscovered, // Dodaj wczytywanie waypointów
                 questionnaireCompleted = serializer.questionnaireCompleted,
                 playerType = serializer.playerType,
+                currentDynamicPlayerType = serializer.currentDynamicPlayerType,
 
                 // Wczytaj odwiedzone strefy
                 visitedZones = serializer.visitedZones != null
@@ -198,6 +199,7 @@ namespace PLAYERTWO.ARPGProject
             characterInstance.zonesDiscovered = serializer.zonesDiscovered;
             characterInstance.questionnaireCompleted = serializer.questionnaireCompleted;
             characterInstance.playerType = serializer.playerType;
+            characterInstance.currentDynamicPlayerType = serializer.currentDynamicPlayerType;
 
             return characterInstance;
         }
