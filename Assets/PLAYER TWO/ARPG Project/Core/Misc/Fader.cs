@@ -28,6 +28,7 @@ namespace PLAYERTWO.ARPGProject
         /// <param name="onFinished">The action that will be invoked in the end of the routine.</param>
         public virtual void FadeOut(System.Action onFinished)
         {
+            EnsureGroupInitialized();
             m_group.blocksRaycasts = true;
             StopAllCoroutines();
             StartCoroutine(AlphaRoutine(0, 1, onFinished));
@@ -39,6 +40,7 @@ namespace PLAYERTWO.ARPGProject
         /// <param name="onFinished">The action that will be invoked in the end of the routine.</param>
         public virtual void FadeIn(System.Action onFinished)
         {
+            EnsureGroupInitialized();
             StopAllCoroutines();
 
             StartCoroutine(AlphaRoutine(1, 0, () =>
@@ -48,9 +50,20 @@ namespace PLAYERTWO.ARPGProject
             }));
         }
 
+        private void EnsureGroupInitialized()
+        {
+            if (m_group == null)
+            {
+                m_group = GetComponent<CanvasGroup>();
+                m_group.alpha = 0;
+                m_group.blocksRaycasts = false;
+            }
+        }
+
         protected IEnumerator AlphaRoutine(float from, float to, System.Action onFinished)
         {
             var time = 0f;
+            EnsureGroupInitialized();
 
             m_group.alpha = from;
 
@@ -67,9 +80,8 @@ namespace PLAYERTWO.ARPGProject
 
         protected override void Awake()
         {
-            m_group = GetComponent<CanvasGroup>();
-            m_group.alpha = 0;
-            m_group.blocksRaycasts = false;
+            base.Awake();
+            EnsureGroupInitialized();
         }
     }
 }

@@ -21,10 +21,19 @@ namespace PLAYERTWO.ARPGProject
         [Header("General Audios")]
         [Tooltip("An Audio Clip to be used as a 'denied' effect.")]
         public AudioClip deniedClip;
+        [Tooltip("An Audio Clip to be used as a menu music.")]
 
         protected AudioSource m_musicSource;
         protected AudioSource m_effectsSource;
         protected AudioSource m_uiEffectsSource;
+        public AudioClip CurrentMusic { get; private set; }
+
+        // public static GameAudio instance { get; private set; }
+        protected override void Awake()
+        {
+            base.Awake();
+            DontDestroyOnLoad(gameObject);
+        }
 
         /// <summary>
         /// Returns the Audio Source that plays music.
@@ -130,10 +139,16 @@ namespace PLAYERTWO.ARPGProject
         /// Plays an Audio Clip with the music Audio Source in loop.
         /// </summary>
         /// <param name="clip">The Audio Clip you want to play.</param>
-        public virtual void PlayMusic(AudioClip clip)
+
+        public void PlayMusic(AudioClip clip)
         {
             if (clip == null) return;
 
+            // Jeśli już odtwarzamy ten utwór, nie rób nic
+            if (CurrentMusic == clip)
+                return;
+
+            CurrentMusic = clip;
             musicSource.clip = clip;
             musicSource.Play();
         }
@@ -141,7 +156,15 @@ namespace PLAYERTWO.ARPGProject
         /// <summary>
         /// Stops playing the current music.
         /// </summary>
-        public virtual void StopMusic() => musicSource.Stop();
+        //public virtual void StopMusic() => musicSource.Stop();
+        public void StopMusic()
+        {
+            if (musicSource.isPlaying)
+            {
+                musicSource.Stop();
+                CurrentMusic = null;
+            }
+        }
 
         /// <summary>
         /// Plays an Audio Clip with the effects Audio Source for one time.
