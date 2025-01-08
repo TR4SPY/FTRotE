@@ -12,22 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcbc84c22772fe449a1319589dfd46cd, type: 3}
   m_Name: Infernal Sword
   m_EditorClassIdentifier: 
-  prefab: {fileID: 1514839444299120, guid: 320b4ecb5175ad181b2cbd25cd9ce0de, type: 3}
-  price: 1500
+  prefab: {fileID: 8825014312839628228, guid: b29cc562cff831ed28948317c894f6b8, type: 3}
+  price: 4500
   dropPosition: {x: 0, y: 0, z: 0}
   dropRotation: {x: -90, y: 0, z: 45}
-  image: {fileID: 21300000, guid: 457c52585bab97ef092b174a79fe8ba7, type: 3}
+  image: {fileID: 21300000, guid: a0f424879f51569338b4c30bdb035c66, type: 3}
   rows: 4
   columns: 1
   canStack: 0
   stackCapacity: 0
-  maxDurability: 45
-  requiredLevel: 9
-  requiredStrength: 30
-  requiredDexterity: 17
-  minDamage: 12
-  maxDamage: 24
-  attackSpeed: 12
+  maxDurability: 57
+  requiredLevel: 20
+  requiredStrength: 60
+  requiredDexterity: 40
+  minDamage: 22
+  maxDamage: 32
+  attackSpeed: 15
   attackClips:
   - {fileID: 8300000, guid: aa3151bff5ceab4449196fc78f916dc1, type: 3}
   - {fileID: 8300000, guid: 5ff94522a8297af488276fa868ce11a7, type: 3}
@@ -36,7 +36,7 @@ MonoBehaviour:
   timeToStopCombo: 1
   nextComboDelay: 0.1
   type: 0
-  rightHandPosition: {x: 0.035, y: -0.03, z: 0.173}
-  rightHandRotation: {x: 51.318, y: -86.912, z: 81.237}
+  rightHandPosition: {x: 0, y: 0, z: 0}
+  rightHandRotation: {x: -90, y: 90, z: 90}
   leftHandPosition: {x: 0, y: 0, z: 0}
   leftHandRotation: {x: 90, y: 90, z: 90}

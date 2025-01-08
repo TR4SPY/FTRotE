@@ -135,7 +135,18 @@ namespace PLAYERTWO.ARPGProject
         {
             var elapsedTime = 0f;
             var flashColor = damageColor;
-            var initialColor = material.color;
+            Color initialColor = Color.white; // Domyślny kolor, na wypadek braku `_Color` w materiale.
+
+            // Sprawdź, czy materiał ma właściwość `_Color`
+            if (material.HasProperty("_Color"))
+            {
+                initialColor = material.color;
+            }
+            else
+            {
+                Debug.LogWarning($"Material '{material.name}' does not have a '_Color' property.");
+                yield break; // Przerwij coroutine, ponieważ materiał nie ma właściwości `_Color`.
+            }
 
             m_isFlashing = true;
 

@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Rendering;
 using AI_DDA.Assets.Scripts;
 
 namespace PLAYERTWO.ARPGProject
@@ -30,6 +31,9 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("References the ui effects volume slider.")]
         public Slider uiVolume;
 
+        [Header("References")]
+        [Tooltip("The Volume component controlling post-processing effects.")]
+        public Volume postProcessingVolume;
         protected GameSettings m_settings => GameSettings.instance;
 
         protected override void Start()
@@ -71,10 +75,36 @@ namespace PLAYERTWO.ARPGProject
             fullScreen.onValueChanged.AddListener(m_settings.SetFullScreen);
         }
 
+/*
         protected virtual void InitializePostProcessing()
         {
             postProcessing.isOn = m_settings.GetPostProcessing();
             postProcessing.onValueChanged.AddListener(m_settings.SetPostProcessing);
+        }
+*/
+
+        protected virtual void InitializePostProcessing()
+        {
+            // Ustaw początkowy stan Toggle zgodnie z aktualnym ustawieniem
+            bool isPostProcessingEnabled = m_settings.GetPostProcessing();
+            postProcessing.isOn = isPostProcessingEnabled;
+
+            // Ustaw aktywność Volume w oparciu o początkowe ustawienie
+            if (postProcessingVolume != null)
+                postProcessingVolume.enabled = isPostProcessingEnabled;
+
+            // Dodaj listener do Toggle
+            postProcessing.onValueChanged.AddListener(SetPostProcessingState);
+        }
+
+        protected virtual void SetPostProcessingState(bool isEnabled)
+        {
+            // Zapisz ustawienie w Settings
+            m_settings.SetPostProcessing(isEnabled);
+
+            // Włącz/wyłącz Volume
+            if (postProcessingVolume != null)
+                postProcessingVolume.enabled = isEnabled;
         }
 
         protected virtual void InitializeMusicVolume()

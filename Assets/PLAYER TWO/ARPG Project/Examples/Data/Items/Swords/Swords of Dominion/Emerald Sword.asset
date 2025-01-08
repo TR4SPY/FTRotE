@@ -12,22 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcbc84c22772fe449a1319589dfd46cd, type: 3}
   m_Name: Emerald Sword
   m_EditorClassIdentifier: 
-  prefab: {fileID: 1514839444299120, guid: 320b4ecb5175ad181b2cbd25cd9ce0de, type: 3}
-  price: 1500
+  prefab: {fileID: 9074562592178130187, guid: d48a11a32fbd038f0bac83c4d6acb0cf, type: 3}
+  price: 4000
   dropPosition: {x: 0, y: 0, z: 0}
   dropRotation: {x: -90, y: 0, z: 45}
-  image: {fileID: 21300000, guid: 457c52585bab97ef092b174a79fe8ba7, type: 3}
+  image: {fileID: 21300000, guid: 90f6c8928c378f28f917e5a7b7a9cf23, type: 3}
   rows: 4
   columns: 1
   canStack: 0
   stackCapacity: 0
-  maxDurability: 45
-  requiredLevel: 9
-  requiredStrength: 30
-  requiredDexterity: 17
-  minDamage: 12
-  maxDamage: 24
-  attackSpeed: 12
+  maxDurability: 52
+  requiredLevel: 15
+  requiredStrength: 56
+  requiredDexterity: 32
+  minDamage: 19
+  maxDamage: 29
+  attackSpeed: 15
   attackClips:
   - {fileID: 8300000, guid: aa3151bff5ceab4449196fc78f916dc1, type: 3}
   - {fileID: 8300000, guid: 5ff94522a8297af488276fa868ce11a7, type: 3}
@@ -36,7 +36,7 @@ MonoBehaviour:
   timeToStopCombo: 1
   nextComboDelay: 0.1
   type: 0
-  rightHandPosition: {x: 0.035, y: -0.03, z: 0.173}
-  rightHandRotation: {x: 51.318, y: -86.912, z: 81.237}
+  rightHandPosition: {x: 0, y: 0, z: 0.237}
+  rightHandRotation: {x: -90, y: 90, z: 90}
   leftHandPosition: {x: 0, y: 0, z: 0}
   leftHandRotation: {x: 90, y: 90, z: 90}
