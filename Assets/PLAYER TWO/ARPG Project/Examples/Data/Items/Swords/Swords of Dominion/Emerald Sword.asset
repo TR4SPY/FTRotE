@@ -36,7 +36,7 @@ MonoBehaviour:
   timeToStopCombo: 1
   nextComboDelay: 0.1
   type: 0
-  rightHandPosition: {x: 0, y: 0, z: 0.237}
+  rightHandPosition: {x: 0, y: 0, z: 0}
   rightHandRotation: {x: -90, y: 90, z: 90}
   leftHandPosition: {x: 0, y: 0, z: 0}
   leftHandRotation: {x: 90, y: 90, z: 90}
