@@ -7,16 +7,13 @@ EditorBuildSettings:
   m_Scenes:
   - enabled: 1
     path: Assets/PLAYER TWO/ARPG Project/Examples/Scenes/Main.unity
-    guid: 5c8e9a06ee492db1f935682554ed6f21
+    guid: 6f25a5dbe709beef7acec1691bf81cd6
   - enabled: 1
     path: Assets/PLAYER TWO/ARPG Project/Examples/Scenes/Title.unity
-    guid: 70f52b70753dd5b41ad02f9572b3e116
+    guid: 38b8207a44eef580294556f6d3452582
   - enabled: 1
     path: Assets/PLAYER TWO/ARPG Project/Examples/Scenes/Tutorial.unity
     guid: 70a178a6602d6f84d99b0b864676a480
-  - enabled: 0
-    path: Assets/PLAYER TWO/ARPG Project/Examples/Scenes/Tutorial_Old.unity
-    guid: fcc49620b998e08499e24aa8a0262a6c
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 465a3c9fcf86f3d9a925c4abc1b42763, type: 2}
     com.unity.localization.settings: {fileID: 11400000, guid: fb9ddca92758c70a4923346f3caa7895, type: 2}

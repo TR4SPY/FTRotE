@@ -35,7 +35,7 @@ MonoBehaviour:
   maxCombos: 3
   timeToStopCombo: 1
   nextComboDelay: 0.1
-  type: 0
+  type: 1
   rightHandPosition: {x: 0.035, y: -0.03, z: 0.173}
   rightHandRotation: {x: 51.318, y: -86.912, z: 81.237}
   leftHandPosition: {x: 0, y: 0, z: 0}
