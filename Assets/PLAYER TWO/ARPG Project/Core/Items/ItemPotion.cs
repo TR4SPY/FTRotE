@@ -4,7 +4,7 @@ using AI_DDA.Assets.Scripts;
 namespace PLAYERTWO.ARPGProject
 {
     [CreateAssetMenu(fileName = "New Potion", menuName = "PLAYER TWO/ARPG Project/Item/Potion")]
-    public class ItemPotion : ItemConsumable
+    public class ItemPotion : ItemConsumable, ItemQuest
     {
         [Header("Healing Settings")]
         [Tooltip("The amount of health points this Potion recovers.")]
@@ -12,6 +12,15 @@ namespace PLAYERTWO.ARPGProject
 
         [Tooltip("The amount of mana points this Potion recovers.")]
         public int manaAmount;
+
+        [Header("Quest Settings")]
+        [Tooltip("Is this blade a quest item?")]
+        public bool isQuestSpecific = false;
+
+        /// <summary>
+        /// Returns true if this item is quest related.
+        /// </summary>
+        public bool IsQuestSpecific => isQuestSpecific;
 
         public override void Consume(Entity entity)
         {

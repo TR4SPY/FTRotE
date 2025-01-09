@@ -352,8 +352,12 @@ namespace PLAYERTWO.ARPGProject
                 {
                     var weaponType = blade.IsTwoHanded() ? "Two-Handed Weapon\n" : "One-Handed Weapon\n";
                     text += $"{StringUtils.StringWithColor(weaponType, special)}";
-                    
                 }
+                else
+                {
+                    text += $"{StringUtils.StringWithColor("Two-Handed Weapon\n", special)}";
+                }
+
                 text += $"Damage: {GetWeapon().minDamage} ~ {GetWeapon().maxDamage}";
                 text += $"\nAttack Speed: {GetWeapon().attackSpeed}";
             }  

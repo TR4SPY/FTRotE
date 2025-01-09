@@ -3,7 +3,7 @@ using UnityEngine;
 namespace PLAYERTWO.ARPGProject
 {
     [CreateAssetMenu(fileName = "New Armor", menuName = "PLAYER TWO/ARPG Project/Item/Armor")]
-    public class ItemArmor : ItemEquippable
+    public class ItemArmor : ItemEquippable, ItemQuest
     {
         [System.Serializable]
         public class PieceSettings
@@ -30,6 +30,15 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The pieces of the character that will be shown or hidden when this armor is equipped.")]
         public PieceSettings[] pieces;
 
+        [Header("Quest Settings")]
+        [Tooltip("Is this blade a quest item?")]
+        public bool isQuestSpecific = false;
+
+        /// <summary>
+        /// Returns true if this item is quest related.
+        /// </summary>
+        public bool IsQuestSpecific => isQuestSpecific;
+        
         /// <summary>
         /// Returns true if this Item has custom materials.
         /// </summary>
