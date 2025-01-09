@@ -42,6 +42,15 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("Regular text colors.")]
         public Color regularColor = new(1, 1, 1, 1);
 
+        [Tooltip("Rare text colors.")]
+        public Color rareItemColor = new(1, 1, 1, 1);
+
+        [Tooltip("Quest item name colors.")]
+        public Color questItemColor = GameColors.Gold;
+
+        [Tooltip("Is quest item name bold?")]
+        public bool isBold = true; // Opcja do ustawienia bold w inspektorze
+
         [Tooltip("Invalid text colors.")]
         public Color invalidColor = new(1, 0, 0, 1);
 
@@ -139,6 +148,19 @@ namespace PLAYERTWO.ARPGProject
 
             if (m_item.IsSkill() || m_item.GetAttributesCount() > 0)
                 itemName.color = specialColor;
+            
+            if (m_item.data is ItemQuest questItem && questItem.IsQuestSpecific)
+            {
+                // Kolor w formacie hex
+                string colorHex = ColorUtility.ToHtmlStringRGB(questItemColor);
+
+                // Tworzenie tekstu z kolorem i opcjonalnym bold
+                string formattedText = isBold 
+                    ? $"<b><color=#{colorHex}>{m_item.data.name}</color></b>" // Bold + kolor
+                    : $"<color=#{colorHex}>{m_item.data.name}</color>";      // Tylko kolor
+
+                itemName.text = formattedText;
+            }
         }
 
         protected virtual void UpdateAttributes()
@@ -146,7 +168,7 @@ namespace PLAYERTWO.ARPGProject
             attributesContainer.SetActive(m_item.IsEquippable() || m_item.IsSkill());
 
             if (attributesContainer.activeSelf)
-                attributesText.text = m_item.Inspect(m_entity.stats, attentionColor, invalidColor);
+                attributesText.text = m_item.Inspect(m_entity.stats, attentionColor, invalidColor, specialColor, questItemColor);
         }
 
         protected virtual void UpdatePotionDescription()

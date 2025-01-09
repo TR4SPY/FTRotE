@@ -3,6 +3,9 @@ using System.Text.RegularExpressions;
 
 namespace PLAYERTWO.ARPGProject
 {
+using System.Text.RegularExpressions;
+using UnityEngine;
+
     public class StringUtils
     {
         /// <summary>
@@ -26,6 +29,44 @@ namespace PLAYERTWO.ARPGProject
         {
             var hex = ColorUtility.ToHtmlStringRGB(color);
             return $"<color=#{hex}>{input}</color>";
+        }
+
+        /// <summary>
+        /// Returns a given string with a color and optional styles (bold/italic).
+        /// </summary>
+        /// <param name="input">The string you want to format.</param>
+        /// <param name="color">The color to apply to the string.</param>
+        /// <param name="bold">If true, the text will be bold.</param>
+        /// <param name="italic">If true, the text will be italic.</param>
+        public static string StringWithColorAndStyle(string input, Color color, bool bold = false, bool italic = false)
+        {
+            var hex = ColorUtility.ToHtmlStringRGB(color);
+            var result = $"<color=#{hex}>{input}</color>";
+
+            if (bold)
+                result = $"<b>{result}</b>";
+
+            if (italic)
+                result = $"<i>{result}</i>";
+
+            return result;
+        }
+
+        /// <summary>
+        /// Applies multiple styles to a string.
+        /// </summary>
+        /// <param name="input">The string you want to format.</param>
+        /// <param name="bold">If true, the text will be bold.</param>
+        /// <param name="italic">If true, the text will be italic.</param>
+        public static string ApplyStyles(string input, bool bold = false, bool italic = false)
+        {
+            if (bold)
+                input = $"<b>{input}</b>";
+
+            if (italic)
+                input = $"<i>{input}</i>";
+
+            return input;
         }
     }
 }

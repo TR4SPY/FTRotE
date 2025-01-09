@@ -334,7 +334,7 @@ namespace PLAYERTWO.ARPGProject
         /// <param name="stats">The Entity Stats to compare against.</param>
         /// <param name="warning">The color of warning texts.</param>
         /// <param name="error">The color of the error texts.</param>
-        public virtual string Inspect(EntityStatsManager stats, Color warning, Color error)
+        public virtual string Inspect(EntityStatsManager stats, Color warning, Color error, Color special, Color quest)
         {
             var text = "";
 
@@ -347,9 +347,16 @@ namespace PLAYERTWO.ARPGProject
             }
             else if (IsWeapon())
             {
+                var blade = GetBlade();
+                if (blade != null)
+                {
+                    var weaponType = blade.IsTwoHanded() ? "Two-Handed Weapon\n" : "One-Handed Weapon\n";
+                    text += $"{StringUtils.StringWithColor(weaponType, special)}";
+                    
+                }
                 text += $"Damage: {GetWeapon().minDamage} ~ {GetWeapon().maxDamage}";
                 text += $"\nAttack Speed: {GetWeapon().attackSpeed}";
-            }
+            }  
 
             if (IsEquippable())
             {
@@ -375,6 +382,12 @@ namespace PLAYERTWO.ARPGProject
 
             if (GetRequiredEnergy() > 0)
                 text += InspectRequired("Energy", GetRequiredEnergy(), stats.energy, error, text.Length > 0);
+
+            if (data is ItemQuest questItem && questItem.IsQuestSpecific)
+            {
+                text += $"\n{StringUtils.StringWithColorAndStyle("\nThis is a Quest Item", quest, bold: true)}";
+                text += $"\n{StringUtils.StringWithColorAndStyle("Cannot be sold or dropped", error)}";
+            }
 
             return text;
         }
