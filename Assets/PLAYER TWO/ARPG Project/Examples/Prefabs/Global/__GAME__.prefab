@@ -95,6 +95,7 @@ GameObject:
   - component: {fileID: 5976231801261528092}
   - component: {fileID: 1668754394529997350}
   - component: {fileID: 105099512331301389}
+  - component: {fileID: 7952096078989433651}
   m_Layer: 0
   m_Name: __GAME__
   m_TagString: Untagged
@@ -268,10 +269,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e8808aee1ccb9a2a8d6b750e36ac41c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CurrentHealthMultiplier: 1
-  CurrentDamageMultiplier: 1
+  CurrentDexterityMultiplier: 1
+  CurrentStrengthMultiplier: 1
   CurrentSpeedMultiplier: 1
   playerLogger: {fileID: 0}
+--- !u!114 &7952096078989433651
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2175000572608817883}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb7ed95fbdf8e03d3a1ec05afbde94bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GUIAchievementsHUD: {fileID: 0}
 --- !u!1 &2499290984610492485
 GameObject:
   m_ObjectHideFlags: 0

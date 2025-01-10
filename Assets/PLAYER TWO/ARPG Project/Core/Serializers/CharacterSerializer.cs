@@ -35,6 +35,7 @@ namespace PLAYERTWO.ARPGProject
         public int potionsUsed;
         public int difficultyMultiplier;
         public int zonesDiscovered;
+        public int achievementsUnlocked;
         public int npcInteractions;
         public int questsCompleted;
         public bool questionnaireCompleted = false;
@@ -79,6 +80,7 @@ namespace PLAYERTWO.ARPGProject
             potionsUsed = character.potionsUsed;
             waypointsDiscovered = character.waypointsDiscovered;
             zonesDiscovered = character.zonesDiscovered;
+            achievementsUnlocked = character.achievementsUnlocked;
             playerType = character.playerType;
             currentDynamicPlayerType = character.currentDynamicPlayerType;
             totalPlayTime = character.totalPlayTime;

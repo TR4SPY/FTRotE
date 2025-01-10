@@ -42,6 +42,7 @@ namespace PLAYERTWO.ARPGProject
         public int potionsUsed = 0;
         public int difficultyMultiplier = 0;
         public int zonesDiscovered = 0;
+        public int achievementsUnlocked = 0;
         public int npcInteractions = 0;
         public int questsCompleted = 0;
         public int waypointsDiscovered = 0;
@@ -169,8 +170,9 @@ namespace PLAYERTWO.ARPGProject
                 zonesDiscovered = serializer.zonesDiscovered,
                 npcInteractions = serializer.npcInteractions,
                 questsCompleted = serializer.questsCompleted,
-                waypointsDiscovered = serializer.waypointsDiscovered, // Dodaj wczytywanie waypointów
+                waypointsDiscovered = serializer.waypointsDiscovered,
                 questionnaireCompleted = serializer.questionnaireCompleted,
+                achievementsUnlocked = serializer.achievementsUnlocked,
                 playerType = serializer.playerType,
                 currentDynamicPlayerType = serializer.currentDynamicPlayerType,
                 totalPlayTime = serializer.totalPlayTime,
@@ -200,6 +202,7 @@ namespace PLAYERTWO.ARPGProject
             characterInstance.waypointsDiscovered = serializer.waypointsDiscovered;
             characterInstance.zonesDiscovered = serializer.zonesDiscovered;
             characterInstance.questionnaireCompleted = serializer.questionnaireCompleted;
+            characterInstance.achievementsUnlocked = serializer.achievementsUnlocked;
             characterInstance.playerType = serializer.playerType;
             characterInstance.currentDynamicPlayerType = serializer.currentDynamicPlayerType;
             characterInstance.totalPlayTime = serializer.totalPlayTime;

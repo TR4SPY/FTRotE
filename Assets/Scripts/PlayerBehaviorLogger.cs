@@ -65,10 +65,18 @@ namespace AI_DDA.Assets.Scripts
     private HashSet<string> discoveredZones = new HashSet<string>();
     private HashSet<int> discoveredWaypoints = new HashSet<int>();
     public bool isLoggingEnabled { get; set; } = true;
+    public int achievementsUnlocked = 0; // Licznik zdobytych osiągnięć
+    public List<string> unlockedAchievements = new List<string>(); // Lista nazw osiągnięć
+    private AchievementManager achievementManager;
 
     private void Start()
         {
             UpdatePlayerType();
+            achievementManager = UnityEngine.Object.FindFirstObjectByType<AchievementManager>();
+            if (achievementManager == null)
+            {
+                Debug.LogError("AchievementManager not found in the scene!");
+            }
         }
 
     private float combatStartTime;
@@ -117,6 +125,7 @@ namespace AI_DDA.Assets.Scripts
         enemiesDefeated++;
         Debug.Log($"Enemies defeated: {enemiesDefeated}");
         UpdatePlayerType(); // Recalculate player type
+        achievementManager?.CheckAchievements(this); // Sprawdź osiągnięcia w czasie rzeczywistym
     }
 
         /// <summary>
@@ -128,6 +137,7 @@ namespace AI_DDA.Assets.Scripts
             Debug.Log($"Player deaths: {playerDeaths}");
             DifficultyManager.Instance.AdjustDifficulty(this);
             UpdatePlayerType(); // Recalculate player type
+            achievementManager?.CheckAchievements(this); // Sprawdź osiągnięcia w czasie rzeczywistym
         }
 
         public void LogAreaDiscovered(string zoneName)
@@ -138,6 +148,7 @@ namespace AI_DDA.Assets.Scripts
                 zonesDiscovered++;
                 Debug.Log($"Discovered new area: {zoneName}");
                 UpdatePlayerType(); // Recalculate player type
+                achievementManager?.CheckAchievements(this); // Sprawdź osiągnięcia w czasie rzeczywistym
             }
         }
 
@@ -149,6 +160,7 @@ namespace AI_DDA.Assets.Scripts
                 waypointsDiscovered++;
                 Debug.Log($"Discovered new waypoint: {waypointID}");
                 UpdatePlayerType(); // Recalculate player type
+                achievementManager?.CheckAchievements(this); // Sprawdź osiągnięcia w czasie rzeczywistym
             }
         }
 
@@ -157,12 +169,14 @@ namespace AI_DDA.Assets.Scripts
             npcInteractions++;
             Debug.Log($"NPC interaction! Total: {npcInteractions}");
             UpdatePlayerType(); // Recalculate player type
+            achievementManager?.CheckAchievements(this); // Sprawdź osiągnięcia w czasie rzeczywistym
         }
         public void LogQuestCompleted()
         {
             questsCompleted++;
             Debug.Log($"Quest completed! Total: {questsCompleted}");
             UpdatePlayerType(); // Recalculate player type
+            achievementManager?.CheckAchievements(this); // Sprawdź osiągnięcia w czasie rzeczywistym
         }
 
         public void LogPotionsUsed()
@@ -170,6 +184,7 @@ namespace AI_DDA.Assets.Scripts
             potionsUsed++;
             Debug.Log($"Potion used! Total: {potionsUsed}");
             UpdatePlayerType(); // Recalculate player type
+            achievementManager?.CheckAchievements(this); // Sprawdź osiągnięcia w czasie rzeczywistym
         }
 
         public void LogCurrentDynamicPlayerType()
@@ -248,7 +263,6 @@ namespace AI_DDA.Assets.Scripts
                 Directory.CreateDirectory(directoryPath);
             }
 
-            // Pobierz aktualną instancję postaci z Game.instance
             var characterInstance = Game.instance?.currentCharacter;
             if (characterInstance == null)
             {
@@ -256,29 +270,45 @@ namespace AI_DDA.Assets.Scripts
                 return;
             }
 
-            string timestamp = System.DateTime.Now.ToString("yyyy-MM-dd_HH:mm:ss");
-            string fileName = $"Research_{characterInstance.name}.log";
+            string timestamp = System.DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+            string fileName = $"Research_{characterInstance.name}_{timestamp}.log";
             string filePath = Path.Combine(directoryPath, fileName);
 
-            using (StreamWriter writer = new StreamWriter(filePath))
+            // Tworzenie struktury danych logu
+            var logData = new
             {
-                writer.WriteLine($"=== Player Behavior Logs as of {timestamp}===");
-                writer.WriteLine($"Character Name: {characterInstance.name}");
-                writer.WriteLine($"Total Play Time: {FormatPlayTime(Game.instance.currentCharacter.totalPlayTime)}");
-                writer.WriteLine($"Player Deaths: {playerDeaths}");
-                writer.WriteLine($"Enemies Defeated: {enemiesDefeated}");
-                writer.WriteLine($"Total Combat Time: {totalCombatTime} seconds");
-                writer.WriteLine($"NPC Interactions: {npcInteractions}");
-                writer.WriteLine($"Potions Used: {potionsUsed}");
-                writer.WriteLine($"Zones Discovered: {zonesDiscovered}");
-                writer.WriteLine($"Quests Completed: {questsCompleted}");
-                writer.WriteLine($"Waypoints Discovered: {waypointsDiscovered}");
-                writer.WriteLine($"Current Difficulty Multiplier: {difficultyMultiplier}");
-                writer.WriteLine($"Player Type based on questionnaire: {characterInstance.playerType}");
-                writer.WriteLine($"Current Dynamic Player Type: {currentDynamicPlayerType}");
-            }
+                timestamp = timestamp,
+                characterName = characterInstance.name,
+                totalPlayTime = FormatPlayTime(characterInstance.totalPlayTime),
+                playerDeaths = playerDeaths,
+                enemiesDefeated = enemiesDefeated,
+                totalCombatTime = totalCombatTime,
+                npcInteractions = npcInteractions,
+                potionsUsed = potionsUsed,
+                zonesDiscovered = zonesDiscovered,
+                questsCompleted = questsCompleted,
+                waypointsDiscovered = waypointsDiscovered,
+                achievementsUnlocked = achievementsUnlocked,
 
+                currentDifficultyMultiplier = difficultyMultiplier,
+                playerTypeQuestionnaire = characterInstance.playerType,
+                dynamicPlayerType = currentDynamicPlayerType
+            };
+
+            // Serializacja do JSON
+            string jsonContent = JsonUtility.ToJson(logData, true);
+
+            File.WriteAllText(filePath, jsonContent);
             Debug.Log($"Logs saved to: {filePath}");
+        }
+        public void LogAchievement(string achievementName)
+        {
+            if (!unlockedAchievements.Contains(achievementName))
+            {
+                unlockedAchievements.Add(achievementName);
+                achievementsUnlocked++;
+                Debug.Log($"Achievement unlocked: {achievementName}");
+            }
         }
 
         public void ApplySettingsFromGameSettings()
@@ -298,7 +328,15 @@ namespace AI_DDA.Assets.Scripts
                 Game.instance.currentCharacter.totalPlayTime += deltaTime;
                 lastUpdateTime = Time.time;
             }
+
+            if (achievementManager == null)
+            {
+                achievementManager = UnityEngine.Object.FindFirstObjectByType<AchievementManager>();
+            }
+
+            achievementManager?.CheckAchievements(this);
         }
+
         public static string FormatPlayTime(float totalSeconds)
         {
             int days = (int)(totalSeconds / 86400); // 1 dzień = 86400 sekund

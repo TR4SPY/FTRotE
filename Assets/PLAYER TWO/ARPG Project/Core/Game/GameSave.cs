@@ -178,6 +178,7 @@ namespace PLAYERTWO.ARPGProject
             PlayerBehaviorLogger.Instance.questsCompleted = character.questsCompleted;
             PlayerBehaviorLogger.Instance.potionsUsed = character.potionsUsed;
             PlayerBehaviorLogger.Instance.zonesDiscovered = character.zonesDiscovered;
+            PlayerBehaviorLogger.Instance.achievementsUnlocked = character.achievementsUnlocked;
             QuestionnaireManager.Instance.playerType = character.playerType;
             PlayerBehaviorLogger.Instance.currentDynamicPlayerType = character.currentDynamicPlayerType;
 
@@ -193,6 +194,7 @@ namespace PLAYERTWO.ARPGProject
                     $"QuestsCompleted={PlayerBehaviorLogger.Instance.questsCompleted}" +
                     $"PotionsUsed={PlayerBehaviorLogger.Instance.potionsUsed}" +
                     $"ZonesDiscovered={PlayerBehaviorLogger.Instance.zonesDiscovered}" +
+                    $"AchievementsUnlocked={PlayerBehaviorLogger.Instance.achievementsUnlocked}" +
                     $"PlayerType={QuestionnaireManager.Instance.playerType}" +
                     $"CurrentDynamicPlayerType={PlayerBehaviorLogger.Instance.currentDynamicPlayerType}" +
                     $"PlayTime={character.totalPlayTime}");
@@ -238,11 +240,12 @@ namespace PLAYERTWO.ARPGProject
             character.questsCompleted = PlayerBehaviorLogger.Instance.questsCompleted;
             character.potionsUsed = PlayerBehaviorLogger.Instance.potionsUsed;
             character.zonesDiscovered = PlayerBehaviorLogger.Instance.zonesDiscovered;
+            character.achievementsUnlocked = PlayerBehaviorLogger.Instance.achievementsUnlocked;
             //character.playerType = QuestionnaireManager.Instance.playerType;
             character.playerType = QuestionnaireManager.Instance?.playerType ?? "Undefined";
             character.currentDynamicPlayerType = PlayerBehaviorLogger.Instance?.currentDynamicPlayerType ?? "Unknown";
 
-            Debug.Log($"Saved Player Behavior Logs for {character.name}: Deaths={character.playerDeaths}, Defeated={character.enemiesDefeated}, CombatTime={character.totalCombatTime}, NPCInteractions={character.npcInteractions}, WaypointsDiscovered={character.waypointsDiscovered}, QuestsCompleted={character.questsCompleted}, PotionsUsed={character.potionsUsed}, ZonesDiscovered={character.zonesDiscovered}, PlayerType={character.playerType}, CurrentDynamicPlayerType={character.currentDynamicPlayerType}");
+            Debug.Log($"Saved Player Behavior Logs for {character.name}");
         }
 
         protected virtual void SaveJSON()
