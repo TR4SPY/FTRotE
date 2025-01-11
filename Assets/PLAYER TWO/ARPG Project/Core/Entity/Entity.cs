@@ -521,7 +521,10 @@ namespace PLAYERTWO.ARPGProject
             }
             else if (items && items.IsUsingBow())
             {
-                items.ShootProjectile();
+                // Ensure the projectile is shot towards the full 3D position of the target
+                Vector3 targetPosition = target ? target.position : transform.position + transform.forward * items.GetBow().shotDistance;
+                Vector3 direction = (targetPosition - transform.position).normalized;
+                items.ShootProjectile(direction);
             }
             else
             {

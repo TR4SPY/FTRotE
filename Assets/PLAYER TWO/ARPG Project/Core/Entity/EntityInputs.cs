@@ -294,25 +294,32 @@ namespace PLAYERTWO.ARPGProject
             }
 #endif
         }
-
+        
         protected virtual void HandleAttack()
         {
             if (m_holdAttack || m_holdSkill)
             {
                 if (m_attackMode || m_holdSkill && !m_entity.skills.RequireTarget())
                 {
-#if UNITY_STANDALONE || UNITY_WEBGL
+                    // Handle free attack by aiming in the direction of the mouse, considering 3D space
+                    #if UNITY_STANDALONE || UNITY_WEBGL
                     m_entity.lookDirection = GetMouseDirection();
                     m_entity.FreeAttack();
-#else
+                    #else
                     if (IsTargetEntityActive() || TryRefreshTarget())
+                    {
+                        // Move to attack taking the full 3D position into account
                         m_entity.MoveToAttack(m_target);
+                    }
                     else
+                    {
                         m_entity.FreeAttack();
-#endif
+                    }
+                    #endif
                 }
                 else if (IsTargetEntityActive() || TryRefreshTarget() && IsTargetAttackable())
                 {
+                    // Ensure the entity moves to the target considering full 3D coordinates
                     m_entity.MoveToAttack(m_target);
                 }
                 else

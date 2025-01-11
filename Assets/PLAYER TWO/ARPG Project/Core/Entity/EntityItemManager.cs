@@ -547,13 +547,12 @@ namespace PLAYERTWO.ARPGProject
         /// <summary>
         /// Instantiates, calculates the damage, and configure the projectile form the current weapon.
         /// </summary>
-        public virtual Projectile ShootProjectile()
+        public virtual Projectile ShootProjectile(Vector3 direction)
         {
             if (!IsUsingBow()) return null;
 
             var damage = entity.stats.GetDamage(out var critical);
-            var projectile = Instantiate(GetBow().projectile,
-                projectileOrigin.position, projectileOrigin.rotation);
+            var projectile = Instantiate(GetBow().projectile, projectileOrigin.position, Quaternion.LookRotation(direction));
 
             projectile.SetDamage(entity, damage, critical, entity.targetTags);
             return projectile;
