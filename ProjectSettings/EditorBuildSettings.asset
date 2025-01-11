@@ -9,7 +9,7 @@ EditorBuildSettings:
     path: Assets/PLAYER TWO/ARPG Project/Examples/Scenes/Main.unity
     guid: 6f25a5dbe709beef7acec1691bf81cd6
   - enabled: 1
-    path: Assets/PLAYER TWO/ARPG Project/Examples/Scenes/Title.unity
+    path: Assets/PLAYER TWO/ARPG Project/Examples/Scenes/Title_Backup.unity
     guid: 38b8207a44eef580294556f6d3452582
   - enabled: 1
     path: Assets/PLAYER TWO/ARPG Project/Examples/Scenes/Tutorial.unity

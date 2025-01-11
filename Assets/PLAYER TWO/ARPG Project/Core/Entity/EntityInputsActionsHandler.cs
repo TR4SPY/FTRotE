@@ -61,23 +61,50 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void FinalizeActionCallbacks()
         {
-            m_setDestinationAction.performed -= OnSetDestination;
-            m_setDestinationAction.canceled -= OnSetDestinationCancelled;
-            m_skillAction.performed -= OnSkill;
-            m_skillAction.canceled -= OnSkillCancelled;
-            m_attackModeAction.performed -= OnAttackMode;
-            m_attackModeAction.canceled -= OnAttackModeCancelled;
-            m_consumeItem0.performed -= OnConsumeItem0;
-            m_consumeItem1.performed -= OnConsumeItem1;
-            m_consumeItem2.performed -= OnConsumeItem2;
-            m_consumeItem3.performed -= OnConsumeItem3;
-            m_selectSkill0.performed -= OnSelectSkill0;
-            m_selectSkill1.performed -= OnSelectSkill1;
-            m_selectSkill2.performed -= OnSelectSkill2;
-            m_selectSkill3.performed -= OnSelectSkill3;
-            m_attackAction.performed -= OnAttack;
-            m_attackAction.canceled -= OnAttackCancelled;
-            m_interactAction.performed -= OnInteract;
+            if (m_setDestinationAction != null)
+            {
+                m_setDestinationAction.performed -= OnSetDestination;
+                m_setDestinationAction.canceled -= OnSetDestinationCancelled;
+            }
+
+            if (m_skillAction != null)
+            {
+                m_skillAction.performed -= OnSkill;
+                m_skillAction.canceled -= OnSkillCancelled;
+            }
+
+            if (m_attackModeAction != null)
+            {
+                m_attackModeAction.performed -= OnAttackMode;
+                m_attackModeAction.canceled -= OnAttackModeCancelled;
+            }
+
+            if (m_consumeItem0 != null)
+                m_consumeItem0.performed -= OnConsumeItem0;
+            if (m_consumeItem1 != null)
+                m_consumeItem1.performed -= OnConsumeItem1;
+            if (m_consumeItem2 != null)
+                m_consumeItem2.performed -= OnConsumeItem2;
+            if (m_consumeItem3 != null)
+                m_consumeItem3.performed -= OnConsumeItem3;
+
+            if (m_selectSkill0 != null)
+                m_selectSkill0.performed -= OnSelectSkill0;
+            if (m_selectSkill1 != null)
+                m_selectSkill1.performed -= OnSelectSkill1;
+            if (m_selectSkill2 != null)
+                m_selectSkill2.performed -= OnSelectSkill2;
+            if (m_selectSkill3 != null)
+                m_selectSkill3.performed -= OnSelectSkill3;
+
+            if (m_attackAction != null)
+            {
+                m_attackAction.performed -= OnAttack;
+                m_attackAction.canceled -= OnAttackCancelled;
+            }
+
+            if (m_interactAction != null)
+                m_interactAction.performed -= OnInteract;
         }
     }
 }

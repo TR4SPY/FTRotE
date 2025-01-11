@@ -52,9 +52,13 @@ namespace PLAYERTWO.ARPGProject
         [Space(15)]
         public UnityEvent<CharacterInstance> onCharacterSelected;
 
+        public Transform characterCenterPoint; // Punkt centralny półokręgu
+        public GameObject characterInfoUIPrefab; // Prefab UI dla informacji o postaci
+        float characterRadius = 5f; // Promień półokręgu
+        float characterAngleStep = 20f; // Kąt między postaciami
+        private Transform cameraTransform;
         protected CanvasGroup m_charactersWindowGroup;
         protected CanvasGroup m_characterActionsGroup;
-
         protected int m_currentCharacterId = -1;
         protected bool m_creatingCharacter;
 
@@ -121,7 +125,251 @@ namespace PLAYERTWO.ARPGProject
             characterActions.SetActive(false);
             Game.instance.StartGame(m_currentCharacterId);
         }
+        private void ClearAttachmentPoints(Transform characterObject)
+        {
+            foreach (var attachmentPointName in new[] { "RightHand", "LeftHand", "Head", "Chest", "Pants", "Gloves", "Boots" })
+            {
+                var attachmentPoint = characterObject.Find(attachmentPointName);
+                if (attachmentPoint != null)
+                {
+                    foreach (Transform child in attachmentPoint)
+                    {
+                        Destroy(child.gameObject);
+                    }
+                }
+            }
+        }
+        private Transform FindAttachmentPoint(GameObject characterObject, string pointName)
+        {
+            Transform[] allChildren = characterObject.GetComponentsInChildren<Transform>(true);
+            foreach (Transform child in allChildren)
+            {
+                if (child.name == pointName)
+                {
+                    Debug.Log($"Attachment point '{pointName}' found at: {child.name}");
+                    return child;
+                }
+            }
 
+            Debug.LogWarning($"Attachment point '{pointName}' not found on prefab '{characterObject.name}'");
+            return null;
+        }
+
+        private void AttachEquipment(CharacterInstance characterInstance, GameObject characterObject)
+        {
+            // Pobierz wyposażenie postaci jako słownik {slot: ItemInstance}
+            var equippedItems = characterInstance.equipments.GetEquippedItems();
+
+            // Pobierz Entity Item Manager
+            var itemManager = characterObject.GetComponent<EntityItemManager>();
+            if (itemManager == null)
+            {
+                Debug.LogError("EntityItemManager not found on characterObject!");
+                return;
+            }
+
+            // Iteruj przez każde wyposażenie
+            foreach (var itemSlot in equippedItems.Keys)
+            {
+                var itemInstance = equippedItems[itemSlot];
+
+                // Obsługa tarczy
+                if (itemInstance?.data is ItemShield shield)
+                {
+                    if (itemManager.leftHandShieldSlot != null)
+                    {
+                        shield.Instantiate(itemManager.leftHandShieldSlot);
+                        Debug.Log($"Attached shield: {shield.name} to {itemManager.leftHandShieldSlot.name}");
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Left hand shield slot not found for shield: {shield.name}");
+                    }
+                }
+                // Obsługa miecza jednoręcznego
+                else if (itemInstance?.data is ItemBlade blade)
+                {
+                    Transform attachmentPoint = null;
+
+                    // Wybierz odpowiedni slot w zależności od miejsca przeznaczenia
+                    if (itemSlot == "RightHand" && itemManager.rightHandSlot != null)
+                    {
+                        attachmentPoint = itemManager.rightHandSlot;
+                    }
+                    else if (itemSlot == "LeftHand" && itemManager.leftHandSlot != null)
+                    {
+                        attachmentPoint = itemManager.leftHandSlot;
+                    }
+
+                    if (attachmentPoint != null)
+                    {
+                        blade.InstantiateRightHand(attachmentPoint);
+                        Debug.Log($"Attached blade: {blade.name} to {attachmentPoint.name}");
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"No attachment point found for blade: {blade.name} in slot: {itemSlot}");
+                    }
+                }
+                // Obsługa łuku
+                else if (itemInstance?.data is ItemBow bow)
+                {
+                    if (itemManager.rightHandSlot != null && itemManager.leftHandSlot != null)
+                    {
+                        bow.Instantiate(itemManager.rightHandSlot, itemManager.leftHandSlot);
+                        Debug.Log($"Attached bow: {bow.name} using {itemManager.rightHandSlot.name} and {itemManager.leftHandSlot.name}");
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Bow slots not found for bow: {bow.name}");
+                    }
+                }
+                // Obsługa zbroi
+                else if (itemInstance?.data is ItemArmor armor)
+                {
+                    SkinnedMeshRenderer targetRenderer = null;
+
+                    // Dopasowanie rendererów na podstawie slotu
+                    switch (itemSlot)
+                    {
+                        case "Chest":
+                            targetRenderer = itemManager.chestRenderer;
+                            break;
+                        case "Pants":
+                            targetRenderer = itemManager.pantsRenderer;
+                            break;
+                        case "Gloves":
+                            targetRenderer = itemManager.glovesRenderer;
+                            break;
+                        case "Boots":
+                            targetRenderer = itemManager.bootsRenderer;
+                            break;
+                        case "Head":
+                            targetRenderer = itemManager.helmRenderer;
+                            break;
+                    }
+
+                    if (targetRenderer != null)
+                    {
+                        // Przypisz mesh i materiały
+                        targetRenderer.sharedMesh = armor.mesh;
+                        targetRenderer.materials = armor.materials;
+                        Debug.Log($"Assigned armor: {armor.name} to renderer: {targetRenderer.name}");
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"No SkinnedMeshRenderer found for slot '{itemSlot}'");
+                    }
+                }
+                // Ogólny przypadek
+                else if (itemInstance?.data != null)
+                {
+                    Debug.LogWarning($"Unhandled item type for slot '{itemSlot}': {itemInstance.data.name}");
+                }
+            }
+        }
+
+        public void ArrangeCharactersInSemiCircle(List<CharacterInstance> characters, Transform centerPoint, float radius, Transform cameraTransform, float angleStep = 15f)
+        {
+            int count = characters.Count;
+
+            // Oblicz początkowy kąt, aby symetrycznie rozmieścić postacie
+            float totalAngle = angleStep * (count - 1); // Łączny zakres kątów
+            float startAngle = -totalAngle / 2f; // Początek łuku
+
+            for (int i = 0; i < count; i++)
+            {
+                // Obliczenie pozycji i kąta dla każdej postaci
+                float angle = startAngle + angleStep * i; // Kąt w stopniach
+                float radians = angle * Mathf.Deg2Rad; // Zamiana kąta na radiany
+
+                // Ustawienie pozycji postaci
+                Vector3 position = new Vector3(
+                    centerPoint.position.x + radius * Mathf.Cos(radians),
+                    centerPoint.position.y,
+                    centerPoint.position.z - radius * Mathf.Sin(radians) // Znak "-" odwraca kierunek
+                );
+
+                // Pobierz prefab postaci i ustaw pozycję oraz rotację
+                var characterInstance = characters[i];
+                if (characterInstance.data.classPrefab != null)
+                {
+                    GameObject characterObject = Instantiate(characterInstance.data.classPrefab, position, Quaternion.identity);
+                    characterObject.transform.SetParent(centerPoint); // Przypisz jako dziecko do punktu centralnego
+
+                    // Wyłącz rotację lokalną (jeśli prefab ma niechciane komponenty)
+                    characterObject.transform.localRotation = Quaternion.identity;
+
+                    // Ustaw rotację postaci w stronę kamery
+                    Vector3 directionToCamera = cameraTransform.position - characterObject.transform.position;
+                    directionToCamera.y = 0; // Ignoruj różnice w wysokości
+                    characterObject.transform.rotation = Quaternion.LookRotation(directionToCamera);
+
+                    // Obrót o 180 stopni (jeśli prefab jest zwrócony tyłem)
+                    //characterObject.transform.rotation = Quaternion.Euler(0, characterObject.transform.rotation.eulerAngles.y + 180, 0);
+                    
+                    // Dodaj wyposażenie do postaci
+                    AttachEquipment(characterInstance, characterObject);
+
+                    // Wywołaj DisplayCharacterInfo
+                    DisplayCharacterInfo(characterObject, characterInstance);
+                }
+            }
+        }
+        
+        private void DisplayCharacterInfo(GameObject characterObject, CharacterInstance characterInstance)
+        {
+            // Instancjuj prefabrykat UI
+            var uiInstance = Instantiate(characterInfoUIPrefab, Vector3.zero, Quaternion.identity);
+
+            // Ustaw prefabrykat jako dziecko Canvas
+            var mainCanvas = Object.FindFirstObjectByType<Canvas>();
+            if (mainCanvas != null)
+            {
+                uiInstance.transform.SetParent(mainCanvas.transform, false); // Dodaj prefabrykat jako dziecko Canvas
+                uiInstance.transform.SetAsLastSibling(); // Przenieś na wierzch hierarchii Canvas
+                uiInstance.transform.localScale = Vector3.one; // Resetuj skalę
+                Debug.Log($"UI Instance {uiInstance.name} added to Canvas {mainCanvas.name}");
+            }
+            else
+            {
+                Debug.LogError("Main Canvas not found! Ensure there is a Canvas in the scene.");
+            }
+            // Pobierz komponent GUICharacterInfo
+            var guiCharacterInfo = uiInstance.GetComponent<GUICharacterInfo>();
+            if (guiCharacterInfo != null)
+            {
+                // Pobierz dane postaci
+                var playerName = characterInstance.name; // Nick gracza
+                var classFullName = characterInstance.data.classPrefab.name; // Nazwa klasy
+                var characterClass = classFullName.Replace(" Class", ""); // Usuń " Class" z nazwy prefabrykatu
+                var level = characterInstance.stats.currentLevel; // Poziom postaci
+
+                // Ustaw dane postaci w UI
+                guiCharacterInfo.SetCharacterInfo(
+                    characterObject.transform,
+                    $"{playerName}\n{characterClass}\nLevel {level}", // Format: Nick, Klasa, Poziom
+                    characterClass,
+                    level
+                );
+            }
+        }
+
+        public void RefreshCharacterDisplay()
+        {
+            Debug.Log("RefreshCharacterDisplay called.");
+
+            var characters = Game.instance.characters;
+
+            // Usuń wszystkie istniejące obiekty dzieci
+            foreach (Transform child in characterCenterPoint)
+            {
+                Destroy(child.gameObject);
+            }
+
+            // Wywołaj ArrangeCharactersInSemiCircle tylko raz
+            ArrangeCharactersInSemiCircle(characters, characterCenterPoint, characterRadius, cameraTransform, characterAngleStep);
+        }
 
         public virtual void AddCharacter(int characterId)
         {
@@ -138,6 +386,8 @@ namespace PLAYERTWO.ARPGProject
             characterWindow.gameObject.SetActive(false);
             characterActions.gameObject.SetActive(false);
             Game.instance.DeleteCharacter(m_currentCharacterId);
+            // Odświeżanie po usunięciu postaci
+            RefreshCharacterDisplay();
         }
 
         public virtual void SelectCharacter(int characterId)
@@ -213,10 +463,20 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void Start()
         {
+            if (Camera.main != null)
+            {
+                cameraTransform = Camera.main.transform;
+            }
+            else
+            {
+                Debug.LogError("Main Camera not found! Ensure your camera is tagged as 'MainCamera'.");
+            }
+
             Game.instance.ReloadGameData();
             InitializeGroups();
             InitializeCallbacks();
             RefreshList();
+            RefreshCharacterDisplay();
 
             if (selectFirstOnStart && m_characters.Count > 0)
             {

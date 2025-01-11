@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Warrior
   m_EditorClassIdentifier: 
   entity: {fileID: 2957117560480157750, guid: 6c9d15a835757e54ca2db47589a05b77, type: 3}
+  classPrefab: {fileID: 2474699591269329025, guid: 00b6ac85ec95fecd5865910847e994ca, type: 3}
   initialScene: Tutorial
   level: 1
   strength: 25

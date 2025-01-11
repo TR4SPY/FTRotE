@@ -70,6 +70,56 @@ namespace PLAYERTWO.ARPGProject
             scenes = new CharacterScenes();
         }
 
+        public Dictionary<string, GameObject> GetEquippedPrefabs()
+        {
+            var equippedPrefabs = new Dictionary<string, GameObject>();
+
+            if (equipments.currentRightHand?.data?.prefab != null)
+            {
+                equippedPrefabs.Add("RightHand", equipments.currentRightHand.data.prefab);
+                Debug.Log($"RightHand prefab: {equipments.currentRightHand.data.prefab.name}");
+                
+            }
+
+            if (equipments.currentLeftHand?.data?.prefab != null)
+            {
+                equippedPrefabs.Add("LeftHand", equipments.currentLeftHand.data.prefab);
+                Debug.Log($"LeftHand prefab: {equipments.currentLeftHand.data.prefab.name}");
+            }
+
+            if (equipments.currentHelm?.data?.prefab != null)
+            {
+                equippedPrefabs.Add("Head", equipments.currentHelm.data.prefab);
+                Debug.Log($"Head prefab: {equipments.currentHelm.data.prefab.name}");
+            }
+
+            if (equipments.currentChest?.data?.prefab != null)
+            {
+                equippedPrefabs.Add("Chest", equipments.currentChest.data.prefab);
+                Debug.Log($"Chest prefab: {equipments.currentChest.data.prefab.name}");
+            }
+
+            if (equipments.currentPants?.data?.prefab != null)
+            {
+                equippedPrefabs.Add("Pants", equipments.currentPants.data.prefab);
+                Debug.Log($"Pants prefab: {equipments.currentPants.data.prefab.name}");
+            }
+
+            if (equipments.currentGloves?.data?.prefab != null)
+            {
+                equippedPrefabs.Add("Gloves", equipments.currentGloves.data.prefab);
+                Debug.Log($"Gloves prefab: {equipments.currentGloves.data.prefab.name}");
+            }
+
+            if (equipments.currentBoots?.data?.prefab != null)
+            {
+                equippedPrefabs.Add("Boots", equipments.currentBoots.data.prefab);
+                Debug.Log($"Boots prefab: {equipments.currentBoots.data.prefab.name}");
+            }
+
+            return equippedPrefabs;
+        }
+
         /// <summary>
         /// Pobierz wartość mnożnika dla danej statystyki.
         /// </summary>

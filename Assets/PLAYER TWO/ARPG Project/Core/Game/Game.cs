@@ -151,6 +151,12 @@ namespace PLAYERTWO.ARPGProject
             characters.Add(character);
             m_currentCharacterId = characters.Count - 1;
             onCharacterAdded?.Invoke(m_currentCharacterId);
+            // Znajdź UICharacterSelection i odśwież
+            UICharacterSelection characterSelection = Object.FindFirstObjectByType<UICharacterSelection>();
+            if (characterSelection != null)
+            {
+                characterSelection.RefreshCharacterDisplay();
+            }
         }
 
         /// <summary>
@@ -164,6 +170,12 @@ namespace PLAYERTWO.ARPGProject
 
             characters.RemoveAt(characterId);
             onCharacterDeleted?.Invoke();
+            // Znajdź UICharacterSelection i odśwież
+            UICharacterSelection characterSelection = Object.FindFirstObjectByType<UICharacterSelection>();
+            if (characterSelection != null)
+            {
+                characterSelection.RefreshCharacterDisplay();
+            }
         }
 
         /// <summary>

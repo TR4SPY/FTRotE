@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace PLAYERTWO.ARPGProject
 {
     public class CharacterEquipments
@@ -32,6 +34,20 @@ namespace PLAYERTWO.ARPGProject
             InstantiateItem(data.gloves, ref initialGloves);
             InstantiateItem(data.boots, ref initialBoots);
             InstantiateConsumables(data.initialConsumables, data.maxConsumableSlots);
+        }
+
+        public Dictionary<string, ItemInstance> GetEquippedItems()
+        {
+            return new Dictionary<string, ItemInstance>
+            {
+                { "RightHand", currentRightHand },
+                { "LeftHand", currentLeftHand },
+                { "Head", currentHelm },
+                { "Chest", currentChest },
+                { "Pants", currentPants },
+                { "Gloves", currentGloves },
+                { "Boots", currentBoots }
+            };
         }
 
         public CharacterEquipments(ItemInstance initialRightHand,

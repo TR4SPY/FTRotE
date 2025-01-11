@@ -9,6 +9,12 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The prefab of the Entity that represents this Character in hte game world.")]
         public Entity entity;
 
+        [Header("Class Representation")]
+        [Tooltip("The prefab of the class that represents this Character in the game world.")]
+        public GameObject classPrefab;
+
+        //public GameObject characterPrefab; // Added field for the character prefab
+
         [Tooltip("The initial scene where this Character spawns.")]
         public string initialScene;
 
