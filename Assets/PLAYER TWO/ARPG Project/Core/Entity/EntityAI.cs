@@ -20,6 +20,13 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The minimum radius to spot a new target.")]
         public float spotRadius = 5f;
 
+        [Header("Field of View Settings")]
+        [Tooltip("Angle of the field of view for spotting targets.")]
+        public float viewAngle = 110f; // Example angle in degrees
+
+        [Tooltip("The maximum distance the AI can spot an entity within the view angle.")]
+        public float viewDistance = 10f;
+
         [Tooltip("The minimum distance to space from the Entity view sight after being detected.")]
         public float fleeRadius = 10f;
 
@@ -36,16 +43,10 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("If true, this Entity will add itself to the attackers list of the target.")]
         public bool addToAttackersList = true;
 
-        [Tooltip(
-            "If true, this Entity will not attack another if the maximum "
-                + "number of attackers has already attacked that."
-        )]
+        [Tooltip("If true, this Entity will not attack another if the maximum number of attackers has already attacked that.")]
         public bool limitSimultaneousAttackers = true;
 
-        [Tooltip(
-            "If the maximum number of attackers attacks the target, this Entity "
-                + "will not attack it. This value is ignored if Limit Simultaneous Attackers is off."
-        )]
+        [Tooltip("If the maximum number of attackers attacks the target, this Entity will not attack it. This value is ignored if Limit Simultaneous Attackers is off.")]
         public int maxSimultaneousAttackers = 2;
 
         [Header("Search Settings")]
@@ -68,6 +69,28 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("If true, this AI will die with its associated leader.")]
         public bool dieWithLeader = true;
 
+        [Header("Gizmo's Settings")]
+        [Tooltip("Height above the ground to draw the spot radius.")]
+        public float spotRadiusYOffset = -0.98f;
+
+        [Tooltip("Height above the ground to draw the flee radius.")]
+        public float fleeRadiusYOffset = -0.98f;
+
+        [Tooltip("Y Offset for the field of view gizmo's.")]
+        public float viewAngleYOffset = -0.98f;
+
+        [Tooltip("Color for the spot radius visualization.")]
+        public Color spotRadiusColor = Color.blue;
+
+        [Tooltip("Color for the flee radius visualization.")]
+        public Color fleeRadiusColor = Color.red;
+
+        [Tooltip("Color for the field of view visualization.")]
+        public Color fieldOfViewColor = Color.green; // Add this line for a new color
+
+        [Tooltip("Number of lines to draw for the circle outline. More lines result in a smoother outline.")]
+        public int outlineLines = 36;
+
         protected Entity m_entity;
         protected Camera m_camera;
 
@@ -77,15 +100,21 @@ namespace PLAYERTWO.ARPGProject
         protected float m_nextTargetRefreshTime;
         protected bool m_waitingToSearch;
 
+        protected Plane[] m_frustumPlanes = new Plane[6];
+        protected Collider[] m_targetsInSight = new Collider[128];
         protected WaitForSeconds m_resetMoveDelay;
         protected WaitForSeconds m_searchDamageSourceDuration;
 
+
         protected const float k_targetRefreshRate = 0.2f;
+
+
 
         /// <summary>
         /// And offset applied to the leader following target position.
         /// </summary>
         public Vector3 leaderOffset { get; set; }
+
 
         /// <summary>
         /// Returns the bounding box of this Entity.
@@ -126,19 +155,26 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void InitializeLeader()
         {
-            if (!leader)
-                return;
+            if (!leader) return;
 
             if (dieWithLeader)
                 leader.onDie.AddListener(() => m_entity.Die());
+        }
+
+        protected virtual void HandleEntityOptimization()
+        {
+            GeometryUtility.CalculateFrustumPlanes(m_camera, m_frustumPlanes);
+            m_entity.enabled = GeometryUtility.TestPlanesAABB(m_frustumPlanes, m_entity.controller.bounds);
+
+            if (!m_entity.isActive && !m_entity.enabled)
+                gameObject.SetActive(false);
         }
 
         protected virtual void RegisterAI() => LevelAIManager.instance.RegisterAI(this);
 
         protected virtual void HandleViewSight()
         {
-            if (m_entity.target || Time.time < m_nextTargetRefreshTime)
-                return;
+            if (m_entity.target || Time.time < m_nextTargetRefreshTime) return;
 
             m_nextTargetRefreshTime = Time.time + k_targetRefreshRate;
             SearchTarget();
@@ -146,23 +182,42 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void SearchTarget(bool ignoreSimultaneousAttacks = false)
         {
-            if (m_entity.target)
-                return;
+            if (m_entity.target) return;
 
-            m_totalTargetsInSight = Physics.OverlapSphereNonAlloc(
-                transform.position,
-                spotRadius,
-                LevelAIManager.SightBuffer
-            );
+            // Detect targets within the spot radius (360-degree check)
+            Collider[] targetsInSpotRadius = Physics.OverlapSphere(transform.position, spotRadius);
+            foreach (var potentialTarget in targetsInSpotRadius)
+            {
+                if (GameTags.InTagList(potentialTarget, targetTags))
+                {
+                    SpotTarget(potentialTarget.GetComponent<Entity>(), ignoreSimultaneousAttacks);
+                    return; // Exit if a target is found within the spot radius
+                }
+            }
+
+            // Detect targets within the view distance and angle (conical check)
+            m_totalTargetsInSight = Physics.OverlapSphereNonAlloc(transform.position, viewDistance, m_targetsInSight);
+
+            Vector3 directionToTarget;
+            float distanceToTarget;
+            Entity entityComponent;
 
             for (int i = 0; i < m_totalTargetsInSight; i++)
             {
-                if (GameTags.InTagList(LevelAIManager.SightBuffer[i], targetTags))
+                if (m_targetsInSight[i] != null)
                 {
-                    SpotTarget(
-                        LevelAIManager.SightBuffer[i].GetComponent<Entity>(),
-                        ignoreSimultaneousAttacks
-                    );
+                    directionToTarget = (m_targetsInSight[i].transform.position - transform.position).normalized;
+                    distanceToTarget = Vector3.Distance(transform.position, m_targetsInSight[i].transform.position);
+                    entityComponent = m_targetsInSight[i].GetComponent<Entity>();
+
+                    // Check if potential target is within the field of view angle
+                    if (Vector3.Angle(transform.forward, directionToTarget) <= viewAngle / 2 && distanceToTarget <= viewDistance)
+                    {
+                        if (GameTags.InTagList(m_targetsInSight[i], targetTags) && entityComponent != null)
+                        {
+                            SpotTarget(entityComponent, ignoreSimultaneousAttacks);
+                        }
+                    }
                 }
             }
         }
@@ -171,16 +226,14 @@ namespace PLAYERTWO.ARPGProject
         /// Assign a target to the Entity and handles its attackers list.
         /// </summary>
         /// <param name="target">The target you want to assign.</param>
-        /// <param name="ignoreSimultaneousAttacks">If true, the Entity will attack the
-        /// target even if the maximum number of attackers has already attacked it.</param>
+        /// <param name="ignoreSimultaneousAttacks">If true, the Entity will attack the target even if the maximum number of attackers has already attacked it.</param>
         public virtual void SpotTarget(Entity target, bool ignoreSimultaneousAttacks = false)
         {
-            if (
-                !ignoreSimultaneousAttacks
-                && limitSimultaneousAttackers
-                && target.attackedBy.Count >= maxSimultaneousAttackers
-            )
+            if (!ignoreSimultaneousAttacks && limitSimultaneousAttackers &&
+                target.attackedBy.Count >= maxSimultaneousAttackers)
+            {
                 return;
+            }
 
             StopAllCoroutines();
             m_entity.SetTarget(target.transform);
@@ -198,11 +251,9 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void HandleTargetFlee()
         {
-            if (!m_entity.target)
-                return;
+            if (!m_entity.target) return;
 
-            if (m_entity.GetDistanceToTarget() > fleeRadius)
-                StopAttack();
+            if (m_entity.GetDistanceToTarget() > fleeRadius) StopAttack();
         }
 
         protected virtual void HandleAttack()
@@ -233,7 +284,8 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void HandleFollowing()
         {
-            if (!followLeader || !leader || m_entity.target || m_entity.isAttacking || !canMove)
+            if (!followLeader || !leader || m_entity.target ||
+                m_entity.isAttacking || !canMove)
                 return;
 
             var destination = leader.position + leaderOffset;
@@ -242,8 +294,7 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void OnDamage(int amount, Vector3 source, bool critical)
         {
-            if (m_entity.target)
-                return;
+            if (m_entity.target) return;
 
             if (m_entity.GetDistanceTo(source) < spotRadius)
             {
@@ -287,7 +338,6 @@ namespace PLAYERTWO.ARPGProject
             m_entity.targetEntity?.attackedBy.Remove(m_entity);
             m_entity.SetTarget(null);
 
-
             // Logowanie zakończenia walki - DODANO 29 GRUDNIA 2024 - 0001
             var playerLogger = Object.FindFirstObjectByType<PlayerBehaviorLogger>();
             if (playerLogger != null)
@@ -325,8 +375,7 @@ namespace PLAYERTWO.ARPGProject
             m_waitingToSearch = false;
         }
 
-        protected virtual bool CanUpdateAI() =>
-            gameObject.activeSelf && m_entity.enabled && m_entity.isActive;
+        protected virtual bool CanUpdateAI() => gameObject.activeSelf && m_entity.enabled && m_entity.isActive;
 
         public virtual void AIUpdate()
         {
@@ -349,10 +398,91 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void Update()
         {
+            HandleEntityOptimization();
+
             if (CanUpdateAI())
             {
+                HandleViewSight();
                 HandleAttack();
                 HandleFollowing();
+                HandleTargetFlee();
+            }
+        }
+
+        protected virtual void OnDrawGizmos()
+        {
+            DrawFieldOfViewGizmoOnGround();
+            DrawRadiusGizmoOnGround(spotRadius, spotRadiusColor, spotRadiusYOffset);
+            DrawRadiusGizmoOnGround(fleeRadius, fleeRadiusColor, fleeRadiusYOffset);
+        }
+
+        private void DrawFieldOfViewGizmoOnGround()
+        {
+            Vector3 origin = transform.position + Vector3.up * viewAngleYOffset;
+            Vector3 forward = transform.forward;
+            Quaternion leftRayRotation = Quaternion.AngleAxis(-viewAngle / 2, Vector3.up);
+            Quaternion rightRayRotation = Quaternion.AngleAxis(viewAngle / 2, Vector3.up);
+
+            Vector3 leftDir = leftRayRotation * forward;
+            Vector3 rightDir = rightRayRotation * forward;
+
+            Vector3 leftRayEnd = origin + leftDir * viewDistance;
+            Vector3 rightRayEnd = origin + rightDir * viewDistance;
+
+            // Draw lines from AI to the ends of the field of view using the field of view color
+            Gizmos.color = fieldOfViewColor;
+            Gizmos.DrawLine(origin, leftRayEnd);
+            Gizmos.DrawLine(origin, rightRayEnd);
+
+            // Draw the arc between the ends using the field of view color
+            DrawArcGizmoOnGround(origin, leftDir, rightDir, viewDistance, fieldOfViewColor);
+
+            // Optional: Draw lines across the field of view using the field of view color
+            for (int i = 0; i < outlineLines; i++)
+            {
+                Quaternion rotation = Quaternion.AngleAxis((-viewAngle / 2) + (viewAngle / (outlineLines - 1)) * i, Vector3.up);
+                Gizmos.DrawLine(origin, origin + rotation * forward * viewDistance);
+            }
+        }
+
+        private void DrawRadiusGizmoOnGround(float radius, Color color, float yOffset)
+        {
+            Gizmos.color = color;
+            Vector3 center = transform.position + Vector3.up * yOffset;
+
+            // Draw the radius as a circle on the ground
+            DrawCircleGizmoOnGround(center, radius, color);
+        }
+
+        private void DrawArcGizmoOnGround(Vector3 origin, Vector3 startDir, Vector3 endDir, float radius, Color color)
+        {
+            Gizmos.color = color;
+            float step = viewAngle / outlineLines;
+            Vector3 prevPoint = origin + startDir * radius;
+            Vector3 newPoint = Vector3.zero;
+
+            for (int i = 1; i <= outlineLines; i++)
+            {
+                Quaternion rotation = Quaternion.AngleAxis(step * i - viewAngle / 2, Vector3.up);
+                newPoint = origin + rotation * transform.forward * radius;
+                Gizmos.DrawLine(prevPoint, newPoint);
+                prevPoint = newPoint;
+            }
+        }
+
+        private void DrawCircleGizmoOnGround(Vector3 center, float radius, Color color)
+        {
+            Gizmos.color = color;
+            float deltaTheta = (2f * Mathf.PI) / outlineLines;
+            float theta = 0f;
+
+            Vector3 oldPos = center + new Vector3(radius, 0f, 0f);
+            for (int i = 0; i < outlineLines + 1; i++)
+            {
+                Vector3 newPos = center + new Vector3(Mathf.Cos(theta) * radius, 0f, Mathf.Sin(theta) * radius);
+                Gizmos.DrawLine(oldPos, newPos);
+                oldPos = newPos;
+                theta += deltaTheta;
             }
         }
     }
