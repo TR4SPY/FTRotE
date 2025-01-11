@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -33,6 +34,8 @@ namespace PLAYERTWO.ARPGProject
 
         [Tooltip("The prefab instantiated when dropping an Item on the ground.")]
         public CollectibleItem droppedItemPrefab;
+
+        public float dropRange = 2f; // Editable range around the player to drop items
 
         [Header("Input Callbacks")]
         public UnityEvent onToggleSkills;
@@ -125,21 +128,69 @@ namespace PLAYERTWO.ARPGProject
         {
             if (!selected || !canDropItems) return;
 
+            Vector3 dropPosition;
+
             if (m_entity.inputs.MouseRaycast(out var hit, dropGroundLayer))
             {
-                var collectible = Instantiate(droppedItemPrefab, hit.point, Quaternion.identity);
+                // If the raycast hits the ground, calculate the drop position based on the hit point
+                Vector3 direction = (hit.point - m_entity.transform.position).normalized;
+                float distance = Mathf.Min(Vector3.Distance(m_entity.transform.position, hit.point), dropRange);
+                dropPosition = m_entity.transform.position + direction * distance;
+
+                // Create the item at the player's feet
+                var collectible = Instantiate(droppedItemPrefab, m_entity.transform.position, Quaternion.identity);
                 collectible.SetItem(selected.item);
                 Destroy(selected.gameObject);
                 selected = null;
                 m_dropTime = Time.time;
+
+                // Start the drop animation in an arc path
+                StartCoroutine(AnimateDropItem(collectible.transform, dropPosition));
             }
-#if UNITY_ANDROID || UNITY_IOS
             else
             {
-                selected.TryMoveToLastPosition();
-                Deselect();
-            }
+                // If the raycast does not hit the ground, move the item back to the inventory
+#if UNITY_ANDROID || UNITY_IOS
+        selected.TryMoveToLastPosition();
+        Deselect();
 #endif
+            }
+        }
+
+
+        private Vector3 GetRandomDropPosition()
+        {
+            float angle = Random.Range(0f, 360f);
+            float radius = Random.Range(0f, dropRange);
+            Vector3 randomOffset = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * radius;
+            return randomOffset;
+        }
+
+        private IEnumerator AnimateDropItem(Transform itemTransform, Vector3 targetPosition)
+        {
+            float animationDuration = 1f; // Duration of the animation
+            float elapsedTime = 0f;
+
+            Vector3 startPosition = itemTransform.position;
+            Vector3 controlPoint = startPosition + (targetPosition - startPosition) / 2 + Vector3.up * 2f; // Control point to create the arc
+
+            while (elapsedTime < animationDuration)
+            {
+                elapsedTime += Time.deltaTime;
+                float t = elapsedTime / animationDuration;
+
+                // Calculate the position on the quadratic Bezier curve
+                Vector3 currentPos = Mathf.Pow(1 - t, 2) * startPosition +
+                                     2 * (1 - t) * t * controlPoint +
+                                     Mathf.Pow(t, 2) * targetPosition;
+
+                itemTransform.position = currentPos;
+
+                yield return null;
+            }
+
+            // Ensure the item lands exactly at the target position
+            itemTransform.position = targetPosition;
         }
 
         protected virtual void HandleItemPosition()
