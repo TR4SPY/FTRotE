@@ -95,7 +95,6 @@ namespace PLAYERTWO.ARPGProject
             {
                 characterSelection.RefreshList();
                 characterSelection.SelectCharacter(Game.instance.characters.Count - 1);  // Assuming new character is at the end
-                characterSelection.RefreshCharacterDisplay();
             }
         }
 

@@ -13,8 +13,7 @@ namespace PLAYERTWO.ARPGProject
 
         [Tooltip("Offset for positioning the UI element above the character.")]
         public Vector3 offset = new Vector3(0, 2f, 0);
-
-        protected Transform m_target;
+        public Transform m_target; // Właściwość tylko do odczytu
         protected Camera m_camera;
 
         protected virtual void InitializeCamera() => m_camera = Camera.main;
@@ -28,7 +27,11 @@ namespace PLAYERTWO.ARPGProject
         /// <param name="level">The character's level.</param>
         public virtual void SetCharacterInfo(Transform target, string name, string characterClass, int level)
         {
-            if (!target) return;
+            if (target == null)
+            {
+                Debug.LogWarning("Target is null. Skipping character info setup.");
+                return;
+            }
 
             m_target = target;
             infoText.text = $"{name} - {characterClass}";
@@ -42,8 +45,10 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void LateUpdate()
         {
-            if (!m_target)
+            // Sprawdź, czy m_target jest zniszczony
+            if (m_target == null || m_target.Equals(null))
             {
+                Debug.LogWarning("Target has been destroyed. Destroying UI element.");
                 Destroy(this.gameObject);
                 return;
             }
@@ -60,7 +65,7 @@ namespace PLAYERTWO.ARPGProject
             else
             {
                 infoText.enabled = true; // Pokaż, gdy postać jest widoczna
-                levelText.enabled = true; 
+                levelText.enabled = true;
             }
         }
     }
