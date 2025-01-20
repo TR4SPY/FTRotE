@@ -14,6 +14,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/PLAYER TWO/ARPG Project/Examples/Scenes/Tutorial.unity
     guid: 70a178a6602d6f84d99b0b864676a480
+  - enabled: 1
+    path: Assets/PLAYER TWO/ARPG Project/Examples/Scenes/Testing_Ground.unity
+    guid: 0f112fbe857f4dc94b2249c3718a3386
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 465a3c9fcf86f3d9a925c4abc1b42763, type: 2}
     com.unity.localization.settings: {fileID: 11400000, guid: fb9ddca92758c70a4923346f3caa7895, type: 2}

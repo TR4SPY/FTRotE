@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 75903b8deb948934e8feda46b8ec180b
+guid: e48a32f117d9c0ddeb368a9f93e0a111
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -94,10 +94,3 @@ TextureImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
-AssetOrigin:
-  serializedVersion: 1
-  productId: 251134
-  packageName: ARPG Project
-  packageVersion: 1.4.0
-  assetPath: Assets/PLAYER TWO/ARPG Project/Examples/Scenes/Tutorial/Minimap.png
-  uploadId: 704322

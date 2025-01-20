@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 60e8f534d77ec2d4db74c00456fcd4cf
+guid: 724d3e6776c17b9388bfeb9bc022cf7c
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -145,10 +145,3 @@ TextureImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
-AssetOrigin:
-  serializedVersion: 1
-  productId: 251134
-  packageName: ARPG Project
-  packageVersion: 1.4.0
-  assetPath: Assets/PLAYER TWO/ARPG Project/Examples/Scenes/Tutorial/Lightmap-0_comp_dir.png
-  uploadId: 704322
