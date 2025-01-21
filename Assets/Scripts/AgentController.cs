@@ -10,12 +10,18 @@ public class AgentController : Agent
 {
     private Entity entity; // Referencja do Entity
     private EntityAI entityAI; // Referencja do EntityAI
-
+    private int observationCallCount = 0;
     public Transform target; // Cel agenta
     public bool isAI = true; // Flaga do identyfikacji jako AI Agent
 
     public override void Initialize()
     {
+        Debug.Log($"Academy environment step count: {Unity.MLAgents.Academy.Instance.StepCount}");
+        Debug.Log($"Is Academy Training: {Unity.MLAgents.Academy.Instance.IsCommunicatorOn}");
+
+        var behaviorParameters = GetComponent<Unity.MLAgents.Policies.BehaviorParameters>();
+        Debug.Log($"Vector Observation Size: {behaviorParameters.BrainParameters.VectorObservationSize}");
+
         entity = GetComponent<Entity>();
         entityAI = GetComponent<EntityAI>();
 
@@ -40,20 +46,28 @@ public class AgentController : Agent
         Vector3 startPosition = new Vector3(Random.Range(-50f, 50f), 0.5f, Random.Range(-50f, 50f));
         entity.Teleport(startPosition, Quaternion.identity);
 
-        // Ustaw nowy cel
-        SetRandomTarget();
-
         Debug.Log("Episode has started");
         Debug.Log($"Agent position: {transform.position}");
+        // Ustaw nowy cel
+        SetRandomTarget();
         Debug.Log($"Target: {target?.name ?? "No target set"}");
     }
 
     public override void CollectObservations(VectorSensor sensor)
     {
+        observationCallCount++;
+        Debug.Log($"CollectObservations called {observationCallCount} times.");
+
         // Dodaj pozycję agenta (3 obserwacje)
         sensor.AddObservation(transform.position);
 
-        if (target != null)
+        if (target == null)
+        {
+            Debug.LogWarning("Target is null during CollectObservations. Adding default values.");
+            sensor.AddObservation(Vector3.zero); // Pozycja celu (3 zerowe obserwacje)
+            sensor.AddObservation(0f);          // Zerowa odległość (1 obserwacja)
+        }
+        else
         {
             // Dodaj pozycję celu (3 obserwacje)
             sensor.AddObservation(target.position);
@@ -61,20 +75,14 @@ public class AgentController : Agent
             // Dodaj odległość do celu (1 obserwacja)
             sensor.AddObservation(Vector3.Distance(transform.position, target.position));
         }
-        else
-        {
-            // Dodaj zerowe wartości dla braku celu
-            sensor.AddObservation(Vector3.zero); // 3 obserwacje
-            sensor.AddObservation(0f);          // 1 obserwacja
-        }
 
-        // Debug: Sprawdź dokładnie, ile obserwacji zostało dodanych
-        Debug.Log($"Observation count: {sensor.ObservationSize()}");
+        Debug.Log($"Observation count added: 7");
     }
-
 
     public override void OnActionReceived(ActionBuffers actions)
     {
+        Debug.Log("OnActionReceived called.");
+
         float moveX = actions.ContinuousActions[0];
         float moveZ = actions.ContinuousActions[1];
 
@@ -155,5 +163,17 @@ public class AgentController : Agent
         var continuousActions = actionsOut.ContinuousActions;
         continuousActions[0] = Input.GetAxis("Horizontal");
         continuousActions[1] = Input.GetAxis("Vertical");
+    }
+
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+        Debug.Log("Agent enabled.");
+    }
+
+    protected override void OnDisable()
+    {
+        Debug.Log("Agent disabled.");
+        base.OnDisable();
     }
 }
