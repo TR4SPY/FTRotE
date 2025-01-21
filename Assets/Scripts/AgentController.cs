@@ -1,10 +1,10 @@
-using System.Collections.Generic;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
 using PLAYERTWO.ARPGProject;
 using AI_DDA.Assets.Scripts;
+using Unity.MLAgents.Policies;
 
 public class AgentController : Agent
 {
@@ -16,7 +16,6 @@ public class AgentController : Agent
 
     public override void Initialize()
     {
-        // Pobierz komponenty Entity i EntityAI
         entity = GetComponent<Entity>();
         entityAI = GetComponent<EntityAI>();
 
@@ -25,75 +24,89 @@ public class AgentController : Agent
             Debug.LogError("Entity or EntityAI component is missing on the AI Agent!");
         }
 
-        // Ustaw domyślne parametry Entity
+        // Ustaw flagę AI Agenta
+        entity.isAgent = true;
+
+        // Ustaw domyślne parametry
         entity.moveSpeed = 5f;
         entity.rotationSpeed = 720f;
 
-        // Ustaw tagi do wykrywania stref (jeśli wymagane)
-        entity.targetTags = new List<string> { "ZoneTrigger" };
+        Debug.Log($"Agent {gameObject.name} initialized with Behavior Name: {GetComponent<BehaviorParameters>().BehaviorName}");
     }
 
     public override void OnEpisodeBegin()
     {
-        // Resetuj pozycję agenta
-        Vector3 startPosition = new Vector3(Random.Range(-10f, 10f), 0.5f, Random.Range(-10f, 10f));
+        // Reset pozycji AI Agenta
+        Vector3 startPosition = new Vector3(Random.Range(-50f, 50f), 0.5f, Random.Range(-50f, 50f));
         entity.Teleport(startPosition, Quaternion.identity);
 
         // Ustaw nowy cel
         SetRandomTarget();
+
+        Debug.Log("Episode has started");
+        Debug.Log($"Agent position: {transform.position}");
+        Debug.Log($"Target: {target?.name ?? "No target set"}");
     }
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        // Dodaj pozycję agenta
+        // Dodaj pozycję agenta (3 obserwacje)
         sensor.AddObservation(transform.position);
 
-        // Dodaj pozycję celu, jeśli istnieje
         if (target != null)
         {
+            // Dodaj pozycję celu (3 obserwacje)
             sensor.AddObservation(target.position);
+
+            // Dodaj odległość do celu (1 obserwacja)
             sensor.AddObservation(Vector3.Distance(transform.position, target.position));
         }
         else
         {
-            sensor.AddObservation(Vector3.zero); // Jeśli brak celu, dodaj zerowe obserwacje
-            sensor.AddObservation(0f);          // Dodaj zerową odległość
+            // Dodaj zerowe wartości dla braku celu
+            sensor.AddObservation(Vector3.zero); // 3 obserwacje
+            sensor.AddObservation(0f);          // 1 obserwacja
         }
+
+        // Debug: Sprawdź dokładnie, ile obserwacji zostało dodanych
+        Debug.Log($"Observation count: {sensor.ObservationSize()}");
     }
+
 
     public override void OnActionReceived(ActionBuffers actions)
     {
-        // Pobierz akcje i wygeneruj kierunek ruchu
         float moveX = actions.ContinuousActions[0];
         float moveZ = actions.ContinuousActions[1];
 
         Vector3 moveDirection = new Vector3(moveX, 0, moveZ).normalized;
 
-        // Wykonaj ruch za pomocą Entity
         if (target != null)
         {
+            // Ruch w kierunku celu
             entity.MoveTo(target.position);
-        }
-        else
-        {
-            entity.MoveTo(transform.position + moveDirection * entity.moveSpeed);
-        }
 
-        // Nagroda za zbliżenie się do celu
-        if (target != null)
-        {
             float distanceToTarget = Vector3.Distance(transform.position, target.position);
             if (distanceToTarget < 1.0f)
             {
+                // Przyznaj nagrodę i zakończ epizod
                 SetReward(1.0f);
+                Debug.Log($"Target reached: {target.name}. Reward given.");
                 EndEpisode();
             }
         }
+        else
+        {
+            // Ruch oparty na akcjach, jeśli brak celu
+            entity.MoveTo(transform.position + moveDirection * entity.moveSpeed);
+            Debug.Log($"Moving based on actions: {moveDirection}");
+        }
+
+        // Debugowanie akcji i pozycji
+        Debug.Log($"Action X: {moveX}, Action Z: {moveZ}, Position: {transform.position}");
     }
 
     private void SetRandomTarget()
     {
-        // Wybierz losowy cel z dostępnych ZoneTrigger
         var targets = Object.FindObjectsByType<ZoneTrigger>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
         Debug.Log($"Found {targets.Length} ZoneTriggers.");
 
@@ -105,20 +118,42 @@ public class AgentController : Agent
         else
         {
             Debug.LogWarning("No ZoneTriggers found. Cannot set target.");
+            EndAgentEpisode(); // Zamiast EndEpisode()
+            return;
         }
 
-        // Ustaw cel w Entity
         if (target != null)
         {
             entity.SetTarget(target);
         }
     }
 
+    public void DiscoverZone(string zoneName)
+    {
+        Debug.Log($"AI Agent discovered zone: {zoneName}");
+
+        // Przyznaj nagrodę za odkrycie strefy
+        SetReward(1.0f);
+        Debug.Log("Reward given for discovering zone.");
+
+        // Zakończ epizod
+        EndAgentEpisode(); // Zamiast EndEpisode()
+        Debug.Log("Episode ended after discovering zone.");
+    }
+
+    private void EndAgentEpisode()
+    {
+        // Dodaj własne logi lub operacje przed zakończeniem epizodu
+        Debug.Log("Ending episode for AI Agent...");
+        Debug.Log($"Reward before ending: {GetCumulativeReward()}"); // Sprawdź, czy nagroda jest prawidłowa
+        // Wywołaj bazową metodę EndEpisode()
+        EndEpisode();
+    }
+
     public override void Heuristic(in ActionBuffers actionsOut)
     {
-        // Ręczne sterowanie agentem
         var continuousActions = actionsOut.ContinuousActions;
-        continuousActions[0] = Input.GetAxis("Horizontal"); // Ruch w osi X
-        continuousActions[1] = Input.GetAxis("Vertical");   // Ruch w osi Z
+        continuousActions[0] = Input.GetAxis("Horizontal");
+        continuousActions[1] = Input.GetAxis("Vertical");
     }
 }

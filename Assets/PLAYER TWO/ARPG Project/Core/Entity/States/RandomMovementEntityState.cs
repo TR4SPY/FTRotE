@@ -41,8 +41,22 @@ namespace PLAYERTWO.ARPGProject
             var point = Random.insideUnitCircle;
             var direction = new Vector3(point.x, 0, point.y).normalized;
             var distanceIndex = Random.Range(0, m_walkingDistances.Length);
-            var destination = entity.initialPosition + direction * m_walkingDistances[distanceIndex];
-            entity.TryCalculatePath(destination);
+
+            // Jeśli jest agentem AI, pozwól na pełny zakres ruchu po mapie
+            if (entity.isAgent)
+            {
+                var randomPosition = new Vector3(
+                    Random.Range(-50f, 50f), // Zakres mapy X
+                    entity.transform.position.y,
+                    Random.Range(-50f, 50f)  // Zakres mapy Z
+                );
+                entity.TryCalculatePath(randomPosition);
+            }
+            else
+            {
+                var destination = entity.initialPosition + direction * m_walkingDistances[distanceIndex];
+                entity.TryCalculatePath(destination);
+            }
         }
 
         protected virtual void UpdateWaitingDuration()

@@ -48,6 +48,15 @@ namespace AI_DDA.Assets.Scripts
 
             if (!isPlayer && !isAI) return; // Ignoruj, jeśli to nie gracz ani AI Agent
 
+            if (other.CompareTag("Entity/AI_Agent"))
+            {
+                var agentController = other.GetComponent<AgentController>();
+                if (agentController != null)
+                {
+                    agentController.DiscoverZone(zoneName); // Przekazanie informacji o strefie
+                }
+            }
+
             if (string.IsNullOrEmpty(zoneName))
             {
                 Debug.LogError("Zone name is null or empty. Cannot log zone discovery.");

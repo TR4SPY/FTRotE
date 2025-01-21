@@ -18,6 +18,7 @@ namespace PLAYERTWO.ARPGProject
         public UnityEvent onStunned;
         public UnityEvent onDie;
         public UnityEvent onRevive;
+        public bool isAgent = false; // Flaga identyfikująca AI Agent
 
         [Tooltip("The tags of Game Objects that this Entity identifies as potential targets.")]
         public List<string> targetTags;
@@ -153,7 +154,7 @@ namespace PLAYERTWO.ARPGProject
         /// <summary>
         /// Returns true if the Entity have any health.
         /// </summary>
-        public bool isDead => stats.health == 0;
+        public virtual bool isDead => stats != null && stats.health <= 0;
 
         /// <summary>
         /// Returns true if the Entity is performing an attack.
@@ -590,9 +591,16 @@ namespace PLAYERTWO.ARPGProject
 
         private void Start()
         {
+            if (isAgent)
+            {
+                Debug.Log("Skipping stats initialization for AI Agent.");
+                return;
+            }
+
             if (stats == null)
             {
                 Debug.LogError($"{name} does not have stats initialized!");
+                return;
             }
         }
 

@@ -90,7 +90,8 @@ namespace PLAYERTWO.ARPGProject
 
         [Tooltip("Number of lines to draw for the circle outline. More lines result in a smoother outline.")]
         public int outlineLines = 36;
-
+        public virtual bool isAgent => m_entity != null && m_entity.isAgent;
+        
         protected Entity m_entity;
         protected Camera m_camera;
 
@@ -105,10 +106,7 @@ namespace PLAYERTWO.ARPGProject
         protected WaitForSeconds m_resetMoveDelay;
         protected WaitForSeconds m_searchDamageSourceDuration;
 
-
         protected const float k_targetRefreshRate = 0.2f;
-
-
 
         /// <summary>
         /// And offset applied to the leader following target position.
@@ -124,7 +122,7 @@ namespace PLAYERTWO.ARPGProject
         /// <summary>
         /// Returns true if this Entity is dead.
         /// </summary>
-        public virtual bool isDead => m_entity.isDead;
+        public virtual bool isDead => m_entity != null && m_entity.stats != null && m_entity.isDead;
 
         /// <summary>
         /// Returns true if the Entity is able to move.
@@ -163,6 +161,12 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void HandleEntityOptimization()
         {
+            if (m_entity.isAgent)
+            {
+                m_entity.enabled = true; // AI Agent jest zawsze aktywny
+                return;
+            }
+
             GeometryUtility.CalculateFrustumPlanes(m_camera, m_frustumPlanes);
             m_entity.enabled = GeometryUtility.TestPlanesAABB(m_frustumPlanes, m_entity.controller.bounds);
 
@@ -174,6 +178,12 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void HandleViewSight()
         {
+            // Wyłącz obsługę ataku dla AI Agenta
+            if (m_entity.isAgent)
+            {
+                return; // AI Agent nie wymaga logiki ataku
+            }
+            
             if (m_entity.target || Time.time < m_nextTargetRefreshTime) return;
 
             m_nextTargetRefreshTime = Time.time + k_targetRefreshRate;
@@ -251,6 +261,12 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void HandleTargetFlee()
         {
+            // Wyłącz obsługę ataku dla AI Agenta
+            if (m_entity.isAgent)
+            {
+                return; // AI Agent nie wymaga logiki ataku
+            }
+            
             if (!m_entity.target) return;
 
             if (m_entity.GetDistanceToTarget() > fleeRadius) StopAttack();
@@ -258,6 +274,12 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void HandleAttack()
         {
+            // Wyłącz obsługę ataku dla AI Agenta
+            if (m_entity.isAgent)
+            {
+                return; // AI Agent nie wymaga logiki ataku
+            }
+
             if (!m_entity.target || m_entity.isAttacking || !canMove)
                 return;
 
@@ -284,6 +306,12 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void HandleFollowing()
         {
+            // Wyłącz obsługę ataku dla AI Agenta
+            if (m_entity.isAgent)
+            {
+                return; // AI Agent nie wymaga logiki ataku
+            }
+
             if (!followLeader || !leader || m_entity.target ||
                 m_entity.isAttacking || !canMove)
                 return;
@@ -375,7 +403,15 @@ namespace PLAYERTWO.ARPGProject
             m_waitingToSearch = false;
         }
 
-        protected virtual bool CanUpdateAI() => gameObject.activeSelf && m_entity.enabled && m_entity.isActive;
+        protected virtual bool CanUpdateAI()
+        {
+            if (m_entity.isAgent)
+            {
+                return true; // AI Agent jest zawsze aktywny
+            }
+
+            return gameObject.activeSelf && m_entity.enabled && m_entity.isActive;
+        }
 
         public virtual void AIUpdate()
         {

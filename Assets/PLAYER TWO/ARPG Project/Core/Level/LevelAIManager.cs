@@ -68,6 +68,14 @@ namespace PLAYERTWO.ARPGProject
             if (!ai || ai.ignoreCulling)
                 return;
 
+            // Sprawdź, czy AI Agent
+            if (ai.isAgent)
+            {
+                ai.gameObject.SetActive(true); // AI Agent zawsze aktywny
+                return;
+            }
+
+            // Oryginalna logika culling
             m_cullingBounds.center = Level.instance.player.transform.position;
             var visible = m_cullingBounds.Intersects(ai.bounds);
 
