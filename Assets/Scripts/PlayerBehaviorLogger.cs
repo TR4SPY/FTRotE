@@ -354,6 +354,11 @@ namespace AI_DDA.Assets.Scripts
                 return $"{seconds}s";
         }
 
+        public void LogAgentZoneDiscovery(string zoneName)
+        {
+            Debug.Log($"AI Agent discovered zone: {zoneName}");
+        }
+
         /// <summary>
         /// Resetowanie logów (opcjonalne).
         /// </summary>

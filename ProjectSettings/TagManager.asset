@@ -16,6 +16,7 @@ TagManager:
   - Synty Medium Farm
   - Synty Tree
   - Synty Small Farm
+  - Entity/AI_Agent
   layers:
   - Default
   - TransparentFX

@@ -43,15 +43,10 @@ namespace AI_DDA.Assets.Scripts
 
         private void OnTriggerEnter(Collider other)
         {
-            if (!other.CompareTag(GameTags.Player)) return;
+            bool isPlayer = other.CompareTag(GameTags.Player);
+            bool isAI = other.GetComponent<AgentController>()?.isAI == true;
 
-            var currentCharacter = Game.instance.currentCharacter;
-
-            if (currentCharacter == null)
-            {
-                Debug.LogError("Current character is null. Cannot log zone discovery.");
-                return;
-            }
+            if (!isPlayer && !isAI) return; // Ignoruj, jeśli to nie gracz ani AI Agent
 
             if (string.IsNullOrEmpty(zoneName))
             {
@@ -59,32 +54,50 @@ namespace AI_DDA.Assets.Scripts
                 return;
             }
 
-            if (currentCharacter.visitedZones == null)
+            // Jeśli obiekt to gracz
+            if (isPlayer)
             {
-                Debug.LogError("Visited zones list is null. Initializing it.");
-                currentCharacter.visitedZones = new HashSet<string>(); // Utworzenie nowego HashSet
+                var currentCharacter = Game.instance.currentCharacter;
+
+                if (currentCharacter == null)
+                {
+                    Debug.LogError("Current character is null. Cannot log zone discovery.");
+                    return;
+                }
+
+                if (currentCharacter.visitedZones == null)
+                {
+                    Debug.LogError("Visited zones list is null. Initializing it.");
+                    currentCharacter.visitedZones = new HashSet<string>();
+                }
+
+                if (currentCharacter.visitedZones.Contains(zoneName))
+                {
+                    Debug.Log($"Zone '{zoneName}' has already been visited by the player.");
+                    return;
+                }
+
+                // Dodaj strefę do odwiedzonych
+                currentCharacter.visitedZones.Add(zoneName);
+
+                // Zapis stanu gry
+                GameSave.instance.Save();
+
+                // Logowanie odkrycia strefy
+                PlayerBehaviorLogger.Instance?.LogAreaDiscovered(zoneName);
+
+                // Wyświetlenie informacji o strefie w GUI
+                guiZoneHUD?.ShowZone(zoneStatus, zoneName, zoneDescription);
+
+                Debug.Log($"Zone '{zoneName}' discovered and saved for character '{currentCharacter.name}'.");
             }
 
-            // Sprawdź, czy strefa została już odwiedzona
-            if (currentCharacter.visitedZones.Contains(zoneName))
+            // Jeśli obiekt to AI Agent
+            if (isAI)
             {
-                Debug.Log($"Zone '{zoneName}' has already been visited.");
-                return;
+                Debug.Log($"AI Agent discovered zone '{zoneName}'.");
+                PlayerBehaviorLogger.Instance?.LogAgentZoneDiscovery(zoneName); // Logowanie dla AI
             }
-
-            // Dodaj strefę do odwiedzonych
-            currentCharacter.visitedZones.Add(zoneName);
-
-            // Zapis stanu gry
-            GameSave.instance.Save();
-
-            // Logowanie odkrycia strefy
-            PlayerBehaviorLogger.Instance?.LogAreaDiscovered(zoneName);
-
-            // Wyświetlenie informacji o strefie w GUI
-            guiZoneHUD?.ShowZone(zoneStatus, zoneName, zoneDescription);
-
-            Debug.Log($"Zone '{zoneName}' discovered and saved for character '{currentCharacter.name}'.");
         }
     }
 }
