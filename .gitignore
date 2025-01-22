@@ -26,6 +26,7 @@ Logs/
 *.manifest
 *.tmp
 MemoryCaptures/
+results/
 
 # Wykluczenie dużych plików binarnych
 *.unitypackage
