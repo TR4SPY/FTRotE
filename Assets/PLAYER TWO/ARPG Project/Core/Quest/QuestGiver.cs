@@ -80,19 +80,27 @@ namespace PLAYERTWO.ARPGProject
             return null;
         }
 
-        protected override void OnInteract(object _)
+        protected override void OnInteract(object other)
         {
-            var current = CurrentQuest();
+            if (!(other is Entity entity)) return;
 
-            if (!current)
-                return;
+            var current = CurrentQuest();
+            if (!current) return;
 
             // Logowanie interakcji
             GetComponent<NpcInteractionLogger>()?.LogInteraction();
 
-            GUIWindowsManager.instance.quest.SetQuest(current);
+            // Otwórz UI tylko dla gracza
+            if (entity.isPlayer)
+            {
+                GUIWindowsManager.instance.quest.SetQuest(current);
+                Debug.Log("QuestGiver interacted with by player. Quest UI opened.");
+            }
+            else
+            {
+                Debug.Log("QuestGiver interacted with by AI Agent. UI not opened.");
+            }
         }
-
 
         /// <summary>
         /// Returns true if the QuestInstance matches any quest in the quests array.

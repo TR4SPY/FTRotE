@@ -410,6 +410,7 @@ MonoBehaviour:
   onRevive:
     m_PersistentCalls:
       m_Calls: []
+  isAgent: 0
   targetTags:
   - Entity/Enemy
   moveSpeed: 6
@@ -419,6 +420,7 @@ MonoBehaviour:
   hitbox: {fileID: 2957117558929388001}
   autoCollectItems: 0
   autoCollectCoolDown: 0.1
+  isPlayer: 1
 --- !u!114 &2957117560480157709
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -659,9 +661,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerDeaths: 0
+  difficultyMultiplier: 0
   enemiesDefeated: 0
   totalCombatTime: 0
   potionsUsed: 0
+  zonesDiscovered: 0
+  npcInteractions: 0
+  questsCompleted: 0
+  waypointsDiscovered: 0
+  currentDynamicPlayerType: Unknown
+  lastUpdateTime: 0
+  achievementsUnlocked: 0
+  unlockedAchievements: []
 --- !u!114 &4119923726096340576
 MonoBehaviour:
   m_ObjectHideFlags: 0

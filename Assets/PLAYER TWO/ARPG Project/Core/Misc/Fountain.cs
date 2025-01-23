@@ -16,19 +16,28 @@ namespace PLAYERTWO.ARPGProject
         public GameObject content;
 
         protected bool m_canUse = true;
+        public bool CanUse => m_canUse;
 
         protected override void OnInteract(object other)
         {
-            if (!(other is Entity) || !m_canUse) return;
+            if (!(other is Entity entity) || !m_canUse) return;
 
             if (resetHealth)
-                (other as Entity).stats.ResetHealth();
+            {
+                entity.stats.ResetHealth();
+                Debug.Log($"Health reset by Fountain for: {entity.name}");
+            }
 
             if (resetMana)
-                (other as Entity).stats.ResetMana();
+            {
+                entity.stats.ResetMana();
+                Debug.Log($"Mana reset by Fountain for: {entity.name}");
+            }
 
             m_canUse = false;
             content.SetActive(false);
+
+            Debug.Log($"Fountain used by: {entity.name}, isPlayer: {entity.isPlayer}");
         }
     }
 }

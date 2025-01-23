@@ -89,11 +89,11 @@ namespace PLAYERTWO.ARPGProject
 
         protected override void OnInteract(object other)
         {
-            if (!(other is Entity)) return;
+            if (!(other is Entity entity)) return;
 
-            if ((other as Entity) != m_entity)
+            if (entity != m_entity)
             {
-                m_entity = other as Entity;
+                m_entity = entity;
                 m_entity.inventory.onItemAdded
                     .AddListener((_) => m_blacksmithWindow.Refresh());
                 m_entity.inventory.onItemInserted
@@ -101,10 +101,20 @@ namespace PLAYERTWO.ARPGProject
                 m_entity.inventory.onItemRemoved.AddListener(m_blacksmithWindow.Refresh);
                 m_entity.items.onChanged.AddListener(m_blacksmithWindow.Refresh);
             }
+
             // Logowanie interakcji
             GetComponent<NpcInteractionLogger>()?.LogInteraction();
 
-            m_blacksmithWindow.Show(this);
+            // Otwórz UI tylko dla gracza
+            if (entity.isPlayer)
+            {
+                m_blacksmithWindow.Show(this);
+                Debug.Log("Blacksmith interacted with by player. UI opened.");
+            }
+            else
+            {
+                Debug.Log("Blacksmith interacted with by AI Agent. UI not opened.");
+            }
         }
     }
 }

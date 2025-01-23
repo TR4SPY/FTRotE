@@ -18,7 +18,8 @@ namespace PLAYERTWO.ARPGProject
         public UnityEvent onStunned;
         public UnityEvent onDie;
         public UnityEvent onRevive;
-        public bool isAgent = false; // Flaga identyfikująca AI Agent
+        public bool isAgent = false; // Flaga identyfikująca AI Agenta
+        public bool isPlayer = false; // Flaga rozróżniająca gracza
 
         [Tooltip("The tags of Game Objects that this Entity identifies as potential targets.")]
         public List<string> targetTags;

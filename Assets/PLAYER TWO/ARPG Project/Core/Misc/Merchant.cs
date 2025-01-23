@@ -76,15 +76,24 @@ namespace PLAYERTWO.ARPGProject
 
         protected override void OnInteract(object other)
         {
-            if (!(other is Entity)) return;
+            if (!(other is Entity entity)) return;
 
             // Logowanie interakcji
             GetComponent<NpcInteractionLogger>()?.LogInteraction();
 
-            GUIWindowsManager.instance.merchantWindow.Show();
-            GUIWindowsManager.instance.inventoryWindow.Show();
+            // Sprawdzenie, czy interakcja pochodzi od gracza
+            if (entity.isPlayer)
+            {
+                GUIWindowsManager.instance.merchantWindow.Show();
+                GUIWindowsManager.instance.inventoryWindow.Show();
+                m_guiMerchant.SetMerchant(this);
 
-            m_guiMerchant.SetMerchant(this);
+                Debug.Log("Merchant interacted with by player. UI opened.");
+            }
+            else
+            {
+                Debug.Log("Merchant interacted with by AI Agent. UI not opened.");
+            }
         }
 
         protected override void Start()

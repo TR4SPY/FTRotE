@@ -11,6 +11,9 @@ public class AgentController : Agent
     private Entity entity; // Referencja do Entity
     private EntityAI entityAI; // Referencja do EntityAI
     private int totalObservationsCalls = 0;
+    private Interactive lastInteractedObject; // Przechowuje ostatnio użyty obiekt interaktywny
+    private float lastInteractionTime = 0f;
+    private float interactionCooldown = 5f; // Czas w sekundach
     public Transform target; // Cel agenta
     public bool isAI = true; // Flaga do identyfikacji jako AI Agent
 
@@ -121,13 +124,21 @@ public class AgentController : Agent
             entity.MoveTo(transform.position + moveDirection * entity.moveSpeed);
         }
 
-        // Reakcja na przeciwników
-        var closestEnemy = GetComponent<EntityAreaScanner>()?.GetClosestTarget();
-        if (closestEnemy != null && Vector3.Distance(transform.position, closestEnemy.position) < 5f)
+        // Próba interakcji z NPC
+        InteractWithNPC();
+
+        // Rozszerzona logika unikania
+        var scanner = GetComponent<EntityAreaScanner>();
+        var closestEnemy = scanner?.GetClosestTarget();
+        if (closestEnemy != null)
         {
-            Vector3 fleeDirection = (transform.position - closestEnemy.position).normalized;
-            entity.MoveTo(transform.position + fleeDirection * entity.moveSpeed);
-            Debug.Log($"Avoiding enemy: {closestEnemy.name}");
+            float closestDistance = Vector3.Distance(transform.position, closestEnemy.position);
+            if (closestDistance < 5f)
+            {
+                Vector3 fleeDirection = (transform.position - closestEnemy.position).normalized;
+                entity.MoveTo(transform.position + fleeDirection * entity.moveSpeed);
+                Debug.Log($"Avoiding enemy: {closestEnemy.name} at distance {closestDistance}");
+            }
         }
     }
 
@@ -165,6 +176,59 @@ public class AgentController : Agent
         // Zakończ epizod
         EndAgentEpisode(); // Zamiast EndEpisode()
         Debug.Log("Episode ended after discovering zone.");
+    }
+
+    private void InteractWithNPC()
+{
+    var scanner = GetComponent<EntityAreaScanner>();
+    var closestInteractive = scanner?.GetClosestInteractiveObject();
+
+    // Sprawdzenie cooldownu
+    if (Time.time - lastInteractionTime < interactionCooldown)
+    {
+        Debug.Log("Interaction on cooldown.");
+        return;
+    }
+
+    // Wyklucz Signs i inne niechciane obiekty
+    if (closestInteractive is Sign)
+    {
+        Debug.Log($"Ignoring sign: {closestInteractive.name}");
+        return;
+    }
+
+    // Wyklucz niedostępne fontanny
+    if (closestInteractive is Fountain)
+    {
+        Debug.Log($"Ignoring fountain: {closestInteractive.name}");
+        return;
+    }
+
+    if (closestInteractive != null 
+        && !(closestInteractive is Collectible) 
+        && closestInteractive != lastInteractedObject)
+    {
+        // Przemieszczenie w kierunku NPC lub innego obiektu interaktywnego
+        entity.MoveTo(closestInteractive.transform.position);
+
+        float distance = Vector3.Distance(transform.position, closestInteractive.transform.position);
+        if (distance < 1.0f)
+        {
+            // Wywołanie interakcji z obiektem
+            closestInteractive.Interact(entity);
+            Debug.Log($"Interacted with: {closestInteractive.name}");
+
+            // Ustawienie ostatniego obiektu i czasu interakcji
+            lastInteractedObject = closestInteractive;
+            lastInteractionTime = Time.time;
+            Debug.Log($"Interaction cooldown started for: {closestInteractive.name}");
+        }
+    }
+}
+
+    private void ClearLastInteractedObject()
+    {
+        lastInteractedObject = null;
     }
 
     private void EndAgentEpisode()
