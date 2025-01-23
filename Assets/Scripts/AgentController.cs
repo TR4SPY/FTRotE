@@ -55,71 +55,80 @@ public class AgentController : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        // Dodaj pozycję agenta (3 obserwacje)
+        // Pozycja agenta (3 obserwacje)
         Vector3 agentPosition = transform.position;
         sensor.AddObservation(agentPosition.x);
         sensor.AddObservation(agentPosition.y);
         sensor.AddObservation(agentPosition.z);
 
+        // Pozycja celu i odległość do celu (4 obserwacje)
         if (target != null)
         {
-            // Dodaj pozycję celu (3 obserwacje)
             Vector3 targetPosition = target.position;
             sensor.AddObservation(targetPosition.x);
             sensor.AddObservation(targetPosition.y);
             sensor.AddObservation(targetPosition.z);
-
-            // Dodaj odległość do celu (1 obserwacja)
-            float distanceToTarget = Vector3.Distance(agentPosition, targetPosition);
-            sensor.AddObservation(distanceToTarget);
+            sensor.AddObservation(Vector3.Distance(agentPosition, targetPosition));
         }
         else
         {
-            // Wypełnij zerami brakujące obserwacje
             sensor.AddObservation(0f); // Cel x
             sensor.AddObservation(0f); // Cel y
             sensor.AddObservation(0f); // Cel z
             sensor.AddObservation(0f); // Odległość do celu
         }
 
-        // Debugowanie liczby dodanych obserwacji
-        Debug.Log($"CollectObservations called. Observation count added: {sensor.ObservationSize()}");
-        totalObservationsCalls++;
-        Debug.Log($"CollectObservations call #{totalObservationsCalls} - Observation count added: {sensor.ObservationSize()}");
+        // Dodanie najbliższego przeciwnika (4 obserwacje)
+        var closestEnemy = GetComponent<EntityAreaScanner>()?.GetClosestTarget();
+        if (closestEnemy != null)
+        {
+            Vector3 enemyPosition = closestEnemy.position;
+            sensor.AddObservation(enemyPosition.x);
+            sensor.AddObservation(enemyPosition.y);
+            sensor.AddObservation(enemyPosition.z);
+            sensor.AddObservation(Vector3.Distance(agentPosition, enemyPosition));
+        }
+        else
+        {
+            sensor.AddObservation(0f); // Przeciwnik x
+            sensor.AddObservation(0f); // Przeciwnik y
+            sensor.AddObservation(0f); // Przeciwnik z
+            sensor.AddObservation(0f); // Odległość do przeciwnika
+        }
+
+        // Debugowanie
+        Debug.Log("CollectObservations: Agent now observes enemies and target zones.");
     }
 
     public override void OnActionReceived(ActionBuffers actions)
     {
-        Debug.Log("OnActionReceived called.");
-
         float moveX = actions.ContinuousActions[0];
         float moveZ = actions.ContinuousActions[1];
-
         Vector3 moveDirection = new Vector3(moveX, 0, moveZ).normalized;
 
         if (target != null)
         {
-            // Ruch w kierunku celu
             entity.MoveTo(target.position);
-
             float distanceToTarget = Vector3.Distance(transform.position, target.position);
             if (distanceToTarget < 1.0f)
             {
-                // Przyznaj nagrodę i zakończ epizod
                 SetReward(1.0f);
-                Debug.Log($"Target reached: {target.name}. Reward given.");
                 EndEpisode();
             }
         }
         else
         {
-            // Ruch oparty na akcjach, jeśli brak celu
             entity.MoveTo(transform.position + moveDirection * entity.moveSpeed);
-            Debug.Log($"Moving based on actions: {moveDirection}");
         }
 
-        // Debugowanie akcji i pozycji
-        Debug.Log($"Action X: {moveX}, Action Z: {moveZ}, Position: {transform.position}");
+        // Reakcja na przeciwników
+        var closestEnemy = GetComponent<EntityAreaScanner>()?.GetClosestTarget();
+        if (closestEnemy != null && Vector3.Distance(transform.position, closestEnemy.position) < 5f)
+        {
+            Vector3 fleeDirection = (transform.position - closestEnemy.position).normalized;
+            entity.MoveTo(transform.position + fleeDirection * entity.moveSpeed);
+            Debug.Log($"Avoiding enemy: {closestEnemy.name}");
+        }
     }
 
     private void SetRandomTarget()
