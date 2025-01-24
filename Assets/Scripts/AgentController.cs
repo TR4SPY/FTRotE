@@ -190,6 +190,7 @@ public class AgentController : Agent
         return;
     }
 
+/*
     // Wyklucz Signs i inne niechciane obiekty
     if (closestInteractive is Sign)
     {
@@ -203,10 +204,12 @@ public class AgentController : Agent
         Debug.Log($"Ignoring fountain: {closestInteractive.name}");
         return;
     }
+*/
 
     if (closestInteractive != null 
         && !(closestInteractive is Collectible) 
-        && closestInteractive != lastInteractedObject)
+        && closestInteractive != lastInteractedObject 
+        && closestInteractive.CanAgentInteract) // Nowy warunek: sprawdzanie pola CanAgentInteract
     {
         // Przemieszczenie w kierunku NPC lub innego obiektu interaktywnego
         entity.MoveTo(closestInteractive.transform.position);
@@ -223,6 +226,10 @@ public class AgentController : Agent
             lastInteractionTime = Time.time;
             Debug.Log($"Interaction cooldown started for: {closestInteractive.name}");
         }
+    }
+    else if (closestInteractive != null)
+    {
+        Debug.Log($"Ignoring {closestInteractive.name}: CanAgentInteract is false or already interacted.");
     }
 }
 
