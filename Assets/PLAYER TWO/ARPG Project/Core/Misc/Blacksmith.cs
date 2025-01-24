@@ -93,13 +93,13 @@ namespace PLAYERTWO.ARPGProject
 
             if (m_blacksmithWindow == null)
             {
-                Debug.LogError("Blacksmith.OnInteract: m_blacksmithWindow is null! Ensure it is assigned in the inspector.");
+                Debug.LogWarning("Blacksmith.OnInteract: m_blacksmithWindow is null! Ensure it is assigned in the inspector.");
                 return;
             }
 
             if (entity.inventory == null)
             {
-                Debug.LogError("Blacksmith.OnInteract: Entity has no inventory! Skipping interaction.");
+                Debug.LogWarning("Blacksmith.OnInteract: Entity has no inventory! Skipping interaction.");
                 return;
             }
 

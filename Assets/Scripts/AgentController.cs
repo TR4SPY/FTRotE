@@ -14,8 +14,16 @@ public class AgentController : Agent
     private Interactive lastInteractedObject; // Przechowuje ostatnio użyty obiekt interaktywny
     private float lastInteractionTime = 0f;
     private float interactionCooldown = 5f; // Czas w sekundach
+    private Vector3 lastPosition;
+    private float stuckTimer = 0f;
+    private float interactionTimeout = 10f; // Maksymalny czas na osiągnięcie celu (w sekundach)
+    private float interactionTimer = 0f;
+    private const float stuckThreshold = 2f; // Czas w sekundach, po którym agent jest uznany za zablokowanego
+    private bool isResetting = false;
+    
     public Transform target; // Cel agenta
     public bool isAI = true; // Flaga do identyfikacji jako AI Agent
+    
 
     public override void Initialize()
     {
@@ -266,8 +274,97 @@ public class AgentController : Agent
         base.OnDisable();
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Obstacle")) // Przeszkody muszą mieć tag "Obstacle"
+        {
+            Debug.Log($"Obstacle detected: {collision.gameObject.name}. Avoiding obstacle.");
+            Vector3 avoidDirection = (transform.position - collision.contacts[0].point).normalized;
+            entity.MoveTo(transform.position + avoidDirection * 3f); // Przesunięcie o 3 jednostki od przeszkody
+        }
+    }
+
+    private void CheckIfStuck()
+    {
+        if (isResetting) return;
+
+        if (Vector3.Distance(transform.position, lastPosition) < 0.2f) // Tolerancja na ruch
+        {
+            stuckTimer += Time.deltaTime;
+            if (stuckTimer > stuckThreshold)
+            {
+                Debug.Log("AI Agent is stuck! Resetting position or target.");
+                isResetting = true;
+                ResetAgent();
+                stuckTimer = 0f;
+                isResetting = false;
+            }
+        }
+        else
+        {
+            stuckTimer = 0f;
+        }
+
+        lastPosition = transform.position;
+    }
+
+    private void ResetAgent()
+    {
+        if (target != null)
+        {
+            Vector3 fleeDirection = (transform.position - target.position).normalized;
+            Vector3 newPosition = transform.position + fleeDirection * 3f;
+            entity.MoveTo(newPosition);
+            Debug.Log($"Agent reset to avoid being stuck. New position: {newPosition}");
+        }
+        else
+        {
+            Vector3 randomDirection = new Vector3(
+                Random.Range(-1f, 1f),
+                0,
+                Random.Range(-1f, 1f)
+            ).normalized;
+
+            Vector3 newPosition = transform.position + randomDirection * 3f;
+            entity.MoveTo(newPosition);
+            Debug.Log($"Agent reset. Moving to new random position: {newPosition}");
+        }
+    }
+
+    private void CheckInteractionTimeout()
+    {
+        if (isResetting) return;
+
+        if (target != null)
+        {
+            interactionTimer += Time.deltaTime;
+
+            if (interactionTimer > interactionTimeout)
+            {
+                Debug.Log($"Interaction target timed out: {target.name}. Selecting new target.");
+                isResetting = true;
+                target = null; // Resetowanie celu
+                interactionTimer = 0f;
+                SetRandomTarget();
+                isResetting = false;
+            }
+        }
+        else
+        {
+            interactionTimer = 0f;
+        }
+    }
+
+    private void DebugAgentState()
+    {
+        Debug.Log($"Agent Position: {transform.position}, Target: {target?.name ?? "None"}, StuckTimer: {stuckTimer}, InteractionTimer: {interactionTimer}");
+    }
+
     void Update()
     {
+        CheckIfStuck();
+        CheckInteractionTimeout();
+
         if (Time.frameCount % 30 == 0) // Log every 30 frames
         {
             Debug.Log($"Frame: {Time.frameCount}, StepCount: {Academy.Instance.StepCount}");
