@@ -91,13 +91,24 @@ namespace PLAYERTWO.ARPGProject
         {
             if (!(other is Entity entity)) return;
 
+            if (m_blacksmithWindow == null)
+            {
+                Debug.LogError("Blacksmith.OnInteract: m_blacksmithWindow is null! Ensure it is assigned in the inspector.");
+                return;
+            }
+
+            if (entity.inventory == null)
+            {
+                Debug.LogError("Blacksmith.OnInteract: Entity has no inventory! Skipping interaction.");
+                return;
+            }
+
             if (entity != m_entity)
             {
                 m_entity = entity;
-                m_entity.inventory.onItemAdded
-                    .AddListener((_) => m_blacksmithWindow.Refresh());
-                m_entity.inventory.onItemInserted
-                    .AddListener((_) => m_blacksmithWindow.Refresh());
+
+                m_entity.inventory.onItemAdded.AddListener((_) => m_blacksmithWindow.Refresh());
+                m_entity.inventory.onItemInserted.AddListener((_) => m_blacksmithWindow.Refresh());
                 m_entity.inventory.onItemRemoved.AddListener(m_blacksmithWindow.Refresh);
                 m_entity.items.onChanged.AddListener(m_blacksmithWindow.Refresh);
             }
