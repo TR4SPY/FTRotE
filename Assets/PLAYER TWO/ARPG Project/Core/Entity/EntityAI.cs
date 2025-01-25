@@ -345,7 +345,12 @@ namespace PLAYERTWO.ARPGProject
             if (playerLogger != null)
             {
                 playerLogger.LogDifficultyMultiplier();
-                playerLogger.LogEnemiesDefeated();
+                //playerLogger.LogEnemiesDefeated();
+                var entity = GetComponent<Entity>();
+                if (entity != null)
+                {
+                    playerLogger.LogEnemiesDefeated(entity);
+                }
             }
         }
 

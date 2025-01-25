@@ -624,7 +624,11 @@ namespace PLAYERTWO.ARPGProject
                 var playerLogger = GetComponent<PlayerBehaviorLogger>();
                 if (playerLogger != null)
                 {
-                    playerLogger.LogPlayerDeath();
+                var entity = GetComponent<Entity>();
+                if (entity != null)
+                {
+                    playerLogger.LogPlayerDeath(entity);
+                }
                     Debug.Log("Player death logged for Entity/Player.");
                 }
                 else

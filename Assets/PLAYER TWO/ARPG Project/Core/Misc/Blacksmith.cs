@@ -113,8 +113,25 @@ namespace PLAYERTWO.ARPGProject
                 m_entity.items.onChanged.AddListener(m_blacksmithWindow.Refresh);
             }
 
-            // Logowanie interakcji
-            GetComponent<NpcInteractionLogger>()?.LogInteraction();
+            // Logowanie interakcji przy użyciu Collidera
+            var interactionLogger = GetComponent<NpcInteractionLogger>();
+            if (interactionLogger != null)
+            {
+                // Jeśli `other` jest obiektem gracza lub Agenta AI, pobierz jego Collider
+                var collider = entity.GetComponent<Collider>();
+                if (collider != null)
+                {
+                    interactionLogger.LogInteraction(collider); // Przekazujemy Collider
+                }
+                else
+                {
+                    Debug.LogWarning("Collider for interacting entity is null. Cannot log interaction.");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("NpcInteractionLogger not found on Blacksmith. Cannot log interaction.");
+            }
 
             // Otwórz UI tylko dla gracza
             if (entity.isPlayer)
@@ -127,5 +144,6 @@ namespace PLAYERTWO.ARPGProject
                 Debug.Log("Blacksmith interacted with by AI Agent. UI not opened.");
             }
         }
+
     }
 }

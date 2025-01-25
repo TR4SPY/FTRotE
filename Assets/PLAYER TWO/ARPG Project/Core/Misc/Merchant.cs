@@ -78,8 +78,25 @@ namespace PLAYERTWO.ARPGProject
         {
             if (!(other is Entity entity)) return;
 
-            // Logowanie interakcji
-            GetComponent<NpcInteractionLogger>()?.LogInteraction();
+            // Logowanie interakcji przy użyciu Collidera
+            var interactionLogger = GetComponent<NpcInteractionLogger>();
+            if (interactionLogger != null)
+            {
+                // Pobranie Collidera dla gracza lub Agenta AI
+                var collider = entity.GetComponent<Collider>();
+                if (collider != null)
+                {
+                    interactionLogger.LogInteraction(collider); // Przekazujemy Collider do logowania
+                }
+                else
+                {
+                    Debug.LogWarning("Collider for interacting entity is null. Cannot log interaction.");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("NpcInteractionLogger not found on Merchant. Cannot log interaction.");
+            }
 
             // Sprawdzenie, czy interakcja pochodzi od gracza
             if (entity.isPlayer)

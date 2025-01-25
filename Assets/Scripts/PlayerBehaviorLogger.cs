@@ -79,6 +79,18 @@ namespace AI_DDA.Assets.Scripts
             }
         }
 
+    public string GetActor(Entity entity)
+        {
+            if (entity == null) return "Unknown";
+
+            if (entity.isPlayer)
+                return "Player";
+            else if (entity.isAgent)
+                return "AI Agent";
+            else
+                return "Unknown";
+        }
+
     private float combatStartTime;
 
         /// <summary>
@@ -120,57 +132,67 @@ namespace AI_DDA.Assets.Scripts
             Debug.Log($"Difficulty Multiplier is now: {difficultyMultiplier}");
         }
     }
-    public void LogEnemiesDefeated()
+    public void LogEnemiesDefeated(Entity entity)
     {
+        string actor = GetActor(entity); // Automatyczne rozpoznanie aktora
+
         enemiesDefeated++;
-        Debug.Log($"Enemies defeated: {enemiesDefeated}");
+        Debug.Log($"{actor} defeated an enemy! Total: {enemiesDefeated}");
         UpdatePlayerType(); // Recalculate player type
-        achievementManager?.CheckAchievements(this); // Sprawdź osiągnięcia w czasie rzeczywistym
+        achievementManager?.CheckAchievements(this); // Check achievements in real-time
     }
 
         /// <summary>
         /// Zaloguj śmierć gracza.
         /// </summary>
-        public void LogPlayerDeath()
+        public void LogPlayerDeath(Entity entity)
         {
+            string actor = GetActor(entity); // Automatyczne rozpoznanie aktora
+
             playerDeaths++;
-            Debug.Log($"Player deaths: {playerDeaths}");
-            DifficultyManager.Instance.AdjustDifficulty(this);
+            Debug.Log($"{actor} died! Total deaths: {playerDeaths}");
+            DifficultyManager.Instance.AdjustDifficulty(this); // Adjust difficulty dynamically
             UpdatePlayerType(); // Recalculate player type
-            achievementManager?.CheckAchievements(this); // Sprawdź osiągnięcia w czasie rzeczywistym
+            achievementManager?.CheckAchievements(this); // Check achievements in real-time
         }
 
-        public void LogAreaDiscovered(string zoneName)
+        public void LogAreaDiscovered(Entity entity, string zoneName)
         {
+            string actor = GetActor(entity); // Automatyczne rozpoznanie aktora
+
             if (!discoveredZones.Contains(zoneName))
             {
                 discoveredZones.Add(zoneName);
                 zonesDiscovered++;
-                Debug.Log($"Discovered new area: {zoneName}");
+                Debug.Log($"{actor} discovered a new area: {zoneName}");
                 UpdatePlayerType(); // Recalculate player type
-                achievementManager?.CheckAchievements(this); // Sprawdź osiągnięcia w czasie rzeczywistym
+                achievementManager?.CheckAchievements(this); // Check achievements in real-time
             }
         }
 
-        public void LogWaypointDiscovery(int waypointID)
+        public void LogWaypointDiscovery(Entity entity, int waypointID)
         {
+            string actor = GetActor(entity); // Automatyczne rozpoznanie aktora
+
             if (!discoveredWaypoints.Contains(waypointID))
             {
                 discoveredWaypoints.Add(waypointID);
                 waypointsDiscovered++;
-                Debug.Log($"Discovered new waypoint: {waypointID}");
+                Debug.Log($"{actor} discovered a new waypoint: {waypointID}");
                 UpdatePlayerType(); // Recalculate player type
-                achievementManager?.CheckAchievements(this); // Sprawdź osiągnięcia w czasie rzeczywistym
+                achievementManager?.CheckAchievements(this); // Check achievements in real-time
             }
         }
 
-        public void LogNpcInteraction()
+        public void LogNpcInteraction(Entity entity)
         {
+            string actor = GetActor(entity); // Rozpoznaj, czy to gracz, czy AI Agent
             npcInteractions++;
-            Debug.Log($"NPC interaction! Total: {npcInteractions}");
-            UpdatePlayerType(); // Recalculate player type
-            achievementManager?.CheckAchievements(this); // Sprawdź osiągnięcia w czasie rzeczywistym
+            Debug.Log($"{actor} interacted with an NPC! Total: {npcInteractions}");
+            UpdatePlayerType();
+            achievementManager?.CheckAchievements(this);
         }
+
         public void LogQuestCompleted()
         {
             questsCompleted++;
@@ -179,17 +201,24 @@ namespace AI_DDA.Assets.Scripts
             achievementManager?.CheckAchievements(this); // Sprawdź osiągnięcia w czasie rzeczywistym
         }
 
-        public void LogPotionsUsed()
+        public void LogPotionsUsed(Entity entity)
         {
+            string actor = GetActor(entity); // Automatyczne rozpoznanie aktora
+
             potionsUsed++;
-            Debug.Log($"Potion used! Total: {potionsUsed}");
+            Debug.Log($"{actor} used a potion! Total: {potionsUsed}");
             UpdatePlayerType(); // Recalculate player type
-            achievementManager?.CheckAchievements(this); // Sprawdź osiągnięcia w czasie rzeczywistym
+            achievementManager?.CheckAchievements(this); // Check achievements in real-time
         }
 
         public void LogCurrentDynamicPlayerType()
         {
             Debug.Log($"Current Dynamic Player Type: {currentDynamicPlayerType}");
+        }
+
+        public void LogAgentAction(string action, string target)
+        {
+            Debug.Log($"AI Agent performed action: {action} on {target}");
         }
 
         public void LoadLogs(CharacterInstance characterInstance)

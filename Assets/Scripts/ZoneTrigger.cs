@@ -93,7 +93,12 @@ namespace AI_DDA.Assets.Scripts
                 GameSave.instance.Save();
 
                 // Logowanie odkrycia strefy
-                PlayerBehaviorLogger.Instance?.LogAreaDiscovered(zoneName);
+                var entity = other.GetComponent<Entity>();
+                if (entity != null)
+                {
+                    PlayerBehaviorLogger.Instance?.LogAreaDiscovered(entity, zoneName);
+                }
+                //PlayerBehaviorLogger.Instance?.LogAreaDiscovered(zoneName);
 
                 // Wyświetlenie informacji o strefie w GUI
                 guiZoneHUD?.ShowZone(zoneStatus, zoneName, zoneDescription);

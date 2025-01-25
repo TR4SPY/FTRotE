@@ -91,12 +91,41 @@ namespace PLAYERTWO.ARPGProject
             GUIWindowsManager.instance.waypointsWindow.Show();
         }
 
-        protected void LogWaypointDiscovery()
+        protected void LogWaypointDiscovery(Collider other = null)
         {
-            if (PlayerBehaviorLogger.Instance != null)
+            // Domyślnie ustaw interaktor na gracza
+            Entity interactor = m_player;
+
+            // Jeśli przekazano Collider, sprawdź, czy to gracz lub AI Agent
+            if (other != null)
             {
-                PlayerBehaviorLogger.Instance.LogWaypointDiscovery(waypointID);
-                Debug.Log($"Waypoint '{title}' (ID: {waypointID}) discovered and logged.");
+                bool isPlayer = other.CompareTag(GameTags.Player);
+                bool isAI = other.GetComponent<AgentController>()?.isAI == true;
+
+                if (!isPlayer && !isAI)
+                {
+                    Debug.LogWarning($"Waypoint discovery ignored. {other.name} is neither Player nor AI Agent.");
+                    return;
+                }
+
+                // Pobierz Entity na podstawie Collidera
+                interactor = other.GetComponent<Entity>();
+                if (interactor == null)
+                {
+                    Debug.LogWarning($"Entity is null for {other.name}. Cannot log waypoint discovery.");
+                    return;
+                }
+            }
+
+            // Logowanie odkrycia waypointu
+            if (PlayerBehaviorLogger.Instance != null && interactor != null)
+            {
+                PlayerBehaviorLogger.Instance.LogWaypointDiscovery(interactor, waypointID);
+                Debug.Log($"Waypoint '{title}' (ID: {waypointID}) discovered and logged by {interactor.name}.");
+            }
+            else if (interactor == null)
+            {
+                Debug.LogWarning("Interactor entity is null. Cannot log waypoint discovery.");
             }
             else
             {
