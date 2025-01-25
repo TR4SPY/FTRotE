@@ -5145,7 +5145,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 94128309}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.94330996, z: 0, w: -0.33191308}
+  m_LocalRotation: {x: 0, y: 0.9311229, z: 0, w: -0.36470553}
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -17628,7 +17628,7 @@ Transform:
   m_GameObject: {fileID: 758569906}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 154.07521, y: 92.239746, z: -181.13828}
+  m_LocalPosition: {x: 0, y: 62.5, z: -1.5}
   m_LocalScale: {x: 5, y: 5, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -29021,14 +29021,14 @@ MonoBehaviour:
   m_snowingHeight: 60
   m_snowFadeHeight: 50
   m_snowDuration: 0
-  m_snowWaitTime: 392.60324
+  m_snowWaitTime: 261.23322
   m_snowSampleStrength: 0
   m_savedSnowingHeight: 66.47059
   m_enableRain: 1
   m_rainIntensity: 0
   m_rainSampleStrength: 0
   m_rainDuration: 0
-  m_rainWaitTime: 181.55292
+  m_rainWaitTime: 291.77005
   m_thunderLightColor: {r: 0, g: 0.6313726, b: 1, a: 1}
   m_thunderLightIntensity: 2
   m_thunderAudioSources:
@@ -29149,8 +29149,8 @@ MonoBehaviour:
   GaiaAudioManager: {fileID: 0}
   m_thunderObject: {fileID: 535541605}
   m_thunderComponent: {fileID: 535541609}
-  IsSnowingFinished: 0
-  IsRainingFinished: 0
+  IsSnowingFinished: 1
+  IsRainingFinished: 1
   SkyboxShaderValid: 0
   CloudSystemValid: 1
   WaterSystemValid: 1
@@ -29399,7 +29399,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1363076298}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0.792338, z: 0, w: 0.61008245}
+  m_LocalRotation: {x: 0, y: -0.72406363, z: 0, w: 0.6897332}
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -35515,7 +35515,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1960832360}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0.44265407, z: 0, w: -0.8966925}
+  m_LocalRotation: {x: 0, y: -0.50426185, z: 0, w: -0.86355084}
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -35672,7 +35672,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 968083932832098461, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -20.109203
+      value: -20.872482
       objectReference: {fileID: 0}
     - target: {fileID: 996639750028847107, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -35982,6 +35982,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -72.5
       objectReference: {fileID: 0}
+    - target: {fileID: 5476020710297005506, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
+      propertyPath: m_Text
+      value: v.0.48A | Jan 2025
+      objectReference: {fileID: 0}
     - target: {fileID: 6049673157832852216, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
@@ -36108,7 +36112,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8379646070136262659, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -85.10921
+      value: -85.87248
       objectReference: {fileID: 0}
     - target: {fileID: 8528115754144108339, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
       propertyPath: m_AnchorMax.y
@@ -39334,7 +39338,7 @@ MonoBehaviour:
   m_spawnRuleStampsToggleAllState: 1
   m_drawPreview: 0
   m_previewRuleIds: 
-  m_maxWorldHeight: 123.23625
+  m_maxWorldHeight: 123.06438
   m_minWorldHeight: 0
   m_showSeaLevelinStampPreview: 1
   m_terrainGeneratorPanelUnfolded: 1
@@ -39956,7 +39960,7 @@ MonoBehaviour:
   m_spawnRuleStampsToggleAllState: 1
   m_drawPreview: 0
   m_previewRuleIds: 
-  m_maxWorldHeight: 123.23625
+  m_maxWorldHeight: 123.06438
   m_minWorldHeight: 0
   m_showSeaLevelinStampPreview: 1
   m_terrainGeneratorPanelUnfolded: 1
@@ -42226,7 +42230,7 @@ MonoBehaviour:
   m_spawnRuleStampsToggleAllState: 1
   m_drawPreview: 0
   m_previewRuleIds: 
-  m_maxWorldHeight: 123.23625
+  m_maxWorldHeight: 123.06438
   m_minWorldHeight: 0
   m_showSeaLevelinStampPreview: 1
   m_terrainGeneratorPanelUnfolded: 1
@@ -42943,7 +42947,7 @@ MonoBehaviour:
   m_spawnRuleStampsToggleAllState: 1
   m_drawPreview: 0
   m_previewRuleIds: 
-  m_maxWorldHeight: 123.23625
+  m_maxWorldHeight: 123.06438
   m_minWorldHeight: 0
   m_showSeaLevelinStampPreview: 1
   m_terrainGeneratorPanelUnfolded: 1
@@ -44888,7 +44892,7 @@ Transform:
   m_GameObject: {fileID: 5366244075297629466}
   serializedVersion: 2
   m_LocalRotation: {x: 0.04282403, y: -0.7074484, z: 0.031288687, w: 0.70477223}
-  m_LocalPosition: {x: 152.69, y: 33.93, z: -182.48}
+  m_LocalPosition: {x: 151.87, y: 33.837, z: -182.069}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -46029,7 +46033,7 @@ MonoBehaviour:
   m_spawnRuleStampsToggleAllState: 1
   m_drawPreview: 0
   m_previewRuleIds: 
-  m_maxWorldHeight: 123.23625
+  m_maxWorldHeight: 123.06438
   m_minWorldHeight: 0
   m_showSeaLevelinStampPreview: 1
   m_terrainGeneratorPanelUnfolded: 1
@@ -46978,7 +46982,7 @@ MonoBehaviour:
   m_spawnRuleStampsToggleAllState: 1
   m_drawPreview: 0
   m_previewRuleIds: 
-  m_maxWorldHeight: 123.23625
+  m_maxWorldHeight: 123.06438
   m_minWorldHeight: 0
   m_showSeaLevelinStampPreview: 1
   m_terrainGeneratorPanelUnfolded: 1
@@ -48374,7 +48378,7 @@ MonoBehaviour:
   m_spawnRuleStampsToggleAllState: 1
   m_drawPreview: 0
   m_previewRuleIds: 
-  m_maxWorldHeight: 123.23625
+  m_maxWorldHeight: 123.06438
   m_minWorldHeight: 0
   m_showSeaLevelinStampPreview: 1
   m_terrainGeneratorPanelUnfolded: 1
@@ -51832,7 +51836,7 @@ MonoBehaviour:
   m_spawnRuleStampsToggleAllState: 1
   m_drawPreview: 0
   m_previewRuleIds: 
-  m_maxWorldHeight: 123.23625
+  m_maxWorldHeight: 123.06438
   m_minWorldHeight: 0
   m_showSeaLevelinStampPreview: 1
   m_terrainGeneratorPanelUnfolded: 1
