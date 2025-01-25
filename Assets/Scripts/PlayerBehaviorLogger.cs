@@ -263,6 +263,7 @@ namespace AI_DDA.Assets.Scripts
                 Directory.CreateDirectory(directoryPath);
             }
 
+            // Pobierz aktualną instancję postaci z Game.instance
             var characterInstance = Game.instance?.currentCharacter;
             if (characterInstance == null)
             {
@@ -271,36 +272,29 @@ namespace AI_DDA.Assets.Scripts
             }
 
             string timestamp = System.DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
-            string fileName = $"Research_{characterInstance.name}_{timestamp}.log";
+            string fileName = $"Research_{characterInstance.name}.log";
             string filePath = Path.Combine(directoryPath, fileName);
 
-            // Tworzenie struktury danych logu
-            var logData = new
+            using (StreamWriter writer = new StreamWriter(filePath))
             {
-                timestamp = timestamp,
-                characterName = characterInstance.name,
-                totalPlayTime = FormatPlayTime(characterInstance.totalPlayTime),
-                playerDeaths = playerDeaths,
-                enemiesDefeated = enemiesDefeated,
-                totalCombatTime = totalCombatTime,
-                npcInteractions = npcInteractions,
-                potionsUsed = potionsUsed,
-                zonesDiscovered = zonesDiscovered,
-                questsCompleted = questsCompleted,
-                waypointsDiscovered = waypointsDiscovered,
-                achievementsUnlocked = achievementsUnlocked,
-
-                currentDifficultyMultiplier = difficultyMultiplier,
-                playerTypeQuestionnaire = characterInstance.playerType,
-                dynamicPlayerType = currentDynamicPlayerType
-            };
-
-            // Serializacja do JSON
-            string jsonContent = JsonUtility.ToJson(logData, true);
-
-            File.WriteAllText(filePath, jsonContent);
+                writer.WriteLine($"=== Player Behavior Logs as of {timestamp} ===");
+                writer.WriteLine($"Character Name: {characterInstance.name}");
+                writer.WriteLine($"Total Play Time: {FormatPlayTime(Game.instance.currentCharacter.totalPlayTime)}");
+                writer.WriteLine($"Player Deaths: {playerDeaths}");
+                writer.WriteLine($"Enemies Defeated: {enemiesDefeated}");
+                writer.WriteLine($"Total Combat Time: {totalCombatTime} seconds");
+                writer.WriteLine($"NPC Interactions: {npcInteractions}");
+                writer.WriteLine($"Potions Used: {potionsUsed}");
+                writer.WriteLine($"Zones Discovered: {zonesDiscovered}");
+                writer.WriteLine($"Quests Completed: {questsCompleted}");
+                writer.WriteLine($"Waypoints Discovered: {waypointsDiscovered}");
+                writer.WriteLine($"Current Difficulty Multiplier: {difficultyMultiplier}");
+                writer.WriteLine($"Player Type based on questionnaire: {characterInstance.playerType}");
+                writer.WriteLine($"Current Dynamic Player Type: {currentDynamicPlayerType}");
+            }
             Debug.Log($"Logs saved to: {filePath}");
         }
+
         public void LogAchievement(string achievementName)
         {
             if (!unlockedAchievements.Contains(achievementName))

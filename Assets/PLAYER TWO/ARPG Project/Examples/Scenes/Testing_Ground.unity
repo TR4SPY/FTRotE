@@ -3666,11 +3666,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5956356906942991807, guid: b5eb27c53be89d188b8e0345245aa2e5, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: -0.000030517578
       objectReference: {fileID: 0}
     - target: {fileID: 5956356906942991807, guid: b5eb27c53be89d188b8e0345245aa2e5, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -180.92459
+      value: -180.9246
       objectReference: {fileID: 0}
     - target: {fileID: 6032920133146700144, guid: b5eb27c53be89d188b8e0345245aa2e5, type: 3}
       propertyPath: m_AnchorMax.x
@@ -3982,7 +3982,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8949346214504825656, guid: b5eb27c53be89d188b8e0345245aa2e5, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0.000045776367
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8949346214504825656, guid: b5eb27c53be89d188b8e0345245aa2e5, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -5860,6 +5860,10 @@ PrefabInstance:
     - target: {fileID: 8983056890620628708, guid: e15e2336a2fc52945bf9aac1a434c596, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8983056890620628709, guid: e15e2336a2fc52945bf9aac1a434c596, type: 3}
+      propertyPath: CanAgentInteract
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8983056890620628715, guid: e15e2336a2fc52945bf9aac1a434c596, type: 3}
       propertyPath: m_Name
@@ -8289,6 +8293,10 @@ PrefabInstance:
     - target: {fileID: 3552628372634861349, guid: 96efb408822b43d4287fbd957ed96041, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3552628372634861351, guid: 96efb408822b43d4287fbd957ed96041, type: 3}
+      propertyPath: CanAgentInteract
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -11660,6 +11668,10 @@ PrefabInstance:
     - target: {fileID: 7399124025929745386, guid: 1b6b4687a61c41a46a384a1f26f339f4, type: 3}
       propertyPath: m_Name
       value: Merchant
+      objectReference: {fileID: 0}
+    - target: {fileID: 7399124025929745389, guid: 1b6b4687a61c41a46a384a1f26f339f4, type: 3}
+      propertyPath: CanAgentInteract
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7399124025929745391, guid: 1b6b4687a61c41a46a384a1f26f339f4, type: 3}
       propertyPath: m_RootOrder
@@ -18310,6 +18322,10 @@ PrefabInstance:
     - target: {fileID: 4297063838814822501, guid: 2c2965d0cd3198f47b0f4a6c1c2d8c34, type: 3}
       propertyPath: m_Name
       value: Guard
+      objectReference: {fileID: 0}
+    - target: {fileID: 4297063838814822502, guid: 2c2965d0cd3198f47b0f4a6c1c2d8c34, type: 3}
+      propertyPath: CanAgentInteract
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
