@@ -140,12 +140,16 @@ public class AgentController : Agent
         var closestEnemy = scanner?.GetClosestTarget();
         if (closestEnemy != null)
         {
+            Debug.Log($"Agent AI avoided enemy: {closestEnemy.name}");
             float closestDistance = Vector3.Distance(transform.position, closestEnemy.position);
             if (closestDistance < 5f)
             {
                 Vector3 fleeDirection = (transform.position - closestEnemy.position).normalized;
                 entity.MoveTo(transform.position + fleeDirection * entity.moveSpeed);
                 Debug.Log($"Avoiding enemy: {closestEnemy.name} at distance {closestDistance}");
+
+                // Logowanie uniknięcia przeciwnika
+                PlayerBehaviorLogger.Instance?.LogEnemyAvoided("Agent AI", closestEnemy.name);
             }
         }
     }
@@ -181,65 +185,55 @@ public class AgentController : Agent
         SetReward(1.0f);
         Debug.Log("Reward given for discovering zone.");
 
+        PlayerBehaviorLogger.Instance?.LogAgentZoneDiscovery(zoneName);
+
         // Zakończ epizod
         EndAgentEpisode(); // Zamiast EndEpisode()
         Debug.Log("Episode ended after discovering zone.");
     }
 
     private void InteractWithNPC()
-{
-    var scanner = GetComponent<EntityAreaScanner>();
-    var closestInteractive = scanner?.GetClosestInteractiveObject();
-
-    // Sprawdzenie cooldownu
-    if (Time.time - lastInteractionTime < interactionCooldown)
     {
-        Debug.Log("Interaction on cooldown.");
-        return;
-    }
+        var scanner = GetComponent<EntityAreaScanner>();
+        var closestInteractive = scanner?.GetClosestInteractiveObject();
 
-/*
-    // Wyklucz Signs i inne niechciane obiekty
-    if (closestInteractive is Sign)
-    {
-        Debug.Log($"Ignoring sign: {closestInteractive.name}");
-        return;
-    }
-
-    // Wyklucz niedostępne fontanny
-    if (closestInteractive is Fountain)
-    {
-        Debug.Log($"Ignoring fountain: {closestInteractive.name}");
-        return;
-    }
-*/
-
-    if (closestInteractive != null 
-        && !(closestInteractive is Collectible) 
-        && closestInteractive != lastInteractedObject 
-        && closestInteractive.CanAgentInteract) // Nowy warunek: sprawdzanie pola CanAgentInteract
-    {
-        // Przemieszczenie w kierunku NPC lub innego obiektu interaktywnego
-        entity.MoveTo(closestInteractive.transform.position);
-
-        float distance = Vector3.Distance(transform.position, closestInteractive.transform.position);
-        if (distance < 1.0f)
+        // Sprawdzenie cooldownu
+        if (Time.time - lastInteractionTime < interactionCooldown)
         {
-            // Wywołanie interakcji z obiektem
-            closestInteractive.Interact(entity);
-            Debug.Log($"Interacted with: {closestInteractive.name}");
+            Debug.Log("Interaction on cooldown.");
+            return;
+        }
 
-            // Ustawienie ostatniego obiektu i czasu interakcji
-            lastInteractedObject = closestInteractive;
-            lastInteractionTime = Time.time;
-            Debug.Log($"Interaction cooldown started for: {closestInteractive.name}");
+        if (closestInteractive != null 
+            && !(closestInteractive is Collectible) 
+            && closestInteractive != lastInteractedObject 
+            && closestInteractive.CanAgentInteract) // Sprawdzanie pola CanAgentInteract
+        {
+            // Przemieszczenie w kierunku NPC lub innego obiektu interaktywnego
+            entity.MoveTo(closestInteractive.transform.position);
+
+            float distance = Vector3.Distance(transform.position, closestInteractive.transform.position);
+            if (distance < 1.0f)
+            {
+                // Wywołanie interakcji z obiektem
+                closestInteractive.Interact(entity);
+                Debug.Log($"Interacted with: {closestInteractive.name}");
+
+                // Logowanie interakcji w PlayerBehaviorLogger
+                PlayerBehaviorLogger.Instance?.LogNpcInteraction(entity);
+                Debug.Log($"Agent AI interacted with {closestInteractive.name}");
+
+                // Ustawienie ostatniego obiektu i czasu interakcji
+                lastInteractedObject = closestInteractive;
+                lastInteractionTime = Time.time;
+                Debug.Log($"Interaction cooldown started for: {closestInteractive.name}");
+            }
+        }
+        else if (closestInteractive != null)
+        {
+            Debug.Log($"Ignoring {closestInteractive.name}: CanAgentInteract is false or already interacted.");
         }
     }
-    else if (closestInteractive != null)
-    {
-        Debug.Log($"Ignoring {closestInteractive.name}: CanAgentInteract is false or already interacted.");
-    }
-}
 
     private void ClearLastInteractedObject()
     {
@@ -253,6 +247,7 @@ public class AgentController : Agent
         Debug.Log($"Reward before ending: {GetCumulativeReward()}"); // Sprawdź, czy nagroda jest prawidłowa
         // Wywołaj bazową metodę EndEpisode()
         EndEpisode();
+        PlayerBehaviorLogger.Instance.SaveAgentLogsToFile();
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
