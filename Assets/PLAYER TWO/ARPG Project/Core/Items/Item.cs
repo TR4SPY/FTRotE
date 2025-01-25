@@ -5,6 +5,9 @@ namespace PLAYERTWO.ARPGProject
     public class Item : ScriptableObject
     {
         [Header("Item Settings")]
+        [Tooltip("The unique identifier for this Item.")]
+        public int id; // Dodane pole ID
+        
         [Tooltip("The prefab that represents this Item in the game scene.")]
         public GameObject prefab;
 

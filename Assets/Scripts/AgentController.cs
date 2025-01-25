@@ -5,6 +5,7 @@ using UnityEngine;
 using PLAYERTWO.ARPGProject;
 using AI_DDA.Assets.Scripts;
 using Unity.MLAgents.Policies;
+using System.Linq;
 
 public class AgentController : Agent
 {
@@ -20,7 +21,9 @@ public class AgentController : Agent
     private float interactionTimer = 0f;
     private const float stuckThreshold = 2f; // Czas w sekundach, po którym agent jest uznany za zablokowanego
     private bool isResetting = false;
-    
+    private Transform targetEnemy; // Przechowuje referencję do najbliższego przeciwnika
+    private GameDatabase gameDatabase;
+
     public Transform target; // Cel agenta
     public bool isAI = true; // Flaga do identyfikacji jako AI Agent
     
@@ -47,6 +50,17 @@ public class AgentController : Agent
         // Ustaw domyślne parametry
         entity.moveSpeed = 5f;
         entity.rotationSpeed = 720f;
+
+        gameDatabase = Object.FindFirstObjectByType<GameDatabase>();
+        if (gameDatabase == null)
+        {
+            Debug.LogError("GameDatabase not found in the scene!");
+            return;
+        }
+
+        InitializeAgentStats();
+        EquipDefaultItems();
+        LearnDefaultSkills();
 
         Debug.Log($"Agent {gameObject.name} initialized with Behavior Name: {GetComponent<BehaviorParameters>().BehaviorName}");
     }
@@ -116,6 +130,27 @@ public class AgentController : Agent
         float moveX = actions.ContinuousActions[0];
         float moveZ = actions.ContinuousActions[1];
         Vector3 moveDirection = new Vector3(moveX, 0, moveZ).normalized;
+        
+        FindClosestEnemy();
+
+        if (targetEnemy != null)
+        {
+            float distanceToEnemy = Vector3.Distance(transform.position, targetEnemy.position);
+
+            if (distanceToEnemy <= 1.5f) // Zasięg ataku
+            {
+                var skillManager = GetComponent<EntitySkillManager>();
+                if (skillManager != null && skillManager.CanUseSkill())
+                {
+                    skillManager.PerformSkill();
+                    Debug.Log("Agent AI performed a skill attack.");
+                }
+            }
+            else
+            {
+                entity.MoveTo(targetEnemy.position); // Podejdź do przeciwnika
+            }
+        }
 
         if (target != null)
         {
@@ -152,6 +187,12 @@ public class AgentController : Agent
                 PlayerBehaviorLogger.Instance?.LogEnemyAvoided("Agent AI", closestEnemy.name);
             }
         }
+    }
+
+    private void FindClosestEnemy()
+    {
+        var scanner = GetComponent<EntityAreaScanner>();
+        targetEnemy = scanner?.GetClosestTarget();
     }
 
     private void SetRandomTarget()
@@ -232,6 +273,64 @@ public class AgentController : Agent
         else if (closestInteractive != null)
         {
             Debug.Log($"Ignoring {closestInteractive.name}: CanAgentInteract is false or already interacted.");
+        }
+    }
+
+    private void InitializeAgentStats()
+    {
+        var statsManager = GetComponent<EntityStatsManager>();
+        if (statsManager != null)
+        {
+            statsManager.level = 1;
+            statsManager.strength = 10;
+            statsManager.dexterity = 8;
+            statsManager.vitality = 12;
+            statsManager.energy = 5;
+            statsManager.health = 100;
+            statsManager.mana = 50;
+            statsManager.Initialize();
+
+            Debug.Log("Agent AI stats initialized.");
+        }
+    }
+
+    private void EquipDefaultItems()
+    {
+        var itemManager = GetComponent<EntityItemManager>();
+        if (itemManager != null && gameDatabase != null)
+        {
+            // Wyszukiwanie przedmiotów na podstawie ID
+            var defaultWeapon = new ItemInstance(gameDatabase.items.OfType<ItemWeapon>().FirstOrDefault(item => item.id == 33));    // Keroisa Sword
+            var defaultShield = new ItemInstance(gameDatabase.items.OfType<ItemShield>().FirstOrDefault(item => item.id == 19));     // 
+
+            if (defaultWeapon != null) itemManager.TryEquip(defaultWeapon, ItemSlots.RightHand);
+            if (defaultShield != null) itemManager.TryEquip(defaultShield, ItemSlots.LeftHand);
+
+            Debug.Log("Agent AI equipped with default items.");
+        }
+        else
+        {
+            Debug.LogWarning("ItemManager or GameDatabase is missing. Cannot equip default items.");
+        }
+    }
+
+    private void LearnDefaultSkills()
+    {
+        var skillManager = GetComponent<EntitySkillManager>();
+        if (skillManager != null)
+        {
+            var basicAttack = new SkillAttack
+            {
+                name = "Basic Attack",
+                manaCost = 10,
+                minDamage = 5,
+                maxDamage = 15,
+                minAttackDistance = 1.5f,
+                damageMode = SkillAttack.DamageMode.Regular
+            };
+            skillManager.TryLearnSkill(basicAttack);
+
+            Debug.Log("Agent AI learned basic attack skill.");
         }
     }
 

@@ -437,6 +437,13 @@ namespace PLAYERTWO.ARPGProject
             characterWindow.gameObject.SetActive(false);
             characterActions.gameObject.SetActive(false);
             Game.instance.DeleteCharacter(m_currentCharacterId);
+
+            // Sprawdź liczbę postaci po usunięciu
+            var characters = Game.instance.characters;
+            newCharacterButton.interactable = characters.Count < 5;
+
+            // Odśwież listę postaci
+            RefreshList();
         }
 
         public virtual void SelectCharacter(int characterId)
@@ -512,6 +519,9 @@ namespace PLAYERTWO.ARPGProject
                 m_characters[i].gameObject.SetActive(true);
                 m_characters[i].SetInteractable(true);
             }
+
+            // Wyłącz przycisk "New Character", jeśli gracz ma 5 postaci
+            newCharacterButton.interactable = characters.Count < 5;
 
             // Na samym końcu - odświeżenie 3D / ustawienie w półokręgu
             RefreshCharacterDisplay();

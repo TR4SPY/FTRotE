@@ -5145,7 +5145,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 94128309}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.9311229, z: 0, w: -0.36470553}
+  m_LocalRotation: {x: 0, y: 0.91484004, z: 0, w: -0.40381646}
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -29021,14 +29021,14 @@ MonoBehaviour:
   m_snowingHeight: 60
   m_snowFadeHeight: 50
   m_snowDuration: 0
-  m_snowWaitTime: 261.23322
+  m_snowWaitTime: 211.25232
   m_snowSampleStrength: 0
   m_savedSnowingHeight: 66.47059
   m_enableRain: 1
   m_rainIntensity: 0
   m_rainSampleStrength: 0
   m_rainDuration: 0
-  m_rainWaitTime: 291.77005
+  m_rainWaitTime: 129.9346
   m_thunderLightColor: {r: 0, g: 0.6313726, b: 1, a: 1}
   m_thunderLightIntensity: 2
   m_thunderAudioSources:
@@ -29399,7 +29399,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1363076298}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0.72406363, z: 0, w: 0.6897332}
+  m_LocalRotation: {x: 0, y: -0.63079065, z: 0, w: 0.77595305}
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -35515,7 +35515,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1960832360}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0.50426185, z: 0, w: -0.86355084}
+  m_LocalRotation: {x: 0, y: -0.57553995, z: 0, w: -0.8177737}
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -35676,11 +35676,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 996639750028847107, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0.000048838556
+      value: 0.000099658966
       objectReference: {fileID: 0}
     - target: {fileID: 996639750028847107, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.00018622233
+      value: -0.00029042584
       objectReference: {fileID: 0}
     - target: {fileID: 1788856090415472038, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
       propertyPath: m_AnchorMax.y
@@ -35709,6 +35709,10 @@ PrefabInstance:
     - target: {fileID: 1788856090415472038, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -222.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1852471546138033101, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
+      propertyPath: m_Horizontal
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1999176159447432393, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
       propertyPath: m_AnchorMax.y
@@ -35858,6 +35862,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3626315471241888353, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 390
+      objectReference: {fileID: 0}
     - target: {fileID: 3690365463246101712, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
       propertyPath: m_SizeDelta.x
       value: 300
@@ -35984,7 +35992,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5476020710297005506, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
       propertyPath: m_Text
-      value: v.0.48A | Jan 2025
+      value: v.0.49A | Jan 2025
       objectReference: {fileID: 0}
     - target: {fileID: 6049673157832852216, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
       propertyPath: m_SizeDelta.y
@@ -36185,6 +36193,10 @@ PrefabInstance:
     - target: {fileID: 8623960419866180521, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
       propertyPath: m_SizeDelta.x
       value: 400
+      objectReference: {fileID: 0}
+    - target: {fileID: 8623960419866180521, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 600
       objectReference: {fileID: 0}
     - target: {fileID: 8623960419866180521, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
       propertyPath: m_AnchoredPosition.x
