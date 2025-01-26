@@ -59,7 +59,7 @@ public class AgentController : Agent
         }
 
         InitializeAgentStats();
-        EquipDefaultItems();
+    //  EquipDefaultItems();
         LearnDefaultSkills();
 
         Debug.Log($"Agent {gameObject.name} initialized with Behavior Name: {GetComponent<BehaviorParameters>().BehaviorName}");
@@ -294,6 +294,7 @@ public class AgentController : Agent
         }
     }
 
+/*
     private void EquipDefaultItems()
     {
         var itemManager = GetComponent<EntityItemManager>();
@@ -313,6 +314,7 @@ public class AgentController : Agent
             Debug.LogWarning("ItemManager or GameDatabase is missing. Cannot equip default items.");
         }
     }
+*/
 
     private void LearnDefaultSkills()
     {
