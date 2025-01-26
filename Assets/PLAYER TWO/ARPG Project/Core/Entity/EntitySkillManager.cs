@@ -88,11 +88,47 @@ namespace PLAYERTWO.ARPGProject
         /// <summary>
         /// Returns true if the Entity can use the current selected skill.
         /// </summary>
-        public virtual bool CanUseSkill() =>
+        /*public virtual bool CanUseSkill() =>
             current && (ignoreCoolDown || currentInstance.CanPerform()) &&
             (!current.useMana || m_entity.stats.mana >= current.manaCost) &&
             (!current.useBlood || m_entity.stats.health >= current.bloodCost) &&
             ValidRequiredWeapon();
+*/
+
+        public virtual bool CanUseSkill()
+{
+    if (!current)
+    {
+        Debug.LogWarning("No skill is currently selected.");
+        return false;
+    }
+
+    if (!ignoreCoolDown && !currentInstance.CanPerform())
+    {
+        Debug.LogWarning($"Skill {current.name} is on cooldown.");
+        return false;
+    }
+
+    if (current.useMana && m_entity.stats.mana < current.manaCost)
+    {
+        Debug.LogWarning($"Not enough mana for skill {current.name}. Required: {current.manaCost}, Available: {m_entity.stats.mana}");
+        return false;
+    }
+
+    if (current.useBlood && m_entity.stats.health < current.bloodCost)
+    {
+        Debug.LogWarning($"Not enough health for skill {current.name}. Required: {current.bloodCost}, Available: {m_entity.stats.health}");
+        return false;
+    }
+
+    if (!ValidRequiredWeapon())
+    {
+        Debug.LogWarning($"Skill {current.name} requires a specific weapon that is not equipped.");
+        return false;
+    }
+
+    return true;
+}
 
         /// <summary>
         /// Returns true if the current selected skill requires an assigned target to work.
@@ -360,20 +396,29 @@ namespace PLAYERTWO.ARPGProject
         /// Returns true if the Entity is equipping the required weapon to perform the current selected Skill.
         /// </summary>
         protected virtual bool ValidRequiredWeapon()
-        {
-            if (!IsAttack()) return true;
+{
+    // Jeśli Agent AI, ignorujemy wymagania dotyczące broni
+    if (m_entity != null && m_entity.isAgent)
+    {
+        Debug.Log("Agent AI is not required to equip specific weapons.");
+        return true;
+    }
 
-            switch (current.AsAttack().requiredWeapon)
-            {
-                default:
-                case SkillAttack.RequiredWeapon.None:
-                    return true;
-                case SkillAttack.RequiredWeapon.Blade:
-                    return m_entity.items.IsUsingBlade();
-                case SkillAttack.RequiredWeapon.Bow:
-                    return m_entity.items.IsUsingBow();
-            }
-        }
+    // Standardowa logika dla gracza lub przeciwników
+    if (!IsAttack()) return true;
+
+    switch (current.AsAttack().requiredWeapon)
+    {
+        default:
+        case SkillAttack.RequiredWeapon.None:
+            return true;
+        case SkillAttack.RequiredWeapon.Blade:
+            return m_entity.items.IsUsingBlade();
+        case SkillAttack.RequiredWeapon.Bow:
+            return m_entity.items.IsUsingBow();
+    }
+}
+
 
         protected virtual void Awake()
         {

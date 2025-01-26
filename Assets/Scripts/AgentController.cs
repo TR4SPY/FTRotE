@@ -19,14 +19,16 @@ public class AgentController : Agent
     private float stuckTimer = 0f;
     private float interactionTimeout = 10f; // Maksymalny czas na osiągnięcie celu (w sekundach)
     private float interactionTimer = 0f;
+    private float lastAttackTime = -5f; // Ostatni czas ataku
+    private float attackCooldown = 2f; // Cooldown ataku (w sekundach)
     private const float stuckThreshold = 2f; // Czas w sekundach, po którym agent jest uznany za zablokowanego
     private bool isResetting = false;
     private Transform targetEnemy; // Przechowuje referencję do najbliższego przeciwnika
     private GameDatabase gameDatabase;
+    private AgentBehaviorLogger agentLogger;
 
     public Transform target; // Cel agenta
     public bool isAI = true; // Flaga do identyfikacji jako AI Agent
-    
 
     public override void Initialize()
     {
@@ -55,6 +57,23 @@ public class AgentController : Agent
         if (gameDatabase == null)
         {
             Debug.LogError("GameDatabase not found in the scene!");
+            return;
+        }
+
+        var skillManager = GetComponent<EntitySkillManager>();
+        if (skillManager != null && skillManager.hands == null)
+        {
+            var handsPlaceholder = new GameObject("AgentHands").transform;
+            handsPlaceholder.parent = transform;
+            handsPlaceholder.localPosition = Vector3.zero;
+            skillManager.hands = handsPlaceholder;
+            Debug.Log("Assigned placeholder hands to Agent AI.");
+        }
+
+        agentLogger = GetComponent<AgentBehaviorLogger>();
+        if (agentLogger == null)
+        {
+            Debug.LogError("AgentBehaviorLogger component is missing on the Agent AI!");
             return;
         }
 
@@ -122,7 +141,7 @@ public class AgentController : Agent
         }
 
         // Debugowanie
-        Debug.Log("CollectObservations: Agent now observes enemies and target zones.");
+        // Debug.Log("CollectObservations: Agent now observes enemies and target zones.");
     }
 
     public override void OnActionReceived(ActionBuffers actions)
@@ -130,69 +149,206 @@ public class AgentController : Agent
         float moveX = actions.ContinuousActions[0];
         float moveZ = actions.ContinuousActions[1];
         Vector3 moveDirection = new Vector3(moveX, 0, moveZ).normalized;
-        
-        FindClosestEnemy();
 
-        if (targetEnemy != null)
+        // Priorytet 1: Atak na przeciwników
+        if (FindAndAttackEnemy())
+            return;
+
+        // Priorytet 2: Eksploracja stref
+        if (ExploreZones())
+            return;
+
+        // Priorytet 3: Interakcja z NPC
+        if (InteractWithNPC())
+            return;
+
+        // Priorytet 4: Poruszanie się w losowym kierunku (wędrowanie)
+        WanderRandomly();
+    }
+
+private bool FindAndAttackEnemy()
+{
+    var scanner = GetComponent<EntityAreaScanner>();
+    var closestEnemy = scanner?.GetClosestTarget();
+
+    if (closestEnemy != null && closestEnemy.CompareTag("Entity/Enemy"))
+    {
+        float distanceToEnemy = Vector3.Distance(transform.position, closestEnemy.position);
+        if (distanceToEnemy <= 1.5f) // Zasięg ataku
         {
-            float distanceToEnemy = Vector3.Distance(transform.position, targetEnemy.position);
-
-            if (distanceToEnemy <= 1.5f) // Zasięg ataku
-            {
-                var skillManager = GetComponent<EntitySkillManager>();
-                if (skillManager != null && skillManager.CanUseSkill())
-                {
-                    skillManager.PerformSkill();
-                    Debug.Log("Agent AI performed a skill attack.");
-                }
-            }
-            else
-            {
-                entity.MoveTo(targetEnemy.position); // Podejdź do przeciwnika
-            }
-        }
-
-        if (target != null)
-        {
-            entity.MoveTo(target.position);
-            float distanceToTarget = Vector3.Distance(transform.position, target.position);
-            if (distanceToTarget < 1.0f)
-            {
-                SetReward(1.0f);
-                EndEpisode();
-            }
+            PerformAttack(closestEnemy);
+            return true; // Atak wykonany
         }
         else
         {
-            entity.MoveTo(transform.position + moveDirection * entity.moveSpeed);
+            entity.MoveTo(closestEnemy.position); // Zbliż się do przeciwnika
+            return true;
+        }
+    }
+
+    return false; // Brak przeciwników
+}
+
+private bool ExploreZones()
+{
+    if (target == null)
+        SetRandomTarget();
+
+    if (target != null)
+    {
+        entity.MoveTo(target.position);
+        float distanceToTarget = Vector3.Distance(transform.position, target.position);
+        if (distanceToTarget < 1.0f)
+        {
+            DiscoverZone(target.name); // Odkryj strefę
+            return true;
+        }
+    }
+    return false; // Brak stref do odkrycia
+}
+
+private bool InteractWithNPC()
+{
+    if (Time.time - lastInteractionTime < interactionCooldown)
+        return false; // Odczekaj do końca cooldownu
+
+    var scanner = GetComponent<EntityAreaScanner>();
+    var closestInteractive = scanner?.GetClosestInteractiveObject();
+
+    if (closestInteractive != null && closestInteractive.CanAgentInteract)
+    {
+        entity.MoveTo(closestInteractive.transform.position);
+        float distance = Vector3.Distance(transform.position, closestInteractive.transform.position);
+        if (distance < 1.0f)
+        {
+            closestInteractive.Interact(entity);
+            lastInteractionTime = Time.time;
+            Debug.Log($"Agent AI interacted with {closestInteractive.name}.");
+            return true;
+        }
+    }
+
+    return false; // Brak NPC do interakcji
+}
+
+private Vector3 wanderTarget; // Docelowy punkt wędrowania
+private float wanderChangeInterval = 5f; // Co ile sekund zmieniać punkt wędrowania
+private float lastWanderChangeTime;
+
+private void WanderRandomly()
+{
+    // Jeśli czas na zmianę celu minął lub cel nie jest ustawiony
+    if (Time.time - lastWanderChangeTime > wanderChangeInterval || wanderTarget == Vector3.zero)
+    {
+        // Wybierz losowy kierunek w promieniu od aktualnej pozycji
+        float wanderRadius = 10f; // Promień, w którym agent będzie wędrować
+        wanderTarget = transform.position + new Vector3(
+            Random.Range(-wanderRadius, wanderRadius),
+            0,
+            Random.Range(-wanderRadius, wanderRadius)
+        );
+
+        lastWanderChangeTime = Time.time;
+        Debug.Log($"Agent AI changed wander target to: {wanderTarget}");
+    }
+
+    // Poruszaj się w kierunku wybranego celu
+    entity.MoveTo(wanderTarget);
+
+    // Jeśli agent osiągnął cel (bliskość mniejsza niż 1 jednostka), ustaw nowy cel
+    if (Vector3.Distance(transform.position, wanderTarget) < 1f)
+    {
+        wanderTarget = Vector3.zero; // Reset celu
+        Debug.Log("Agent AI reached wander target.");
+    }
+}
+
+
+private void PerformAttack(Transform enemy)
+{
+    if (Time.time - lastAttackTime < attackCooldown)
+    {
+        Debug.Log($"Attack on cooldown. Time remaining: {attackCooldown - (Time.time - lastAttackTime):F2}s");
+        return;
+    }
+
+    var skillManager = GetComponent<EntitySkillManager>();
+    if (skillManager != null && skillManager.CanUseSkill())
+    {
+        Debug.Log($"Agent AI attempting to use skill on {enemy.name}");
+        skillManager.PerformSkill(); // Użycie skilla
+        lastAttackTime = Time.time;
+
+        // Loguj użycie umiejętności
+        Debug.Log($"Agent AI used skill {skillManager.current.name} on {enemy.name}");
+    }
+    else
+    {
+        Debug.LogWarning("Agent AI cannot use skill. SkillManager missing or no usable skill.");
+    }
+}
+
+
+    private void FindClosestEnemy()
+    {
+        var scanner = GetComponent<EntityAreaScanner>();
+        if (scanner == null)
+        {
+            Debug.LogWarning("EntityAreaScanner is missing on Agent AI.");
+            targetEnemy = null;
+            return;
         }
 
-        // Próba interakcji z NPC
-        InteractWithNPC();
+        targetEnemy = scanner.GetClosestTarget();
 
-        // Rozszerzona logika unikania
-        var scanner = GetComponent<EntityAreaScanner>();
-        var closestEnemy = scanner?.GetClosestTarget();
-        if (closestEnemy != null)
+        if (targetEnemy != null && !targetEnemy.CompareTag("Entity/Enemy"))
         {
-            Debug.Log($"Agent AI avoided enemy: {closestEnemy.name}");
+            Debug.Log($"Ignored non-enemy target: {targetEnemy.name}");
+            targetEnemy = null;
+        }
+
+        if (targetEnemy == null)
+        {
+            Debug.Log("No enemies found in the area.");
+        }
+        else
+        {
+            Debug.Log($"Closest enemy found: {targetEnemy.name}");
+        }
+    }
+
+    private void AvoidEnemies()
+    {
+        var scanner = GetComponent<EntityAreaScanner>();
+        if (scanner == null)
+        {
+            Debug.LogWarning("EntityAreaScanner is missing on Agent AI.");
+            return;
+        }
+
+        var closestEnemy = scanner.GetClosestTarget();
+
+        if (closestEnemy != null && closestEnemy.CompareTag("Entity/Enemy"))
+        {
             float closestDistance = Vector3.Distance(transform.position, closestEnemy.position);
+
+            if (closestDistance <= 1.5f)
+            {
+                Debug.Log($"Enemy {closestEnemy.name} is within attack range. Not avoiding.");
+                return; // Wróg w zasięgu ataku, nie unikaj
+            }
+
             if (closestDistance < 5f)
             {
                 Vector3 fleeDirection = (transform.position - closestEnemy.position).normalized;
                 entity.MoveTo(transform.position + fleeDirection * entity.moveSpeed);
                 Debug.Log($"Avoiding enemy: {closestEnemy.name} at distance {closestDistance}");
 
-                // Logowanie uniknięcia przeciwnika
-                PlayerBehaviorLogger.Instance?.LogEnemyAvoided("Agent AI", closestEnemy.name);
+                // Nagroda za unikanie
+                SetReward(0.1f);
+                agentLogger?.LogEnemyAvoided(closestEnemy.name);
             }
         }
-    }
-
-    private void FindClosestEnemy()
-    {
-        var scanner = GetComponent<EntityAreaScanner>();
-        targetEnemy = scanner?.GetClosestTarget();
     }
 
     private void SetRandomTarget()
@@ -226,73 +382,36 @@ public class AgentController : Agent
         SetReward(1.0f);
         Debug.Log("Reward given for discovering zone.");
 
-        PlayerBehaviorLogger.Instance?.LogAgentZoneDiscovery(zoneName);
+        // Logowanie odkrycia strefy w AgentBehaviorLogger
+        agentLogger?.LogAgentZoneDiscovery(zoneName);
 
         // Zakończ epizod
         EndAgentEpisode(); // Zamiast EndEpisode()
         Debug.Log("Episode ended after discovering zone.");
     }
 
-    private void InteractWithNPC()
-    {
-        var scanner = GetComponent<EntityAreaScanner>();
-        var closestInteractive = scanner?.GetClosestInteractiveObject();
-
-        // Sprawdzenie cooldownu
-        if (Time.time - lastInteractionTime < interactionCooldown)
-        {
-            Debug.Log("Interaction on cooldown.");
-            return;
-        }
-
-        if (closestInteractive != null 
-            && !(closestInteractive is Collectible) 
-            && closestInteractive != lastInteractedObject 
-            && closestInteractive.CanAgentInteract) // Sprawdzanie pola CanAgentInteract
-        {
-            // Przemieszczenie w kierunku NPC lub innego obiektu interaktywnego
-            entity.MoveTo(closestInteractive.transform.position);
-
-            float distance = Vector3.Distance(transform.position, closestInteractive.transform.position);
-            if (distance < 1.0f)
-            {
-                // Wywołanie interakcji z obiektem
-                closestInteractive.Interact(entity);
-                Debug.Log($"Interacted with: {closestInteractive.name}");
-
-                // Logowanie interakcji w PlayerBehaviorLogger
-                PlayerBehaviorLogger.Instance?.LogNpcInteraction(entity);
-                Debug.Log($"Agent AI interacted with {closestInteractive.name}");
-
-                // Ustawienie ostatniego obiektu i czasu interakcji
-                lastInteractedObject = closestInteractive;
-                lastInteractionTime = Time.time;
-                Debug.Log($"Interaction cooldown started for: {closestInteractive.name}");
-            }
-        }
-        else if (closestInteractive != null)
-        {
-            Debug.Log($"Ignoring {closestInteractive.name}: CanAgentInteract is false or already interacted.");
-        }
-    }
-
     private void InitializeAgentStats()
+{
+    var statsManager = GetComponent<EntityStatsManager>();
+    if (statsManager != null)
     {
-        var statsManager = GetComponent<EntityStatsManager>();
-        if (statsManager != null)
-        {
-            statsManager.level = 1;
-            statsManager.strength = 10;
-            statsManager.dexterity = 8;
-            statsManager.vitality = 12;
-            statsManager.energy = 5;
-            statsManager.health = 100;
-            statsManager.mana = 50;
-            statsManager.Initialize();
+        statsManager.level = 1;
+        statsManager.strength = 10;
+        statsManager.dexterity = 8;
+        statsManager.vitality = 12;
+        statsManager.energy = 5;
+        statsManager.health = 500;
+        statsManager.mana = 500;
+        statsManager.Initialize();
 
-            Debug.Log("Agent AI stats initialized.");
-        }
+        Debug.Log($"[InitializeAgentStats] Stats initialized for Agent AI: Health={statsManager.health}, Mana={statsManager.mana}");
     }
+    else
+    {
+        Debug.LogError("[InitializeAgentStats] EntityStatsManager is missing on Agent AI!");
+    }
+}
+
 
 /*
     private void EquipDefaultItems()
@@ -317,24 +436,24 @@ public class AgentController : Agent
 */
 
     private void LearnDefaultSkills()
+{
+    var skillManager = GetComponent<EntitySkillManager>();
+    if (skillManager != null)
     {
-        var skillManager = GetComponent<EntitySkillManager>();
-        if (skillManager != null)
+        // Przykład: Dodanie umiejętności do agenta
+        foreach (var skill in skillManager.skills)
         {
-            var basicAttack = new SkillAttack
-            {
-                name = "Basic Attack",
-                manaCost = 10,
-                minDamage = 5,
-                maxDamage = 15,
-                minAttackDistance = 1.5f,
-                damageMode = SkillAttack.DamageMode.Regular
-            };
-            skillManager.TryLearnSkill(basicAttack);
-
-            Debug.Log("Agent AI learned basic attack skill.");
+            Debug.Log($"Skill '{skill.name}' assigned to Agent AI.");
         }
+
+        Debug.Log("Agent AI successfully initialized with skills.");
     }
+    else
+    {
+        Debug.LogError("EntitySkillManager is missing on Agent AI.");
+    }
+}
+
 
     private void ClearLastInteractedObject()
     {
@@ -463,7 +582,7 @@ public class AgentController : Agent
 
         if (Time.frameCount % 30 == 0) // Log every 30 frames
         {
-            Debug.Log($"Frame: {Time.frameCount}, StepCount: {Academy.Instance.StepCount}");
+            // Debug.Log($"Frame: {Time.frameCount}, StepCount: {Academy.Instance.StepCount}");
         }
 
         RequestDecision();

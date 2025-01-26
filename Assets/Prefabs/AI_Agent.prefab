@@ -244,14 +244,17 @@ GameObject:
   - component: {fileID: 7112130279391419211}
   - component: {fileID: 7112130279391419215}
   - component: {fileID: -99698577156403319}
-  - component: {fileID: 2261670749068477054}
-  - component: {fileID: 3448039316495744778}
   - component: {fileID: -7040081062105466558}
   - component: {fileID: -6115141544422631108}
+  - component: {fileID: 8097928727646876167}
+  - component: {fileID: 5790110971599482691}
+  - component: {fileID: 2639189342565467296}
+  - component: {fileID: 6816360938728768975}
+  - component: {fileID: 1947163960163866890}
   - component: {fileID: 7112130279391419209}
   - component: {fileID: -1438612737580648959}
   m_Layer: 8
-  m_Name: Skeleton Wizard
+  m_Name: AI_Agent
   m_TagString: Entity/Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -548,36 +551,6 @@ MonoBehaviour:
   blockClips:
   - {fileID: 8300000, guid: a420a524dc0e4fd4f8bf3bd9a4808bc5, type: 3}
   stunClips: []
---- !u!114 &2261670749068477054
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7112130279391419063}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9948718ec1d193449baca943de2e31a5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  stats: {fileID: 11400000, guid: be32a62e152d56c40a66973a7e63def1, type: 2}
-  groundMask:
-    serializedVersion: 2
-    m_Bits: 32755
-  maxGroundDistance: 2
---- !u!114 &3448039316495744778
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7112130279391419063}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25b19a17d053dff4285a6a3f7a5f8364, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enemyKey: skeleton
 --- !u!114 &-7040081062105466558
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -612,6 +585,100 @@ MonoBehaviour:
       m_Calls: []
   maxIntensity: 1
   propertyName: _Emission
+--- !u!114 &8097928727646876167
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7112130279391419063}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_BrainParameters:
+    VectorObservationSize: 11
+    NumStackedVectorObservations: 1
+    m_ActionSpec:
+      m_NumContinuousActions: 2
+      BranchSizes: 01000000
+    VectorActionSize: 
+    VectorActionDescriptions: []
+    VectorActionSpaceType: 0
+    hasUpgradedBrainParametersWithActionSpec: 1
+  m_Model: {fileID: 0}
+  m_InferenceDevice: 0
+  m_BehaviorType: 0
+  m_BehaviorName: AI_TestAgent
+  TeamId: 0
+  m_UseChildSensors: 1
+  m_UseChildActuators: 1
+  m_DeterministicInference: 0
+  m_ObservableAttributeHandling: 0
+--- !u!114 &5790110971599482691
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7112130279391419063}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88b6042bc9a5d4aa58d931eae49442e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
+  MaxStep: 5000
+--- !u!114 &2639189342565467296
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7112130279391419063}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5a09b277fd769e6bb64af648d4b3171, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
+  MaxStep: 5000
+  target: {fileID: 0}
+  isAI: 1
+--- !u!114 &6816360938728768975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7112130279391419063}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1409b49121a99cdffae8eafe5f7f4d4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  zonesDiscovered: 0
+  npcInteractions: 0
+  enemiesAvoided: 0
+  skillsUsed: 0
+--- !u!114 &1947163960163866890
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7112130279391419063}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1d0bc92f275df4408866aae054dfd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scanRadius: 10
 --- !u!65 &7112130279391419209
 BoxCollider:
   m_ObjectHideFlags: 0
