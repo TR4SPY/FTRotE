@@ -64,16 +64,16 @@ namespace AI_DDA.Assets.Scripts
         /// Loguje odkrycie waypointu przez AI Agenta, o ile nie zostało już zaliczone.
         /// </summary>
         /// <param name="waypointID">Unikalny ID waypointu.</param>
-        public void LogWaypointDiscovery(Entity entity, int waypointID)
+        public void LogWaypointDiscovery(int waypointID)
         {
-            string actor = GetActor(entity); // Automatyczne rozpoznanie aktora
+            // string actor = GetActor(entity); // Automatyczne rozpoznanie aktora
 
             // Jeśli agent jeszcze nie odkrył tego waypointu
             if (!discoveredWaypoints.Contains(waypointID))
             {
                 discoveredWaypoints.Add(waypointID);
                 waypointsDiscovered++;
-                Debug.Log($"{actor} discovered a new waypoint: {waypointID}. " +
+                Debug.Log($"AI Agent discovered a new waypoint: {waypointID}. " +
                           $"Total discovered: {waypointsDiscovered}");
             }
         }

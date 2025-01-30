@@ -119,7 +119,7 @@ namespace PLAYERTWO.ARPGProject
 
             if (AgentBehaviorLogger.Instance != null)
             {
-                AgentBehaviorLogger.Instance.LogWaypointDiscovery(interactor, waypointID);
+                AgentBehaviorLogger.Instance.LogWaypointDiscovery(waypointID); 
                 Debug.Log($"Waypoint '{title}' (ID: {waypointID}) discovered and logged by {interactor.name}.");
             }
 
