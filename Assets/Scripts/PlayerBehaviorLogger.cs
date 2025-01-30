@@ -325,35 +325,6 @@ namespace AI_DDA.Assets.Scripts
             Debug.Log($"Logs saved to: {filePath}");
         }
 
-        public void SaveAgentLogsToFile()
-        {
-            var characterInstance = Game.instance?.currentCharacter;
-            if (characterInstance == null)
-            {
-                Debug.LogWarning("No character instance found. Skipping log save.");
-                return;
-            }
-
-            string directoryPath = Path.Combine(Application.persistentDataPath, "Logs");
-            if (!Directory.Exists(directoryPath))
-            {
-                Directory.CreateDirectory(directoryPath);
-            }
-
-            string timestamp = System.DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
-            string fileName = $"AI_BehaviorLogs_{characterInstance.name}.log";
-            string filePath = Path.Combine(directoryPath, fileName);
-
-            using (StreamWriter writer = new StreamWriter(filePath))
-            {
-                writer.WriteLine($"=== AI Agent Behavior Logs for {characterInstance.name} as of {timestamp} ===");
-                writer.WriteLine($"Zones Discovered: {zonesDiscovered}");
-                writer.WriteLine($"NPC Interactions: {npcInteractions}");
-                writer.WriteLine($"Avoided Enemies: {enemiesAvoided}");
-            }
-            Debug.Log($"Agent AI Logs saved to {filePath}");
-        }
-
         public void LogAchievement(string achievementName)
         {
             if (!unlockedAchievements.Contains(achievementName))

@@ -7,11 +7,10 @@ using AI_DDA.Assets.Scripts;
 using Unity.MLAgents.Policies;
 using System.Linq;
 using System.Collections.Generic;
+using System.Collections;
 
 public class AgentController : Agent
 {
-    [SerializeField] private float stuckDistanceThreshold = 0.5f; // minimalny ruch
-    [SerializeField] private float stuckTimeThreshold = 6f;       // sekundy
     private Entity entity; // Referencja do Entity
     private EntityAI entityAI; // Referencja do EntityAI
     private Interactive lastInteractedObject; // Przechowuje ostatnio użyty obiekt interaktywny
@@ -20,6 +19,7 @@ public class AgentController : Agent
     private float stuckTimer = 0f;
     private Vector3 lastPosition;
     private bool isResetting = false;
+    private bool isInteracting = false; // Śledzi, czy agent aktualnie wykonuje interakcję
     private bool agentWantsToMove = false;
     private float interactionTimeout = 10f; // Maksymalny czas na osiągnięcie celu (w sekundach)
     private float interactionTimer = 0f;
@@ -29,8 +29,10 @@ public class AgentController : Agent
     private Transform targetEnemy; // Przechowuje referencję do najbliższego przeciwnika
     private GameDatabase gameDatabase;
     private AgentBehaviorLogger agentLogger;
+    private EntityAreaScanner scanner;
+    private EntitySkillManager skillManager;
+    private Vector3? currentExplorationTarget = null; // Pierwotny cel eksploracji
     private HashSet<string> interactedNPCs = new HashSet<string>(); // Lista interakcji
-        private EntityAreaScanner scanner;
 
     public Transform target; // Cel agenta
     public bool isAI = true; // Flaga do identyfikacji jako AI Agent
@@ -157,34 +159,72 @@ public class AgentController : Agent
     // -------------------------------------------------
     // Główne sterowanie akcji (priorytety)
     // -------------------------------------------------
-    public override void OnActionReceived(ActionBuffers actions)
+public override void OnActionReceived(ActionBuffers actions)
+{
+    agentWantsToMove = false;
+
+    float moveX = actions.ContinuousActions[0];
+    float moveZ = actions.ContinuousActions[1];
+    Vector3 moveDir = new Vector3(moveX, 0f, moveZ).normalized;
+
+    // 1) Priorytet: Jeśli wróg jest w pobliżu → walka!
+    if (FindAndAttackEnemy()) return;
+
+    // 2) Jeśli widzi NPC po drodze, wchodzi w interakcję i potem kontynuuje swój cel
+    bool isInteracting = false;
+    StartCoroutine(InteractWithNPCIfInRange((interactionSuccessful) =>
     {
-        agentWantsToMove = false;
+        if (interactionSuccessful)
+        {
+            Debug.Log($"[Agent {name}] Interaction complete. Continuing exploration.");
+            isInteracting = false;
+        }
+    }));
+    
+    if (isInteracting) return; // **Nie wykonuj kolejnych działań, jeśli trwa interakcja**
 
-        // Wyciągamy wektor ruchu z ML-Agents
-        float moveX = actions.ContinuousActions[0];
-        float moveZ = actions.ContinuousActions[1];
-        Vector3 moveDir = new Vector3(moveX, 0f, moveZ).normalized;
+    // 3) Jeśli idzie do waypointu i zobaczy nową strefę, zmienia cel
+    if (DiscoverZoneIfClose()) return;
 
-        // 1) Walka jest priorytetem
-        if (FightEnemyIfInRange()) return;
+    // 4) Jeśli idzie do strefy, ale widzi waypoint, najpierw odwiedza waypoint
+    if (DiscoverWaypointIfClose()) return;
 
-        // 2) Interakcja z NPC (jeżeli jest blisko)
-        if (InteractWithNPCIfInRange()) return;
+    // 5) Jeśli nie ma żadnych innych priorytetów, kontynuuje swoją eksplorację
+    ContinueExploration(moveDir);
+}
 
-        // 3) Odkrycie Waypointu (jeżeli stoimy tuż obok)
-        if (DiscoverWaypointIfClose()) return;
 
-        // 4) Odkrycie Strefy (zone) (jeżeli stoimy tuż obok)
-        if (DiscoverZoneIfClose()) return;
+    private bool StartCoroutineAndWait(IEnumerator coroutine)
+    {
+        bool completed = false;
+        
+        StartCoroutine(RunCoroutineAndSetFlag(coroutine, () => completed = true));
 
-        // 5) Jeśli nic innego się nie dzieje, poruszaj się losowo
-        WanderAround(moveDir);
+        return !completed; // Jeśli coroutine jeszcze trwa, zwracamy false
+    }
+
+    private IEnumerator RunCoroutineAndSetFlag(IEnumerator coroutine, System.Action onComplete)
+    {
+        yield return StartCoroutine(coroutine);
+        onComplete?.Invoke();
     }
 
     // -------------------------------------------------
     // Metody walki, interakcji, odkrywania, roamowania
     // -------------------------------------------------
+
+    private void ContinueExploration(Vector3 moveDir)
+    {
+        if (currentExplorationTarget != null)
+        {
+            Debug.Log($"[Agent {name}] Continuing exploration towards: {currentExplorationTarget}");
+            entity.MoveTo(currentExplorationTarget.Value);
+        }
+        else
+        {
+            WanderAround(moveDir); // Jeśli nie ma innego celu, losowa eksploracja
+        }
+    }
 
     /// <summary>
     /// Jeśli w zasięgu jest wróg, atakujemy go i zwracamy true.
@@ -211,32 +251,48 @@ public class AgentController : Agent
     /// <summary>
     /// Jeśli w pobliżu jest NPC i możemy z nim wejść w interakcję, robimy to i zwracamy true.
     /// </summary>
-    private bool InteractWithNPCIfInRange()
+    private IEnumerator InteractWithNPCIfInRange(System.Action<bool> onComplete)
+{
+    isInteracting = true; // Ustaw flagę, że trwa interakcja
+
+    var closestInteractive = scanner?.GetClosestInteractiveObject();
+    if (closestInteractive != null && closestInteractive.CanAgentInteract)
     {
-        // Zakładam, że scanner ma metodę GetClosestInteractiveObject(), 
-        // i NPC mają np. 'CanAgentInteract = true'
-        var npc = scanner?.GetClosestInteractiveObject();
-        if (npc == null) return false;
+        float distance = Vector3.Distance(transform.position, closestInteractive.transform.position);
 
-        float dist = Vector3.Distance(transform.position, npc.transform.position);
-        // Załóżmy, że 3f to dystans, z którego możemy zacząć interakcję
-        if (dist <= 3f && npc.CanAgentInteract)
+        if (distance > 1.5f) // **Jeśli NPC jest za daleko, agent podchodzi bliżej**
         {
-            // Interakcja
-            agentWantsToMove = true;
-            entity.MoveTo(npc.transform.position);
-            // Gdy jesteśmy bardzo blisko (1.5f), npc.Interact(entity) 
-            // może zostać wywołane wewnątrz OnTriggerEnter, etc.
-            // Lub:
-            // if (dist < 1.5f) npc.Interact(entity);
-
-            // Log
-            agentLogger?.LogNpcInteraction();
-            return true;
+            Debug.Log($"[Agent {name}] Moving closer to interact with {closestInteractive.name}");
+            entity.MoveTo(closestInteractive.transform.position);
+            yield return new WaitUntil(() => Vector3.Distance(transform.position, closestInteractive.transform.position) < 1.5f);
         }
 
-        return false;
+        if (Vector3.Distance(transform.position, closestInteractive.transform.position) < 1.5f)
+        {
+            Debug.Log($"[Agent {name}] Interacting with NPC: {closestInteractive.name}");
+            closestInteractive.Interact(entity);
+            agentLogger?.LogNpcInteraction();
+            Debug.Log($"[Agent {name}] Successfully interacted with NPC: {closestInteractive.name}");
+
+            // **Dodanie krótkiego oczekiwania, by upewnić się, że interakcja została zakończona**
+            yield return new WaitForSeconds(0.5f);
+            
+            onComplete(true);
+        }
+        else
+        {
+            onComplete(false);
+        }
     }
+    else
+    {
+        onComplete(false);
+    }
+
+    isInteracting = false; // Interakcja zakończona
+}
+
+
 
     /// <summary>
     /// Jeśli agent stoi blisko Waypointu, odkryj go i zwróć true.
@@ -253,7 +309,7 @@ public class AgentController : Agent
         if (dist < 2f) // Załóżmy strefa odkrycia = 2
         {
             // Logi w AgentBehaviorLogger / PlayerBehaviorLogger
-            agentLogger?.LogWaypointDiscovery(waypoint.GetInstanceID());
+            agentLogger?.LogWaypointDiscovery(entity, waypoint.GetInstanceID());
             Debug.Log($"[Agent] Discovered Waypoint: {waypoint.name}");
             return true;
         }
@@ -389,6 +445,7 @@ public class AgentController : Agent
             {
                 agentWantsToMove = true;
                 entity.MoveTo(closestEnemy.position); // Zbliż się do przeciwnika
+                ResumeExplorationAfterCombat(); // Po walce agent wraca do eksploracji
                 return true;
             }
         }
@@ -398,55 +455,34 @@ public class AgentController : Agent
 
     private bool ExploreZones()
     {
-        if (target == null)
-            SetRandomTarget();
-
-        if (target != null)
+        var zoneTrigger = scanner?.GetClosestZoneTrigger();
+        if (zoneTrigger != null)
         {
-            agentWantsToMove = true;
-            entity.MoveTo(target.position);
-            float distanceToTarget = Vector3.Distance(transform.position, target.position);
-            if (distanceToTarget < 1.0f)
+            float distanceToZone = Vector3.Distance(transform.position, zoneTrigger.transform.position);
+            if (distanceToZone > 3f) 
             {
-                DiscoverZone(target.name); // Odkryj strefę
+                Debug.Log($"[Agent {name}] Moving closer to explore zone: {zoneTrigger.name}");
+                currentExplorationTarget = zoneTrigger.transform.position; // Zapamiętanie celu
+                entity.MoveTo(zoneTrigger.transform.position);
                 return true;
             }
-        }
-        return false; // Brak stref do odkrycia
-    }
 
-    private bool InteractWithNPC()
-{
-    if (Time.time - lastInteractionTime < interactionCooldown)
-        return false;
-
-    var scanner = GetComponent<EntityAreaScanner>();
-    var closestInteractive = scanner?.GetClosestInteractiveObject();
-
-    if (closestInteractive != null && closestInteractive.CanAgentInteract)
-    {
-        if (interactedNPCs.Contains(closestInteractive.name))
-        {
-            Debug.Log($"Agent AI already interacted with {closestInteractive.name}. Skipping.");
-            return false;
-        }
-
-        agentWantsToMove = true;
-        entity.MoveTo(closestInteractive.transform.position);
-        float distance = Vector3.Distance(transform.position, closestInteractive.transform.position);
-        if (distance < 1.5f)
-        {
-            closestInteractive.Interact(entity);
-            lastInteractionTime = Time.time;
-            interactedNPCs.Add(closestInteractive.name);
-            Debug.Log($"Agent AI interacted with {closestInteractive.name}.");
-            agentLogger?.LogNpcInteraction();
+            agentLogger?.LogAgentZoneDiscovery(zoneTrigger.name);
+            Debug.Log($"[Agent {name}] Discovered zone: {zoneTrigger.name}");
+            currentExplorationTarget = null; // Po odkryciu, agent może przejść do kolejnego zadania
             return true;
         }
+        return false;
     }
 
-    return false;
-}
+    private void ResumeExplorationAfterCombat()
+    {
+        if (currentExplorationTarget != null)
+        {
+            Debug.Log($"[Agent {name}] Resuming exploration towards: {currentExplorationTarget}");
+            entity.MoveTo(currentExplorationTarget.Value);
+        }
+    }
 
     private Vector3 wanderTarget; // Docelowy punkt wędrowania
     private float wanderChangeInterval = 5f; // Co ile sekund zmieniać punkt wędrowania
@@ -483,43 +519,50 @@ public class AgentController : Agent
 
     private void PerformAttack(Transform enemy)
     {
-        if (Time.time - lastAttackTime < attackCooldown)
-        {
-            Debug.Log($"[Agent {name}] Attack on cooldown. Time remaining: {attackCooldown - (Time.time - lastAttackTime):F2}s");
-            return;
-        }
+        if (Time.time - lastAttackTime < attackCooldown) return;
 
         if (enemy == null || enemy.GetComponent<Entity>().isDead)
         {
-            Debug.Log($"[Agent {name}] Attack failed: target is null or dead.");
+            Debug.Log($"[Agent {name}] Attack failed: target is null or already dead.");
             return;
         }
 
         var targetEntity = enemy.GetComponent<Entity>();
 
-        // Sprawdzenie, czy przeciwnik zginął po ataku
-        if (targetEntity.stats.health - 10 <= 0) 
+        if (skillManager != null && skillManager.CanUseSkill())
+        {
+            Debug.Log($"[Agent {name}] Using skill on {enemy.name}");
+            skillManager.PerformSkill(); // Usunięcie argumentu, bo funkcja go nie wymaga
+
+        }
+        else
+        {
+            Debug.Log($"[Agent {name}] Attacking {enemy.name} with basic attack!");
+            targetEntity.Damage(entity, 10, false);
+        }
+
+        lastAttackTime = Time.time;
+
+        // **Nowe sprawdzenie, czy wróg rzeczywiście umarł**
+        StartCoroutine(WaitForEnemyDeath(targetEntity));
+    }
+
+    private IEnumerator WaitForEnemyDeath(Entity targetEntity)
+    {
+        float timeout = 2f; // Maksymalnie 2 sekundy czekania
+        float elapsed = 0f;
+
+        while (!targetEntity.isDead && elapsed < timeout)
+        {
+            elapsed += Time.deltaTime;
+            yield return null; // Poprawne oczekiwanie na zakończenie warunku
+        }
+
+        if (targetEntity.isDead)
         {
             Debug.Log($"[Agent {name}] Killed enemy: {targetEntity.name}");
             agentLogger?.LogEnemyKilled(targetEntity.name);
         }
-
-        var skillManager = entity.GetComponent<EntitySkillManager>();
-
-        // Jeśli agent ma skille, próbujemy użyć skilla
-        if (skillManager != null && skillManager.CanUseSkill())
-        {
-            Debug.Log($"[Agent {name}] Using skill on {enemy.name}");
-            skillManager.PerformSkill();
-        }
-        else
-        {
-            // Jeśli brak skilli do użycia, wykonaj zwykły atak fizyczny
-            Debug.Log($"[Agent {name}] Attacking {enemy.name} with basic attack!");
-            targetEntity.Damage(entity, 10, false); // Wywołanie ataku fizycznego
-        }
-
-        lastAttackTime = Time.time;
     }
 
     private void FindClosestEnemy()
@@ -702,7 +745,8 @@ public class AgentController : Agent
 
     private void CheckIfStuck()
     {
-        float movementThreshold = 0.2f; // Minimalna odległość, jaką agent powinien pokonać
+        float movementThreshold = 0.5f; // Większy próg ruchu
+        float stuckCheckTime = 5f; // Czas, po którym uznajemy, że agent utknął
 
         if (!agentWantsToMove)
         {
@@ -712,14 +756,15 @@ public class AgentController : Agent
         }
 
         float distMoved = Vector3.Distance(transform.position, lastPosition);
-        if (distMoved < movementThreshold)
+        if (distMoved < movementThreshold && agentWantsToMove)
         {
             stuckTimer += Time.deltaTime;
-            if (stuckTimer > stuckThreshold)
+            if (stuckTimer > stuckCheckTime)
             {
-                Debug.Log($"[Agent {name}] Agent appears stuck! Choosing a new wander target.");
+                Debug.Log($"[Agent {name}] Detected as stuck! Choosing new direction.");
+
                 stuckTimer = 0f;
-                wanderTarget = Vector3.zero; // Natychmiastowy reset celu
+                wanderTarget = Vector3.zero; // Resetowanie celu
                 WanderAround(new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f)).normalized);
             }
         }
@@ -755,7 +800,7 @@ public class AgentController : Agent
         Vector3 rotated = Quaternion.Euler(0, randomAngle, 0) * transform.forward;
         newPosition = transform.position + rotated * 3f;
 
-        if (entity.TryCalculatePath(newPosition))
+        if (entity.TryCalculatePath(newPosition) && !entity.isDead)
         {
             agentWantsToMove = true;
             entity.MoveTo(newPosition);
@@ -841,7 +886,7 @@ public class AgentController : Agent
         var statsManager = GetComponent<EntityStatsManager>();
     if (statsManager != null)
     {
-        // Debug.Log($"[Agent {name}] Health: {statsManager.health}/{statsManager.maxHealth}");
+         Debug.Log($"[Agent {name}] Health: {statsManager.health}/{statsManager.maxHealth}");
     }
         CheckIfStuck();
         CheckInteractionTimeout();

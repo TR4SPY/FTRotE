@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using AI_DDA.Assets.Scripts;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -20,6 +21,8 @@ namespace PLAYERTWO.ARPGProject
         protected float m_lastRefreshTime;
 
         protected const float k_refreshRate = 1f / 30;
+        protected List<Waypoint> m_waypoints = new();
+        protected List<ZoneTrigger> m_zoneTriggers = new();
 
         /// <summary>
         /// Returns the closest target to the Entity in the current frame.
@@ -75,6 +78,28 @@ namespace PLAYERTWO.ARPGProject
             return list[closestId];
         }
 
+        public virtual Waypoint GetClosestWaypoint()
+        {
+            return GetClosestObjectFromList<Waypoint>(m_waypoints);
+        }
+
+        protected virtual void AddWaypoint(Waypoint waypoint)
+        {
+            if (!waypoint) return;
+            m_waypoints.Add(waypoint);
+        }
+
+        public virtual ZoneTrigger GetClosestZoneTrigger()
+        {
+            return GetClosestObjectFromList<ZoneTrigger>(m_zoneTriggers);
+        }
+
+        protected virtual void AddZoneTrigger(ZoneTrigger zoneTrigger)
+        {
+            if (!zoneTrigger) return;
+            m_zoneTriggers.Add(zoneTrigger);
+        }
+
         protected virtual void Start()
         {
             m_entity = GetComponent<Entity>();
@@ -87,6 +112,8 @@ namespace PLAYERTWO.ARPGProject
 
             m_targets.Clear();
             m_interactives.Clear();
+            m_waypoints.Clear(); // Teraz lista waypointów istnieje i jest czyszczona
+            m_zoneTriggers.Clear(); // Resetowanie listy stref
 
             var overlaps = Physics.OverlapSphereNonAlloc(transform.position,
                 scanRadius, m_scanBuffer, Physics.DefaultRaycastLayers,
@@ -98,6 +125,10 @@ namespace PLAYERTWO.ARPGProject
                     AddTarget(m_scanBuffer[i].transform);
                 else if (GameTags.IsInteractive(m_scanBuffer[i].gameObject))
                     AddInteractive(m_scanBuffer[i].GetComponent<Interactive>());
+                else if (m_scanBuffer[i].GetComponent<Waypoint>() != null)
+                    AddWaypoint(m_scanBuffer[i].GetComponent<Waypoint>());
+                else if (m_scanBuffer[i].GetComponent<ZoneTrigger>() != null)
+                    AddZoneTrigger(m_scanBuffer[i].GetComponent<ZoneTrigger>()); // Dodaj strefy
             }
 
             m_lastRefreshTime = Time.time;

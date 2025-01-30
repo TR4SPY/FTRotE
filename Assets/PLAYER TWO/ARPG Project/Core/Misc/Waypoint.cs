@@ -117,6 +117,12 @@ namespace PLAYERTWO.ARPGProject
                 }
             }
 
+            if (AgentBehaviorLogger.Instance != null)
+            {
+                AgentBehaviorLogger.Instance.LogWaypointDiscovery(interactor, waypointID);
+                Debug.Log($"Waypoint '{title}' (ID: {waypointID}) discovered and logged by {interactor.name}.");
+            }
+
             // Logowanie odkrycia waypointu
             if (PlayerBehaviorLogger.Instance != null && interactor != null)
             {
