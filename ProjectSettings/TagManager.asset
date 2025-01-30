@@ -17,6 +17,7 @@ TagManager:
   - Synty Tree
   - Synty Small Farm
   - Entity/AI_Agent
+  - Waypoint
   layers:
   - Default
   - TransparentFX

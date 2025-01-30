@@ -394,6 +394,7 @@ namespace PLAYERTWO.ARPGProject
         /// <param name="point">The point you want the Entity to move to.</param>
         public virtual void MoveTo(Vector3 point)
         {
+            // Debug.Log($"[{name}] MoveTo called. Target: {point}. IsAgent: {isAgent}");
             if (canUpdateDestination &&
                 GetDistanceTo(point) > k_minDistanceToMove &&
                 TryCalculatePath(point))
@@ -619,29 +620,46 @@ namespace PLAYERTWO.ARPGProject
             onDie?.Invoke();
 
         // Logowanie śmierci gracza tylko jeśli Entity to gracz
-            if (CompareTag("Entity/Player"))
+        if (CompareTag("Entity/Player"))
+        {
+            var playerLogger = GetComponent<PlayerBehaviorLogger>();
+            if (playerLogger != null)
             {
-                var playerLogger = GetComponent<PlayerBehaviorLogger>();
-                if (playerLogger != null)
-                {
                 var entity = GetComponent<Entity>();
                 if (entity != null)
                 {
                     playerLogger.LogPlayerDeath(entity);
                 }
-                    Debug.Log("Player death logged for Entity/Player.");
-                }
-                else
-                {
-                    Debug.LogError("PlayerBehaviorLogger not found on player entity!");
-                }
+                Debug.Log("Player death logged for Entity/Player.");
             }
-            else if (CompareTag("Entity/Enemy"))
+            else
             {
-                Debug.Log($"Enemy {name} defeated.");
-                // Możesz dodać inne zachowania specyficzne dla przeciwników tutaj.
+                Debug.LogError("PlayerBehaviorLogger not found on player entity!");
             }
         }
+        else if (CompareTag("Entity/AI_Agent"))
+        {
+            var agentLogger = GetComponent<AgentBehaviorLogger>();
+            if (agentLogger != null)
+            {
+                var entity = GetComponent<Entity>();
+                if (entity != null)
+                {
+                    agentLogger.LogAgentDeath(entity);
+                }
+                Debug.Log("Agent death logged for Entity/AI_Agent.");
+            }
+            else
+            {
+                Debug.LogError("AgentBehaviorLogger not found on agent entity!");
+            }
+        }
+        else if (CompareTag("Entity/Enemy"))
+        {
+            Debug.Log($"Enemy {name} defeated.");
+            // Możesz dodać inne zachowania specyficzne dla przeciwników tutaj.
+        }
+    }
 
         /// <summary>
         /// Brings the Entity back to life, restoring its movements and colliders.
@@ -799,7 +817,15 @@ namespace PLAYERTWO.ARPGProject
             if (controller.enabled)
             {
                 states.HandleStep();
+
+                // Ruch
                 controller.Move(velocity * Time.deltaTime);
+
+                // Obrót w kierunku ruchu dla agenta
+                if (isAgent && velocity.sqrMagnitude > 0)
+                {
+                    FaceMoveDirection();
+                }
             }
         }
 

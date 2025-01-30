@@ -140,8 +140,11 @@ namespace PLAYERTWO.ARPGProject
         protected virtual void InitializeEntity()
         {
             m_entity = GetComponent<Entity>();
-            m_entity.states.ChangeTo<RandomMovementEntityState>();
-            m_entity.useSkill = useSkill;
+            // Tylko jeśli NIE jest agentem
+            if (!m_entity.isAgent)
+            {
+                m_entity.states.ChangeTo<RandomMovementEntityState>();
+            }            m_entity.useSkill = useSkill;
             m_entity.targetTags = targetTags;
         }
 
@@ -163,6 +166,7 @@ namespace PLAYERTWO.ARPGProject
         {
             if (m_entity.isAgent)
             {
+                // Debug.Log($"Optimizing Agent AI: {m_entity.name}");
                 m_entity.enabled = true; // AI Agent jest zawsze aktywny
                 return;
             }
@@ -178,12 +182,7 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void HandleViewSight()
         {
-            // Wyłącz obsługę ataku dla AI Agenta
-            if (m_entity.isAgent)
-            {
-                return; // AI Agent nie wymaga logiki ataku
-            }
-            
+
             if (m_entity.target || Time.time < m_nextTargetRefreshTime) return;
 
             m_nextTargetRefreshTime = Time.time + k_targetRefreshRate;
@@ -261,12 +260,6 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void HandleTargetFlee()
         {
-            // Wyłącz obsługę ataku dla AI Agenta
-            if (m_entity.isAgent)
-            {
-                return; // AI Agent nie wymaga logiki ataku
-            }
-            
             if (!m_entity.target) return;
 
             if (m_entity.GetDistanceToTarget() > fleeRadius) StopAttack();
@@ -274,12 +267,6 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void HandleAttack()
         {
-            // Wyłącz obsługę ataku dla AI Agenta
-            if (m_entity.isAgent)
-            {
-                return; // AI Agent nie wymaga logiki ataku
-            }
-
             if (!m_entity.target || m_entity.isAttacking || !canMove)
                 return;
 
@@ -306,12 +293,6 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void HandleFollowing()
         {
-            // Wyłącz obsługę ataku dla AI Agenta
-            if (m_entity.isAgent)
-            {
-                return; // AI Agent nie wymaga logiki ataku
-            }
-
             if (!followLeader || !leader || m_entity.target ||
                 m_entity.isAttacking || !canMove)
                 return;
@@ -440,6 +421,10 @@ namespace PLAYERTWO.ARPGProject
         protected virtual void Update()
         {
             HandleEntityOptimization();
+
+            // 2) Jeśli to agent ML-Agents → nie rób nic dalej
+            if (m_entity.isAgent)
+                return;
 
             if (CanUpdateAI())
             {

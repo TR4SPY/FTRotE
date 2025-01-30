@@ -368,7 +368,6 @@ namespace PLAYERTWO.ARPGProject
             {
                 var rotation = Quaternion.AngleAxis(camera.transform.eulerAngles.y, Vector3.up);
                 direction = rotation * direction;
-                direction = direction.normalized;
             }
 
             return direction.normalized;

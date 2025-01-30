@@ -256,7 +256,10 @@ MonoBehaviour:
   targetTags:
   - Entity/Player
   - Entity/Summoned
+  - Entity/AI_Agent
   spotRadius: 5
+  viewAngle: 110
+  viewDistance: 10
   fleeRadius: 8
   useSkill: 0
   resetMoveDelay: 1
@@ -270,6 +273,13 @@ MonoBehaviour:
   leader: {fileID: 0}
   followLeader: 0
   dieWithLeader: 1
+  spotRadiusYOffset: -0.98
+  fleeRadiusYOffset: -0.98
+  viewAngleYOffset: -0.98
+  spotRadiusColor: {r: 0, g: 0, b: 1, a: 1}
+  fleeRadiusColor: {r: 1, g: 0, b: 0, a: 1}
+  fieldOfViewColor: {r: 0, g: 1, b: 0, a: 1}
+  outlineLines: 36
 --- !u!114 &6355741063253607786
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -349,6 +359,8 @@ MonoBehaviour:
   onRevive:
     m_PersistentCalls:
       m_Calls: []
+  isAgent: 0
+  isPlayer: 0
   targetTags: []
   moveSpeed: 1.5
   rotationSpeed: 720

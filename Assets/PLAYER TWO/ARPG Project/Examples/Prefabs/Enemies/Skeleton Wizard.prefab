@@ -293,6 +293,7 @@ MonoBehaviour:
   targetTags:
   - Entity/Player
   - Entity/Summoned
+  - Entity/AI_Agent
   spotRadius: 5
   viewAngle: 110
   viewDistance: 10
