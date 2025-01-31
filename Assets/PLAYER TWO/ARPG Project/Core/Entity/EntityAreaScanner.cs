@@ -56,26 +56,27 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual T GetClosestObjectFromList<T>(List<T> list) where T : Component
         {
-            var totalInteractives = list.Count;
+            if (list == null || list.Count == 0) return null;
 
-            if (totalInteractives == 0) return null;
-            if (totalInteractives == 1) return list[0];
+            T closestObject = null;
+            float closestDistance = Mathf.Infinity;
 
-            var closestId = 0;
-            var closestDistance = 0f;
-
-            for (int i = 0; i < totalInteractives; i++)
+            foreach (T obj in list)
             {
-                var distance = m_entity.GetDistanceTo(list[i].transform.position);
-
-                if (closestDistance == 0 || distance < closestDistance)
+                if (obj == null || obj.transform == null)
                 {
-                    closestId = i;
+                    continue;
+                }
+
+                float distance = m_entity.GetDistanceTo(obj.transform.position);
+                if (distance < closestDistance)
+                {
                     closestDistance = distance;
+                    closestObject = obj;
                 }
             }
 
-            return list[closestId];
+            return closestObject;
         }
 
         public virtual Waypoint GetClosestWaypoint()

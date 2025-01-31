@@ -50,25 +50,66 @@ namespace AI_DDA.Assets.Scripts
             }
         }
 
-    public int playerDeaths = 0;  // Licznik śmierci gracza
-    public int difficultyMultiplier = 0;  // Mnożnik trudności (domyślnie bazuje na wzorze enemiesDefeated % 10)
-    public int enemiesDefeated = 0;  // Licznik pokonanych wrogów
-    public float totalCombatTime = 0f;  // Łączny czas walki
-    public int potionsUsed = 0;  // Licznik użytych mikstur
-    public int zonesDiscovered = 0;
-    public int npcInteractions = 0;
-    public int questsCompleted = 0;
-    public int waypointsDiscovered = 0;
-    public int enemiesAvoided = 0;
-    public string currentDynamicPlayerType = "Unknown";
-    public float lastUpdateTime;
     private bool difficultyAdjusted = false; // Flaga dla wielokrotności 10
     private HashSet<string> discoveredZones = new HashSet<string>();
     private HashSet<int> discoveredWaypoints = new HashSet<int>();
-    public bool isLoggingEnabled { get; set; } = true;
-    public int achievementsUnlocked = 0; // Licznik zdobytych osiągnięć
-    public List<string> unlockedAchievements = new List<string>(); // Lista nazw osiągnięć
     private AchievementManager achievementManager;
+
+    // == GRACZ ==
+    [Header("Player Stats")]
+    [Tooltip("Liczba śmierci gracza.")]
+    public int playerDeaths = 0;
+
+    [Tooltip("Liczba ukończonych misji.")]
+    public int questsCompleted = 0;
+
+    [Tooltip("Lista zdobytych osiągnięć.")]
+    public List<string> unlockedAchievements = new List<string>();
+
+    [Tooltip("Liczba zdobytych osiągnięć.")]
+    public int achievementsUnlocked = 0;
+
+    // == WALKA ==
+    [Space(10)]
+    [Header("Combat Stats")]
+    [Tooltip("Łączny czas walki w sekundach.")]
+    public float totalCombatTime = 0f;
+
+    [Tooltip("Liczba pokonanych wrogów.")]
+    public int enemiesDefeated = 0;
+
+    [Tooltip("Liczba unikniętych walk.")]
+    public int enemiesAvoided = 0;
+
+    [Tooltip("Liczba użytych mikstur.")]
+    public int potionsUsed = 0;
+
+    // == EKSPLORACJA ==
+    [Space(10)]
+    [Header("Exploration Stats")]
+    [Tooltip("Liczba odkrytych stref.")]
+    public int zonesDiscovered = 0;
+
+    [Tooltip("Liczba interakcji z NPC.")]
+    public int npcInteractions = 0;
+
+    [Tooltip("Liczba odkrytych waypointów.")]
+    public int waypointsDiscovered = 0;
+
+    // == SYSTEM ==
+    [Space(10)]
+    [Header("System Stats")]
+    [Tooltip("Mnożnik trudności, domyślnie bazuje na enemiesDefeated % 10.")]
+    public int difficultyMultiplier = 0;
+
+    [Tooltip("Czy logowanie jest włączone.")]
+    public bool isLoggingEnabled { get; set; } = true;
+
+    [Tooltip("Aktualny dynamiczny typ gracza.")]
+    public string currentDynamicPlayerType = "Unknown";
+
+    [Tooltip("Czas ostatniej aktualizacji wartości.")]
+    public float lastUpdateTime;
 
     private void Start()
         {
@@ -108,7 +149,7 @@ namespace AI_DDA.Assets.Scripts
         public void EndCombat()
         {
             totalCombatTime += Time.time - combatStartTime;
-            Debug.Log($"Combat Time: {totalCombatTime}");
+            // Debug.Log($"Combat Time: {totalCombatTime}");
             UpdatePlayerType(); // Recalculate player type
         }
 
