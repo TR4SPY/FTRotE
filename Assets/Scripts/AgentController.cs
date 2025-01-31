@@ -223,7 +223,7 @@ public class AgentController : Agent
         var scanner = GetComponent<EntityAreaScanner>();
         var closestNPC = scanner?.GetClosestInteractiveObject();
 
-        if (closestNPC != null && closestNPC.CanAgentInteract) // **Upewniamy się, że Agent MOŻE wejść w interakcję**
+        if (closestNPC != null && closestNPC.CanAgentInteract)
         {
             float distance = Vector3.Distance(transform.position, closestNPC.transform.position);
             if (interactedNPCs.Contains(closestNPC.name))
@@ -242,8 +242,14 @@ public class AgentController : Agent
             {
                 interactedNPCs.Add(closestNPC.name);
                 closestNPC.Interact(entity);
-                Debug.Log($"[Agent {name}] Interacted with NPC: {closestNPC.name}");
                 agentLogger?.LogNpcInteraction();
+                SetReward(0.75f); // Nagroda za interakcję z NPC
+
+                if (ShouldEndEpisode())
+                {
+                    EndAgentEpisode();
+                }
+
                 return true;
             }
         }
@@ -253,42 +259,45 @@ public class AgentController : Agent
     /// <summary>
     /// Jeśli agent stoi blisko Waypointu, odkryj go i zwróć true.
     /// </summary>
-private bool DiscoverWaypoint()
-{
-    var scanner = GetComponent<EntityAreaScanner>();
-    var closestWaypoint = scanner?.GetClosestWaypoint();
-
-    if (closestWaypoint != null)
+    private bool DiscoverWaypoint()
     {
-        float distance = Vector3.Distance(transform.position, closestWaypoint.transform.position);
+        var scanner = GetComponent<EntityAreaScanner>();
+        var closestWaypoint = scanner?.GetClosestWaypoint();
 
-        // **Sprawdzenie, czy waypoint już odwiedzony**
-        if (visitedWaypoints.Contains(closestWaypoint.GetInstanceID()))
+        if (closestWaypoint != null)
         {
-            Debug.Log($"[Agent {name}] Already visited waypoint {closestWaypoint.name}. Skipping.");
-            return false;
-        }
+            int waypointID = closestWaypoint.GetInstanceID();
 
-        // **Jeśli agent jest za daleko, podchodzi bliżej**
-        if (distance > 3f) 
-        {
-            entity.MoveTo(closestWaypoint.transform.position);
-            Debug.Log($"[Agent {name}] Moving closer to waypoint: {closestWaypoint.name}");
-            return true;
-        }
-        else // **Jeśli agent jest blisko, odkrywa waypoint**
-        {
-            int waypointID = closestWaypoint.GetInstanceID(); // Pobieramy ID waypointa
-            visitedWaypoints.Add(waypointID);
-            Debug.Log($"[Agent {name}] Discovered waypoint: {closestWaypoint.name} (ID: {waypointID})");
+            if (visitedWaypoints.Contains(waypointID))
+            {
+                Debug.Log($"[Agent {name}] Already visited waypoint {closestWaypoint.name}. Skipping.");
+                return false;
+            }
 
-            agentLogger?.LogWaypointDiscovery(waypointID); // **Przekazujemy ID do loggera**
-            return true;
+            float distance = Vector3.Distance(transform.position, closestWaypoint.transform.position);
+
+            if (distance > 3f) 
+            {
+                entity.MoveTo(closestWaypoint.transform.position);
+                Debug.Log($"[Agent {name}] Moving closer to waypoint: {closestWaypoint.name}");
+                return true;
+            }
+            else
+            {
+                visitedWaypoints.Add(waypointID);
+                agentLogger?.LogWaypointDiscovery(waypointID);
+                SetReward(0.5f); // Nagroda za odkrycie waypointu
+
+                if (ShouldEndEpisode())
+                {
+                    EndAgentEpisode();
+                }
+
+                return true;
+            }
         }
+        return false;
     }
-    return false;
-}
-
 
     /// <summary>
     /// Jeżeli nic innego nie robimy, agent wędruje. 
@@ -379,7 +388,10 @@ private bool DiscoverWaypoint()
             }
         }
 
-        return false; // Brak przeciwników
+        // return false; // Brak przeciwników
+        SetReward(-1.0f); // Kara za brak walki
+        Debug.Log($"[Agent {name}] Penalty -1.0 for not engaging in combat.");
+        return false;
     }
 
     private void ResumeExplorationAfterCombat()
@@ -436,6 +448,10 @@ private bool DiscoverWaypoint()
         {
             Debug.Log($"[Agent {name}] Killed enemy: {targetEntity.name}");
             agentLogger?.LogEnemyKilled(targetEntity.name);
+
+            // **Dodajemy nagrodę za pokonanie wroga**
+            SetReward(1.5f);
+            Debug.Log($"[Agent {name}] Reward +1.5 for killing an enemy.");
         }
     }
 
@@ -540,8 +556,13 @@ private bool DiscoverWaypoint()
 
     private void EndAgentEpisode()
     {
-        Debug.Log("[AgentController] Ending episode for AI Agent...");
-        Debug.Log($"[AgentController] Reward before ending: {GetCumulativeReward()}");
+        if (!ShouldEndEpisode()) // Jeśli agent nie spełnił jeszcze wszystkich celów, nie kończymy epizodu
+        {
+            Debug.Log($"[Agent {name}] Episode should not end yet. Continuing.");
+            return;
+        }
+
+        Debug.Log($"[Agent {name}] All exploration goals met. Ending episode...");
 
         if (agentLogger != null)
         {
@@ -554,6 +575,25 @@ private bool DiscoverWaypoint()
         }
 
         EndEpisode();
+    }
+
+/*
+    private bool ShouldEndEpisode()
+    {
+        return (discoveredZones.Count >= totalZones &&
+                visitedWaypoints.Count >= totalWaypoints &&
+                interactedNPCs.Count >= totalNPCs);
+    }
+*/
+    private bool ShouldEndEpisode()
+    {
+        bool allZonesDiscovered = discoveredZones.Count >= Object.FindObjectsByType<ZoneTrigger>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).Length;
+        bool allWaypointsDiscovered = visitedWaypoints.Count >= Object.FindObjectsByType<Waypoint>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).Length;
+        bool allNPCsInteracted = interactedNPCs.Count >= Object.FindObjectsByType<NpcInteractionLogger>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).Length;
+
+        Debug.Log($"[Agent {name}] Checking end conditions: Zones {discoveredZones.Count}/{Object.FindObjectsByType<ZoneTrigger>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).Length}, Waypoints {visitedWaypoints.Count}/{Object.FindObjectsByType<Waypoint>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).Length}, NPCs {interactedNPCs.Count}/{Object.FindObjectsByType<NpcInteractionLogger>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).Length}");
+
+        return allZonesDiscovered && allWaypointsDiscovered && allNPCsInteracted;
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -648,6 +688,8 @@ private bool DiscoverWaypoint()
         if (entity != null && entity.isDead)
         {
         Debug.Log($"[Agent AI] {entity.name} has died. Logging death...");
+        // 2. Kara za śmierć (agent powinien unikać umierania)
+        SetReward(-2.0f); 
 
         if (agentLogger != null)
         {
