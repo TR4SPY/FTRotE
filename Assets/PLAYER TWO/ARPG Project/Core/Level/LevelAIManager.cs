@@ -68,23 +68,45 @@ namespace PLAYERTWO.ARPGProject
             if (!ai || ai.ignoreCulling)
                 return;
 
-            // Sprawdź, czy AI Agent
+            // Jeśli to AI Agent → zawsze aktywny
             if (ai.isAgent)
             {
-                ai.gameObject.SetActive(true); // AI Agent zawsze aktywny
+                ai.gameObject.SetActive(true);
                 return;
             }
 
-            // Oryginalna logika culling
+            // Oryginalna logika culling dla gracza
             m_cullingBounds.center = Level.instance.player.transform.position;
-            var visible = m_cullingBounds.Intersects(ai.bounds);
+            bool isVisibleToPlayer = m_cullingBounds.Intersects(ai.bounds);
 
-            if (ai.gameObject.activeSelf != visible)
+            // Sprawdzenie, czy AI Agent jest blisko
+            bool isVisibleToAgent = false;
+            foreach (var agent in FindObjectsByType<AgentController>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
             {
-                if (visible && ai.isDead && cullCompletelyAfterDeath)
+                if (Vector3.Distance(agent.transform.position, ai.transform.position) < 15f) // 15m zasięgu odmrażania
+                {
+                    isVisibleToAgent = true;
+                    break;
+                }
+            }
+
+            // Jeśli przeciwnik jest widoczny dla gracza LUB agenta, aktywuj go
+            bool shouldBeActive = isVisibleToPlayer || isVisibleToAgent;
+
+            if (ai.gameObject.activeSelf != shouldBeActive)
+            {
+                if (shouldBeActive && ai.isDead && cullCompletelyAfterDeath)
                     return;
 
-                ai.gameObject.SetActive(visible);
+                ai.gameObject.SetActive(shouldBeActive);
+
+                if (shouldBeActive)
+                {
+                    // Wymuszenie restartu AI przez deaktywację i aktywację obiektu
+                    ai.gameObject.SetActive(false);
+                    ai.gameObject.SetActive(true);
+                    Debug.Log($"[Culling] AI {ai.name} reactivated with forced reset.");
+                }
             }
         }
 
