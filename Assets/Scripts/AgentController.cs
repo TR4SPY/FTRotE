@@ -178,11 +178,11 @@ public class AgentController : Agent
 
         // 3) Jeśli idzie do waypointu i zobaczy nową strefę, zmienia cel
         var zone = GetClosestZone();
-        if (zone != null && !discoveredZones.Contains(zone.name))
+        if (zone != null && !HasDiscoveredZone(zone.name))
         {
+            Debug.Log($"[Agent {name}] Moving to explore zone: {zone.name}");
+            target = zone; // Ustawiamy target, żeby uniknąć przypadkowych ponownych odkryć
             DiscoverZone(zone.name);
-            SetRandomTarget(); // **Wybierz nowy cel po odkryciu Zone**
-            return;
         }
 
         // 4) Jeśli idzie do strefy, ale widzi waypoint, najpierw odwiedza waypoint
@@ -462,9 +462,14 @@ private bool DiscoverWaypoint()
         }
     }
 
-    public void DiscoverZone(string zoneName)
+    public string GetTargetName()
     {
-        if (discoveredZones.Contains(zoneName))
+        return target != null ? target.name : "";
+    }
+
+    public void DiscoverZone(string zoneName, bool confirmedByTrigger = false)
+    {
+        if (HasDiscoveredZone(zoneName))
         {
             Debug.Log($"[Agent {name}] Zone {zoneName} already discovered. Skipping.");
             return;
@@ -472,13 +477,18 @@ private bool DiscoverWaypoint()
 
         Debug.Log($"[Agent {name}] Discovering new zone: {zoneName}");
 
-        discoveredZones.Add(zoneName); // Dodanie do listy odkrytych stref
+        discoveredZones.Add(zoneName);
         agentLogger?.LogAgentZoneDiscovery(zoneName);
 
         Debug.Log($"[Agent {name}] Successfully logged zone discovery: {zoneName}");
 
         SetReward(1.0f); // Nagroda za odkrycie
-        SetRandomTarget(); // Ustawienie nowego celu, zamiast kończenia epizodu
+
+        // Jeśli strefa została odkryta przez AI (OnActionReceived), nie zmieniamy celu
+        if (!confirmedByTrigger)
+        {
+            SetRandomTarget();
+        }
     }
 
     public bool HasDiscoveredZone(string zoneName)

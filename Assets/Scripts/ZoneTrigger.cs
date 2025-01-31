@@ -55,11 +55,16 @@ namespace AI_DDA.Assets.Scripts
                 {
                     if (agentController.HasDiscoveredZone(zoneName))
                     {
-                        Debug.Log($"[ZoneTrigger] Agent AI already discovered '{zoneName}'. Skipping.");
+                        Debug.Log($"[ZoneTrigger] AI Agent already discovered '{zoneName}', ignoring duplicate.");
                         return;
                     }
 
-                    agentController.DiscoverZone(zoneName);
+                    // Sprawdzenie, czy agent rzeczywiście się ruszał w stronę tej strefy
+                    if (agentController.GetTargetName() == zoneName)
+                    {
+                        Debug.Log($"[ZoneTrigger] AI Agent reached and confirmed discovery of '{zoneName}'.");
+                        agentController.DiscoverZone(zoneName, true); // Ostateczna weryfikacja odkrycia
+                    }
                 }
             }
 
