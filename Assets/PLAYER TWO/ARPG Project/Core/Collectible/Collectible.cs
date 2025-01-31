@@ -11,6 +11,10 @@ namespace PLAYERTWO.ARPGProject
 
         [Tooltip("The color of the text on the GUI Collectible.")]
         public Color nameColor = Color.white;
+    
+        [Header("Collectible Items Settings")]
+        [Tooltip("Time (in seconds) before the collectible is automatically removed.")]
+        public float lifetime = 30f;
 
         protected virtual void InitializeCanvas()
         {
@@ -71,10 +75,22 @@ namespace PLAYERTWO.ARPGProject
 
         protected abstract bool TryCollect(Inventory inventory);
 
+        private void StartLifetimeTimer()
+        {
+            Invoke(nameof(DestroyCollectible), lifetime);
+        }
+
+        private void DestroyCollectible()
+        {
+            Debug.Log($"[Collectible] {gameObject.name} has been removed after {lifetime} seconds.");
+            Destroy(gameObject);
+        }
+
         protected override void Start()
         {
             base.Start();
             InitializeCanvas();
+            StartLifetimeTimer();
         }
     }
 }
