@@ -8,17 +8,30 @@ This project explores the integration of machine learning techniques, specifical
 
 ### **Objective**
 The primary goal of this project is to design and implement an AI system capable of:
-- **Adapting game difficulty dynamically** to suit the player's skill level and preferences.
+- Adapting game difficulty dynamically to suit the player's skill level and preferences.
 - Enhancing player engagement by providing a tailored gaming experience.
 - Leveraging advanced AI techniques for real-time player modeling and difficulty adjustment.
 
 ### **Current Status**
 The project is built upon a heavily modified version of the **ARPG Project** asset and utilizes the **Gaia Pro 2023** terrain generation asset for an immersive environment. The game prototype currently focuses on integrating machine learning systems for AI-driven adaptations.
 
-Key features targeted in the final implementation:
-1. **Bartle's Player Types Integration**: Adjusting gameplay mechanics based on the player's classification (e.g., achievers, explorers, socializers, and killers).
-2. **AI Adaptation Based on Player Behavior**: Real-time player modeling to adjust difficulty metrics such as enemy strength, environment hazards, and quest complexity.
-3. **Cooperative AI Companion**: Developing an AI-controlled companion that adapts to assist the player effectively.
+#### ✔ **Completed**
+
+- **AI Agent Implementation**: AI can explore, interact with NPCs, fight enemies, and discover zones and waypoints.
+- **Data Logging & Player Modeling**: System logs player and AI behavior (kills, deaths, interactions, exploration, etc.).
+- **Bartle’s Player Type Classification**: AI classifies players based on behavior (Achiever, Explorer, Socializer, Killer).
+- **ML-Agents Integration**: AI functions within Unity ML-Agents for behavior learning.
+- **Final DDA Implementation**: Prototype system for difficulty adjustment is in place.
+
+#### 🚧 **In Progress**
+
+- **Finalizing DDA Implementation**: AI should dynamically adjust difficulty based on player behavior.
+- **Training AI Based on Player Data**: AI should learn from real players' behavior to adjust difficulty effectively.
+- **Experiment Setup & Testing**: Two test groups:
+Group A (DDA ON) – AI adjusts difficulty dynamically
+Group B (DDA OFF) – Static difficulty
+- **Optimizing Enemy AI Behavior**: Ensuring enemies behave correctly when AI Agent interacts with them.
+- **Refinement of Player Modeling & Difficulty Scaling**
 
 ---
 
@@ -28,22 +41,16 @@ Key features targeted in the final implementation:
 - **Game Engine**: Unity (URP 6+)
 - **ML Toolkit**: Unity ML-Agents
 - **Assets**:
-  - ARPG Project (heavily modified)
+  - ARPG Project (heavily modified to fit the purpose of the project)
   - Gaia Pro 2023 (terrain generation and environment design)
 - **Programming Languages**: C# (Unity), Python (for ML model training)
 
-### **AI Models and Methods**
-- **ML-Agents**: Reinforcement learning agents for adaptive mechanics.
-- **Player Modeling**: Techniques such as clustering and Hidden Markov Models (HMMs) to analyze player behavior.
-- **Difficulty Adjustment**: Formulas and heuristics that dynamically adjust based on real-time gameplay data.
-
----
-
-## **Future Work**
-- Finalize AI integration with Unity ML-Agents.
-- Expand on Bartle’s player type modeling.
-- Implement a detailed logging and feedback system for player data.
-- Conduct user testing with two distinct groups: one experiencing AI-DDA and one with static difficulty settings.
+### **Core Components**
+- **Dynamic Difficulty Adjustment (DDA)**: AI adapts enemy strength, spawn rates, and mechanics based on the player.
+- **Player Modeling**: AI analyzes player interactions to classify playstyle.
+- **Bartle’s Player Types**: Comparison of player-declared vs. dynamically classified types.
+- **ML-Agents Training**: AI learns to adjust game mechanics based on real player data.
+- **Experimental Validation**: AI's impact on player experience is tested with two groups of participants.
 
 ---
 
@@ -55,4 +62,4 @@ You can reach me through my official [Contact Page](https://tr4spy.co.uk/portfol
 ---
 
 ## **License**
-This project is for academic purposes only and uses third-party assets (e.g., ARPG Project, Gaia Pro 2023) that are subject to their respective licenses.
+This project is for academic purposes only. It includes third-party assets (e.g., ARPG Project, Gaia Pro 2023) that are subject to their respective licenses.
