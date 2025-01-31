@@ -53,7 +53,13 @@ namespace AI_DDA.Assets.Scripts
                 var agentController = other.GetComponent<AgentController>();
                 if (agentController != null)
                 {
-                    agentController.DiscoverZone(zoneName); // Przekazanie informacji o strefie
+                    if (agentController.HasDiscoveredZone(zoneName))
+                    {
+                        Debug.Log($"[ZoneTrigger] Agent AI already discovered '{zoneName}'. Skipping.");
+                        return;
+                    }
+
+                    agentController.DiscoverZone(zoneName);
                 }
             }
 

@@ -463,28 +463,28 @@ private bool DiscoverWaypoint()
     }
 
     public void DiscoverZone(string zoneName)
-{
-    if (discoveredZones.Contains(zoneName))
     {
-        Debug.Log($"[Agent {name}] Zone {zoneName} already discovered. Skipping.");
-        return; // **Agent ignoruje ponowne odkrycie tej samej Zone**
+        if (discoveredZones.Contains(zoneName))
+        {
+            Debug.Log($"[Agent {name}] Zone {zoneName} already discovered. Skipping.");
+            return;
+        }
+
+        Debug.Log($"[Agent {name}] Discovering new zone: {zoneName}");
+
+        discoveredZones.Add(zoneName); // Dodanie do listy odkrytych stref
+        agentLogger?.LogAgentZoneDiscovery(zoneName);
+
+        Debug.Log($"[Agent {name}] Successfully logged zone discovery: {zoneName}");
+
+        SetReward(1.0f); // Nagroda za odkrycie
+        SetRandomTarget(); // Ustawienie nowego celu, zamiast kończenia epizodu
     }
 
-    Debug.Log($"AI Agent discovered zone: {zoneName}");
-
-    // Przyznaj nagrodę za odkrycie strefy
-    SetReward(1.0f);
-    Debug.Log("Reward given for discovering zone.");
-
-    // Logowanie odkrycia strefy
-    discoveredZones.Add(zoneName);
-    agentLogger?.LogAgentZoneDiscovery(zoneName);
-
-    // **Nie kończymy epizodu, ale ustawiamy nowy cel**
-    Debug.Log("Zone discovered. Selecting new target.");
-    SetRandomTarget();
-}
-
+    public bool HasDiscoveredZone(string zoneName)
+    {
+        return discoveredZones.Contains(zoneName);
+    }
 
     private void InitializeAgentStats()
     {
@@ -530,12 +530,20 @@ private bool DiscoverWaypoint()
 
     private void EndAgentEpisode()
     {
-        // Dodaj własne logi lub operacje przed zakończeniem epizodu
-        Debug.Log("Ending episode for AI Agent...");
-        Debug.Log($"Reward before ending: {GetCumulativeReward()}"); // Sprawdź, czy nagroda jest prawidłowa
-        // Wywołaj bazową metodę EndEpisode()
+        Debug.Log("[AgentController] Ending episode for AI Agent...");
+        Debug.Log($"[AgentController] Reward before ending: {GetCumulativeReward()}");
+
+        if (agentLogger != null)
+        {
+            Debug.Log("[AgentController] Saving agent logs...");
+            agentLogger.SaveAgentLogsToFile();
+        }
+        else
+        {
+            Debug.LogError("[AgentController] AgentBehaviorLogger instance is NULL! Cannot save logs.");
+        }
+
         EndEpisode();
-        agentLogger.SaveAgentLogsToFile();
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)

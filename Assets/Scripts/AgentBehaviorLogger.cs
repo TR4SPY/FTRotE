@@ -39,9 +39,9 @@ namespace AI_DDA.Assets.Scripts
 
         public int zonesDiscovered = 0;
         public int npcInteractions = 0;
-        public int enemiesAvoided = 0;
-        public int skillsUsed = 0;
-        public int enemiesKilled = 0;
+        // public int enemiesAvoided = 0;
+        // public int skillsUsed = 0;
+        public int enemiesDefeated = 0;
         public int agentDeaths = 0; // Licznik śmierci agenta AI
 
         private HashSet<string> discoveredZones = new HashSet<string>();
@@ -52,12 +52,15 @@ namespace AI_DDA.Assets.Scripts
 
         public void LogAgentZoneDiscovery(string zoneName)
         {
-            if (!discoveredZones.Contains(zoneName))
+            if (discoveredZones.Contains(zoneName))
             {
-                discoveredZones.Add(zoneName);
-                zonesDiscovered++;
-                Debug.Log($"Agent AI discovered zone: {zoneName}. Total zones discovered: {zonesDiscovered}");
+                Debug.Log($"[AgentBehaviorLogger] Zone {zoneName} already logged. Skipping.");
+                return;
             }
+
+            discoveredZones.Add(zoneName);
+            zonesDiscovered++;
+            Debug.Log($"Agent AI discovered zone: {zoneName}. Total zones discovered: {zonesDiscovered}");
         }
 
         /// <summary>
@@ -91,8 +94,8 @@ namespace AI_DDA.Assets.Scripts
             if (!loggedKills.Contains(enemyName))
             {
                 loggedKills.Add(enemyName);
-                enemiesKilled++;
-                Debug.Log($"Agent AI killed an enemy: {enemyName}. Total kills: {enemiesKilled}");
+                enemiesDefeated++;
+                Debug.Log($"Agent AI killed an enemy: {enemyName}. Total kills: {enemiesDefeated}");
             }
         }
 
@@ -128,31 +131,90 @@ namespace AI_DDA.Assets.Scripts
 
         public void SaveAgentLogsToFile()
         {
-            var characterInstance = Game.instance?.currentCharacter;
-            if (characterInstance == null)
+            try
             {
-                Debug.LogWarning("No character instance found. Skipping log save.");
-                return;
-            }
+                var characterInstance = Game.instance?.currentCharacter;
+                if (characterInstance == null)
+                {
+                    Debug.LogWarning("[AgentBehaviorLogger] No character instance found. Skipping log save.");
+                    return;
+                }
 
-            string directoryPath = Path.Combine(Application.persistentDataPath, "Logs");
-            if (!Directory.Exists(directoryPath))
+                // Tworzenie folderu "Logs", jeśli nie istnieje
+                string directoryPath = Path.Combine(Application.persistentDataPath, "Logs");
+                if (!Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
+
+                // Formatowanie nazwy pliku i ścieżki
+                string timestamp = System.DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+                string fileName = $"Agent_BehaviorLogs_{characterInstance.name}_{timestamp}.log";
+                string filePath = Path.Combine(directoryPath, fileName);
+
+                using (StreamWriter writer = new StreamWriter(filePath))
+                {
+                    writer.WriteLine($"=== AI Agent Behavior Logs for {characterInstance.name} as of {timestamp} ===");
+                    writer.WriteLine($"Zones Discovered: {zonesDiscovered}");
+                    writer.WriteLine($"Waypoints Discovered: {waypointsDiscovered}");
+                    writer.WriteLine($"NPC Interactions: {npcInteractions}");
+                    writer.WriteLine($"Enemies Defeated: {enemiesDefeated}");
+                    writer.WriteLine($"Agent Deaths: {agentDeaths}");
+
+                    if (discoveredZones.Count > 0)
+                    {
+                        writer.WriteLine("\n=== Zones Discovered ===");
+                        foreach (string zone in discoveredZones)
+                        {
+                            writer.WriteLine($"- {zone}");
+                        }
+                    }
+
+                    if (discoveredWaypoints.Count > 0)
+                    {
+                        writer.WriteLine("\n=== Waypoints Discovered ===");
+                        foreach (int waypoint in discoveredWaypoints)
+                        {
+                            writer.WriteLine($"- Waypoint ID: {waypoint}");
+                        }
+                    }
+                }
+
+                Debug.Log($"[AgentBehaviorLogger] Logs saved successfully to: {filePath}");
+            }
+            catch (Exception ex)
             {
-                Directory.CreateDirectory(directoryPath);
+                Debug.LogError($"[AgentBehaviorLogger] Failed to save logs: {ex.Message}");
             }
-
-            string timestamp = System.DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
-            string fileName = $"AI_BehaviorLogs_{characterInstance.name}.log";
-            string filePath = Path.Combine(directoryPath, fileName);
-
-            using (StreamWriter writer = new StreamWriter(filePath))
-            {
-                writer.WriteLine($"=== AI Agent Behavior Logs for {characterInstance.name} as of {timestamp} ===");
-                writer.WriteLine($"Zones Discovered: {zonesDiscovered}");
-                writer.WriteLine($"NPC Interactions: {npcInteractions}");
-                writer.WriteLine($"Avoided Enemies: {enemiesAvoided}");
-            }
-            Debug.Log($"Agent AI Logs saved to {filePath}");
         }
     }
 }
+
+/*
+                    if (discoveredWaypoints.Count > 0)
+                    {
+                        writer.WriteLine("\n=== Waypoints Discovered ===");
+                        foreach (string waypoint in discoveredWaypoints)
+                        {
+                            writer.WriteLine($"- {waypoint}");
+                        }
+                    }
+
+                    if (interactedNPCs.Count > 0)
+                    {
+                        writer.WriteLine("\n=== NPC Interactions ===");
+                        foreach (string npc in interactedNPCs)
+                        {
+                            writer.WriteLine($"- {npc}");
+                        }
+                    }
+
+                    if (defeatedEnemies.Count > 0)
+                    {
+                        writer.WriteLine("\n=== Enemies Defeated ===");
+                        foreach (string enemy in defeatedEnemies)
+                        {
+                            writer.WriteLine($"- {enemy}");
+                        }
+                    }
+*/
