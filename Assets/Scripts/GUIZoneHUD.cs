@@ -6,36 +6,23 @@ using PLAYERTWO.ARPGProject;
 namespace AI_DDA.Assets.Scripts
 {
     [AddComponentMenu("PLAYER TWO/ARPG Project/GUI/GUI Zone HUD")]
-    public class GUIZoneHUD : MonoBehaviour
+    public class GUIZoneHUD : MonoBehaviour, HUDManager.IHUD
     {
         [Header("Text References")]
-        [Tooltip("A reference to the Text component that represents the zone status.")]
         public Text zoneStatus;
-
-        [Tooltip("A reference to the Text component that represents the zone name.")]
         public Text zoneName;
-
-        [Tooltip("A reference to the Text component that represents the zone description.")]
         public Text zoneDescription;
 
         [Header("Display Settings")]
-        [Tooltip("The duration in seconds the HUD takes to fade in.")]
         public float showDuration = 0.25f;
-
-        [Tooltip("The duration in seconds the HUD takes to fade out.")]
         public float hideDuration = 1f;
-
-        [Tooltip("The duration in seconds before the HUD starts to fade out.")]
         public float hideDelay = 3f;
 
         [Header("Audio Settings")]
-        [Tooltip("The Audio Clip that plays when a new zone is discovered.")]
         public AudioClip zoneDiscoveredClip;
 
         protected CanvasGroup m_group;
-
         protected WaitForSeconds m_waitForHideDelay;
-
         protected GameAudio m_audio => GameAudio.instance;
 
         protected virtual void InitializeCanvasGroup()
@@ -44,6 +31,8 @@ namespace AI_DDA.Assets.Scripts
                 m_group = gameObject.AddComponent<CanvasGroup>();
 
             m_group.alpha = 0;
+            m_group.interactable = false; // Blokowanie interakcji w trakcie animacji
+            m_group.blocksRaycasts = false;
         }
 
         protected virtual void InitializeWaits()
@@ -56,23 +45,47 @@ namespace AI_DDA.Assets.Scripts
             zoneStatus.text = status;
             zoneName.text = name;
             zoneDescription.text = description;
+
+            HUDManager.Instance.RequestDisplay(this); // Dodanie do kolejki
+        }
+
+        public void Show()
+        {
             m_audio.PlayUiEffect(zoneDiscoveredClip);
             StopAllCoroutines();
             StartCoroutine(ShowRoutine());
         }
 
+        public void Hide()
+        {
+            StopAllCoroutines();
+            StartCoroutine(HideRoutine());
+        }
+
         protected IEnumerator ShowRoutine()
         {
-            for (float timer = 0; timer < showDuration; )
+            m_group.interactable = true;
+            m_group.blocksRaycasts = true;
+
+            for (float timer = 0; timer < showDuration;)
             {
                 timer += Time.deltaTime;
                 m_group.alpha = Mathf.Lerp(0, 1, timer / showDuration);
                 yield return null;
             }
 
+            m_group.alpha = 1; // Upewnienie się, że jest w pełni widoczny
             yield return m_waitForHideDelay;
 
-            for (float timer = 0; timer < hideDuration; )
+            Hide(); // Automatyczne ukrywanie po czasie
+        }
+
+        protected IEnumerator HideRoutine()
+        {
+            m_group.interactable = false;
+            m_group.blocksRaycasts = false;
+
+            for (float timer = 0; timer < hideDuration;)
             {
                 timer += Time.deltaTime;
                 m_group.alpha = Mathf.Lerp(1, 0, timer / hideDuration);
@@ -80,7 +93,12 @@ namespace AI_DDA.Assets.Scripts
             }
 
             m_group.alpha = 0;
+
+            yield return new WaitForSeconds(0.1f); // Krótki bufor czasowy
+
+            HUDManager.Instance.OnHUDHidden(this); // Informacja o zakończeniu
         }
+
 
         protected virtual void Start()
         {

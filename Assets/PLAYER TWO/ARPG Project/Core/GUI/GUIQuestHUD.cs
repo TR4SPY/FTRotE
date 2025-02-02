@@ -5,46 +5,28 @@ using UnityEngine.UI;
 namespace PLAYERTWO.ARPGProject
 {
     [AddComponentMenu("PLAYER TWO/ARPG Project/GUI/GUI Quest HUD")]
-    public class GUIQuestHUD : MonoBehaviour
+    public class GUIQuestHUD : MonoBehaviour, HUDManager.IHUD
     {
         [Header("Texts References")]
-        [Tooltip("A reference to the Text component that represents the status of the Quest.")]
         public Text status;
-
-        [Tooltip("A reference to the Text component that represents the title of the Quest.")]
         public Text title;
-
-        [Tooltip("A reference to the Text component that represents the objective of the Quest.")]
         public Text objective;
 
         [Header("Display Settings")]
-        [Tooltip("The duration in seconds the HUD takes to fade in.")]
         public float showDuration = 0.25f;
-
-        [Tooltip("The duration in seconds the HUD takes to fade out.")]
         public float hideDuration = 1f;
-
-        [Tooltip("The duration in seconds before the HUD starts to fade out.")]
         public float hideDelay = 3f;
 
         [Header("Status Messages")]
-        [Tooltip("The status text to use when the Quest was accepted.")]
         public string newQuestStatus = "New Quest";
-
-        [Tooltip("The status text to use when the Quest was completed.")]
         public string questCompletedStatus = "Quest Completed";
 
         [Header("Audio Settings")]
-        [Tooltip("The Audio Clip that plays when the Quest was accepted.")]
         public AudioClip questAccepted;
-
-        [Tooltip("The Audio Clip that plays when the Quest was completed.")]
         public AudioClip questCompleted;
 
         protected CanvasGroup m_group;
-
         protected WaitForSeconds m_waitForHideDelay;
-
         protected GameAudio m_audio => GameAudio.instance;
 
         protected virtual void InitializeWaits()
@@ -71,14 +53,18 @@ namespace PLAYERTWO.ARPGProject
         {
             m_audio.PlayUiEffect(questAccepted);
             UpdateTexts(quest, newQuestStatus);
-            StopAllCoroutines();
-            StartCoroutine(ShowRoutine());
+            HUDManager.Instance.RequestDisplay(this); // Dodanie do kolejki
         }
 
         protected virtual void OnQuestCompleted(QuestInstance quest)
         {
             m_audio.PlayUiEffect(questCompleted);
             UpdateTexts(quest, questCompletedStatus);
+
+            // Kolejkowanie w HUDManager
+            HUDManager.Instance.RequestDisplay(this);
+
+            // Oryginalne zachowanie
             StopAllCoroutines();
             StartCoroutine(ShowRoutine());
         }
@@ -92,9 +78,15 @@ namespace PLAYERTWO.ARPGProject
             objective.text = quest.data.objective;
         }
 
+        public void Show()
+        {
+            StopAllCoroutines();
+            StartCoroutine(ShowRoutine());
+        }
+
         protected IEnumerator ShowRoutine()
         {
-            for (float timer = 0; timer < showDuration; )
+            for (float timer = 0; timer < showDuration;)
             {
                 timer += Time.deltaTime;
                 m_group.alpha = Mathf.Lerp(0, 1, timer / showDuration);
@@ -103,15 +95,34 @@ namespace PLAYERTWO.ARPGProject
 
             yield return m_waitForHideDelay;
 
-            for (float timer = 0; timer < hideDuration; )
-            {
-                timer += Time.deltaTime;
-                m_group.alpha = Mathf.Lerp(1, 0, timer / hideDuration);
-                yield return null;
-            }
-
-            m_group.alpha = 0;
+            Hide(); // Automatyczne ukrywanie po wyświetleniu
         }
+
+        public void Hide()
+        {
+            StopAllCoroutines();
+            StartCoroutine(HideRoutine());
+        }
+
+        protected IEnumerator HideRoutine()
+{
+    m_group.interactable = false;
+    m_group.blocksRaycasts = false;
+
+    for (float timer = 0; timer < hideDuration;)
+    {
+        timer += Time.deltaTime;
+        m_group.alpha = Mathf.Lerp(1, 0, timer / hideDuration);
+        yield return null;
+    }
+
+    m_group.alpha = 0;
+
+    yield return new WaitForSeconds(0.1f); // Krótki bufor czasowy
+
+    HUDManager.Instance.OnHUDHidden(this); // Informacja o zakończeniu
+}
+
 
         protected virtual void Start()
         {
