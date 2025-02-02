@@ -28,6 +28,9 @@ namespace PLAYERTWO.ARPGProject
 
         // Zbiór odwiedzonych waypointów
         public HashSet<int> activatedWaypoints = new HashSet<int>();
+        
+        // Zbiór osiągnięć
+        public List<string> unlockedAchievements = new List<string>();
 
         public CharacterEquipments equipments;
         public CharacterInventory inventory;
@@ -42,7 +45,7 @@ namespace PLAYERTWO.ARPGProject
         public int potionsUsed = 0;
         public int difficultyMultiplier = 0;
         public int zonesDiscovered = 0;
-        public int achievementsUnlocked = 0;
+       // public int achievementsUnlocked = 0;
         public int npcInteractions = 0;
         public int questsCompleted = 0;
         public int waypointsDiscovered = 0;
@@ -222,7 +225,7 @@ namespace PLAYERTWO.ARPGProject
                 questsCompleted = serializer.questsCompleted,
                 waypointsDiscovered = serializer.waypointsDiscovered,
                 questionnaireCompleted = serializer.questionnaireCompleted,
-                achievementsUnlocked = serializer.achievementsUnlocked,
+                // achievementsUnlocked = serializer.achievementsUnlocked,
                 playerType = serializer.playerType,
                 currentDynamicPlayerType = serializer.currentDynamicPlayerType,
                 totalPlayTime = serializer.totalPlayTime,
@@ -235,27 +238,18 @@ namespace PLAYERTWO.ARPGProject
                 // Wczytaj odwiedzone waypointy
                 activatedWaypoints = serializer.activatedWaypoints != null
                     ? new HashSet<int>(serializer.activatedWaypoints)
-                    : new HashSet<int>()
+                    : new HashSet<int>(),
+
+                // **NOWOŚĆ: Wczytaj odblokowane osiągnięcia**
+                unlockedAchievements = serializer.unlockedAchievements != null
+                    ? new List<string>(serializer.unlockedAchievements)
+                    : new List<string>()
             };
 
             // Wczytaj mnożniki trudności
             characterInstance.SetMultiplier("Dexterity", serializer.dexterityMultiplier);
             characterInstance.SetMultiplier("Strength", serializer.strengthMultiplier);
             characterInstance.SetMultiplier("Speed", serializer.speedMultiplier);
-
-            characterInstance.playerDeaths = serializer.playerDeaths;
-            characterInstance.enemiesDefeated = serializer.enemiesDefeated;
-            characterInstance.totalCombatTime = serializer.totalCombatTime;
-            characterInstance.npcInteractions = serializer.npcInteractions;
-            characterInstance.questsCompleted = serializer.questsCompleted;
-            characterInstance.potionsUsed = serializer.potionsUsed;
-            characterInstance.waypointsDiscovered = serializer.waypointsDiscovered;
-            characterInstance.zonesDiscovered = serializer.zonesDiscovered;
-            characterInstance.questionnaireCompleted = serializer.questionnaireCompleted;
-            characterInstance.achievementsUnlocked = serializer.achievementsUnlocked;
-            characterInstance.playerType = serializer.playerType;
-            characterInstance.currentDynamicPlayerType = serializer.currentDynamicPlayerType;
-            characterInstance.totalPlayTime = serializer.totalPlayTime;
 
             return characterInstance;
         }

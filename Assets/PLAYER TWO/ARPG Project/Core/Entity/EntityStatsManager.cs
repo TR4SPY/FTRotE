@@ -592,6 +592,10 @@ namespace PLAYERTWO.ARPGProject
 
             if (experience >= nextLevelExp)
                 LevelUp();
+
+            // Sprawdzenie poziomu po dodaniu doświadczenia
+            // PlayerBehaviorLogger.Instance.CheckPlayerLevel();
+            PlayerBehaviorLogger.Instance.achievementManager?.CheckAchievements(PlayerBehaviorLogger.Instance);
         }
 
         /// <summary>

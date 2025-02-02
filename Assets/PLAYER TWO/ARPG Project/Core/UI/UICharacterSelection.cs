@@ -407,18 +407,24 @@ namespace PLAYERTWO.ARPGProject
 
             var characters = Game.instance.characters;
 
-            // Najpierw usuń powiązane GUI
+            // Usuń stare GUI
             foreach (Transform child in characterCenterPoint)
             {
                 RemoveCharacterGUI(child.gameObject);
             }
-            // Teraz usuń obiekty postaci
+
             foreach (Transform child in characterCenterPoint)
             {
                 Destroy(child.gameObject);
             }
 
-            // Dopiero potem generuj od nowa
+            if (characters.Count == 0)
+            {
+                Debug.LogWarning("No characters to display.");
+                return;
+            }
+
+            // Generowanie postaci w UI
             ArrangeCharactersInSemiCircle(characters, characterCenterPoint, characterRadius, cameraTransform, characterAngleStep);
         }
 
@@ -523,6 +529,11 @@ namespace PLAYERTWO.ARPGProject
             // Wyłącz przycisk "New Character", jeśli gracz ma 5 postaci
             newCharacterButton.interactable = characters.Count < 5;
 
+            if (selectFirstOnStart && m_characters.Count > 0)
+            {
+                SelectFirstCharacter();
+            }
+
             // Na samym końcu - odświeżenie 3D / ustawienie w półokręgu
             RefreshCharacterDisplay();
         }
@@ -542,7 +553,9 @@ namespace PLAYERTWO.ARPGProject
             Game.instance.ReloadGameData();
             InitializeGroups();
             InitializeCallbacks();
-            RefreshList();
+            RefreshList(); // To działa przy dodawaniu/usuwaniu postaci
+
+            RefreshCharacterDisplay();
 
             if (selectFirstOnStart && m_characters.Count > 0)
             {

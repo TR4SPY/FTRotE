@@ -35,7 +35,8 @@ namespace PLAYERTWO.ARPGProject
         public int potionsUsed;
         public int difficultyMultiplier;
         public int zonesDiscovered;
-        public int achievementsUnlocked;
+        // public int achievementsUnlocked;
+        public List<string> unlockedAchievements;
         public int npcInteractions;
         public int questsCompleted;
         public bool questionnaireCompleted = false;
@@ -80,7 +81,7 @@ namespace PLAYERTWO.ARPGProject
             potionsUsed = character.potionsUsed;
             waypointsDiscovered = character.waypointsDiscovered;
             zonesDiscovered = character.zonesDiscovered;
-            achievementsUnlocked = character.achievementsUnlocked;
+           // achievementsUnlocked = character.achievementsUnlocked;
             playerType = character.playerType;
             currentDynamicPlayerType = character.currentDynamicPlayerType;
             totalPlayTime = character.totalPlayTime;
@@ -88,6 +89,7 @@ namespace PLAYERTWO.ARPGProject
             // Save questionnaire completion status
            questionnaireCompleted = character.questionnaireCompleted;
             // Waypoints and Zones lists
+            unlockedAchievements = character.unlockedAchievements != null ? new List<string>(character.unlockedAchievements) : new List<string>();
             visitedZones = character.visitedZones != null ? new List<string>(character.visitedZones) : new List<string>();
             activatedWaypoints = character.activatedWaypoints != null ? new List<int>(character.activatedWaypoints) : new List<int>();
 

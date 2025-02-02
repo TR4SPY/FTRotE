@@ -53,7 +53,7 @@ namespace AI_DDA.Assets.Scripts
     private bool difficultyAdjusted = false; // Flaga dla wielokrotności 10
     private HashSet<string> discoveredZones = new HashSet<string>();
     private HashSet<int> discoveredWaypoints = new HashSet<int>();
-    private AchievementManager achievementManager;
+    public AchievementManager achievementManager { get; private set; }
 
     // == GRACZ ==
     [Header("Player Stats")]
@@ -372,7 +372,25 @@ namespace AI_DDA.Assets.Scripts
             {
                 unlockedAchievements.Add(achievementName);
                 achievementsUnlocked++;
+
                 Debug.Log($"Achievement unlocked: {achievementName}");
+
+                // Pobranie aktualnej postaci gracza
+                var characterInstance = Game.instance?.currentCharacter;
+
+                if (characterInstance != null)
+                {
+                    characterInstance.unlockedAchievements = new List<string>(unlockedAchievements);
+
+                    // Zapisanie osiągnięcia do systemu zapisów gry
+                    Game.instance.GetComponent<GameSave>().SaveLogsForCharacter(characterInstance);
+
+                    Debug.Log($"Achievement '{achievementName}' saved for {characterInstance.name}.");
+                }
+                else
+                {
+                    Debug.LogError("Cannot save achievement: Character instance is NULL.");
+                }
             }
         }
 
@@ -405,7 +423,7 @@ namespace AI_DDA.Assets.Scripts
                 achievementManager = UnityEngine.Object.FindFirstObjectByType<AchievementManager>();
             }
 
-            achievementManager?.CheckAchievements(this);
+            // achievementManager?.CheckAchievements(this);
         }
 
         public static string FormatPlayTime(float totalSeconds)

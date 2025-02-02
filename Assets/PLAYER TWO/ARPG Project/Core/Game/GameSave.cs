@@ -2,6 +2,7 @@ using UnityEngine;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using AI_DDA.Assets.Scripts;
+using System.Collections.Generic;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -162,12 +163,24 @@ namespace PLAYERTWO.ARPGProject
                 }
             }
 
-            // Wczytaj całkowity czas gry
+            // Wczytanie całkowitego czasu gry
             if (Game.instance.currentCharacter != null)
             {
                 Game.instance.currentCharacter.totalPlayTime = character.totalPlayTime;
             }
-            
+
+            PlayerBehaviorLogger.Instance.unlockedAchievements = new List<string>(character.unlockedAchievements);
+            #if UNITY_2023_1_OR_NEWER
+            AchievementManager achievementManager = Object.FindFirstObjectByType<AchievementManager>();
+            #else
+            AchievementManager achievementManager = Object.FindObjectOfType<AchievementManager>();
+            #endif
+
+            if (achievementManager != null)
+            {
+                achievementManager.CheckAchievements(PlayerBehaviorLogger.Instance);
+            }
+
 
             PlayerBehaviorLogger.Instance.playerDeaths = character.playerDeaths;
             PlayerBehaviorLogger.Instance.enemiesDefeated = character.enemiesDefeated;
@@ -178,9 +191,10 @@ namespace PLAYERTWO.ARPGProject
             PlayerBehaviorLogger.Instance.questsCompleted = character.questsCompleted;
             PlayerBehaviorLogger.Instance.potionsUsed = character.potionsUsed;
             PlayerBehaviorLogger.Instance.zonesDiscovered = character.zonesDiscovered;
-            PlayerBehaviorLogger.Instance.achievementsUnlocked = character.achievementsUnlocked;
+            // PlayerBehaviorLogger.Instance.unlockedAchievements = character.unlockedAchievements;
             QuestionnaireManager.Instance.playerType = character.playerType;
             PlayerBehaviorLogger.Instance.currentDynamicPlayerType = character.currentDynamicPlayerType;
+            // PlayerBehaviorLogger.Instance.unlockedAchievements = new List<string>(character.unlockedAchievements);
 
              // Wczytaj łączny czas gry
             PlayerBehaviorLogger.Instance.lastUpdateTime = Time.time; // Inicjalizacja czasu
@@ -240,10 +254,11 @@ namespace PLAYERTWO.ARPGProject
             character.questsCompleted = PlayerBehaviorLogger.Instance.questsCompleted;
             character.potionsUsed = PlayerBehaviorLogger.Instance.potionsUsed;
             character.zonesDiscovered = PlayerBehaviorLogger.Instance.zonesDiscovered;
-            character.achievementsUnlocked = PlayerBehaviorLogger.Instance.achievementsUnlocked;
-            //character.playerType = QuestionnaireManager.Instance.playerType;
+            // character.unlockedAchievements = PlayerBehaviorLogger.Instance.unlockedAchievements;
+            // character.playerType = QuestionnaireManager.Instance.playerType;
             character.playerType = QuestionnaireManager.Instance?.playerType ?? "Undefined";
             character.currentDynamicPlayerType = PlayerBehaviorLogger.Instance?.currentDynamicPlayerType ?? "Unknown";
+            character.unlockedAchievements = new List<string>(PlayerBehaviorLogger.Instance.unlockedAchievements);
 
             Debug.Log($"Saved Player Behavior Logs for {character.name}");
         }
