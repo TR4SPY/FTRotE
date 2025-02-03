@@ -13,8 +13,10 @@ namespace PLAYERTWO.ARPGProject
     {
         [Tooltip("A reference to the Input Field component used to input the character name.")]
         public InputField characterName;
-        [Tooltip("Transform location to instantiate the class prefab preview")]
+        //[Tooltip("Transform location to instantiate the class prefab preview")]
         //public Transform previewTransform;  // This is the new Transform field
+        [Tooltip("The maximum amount of letters in Characters name.")]
+        public GameObject maxCharactersWarning; // Obiekt "Max Characters" w scenie
         public float yRotation = 0f; // Rotation around Y-axis in degrees
         private GameObject currentPreview;
 
@@ -34,8 +36,11 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The Audio Clip that plays when cancelling the form.")]
         public AudioClip cancelFormClip;
 
-        [Tooltip("TYhe Audio Clip that plays when submitting the form.")]
+        [Tooltip("The Audio Clip that plays when submitting the form.")]
         public AudioClip submitFormClip;
+
+        private Coroutine hideWarningCoroutine; // Referencja do korutyny, aby ją przerwać, jeśli to konieczne
+
 
         protected string[] m_characterNames;
 
@@ -99,7 +104,7 @@ namespace PLAYERTWO.ARPGProject
         }
 
         protected virtual bool ValidName(string name) =>
-            name.Length > 0 && !m_characterNames.Contains(name);
+    name.Length > 0 && name.Length <= 16 && !m_characterNames.Contains(name);
 
         protected IEnumerator SelectInputField()
         {
@@ -111,10 +116,64 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void Start()
         {
+            characterName.characterLimit = 16;// Ograniczenie nazwy postaci do 16 znaków
+            //characterLimitInfo.text = "Max 16 characters."; 
+
+            characterName.onValueChanged.AddListener(HandleNameInput);
+
             createButton.onClick.AddListener(HandleSubmit);
             characterName.onValueChanged.AddListener((value) =>
                 createButton.interactable = ValidName(value));
             characterClass.onValueChanged.AddListener(HandleClassChange);
+        }
+
+        private void HandleNameInput(string name)
+    {
+        if (name.Length >= 16)
+        {
+            ShowMaxCharactersWarning();
+        }
+        else
+        {
+            // Jeśli długość jest mniejsza niż 16, ukryj ostrzeżenie natychmiast
+            if (maxCharactersWarning.activeSelf)
+            {
+                HideMaxCharactersWarningImmediately();
+            }
+        }
+    }
+
+        private void ShowMaxCharactersWarning()
+        {
+            if (maxCharactersWarning != null)
+            {
+                maxCharactersWarning.SetActive(true);
+
+                // Resetowanie timera, jeśli gracz nadal próbuje wpisywać więcej znaków
+                if (hideWarningCoroutine != null)
+                {
+                    StopCoroutine(hideWarningCoroutine);
+                }
+
+                // Ustawienie ukrycia po 5 sekundach
+                hideWarningCoroutine = StartCoroutine(HideWarningAfterDelay(5f));
+            }
+        }
+        private void HideMaxCharactersWarningImmediately()
+        {
+            if (hideWarningCoroutine != null)
+            {
+                StopCoroutine(hideWarningCoroutine);
+                hideWarningCoroutine = null;
+            }
+            maxCharactersWarning.SetActive(false);
+        }
+
+        private IEnumerator HideWarningAfterDelay(float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            maxCharactersWarning.SetActive(false);
+            hideWarningCoroutine = null;
         }
 
         private void HandleClassChange(int index)

@@ -65,8 +65,8 @@ namespace PLAYERTWO.ARPGProject
             HUDManager.Instance.RequestDisplay(this);
 
             // Oryginalne zachowanie
-            StopAllCoroutines();
-            StartCoroutine(ShowRoutine());
+            // StopAllCoroutines();
+            // StartCoroutine(ShowRoutine());
         }
 
         protected virtual void OnQuestRemoved(QuestInstance quest) { }

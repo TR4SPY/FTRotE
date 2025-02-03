@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -16,7 +17,16 @@ namespace PLAYERTWO.ARPGProject
         public Transform m_target; // Właściwość tylko do odczytu
         protected Camera m_camera;
 
-        protected virtual void InitializeCamera() => m_camera = Camera.main;
+        protected virtual void InitializeCamera()
+        {
+            m_camera = Camera.main;
+
+            if (m_camera == null)
+            {
+                Debug.LogWarning("Main Camera not found! Retrying...");
+                StartCoroutine(RetryInitializeCamera());
+            }
+        }
 
         /// <summary>
         /// Sets the character info to display.
@@ -40,7 +50,26 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void Start()
         {
-            InitializeCamera();
+            if (m_camera == null)
+            {
+                m_camera = Camera.main;
+                if (m_camera == null)
+                {
+                    Debug.LogWarning("Main Camera not found. Retrying...");
+                    StartCoroutine(RetryInitializeCamera());
+                }
+            }
+        }
+
+        private IEnumerator RetryInitializeCamera()
+        {
+            yield return new WaitForSeconds(0.1f); // Poczekaj 100 ms
+            m_camera = Camera.main;
+
+            if (m_camera == null)
+            {
+                Debug.LogError("Failed to initialize Main Camera after retry.");
+            }
         }
 
         protected virtual void LateUpdate()
@@ -48,8 +77,8 @@ namespace PLAYERTWO.ARPGProject
             // Sprawdź, czy m_target jest zniszczony
             if (m_target == null || m_target.Equals(null))
             {
-                Debug.LogWarning("Target has been destroyed. Destroying UI element.");
-                Destroy(this.gameObject);
+                Debug.LogWarning("Target has been destroyed. Delaying UI removal.");
+                StartCoroutine(DelayedDestroy(0.5f)); // Opóźnienie przed usunięciem UI
                 return;
             }
 
@@ -57,6 +86,7 @@ namespace PLAYERTWO.ARPGProject
             var screenPos = m_camera.WorldToScreenPoint(position);
             transform.position = screenPos;
 
+            // Kontrola widoczności w zależności od położenia względem kamery
             if (screenPos.z < 0)
             {
                 infoText.enabled = false; // Ukryj, gdy postać jest za kamerą
@@ -68,5 +98,16 @@ namespace PLAYERTWO.ARPGProject
                 levelText.enabled = true;
             }
         }
+
+        private IEnumerator DelayedDestroy(float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            if (m_target == null || m_target.Equals(null))
+            {
+                Debug.LogWarning("Final check failed. Destroying UI element.");
+                Destroy(this.gameObject);
+            }
+        }
+
     }
 }

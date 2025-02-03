@@ -316,7 +316,7 @@ namespace PLAYERTWO.ARPGProject
 
                     // Obrót o 180 stopni (jeśli prefab jest zwrócony tyłem)
                     //characterObject.transform.rotation = Quaternion.Euler(0, characterObject.transform.rotation.eulerAngles.y + 180, 0);
-                    
+
                     // Dodaj wyposażenie do postaci
                     AttachEquipment(characterInstance, characterObject);
 
@@ -325,7 +325,7 @@ namespace PLAYERTWO.ARPGProject
                 }
             }
         }
-        
+
         private void DisplayCharacterInfo(GameObject characterObject, CharacterInstance characterInstance)
         {
             if (characterObject == null || characterInstance == null)
@@ -407,24 +407,18 @@ namespace PLAYERTWO.ARPGProject
 
             var characters = Game.instance.characters;
 
-            // Usuń stare GUI
+            // Najpierw usuń powiązane GUI
             foreach (Transform child in characterCenterPoint)
             {
                 RemoveCharacterGUI(child.gameObject);
             }
-
+            // Teraz usuń obiekty postaci
             foreach (Transform child in characterCenterPoint)
             {
                 Destroy(child.gameObject);
             }
 
-            if (characters.Count == 0)
-            {
-                Debug.LogWarning("No characters to display.");
-                return;
-            }
-
-            // Generowanie postaci w UI
+            // Dopiero potem generuj od nowa
             ArrangeCharactersInSemiCircle(characters, characterCenterPoint, characterRadius, cameraTransform, characterAngleStep);
         }
 
@@ -529,11 +523,6 @@ namespace PLAYERTWO.ARPGProject
             // Wyłącz przycisk "New Character", jeśli gracz ma 5 postaci
             newCharacterButton.interactable = characters.Count < 5;
 
-            if (selectFirstOnStart && m_characters.Count > 0)
-            {
-                SelectFirstCharacter();
-            }
-
             // Na samym końcu - odświeżenie 3D / ustawienie w półokręgu
             RefreshCharacterDisplay();
         }
@@ -553,9 +542,7 @@ namespace PLAYERTWO.ARPGProject
             Game.instance.ReloadGameData();
             InitializeGroups();
             InitializeCallbacks();
-            RefreshList(); // To działa przy dodawaniu/usuwaniu postaci
-
-            RefreshCharacterDisplay();
+            RefreshList();
 
             if (selectFirstOnStart && m_characters.Count > 0)
             {

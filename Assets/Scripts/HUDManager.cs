@@ -34,15 +34,22 @@ public class HUDManager : MonoBehaviour
 
     public void RequestDisplay(IHUD hud)
     {
-        if (activeHUD == null && !isAnimating) // Sprawdza, czy animacja się zakończyła
+        if (activeHUD == hud || hudQueue.Contains(hud))
+        {
+            Debug.Log($"[HUDManager] HUD '{hud}' is already queued or active.");
+            return; // Zapobiega duplikacji
+        }
+
+        if (activeHUD == null && !isAnimating)
         {
             activeHUD = hud;
-            isAnimating = true; // Blokada nowych animacji
+            isAnimating = true;
             activeHUD.Show();
         }
         else
         {
             hudQueue.Enqueue(hud);
+            Debug.Log($"[HUDManager] HUD '{hud}' added to queue.");
         }
     }
 
