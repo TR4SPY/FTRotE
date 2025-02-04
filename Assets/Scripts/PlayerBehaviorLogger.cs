@@ -65,9 +65,7 @@ namespace AI_DDA.Assets.Scripts
 
     [Tooltip("Lista zdobytych osiągnięć.")]
     public List<string> unlockedAchievements = new List<string>();
-
-    [Tooltip("Liczba zdobytych osiągnięć.")]
-    public int achievementsUnlocked = 0;
+    // public int achievementsUnlocked = 0;
 
     // == WALKA ==
     [Space(10)]
@@ -371,7 +369,7 @@ namespace AI_DDA.Assets.Scripts
             if (!unlockedAchievements.Contains(achievementName))
             {
                 unlockedAchievements.Add(achievementName);
-                achievementsUnlocked++;
+                // achievementsUnlocked++;
 
                 Debug.Log($"Achievement unlocked: {achievementName}");
 

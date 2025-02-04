@@ -5145,7 +5145,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 94128309}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.1811091, z: 0, w: -0.98346305}
+  m_LocalRotation: {x: 0, y: 0.17528006, z: 0, w: -0.98451865}
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -17685,7 +17685,7 @@ Transform:
   m_GameObject: {fileID: 758569906}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 154.2464, y: 84.25612, z: -182.20145}
+  m_LocalPosition: {x: 0, y: 62.5, z: -1.5}
   m_LocalScale: {x: 5, y: 5, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -29078,14 +29078,14 @@ MonoBehaviour:
   m_snowingHeight: 60
   m_snowFadeHeight: 50
   m_snowDuration: 0
-  m_snowWaitTime: 313.844
+  m_snowWaitTime: 478.22284
   m_snowSampleStrength: 0
   m_savedSnowingHeight: 66.47059
   m_enableRain: 1
   m_rainIntensity: 0
   m_rainSampleStrength: 0
   m_rainDuration: 0
-  m_rainWaitTime: 209.39346
+  m_rainWaitTime: 412.67062
   m_thunderLightColor: {r: 0, g: 0.6313726, b: 1, a: 1}
   m_thunderLightIntensity: 2
   m_thunderAudioSources:
@@ -29456,7 +29456,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1363076298}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.7865177, z: 0, w: -0.6175677}
+  m_LocalRotation: {x: 0, y: 0.775419, z: 0, w: -0.63144714}
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -35009,6 +35009,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1670430368}
   m_Mesh: {fileID: 4300000, guid: 00df577a07381ac4598d3e507409d301, type: 2}
+--- !u!1 &1684259304 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2398989193546623826, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
+  m_PrefabInstance: {fileID: 2067597920}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1698026617 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1920158762507531025, guid: 35348ac853f10584a9e52b978af197f9, type: 3}
@@ -35572,7 +35577,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1960832360}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0.54996985, z: 0, w: 0.8351845}
+  m_LocalRotation: {x: 0, y: -0.5400366, z: 0, w: 0.84164155}
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -36243,6 +36248,10 @@ PrefabInstance:
       propertyPath: characterInfoUIPrefab
       value: 
       objectReference: {fileID: 8197811411045361170, guid: 407cdefd85304a884a37b848f35b1ce3, type: 3}
+    - target: {fileID: 8623960419138738253, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
+      propertyPath: maxCharactersWarning
+      value: 
+      objectReference: {fileID: 1684259304}
     - target: {fileID: 8623960419174758715, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
       propertyPath: m_IsActive
       value: 0

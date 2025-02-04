@@ -114,17 +114,26 @@ namespace AI_DDA.Assets.Scripts
 
         private HashSet<string> loggedKills = new HashSet<string>();
 
-        public void LogEnemyKilled(string enemyName)
-        {
-            if (!loggedKills.Contains(enemyName))
-            {
-                int oldValue = enemiesDefeated;
-                loggedKills.Add(enemyName);
-                enemiesDefeated++;
-                SaveLogs(oldValue, enemiesDefeated);
-                Debug.Log($"Agent AI killed an enemy: {enemyName}. Total kills: {enemiesDefeated}");
-            }
-        }
+        private HashSet<string> loggedEnemies = new HashSet<string>(); // Zestaw do śledzenia zalogowanych przeciwników
+
+public void LogEnemyKilled(string enemyName)
+{
+    if (enemyName == "Agent AI")
+    {
+        Debug.LogWarning("Attempted to log agent's own death as an enemy kill. Ignoring...");
+        return;
+    }
+
+    if (!loggedEnemies.Contains(enemyName))
+    {
+        loggedEnemies.Add(enemyName);
+        enemiesDefeated++;
+
+        Debug.Log($"Agent AI killed an enemy: {enemyName}. Total kills: {enemiesDefeated}");
+    }
+}
+
+
         public void StartCombat()
         {
             Debug.Log($"[AgentBehaviorLogger] Combat started!");
@@ -150,24 +159,19 @@ namespace AI_DDA.Assets.Scripts
         }
 
         public void LogAgentDeath(Entity entity)
-        {
-            if (!agentDeathLogged)
-            {
-                int oldValue = agentDeaths;
-                agentDeathLogged = true;
-                agentDeaths++;
-                SaveLogs(oldValue, agentDeaths);
-                Debug.Log($"{GetActor(entity)} died! Total agent deaths: {agentDeaths}");
+{
+    if (entity.isDead && !agentDeathLogged)
+    {
+        agentDeaths++; 
+        agentDeathLogged = true;  // Ustawienie flagi po zalogowaniu śmierci
+        Debug.Log($"Agent death logged. Total deaths: {agentDeaths}");
+    }
+}
 
-                entity.Invoke(nameof(ResetAgentDeathLog), 1f);
-            }
-        }
-
-        private void ResetAgentDeathLog()
+        public void ResetAgentDeathLog()
         {
             agentDeathLogged = false;
         }
-
 
         private string GetActor(Entity entity)
         {

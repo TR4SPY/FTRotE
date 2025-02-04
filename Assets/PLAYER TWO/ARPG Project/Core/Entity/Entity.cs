@@ -639,20 +639,7 @@ namespace PLAYERTWO.ARPGProject
         }
         else if (CompareTag("Entity/AI_Agent"))
         {
-            var agentLogger = GetComponent<AgentBehaviorLogger>();
-            if (agentLogger != null)
-            {
-                var entity = GetComponent<Entity>();
-                if (entity != null)
-                {
-                    agentLogger.LogAgentDeath(entity);
-                }
-                Debug.Log("Agent death logged for Entity/AI_Agent.");
-            }
-            else
-            {
-                Debug.LogError("AgentBehaviorLogger not found on agent entity!");
-            }
+            Debug.Log("Agent death detected, logging handled by AgentController.");
         }
         else if (CompareTag("Entity/Enemy"))
         {

@@ -35,7 +35,13 @@ public class AgentController : Agent
     private HashSet<string> interactedNPCs = new HashSet<string>(); // Lista interakcji
     private HashSet<string> discoveredZones = new HashSet<string>();  
     private HashSet<int> visitedWaypoints = new HashSet<int>();
-
+    private float inactivityTimer = 0f; // Timer do śledzenia braku aktywności
+    private const float inactivityThreshold = 60f; // Limit braku aktywności (w sekundach)
+    private int actionsTaken = 0; // Licznik wykonanych akcji
+    private const int maxActionsPerEpisode = 1000; // Maksymalna liczba akcji w epizodzie
+    private int maxZones;
+    private int maxNPCs;
+    private int  maxWaypoints; 
 
     public Transform target; // Cel agenta
     public bool isAI = true; // Flaga do identyfikacji jako AI Agent
@@ -99,17 +105,40 @@ public class AgentController : Agent
 
     public override void OnEpisodeBegin()
     {
+        ResetAgent();
+        InitializeDynamicLimits();
+
         // Reset pozycji AI Agenta
         // Vector3 startPosition = new Vector3(Random.Range(-50f, 50f), 0.5f, Random.Range(-50f, 50f));
         // entity.Teleport(startPosition, Quaternion.identity);
 
         Debug.Log("Episode has started");
+
         // Debug.Log($"Agent position: {transform.position}");
         // Ustaw nowy cel
         SetRandomTarget();
-       // Debug.Log($"Target: {target?.name ?? "No target set"}");
 
-        Debug.Log($"Agent {name} initialized. Entity moveSpeed: {entity.moveSpeed}");
+        // Debug.Log($"Target: {target?.name ?? "No target set"}");
+        // Debug.Log($"Agent {name} initialized. Entity moveSpeed: {entity.moveSpeed}");
+    }
+    
+    private void ResetAgent()
+    {
+        interactedNPCs.Clear();         // Reset interakcji z NPC
+        discoveredZones.Clear();        // Reset odkrytych stref
+        visitedWaypoints.Clear();       // Reset odwiedzonych waypointów
+        inactivityTimer =0f;            // Reset licznika nieaktywności
+        inCombat = false;               // Agent nie jest w walce na starcie epizodu
+    }
+
+    private void InitializeDynamicLimits()
+    {
+        maxZones = Object.FindObjectsByType<ZoneTrigger>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).Length;
+        maxWaypoints = Object.FindObjectsByType<Waypoint>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).Length;
+        maxNPCs = Object.FindObjectsByType<Interactive>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
+                    .Count(npc => npc.CanAgentInteract);
+
+        Debug.Log($"Limity na epizod: Zones={maxZones}, Waypoints={maxWaypoints}, NPCs={maxNPCs}");
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -162,38 +191,47 @@ public class AgentController : Agent
     // -------------------------------------------------
     // Główne sterowanie akcji (priorytety)
     // -------------------------------------------------
-   public override void OnActionReceived(ActionBuffers actions)
+    public override void OnActionReceived(ActionBuffers actions)
     {
         agentWantsToMove = false;
+
+        // Zwiększenie licznika akcji
+        actionsTaken++;
+
+        // Resetowanie timera braku aktywności po wykonaniu akcji
+        inactivityTimer = 0f;
 
         float moveX = actions.ContinuousActions[0];
         float moveZ = actions.ContinuousActions[1];
         Vector3 moveDir = new Vector3(moveX, 0f, moveZ).normalized;
 
-        // 1) Priorytet: Jeśli wróg jest w pobliżu → walka!
         if (FindAndAttackEnemy()) return;
-
-        // 2) Jeśli widzi NPC po drodze, wchodzi w interakcję i potem kontynuuje swój cel
-        bool isInteracting = false;
-        
         if (InteractWithNPC()) return;
-        
-        if (isInteracting) return; // **Nie wykonuj kolejnych działań, jeśli trwa interakcja**
 
-        // 3) Jeśli idzie do waypointu i zobaczy nową strefę, zmienia cel
         var zone = GetClosestZone();
         if (zone != null && !HasDiscoveredZone(zone.name))
         {
-           // Debug.Log($"[Agent {name}] Moving to explore zone: {zone.name}");
-            target = zone; // Ustawiamy target, żeby uniknąć przypadkowych ponownych odkryć
+            target = zone;
             DiscoverZone(zone.name);
+            inactivityTimer = 0f; // Reset po odkryciu strefy
         }
 
-        // 4) Jeśli idzie do strefy, ale widzi waypoint, najpierw odwiedza waypoint
-        if (DiscoverWaypoint()) return;
+        if (DiscoverWaypoint())
+        {
+            inactivityTimer = 0f; // Reset po odkryciu waypointu
+            return;
+        }
 
-        // 5) Jeśli nie ma żadnych innych priorytetów, kontynuuje swoją eksplorację
         ContinueExploration(moveDir);
+
+        // Zwiększanie timera bezczynności, jeśli agent się nie porusza
+        inactivityTimer += Time.deltaTime;
+
+        if (ShouldEndEpisode())
+        {
+            Debug.Log($"[Agent {name}] Ending episode due to conditions met.");
+            EndEpisode();
+        }
     }
 
     private IEnumerator RunCoroutineAndSetFlag(IEnumerator coroutine, System.Action onComplete)
@@ -230,24 +268,29 @@ public class AgentController : Agent
         if (closestNPC != null && closestNPC.CanAgentInteract)
         {
             float distance = Vector3.Distance(transform.position, closestNPC.transform.position);
+
             if (interactedNPCs.Contains(closestNPC.name))
             {
-               // Debug.Log($"[Agent {name}] Already interacted with NPC {closestNPC.name}. Skipping.");
+                AddReward(-0.2f); // Kara za próbę ponownej interakcji
+                Debug.Log($"[Agent {name}] Penalty for duplicate interaction with {closestNPC.name}: -0.2");
                 return false;
             }
 
-            if (distance > 2f) 
+            if (distance > 2f)
             {
                 entity.MoveTo(closestNPC.transform.position);
-               // Debug.Log($"[Agent {name}] Moving closer to NPC: {closestNPC.name}");
                 return true;
             }
             else
             {
                 interactedNPCs.Add(closestNPC.name);
+                inactivityTimer = 0f; // Reset timera bezczynności po udanej interakcji
+
                 closestNPC.Interact(entity);
                 agentLogger?.LogNpcInteraction();
-                SetReward(0.75f); // Nagroda za interakcję z NPC
+
+                AddReward(1.0f); // Zbalansowana nagroda za interakcję z NPC
+                Debug.Log($"[Agent {name}] Successfully interacted with {closestNPC.name}. Reward: +1.0");
 
                 if (ShouldEndEpisode())
                 {
@@ -274,50 +317,57 @@ public class AgentController : Agent
 
             if (waypoint == null)
             {
-               // Debug.LogWarning($"[Agent {name}] Waypoint component is missing on {closestWaypoint.name}! Skipping discovery.");
                 return false;
             }
 
-            int waypointID = waypoint.waypointID; // Stałe ID waypointu
+            int waypointID = waypoint.waypointID;
 
             if (visitedWaypoints.Contains(waypointID))
             {
-               // Debug.Log($"[Agent {name}] Already visited waypoint {waypointID}. Skipping.");
+                AddReward(-0.1f); // Kara za próbę odkrycia już odwiedzonego waypointu
+                Debug.Log($"[Agent {name}] Penalty for revisiting waypoint {waypointID}: -0.1");
                 return false;
             }
 
             float distance = Vector3.Distance(transform.position, closestWaypoint.transform.position);
 
-            if (distance > 3f) 
+            if (distance > 3f)
             {
                 entity.MoveTo(closestWaypoint.transform.position);
-               // Debug.Log($"[Agent {name}] Moving closer to waypoint: {waypointID}");
                 return true;
             }
             else
             {
                 visitedWaypoints.Add(waypointID);
-                
+                inactivityTimer = 0f; // Reset timera bezczynności po odkryciu waypointu
+
                 if (!agentLogger.discoveredWaypoints.Contains(waypointID))
                 {
                     agentLogger.LogWaypointDiscovery(waypointID);
-                   // Debug.Log($"[Agent {name}] Waypoint {waypointID} logged successfully.");
                 }
-                
-                SetReward(0.5f);
+
+                AddReward(0.4f); // Nagroda za odkrycie nowego waypointu
+                Debug.Log($"[Agent {name}] Discovered waypoint {waypointID}. Reward: +0.4");
+
+                // Bonus za odkrycie wszystkich waypointów w epizodzie
+                int totalWaypoints = Object.FindObjectsByType<Waypoint>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).Length;
+                if (visitedWaypoints.Count == totalWaypoints)
+                {
+                    AddReward(1.0f); // Bonus
+                    Debug.Log($"[Agent {name}] All waypoints discovered. Bonus reward: +1.0");
+                }
 
                 if (ShouldEndEpisode())
                 {
                     EndAgentEpisode();
                 }
 
-               // Debug.Log($"[Agent {name}] Discovered a new waypoint: {waypointID}. Total discovered: {visitedWaypoints.Count}");
-
                 return true;
             }
         }
         return false;
     }
+
 
     /// <summary>
     /// Jeżeli nic innego nie robimy, agent wędruje. 
@@ -399,8 +449,8 @@ public class AgentController : Agent
             {
                 combatStartTime = Time.time;
                 inCombat = true;
-                agentLogger?.StartCombat();  // **NOWOŚĆ: Zapisujemy start walki**
-               // Debug.Log($"[Agent {name}] Entered combat.");
+                inactivityTimer = 0f; // Reset timera bezczynności po rozpoczęciu walki
+                agentLogger?.StartCombat();
             }
 
             if (distanceToEnemy <= 1.5f) // **Zasięg ataku**
@@ -423,14 +473,13 @@ public class AgentController : Agent
             totalCombatTime += combatDuration;
             combatTimeInEpisode += combatDuration;
             inCombat = false;
-            agentLogger?.EndCombat(combatDuration); // **NOWOŚĆ: Przekazujemy czas walki do loggera**
-            
-           // Debug.Log($"[Agent {name}] Exited combat. Duration: {combatDuration}s | Total Combat Time: {totalCombatTime}s | Combat Time in Episode: {combatTimeInEpisode}s");
+
+            agentLogger?.EndCombat(combatDuration);
+            Debug.Log($"[Agent {name}] Exited combat. Duration: {combatDuration}s | Total Combat Time: {totalCombatTime}s | Combat Time in Episode: {combatTimeInEpisode}s");
         }
 
         return false;
     }
-
 
     private void ResumeExplorationAfterCombat()
     {
@@ -470,29 +519,35 @@ public class AgentController : Agent
         // **Nowe sprawdzenie, czy wróg rzeczywiście umarł**
         StartCoroutine(WaitForEnemyDeath(targetEntity));
     }
-
     private IEnumerator WaitForEnemyDeath(Entity targetEntity)
+{
+    float timeout = 2f; // Maksymalnie 2 sekundy czekania
+    float elapsed = 0f;
+
+    while (!targetEntity.isDead && elapsed < timeout)
     {
-        float timeout = 2f; // Maksymalnie 2 sekundy czekania
-        float elapsed = 0f;
+        elapsed += Time.deltaTime;
+        yield return null;
+    }
 
-        while (!targetEntity.isDead && elapsed < timeout)
-        {
-            elapsed += Time.deltaTime;
-            yield return null; // Poprawne oczekiwanie na zakończenie warunku
-        }
-
-        if (targetEntity.isDead)
+    if (targetEntity.isDead)
+    {
+        // Zabezpieczenie: sprawdź, czy to NIE jest agent
+        if (!targetEntity.isAgent)
         {
             Debug.Log($"[Agent {name}] Killed enemy: {targetEntity.name}");
             agentLogger?.LogEnemyKilled(targetEntity.name);
 
-            // **Dodajemy nagrodę za pokonanie wroga**
-            SetReward(1.5f);
+            AddReward(1.5f); 
+            inactivityTimer = 0f;
             Debug.Log($"[Agent {name}] Reward +1.5 for killing an enemy.");
         }
+        else
+        {
+            Debug.LogWarning($"[Agent {name}] Attempted to log own death as enemy kill. Skipping...");
+        }
     }
-
+}
     private void SetRandomTarget()
     {
         var targets = Object.FindObjectsByType<ZoneTrigger>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
@@ -525,23 +580,27 @@ public class AgentController : Agent
     {
         if (HasDiscoveredZone(zoneName))
         {
-            Debug.Log($"[Agent {name}] Zone {zoneName} already discovered. Skipping.");
+            Debug.Log($"[Agent {name}] Zone '{zoneName}' already discovered. Skipping.");
+            AddReward(-0.1f); // Kara za próbę ponownego odkrycia tej samej strefy
             return;
         }
 
         Debug.Log($"[Agent {name}] Discovering new zone: {zoneName}");
 
         discoveredZones.Add(zoneName);
+        inactivityTimer = 0f; // Reset timera bezczynności po odkryciu strefy
+
         agentLogger?.LogAgentZoneDiscovery(zoneName);
+        AddReward(0.75f); // Zbalansowana nagroda za odkrycie strefy
 
-        Debug.Log($"[Agent {name}] Successfully logged zone discovery: {zoneName}");
-
-        SetReward(1.0f); // Nagroda za odkrycie
-
-        // Jeśli strefa została odkryta przez AI (OnActionReceived), nie zmieniamy celu
         if (!confirmedByTrigger)
         {
             SetRandomTarget();
+        }
+
+        if (ShouldEndEpisode())
+        {
+            EndAgentEpisode();
         }
     }
 
@@ -648,19 +707,15 @@ public class AgentController : Agent
 
     private bool ShouldEndEpisode()
     {
-        int totalZones = Object.FindObjectsByType<ZoneTrigger>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).Length;
-        int totalWaypoints = Object.FindObjectsByType<Waypoint>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).Length;
-        int totalNPCs = Object.FindObjectsByType<Interactive>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).Count(npc => npc.CanAgentInteract);
+        bool allZonesDiscovered = discoveredZones.Count >= maxZones;
+        bool allNPCsInteracted = interactedNPCs.Count >= maxNPCs;
+        bool allWaypointsDiscovered = visitedWaypoints.Count >= maxWaypoints;
+        bool inactivityExceeded = inactivityTimer >= inactivityThreshold;
 
-        bool allZonesDiscovered = discoveredZones.Count >= totalZones;
-        bool allWaypointsDiscovered = agentLogger.waypointsDiscovered >= totalWaypoints; // Poprawione
-        bool allNPCsInteracted = interactedNPCs.Count >= totalNPCs;
+        Debug.Log($"[Agent {name}] Checking end conditions: Zones {discoveredZones.Count}/{maxZones}, Waypoints {visitedWaypoints.Count}/{maxWaypoints}, NPCs {interactedNPCs.Count}/{maxNPCs}, Inactivity: {inactivityTimer}/{inactivityThreshold}");
 
-        Debug.Log($"[Agent {name}] Checking end conditions: Zones {discoveredZones.Count}/{totalZones}, Waypoints {agentLogger.waypointsDiscovered}/{totalWaypoints}, NPCs {interactedNPCs.Count}/{totalNPCs}");
-
-        return allZonesDiscovered && allWaypointsDiscovered && allNPCsInteracted;
+        return (allZonesDiscovered && allWaypointsDiscovered && allNPCsInteracted) || inactivityExceeded;
     }
-
 
     public override void Heuristic(in ActionBuffers actionsOut)
     {
@@ -749,53 +804,49 @@ public class AgentController : Agent
         }
     }
 
-    private void HandleAgentDeath()
+private bool deathLogged = false; // Flaga do sprawdzania, czy śmierć została zalogowana
+
+private void HandleAgentDeath()
+{
+    if (entity != null && entity.isDead)
     {
-        if (entity != null && entity.isDead)
+        Debug.Log($"[Agent AI] {entity.name} has died. Logging death...");
+
+        AddReward(-1.5f);  // Zmniejszona kara za śmierć, aby była mniej surowa
+
+        if (agentLogger != null)
         {
-            Debug.Log($"[Agent AI] {entity.name} has died. Logging death...");
+            agentLogger.LogAgentDeath(entity);
+            Debug.Log($"[Agent AI] Death logged successfully.");
+            agentLogger.episodeCount++;
+        }
 
-            // Kara za śmierć
-            SetReward(-2.0f);
-
-            if (agentLogger != null)
-            {
-                agentLogger.LogAgentDeath(entity);
-                Debug.Log($"[Agent AI] Death logged successfully.");
-                agentLogger.episodeCount++;
-            }
-            else
-            {
-                Debug.LogError("[Agent AI] AgentBehaviorLogger instance is NULL! Death log failed.");
-            }
-
-            // **NOWOŚĆ: Jeśli spełnił wszystkie cele, nie traktuj śmierci jako porażki**
-            if (ShouldEndEpisode())
-            {
-                Debug.Log($"[Agent {name}] Agent has died, but all objectives are complete. Treating as successful episode.");
-                EndAgentEpisode(); // Normalne zakończenie epizodu
-            }
-            else
-            {
-                Revive(); // Ożywiamy agenta
-                EndEpisode(); // Kończymy epizod jako porażkę
-            }
+        if (ShouldEndEpisode())
+        {
+            Debug.Log($"[Agent {name}] Agent has died, but all objectives are complete. Ending episode.");
+            EndAgentEpisode(); // Zakończenie epizodu, jeśli wszystkie cele zostały spełnione
+        }
+        else
+        {
+            Revive(); // Ożywienie agenta bez kończenia epizodu
         }
     }
+}
 
-    private void Revive()
-    {
-        Debug.Log($"[Agent {name}] Reviving...");
-        //entity.isDead = false;
-        entity.Revive();
-        entity.stats.health = entity.stats.maxHealth;
-            
-        Vector3 spawnPosition = new Vector3(Random.Range(-50f, 50f), 1f, Random.Range(-50f, 50f));
-        entity.Teleport(spawnPosition, Quaternion.identity);
+private void Revive()
+{
+    Debug.Log($"[Agent {name}] Reviving...");
+    entity.Revive();
+    entity.stats.health = entity.stats.maxHealth;
 
-        entity.SetCollidersEnabled(true);
-        Debug.Log($"[Agent {name}] Revived with {entity.stats.health} HP at {spawnPosition}.");
-    }
+    Vector3 spawnPosition = new Vector3(Random.Range(-50f, 50f), 1f, Random.Range(-50f, 50f));
+    entity.Teleport(spawnPosition, Quaternion.identity);
+
+    entity.SetCollidersEnabled(true);
+    agentLogger?.ResetAgentDeathLog();  // Reset flagi po odrodzeniu agenta
+
+    Debug.Log($"[Agent {name}] Revived with {entity.stats.health} HP at {spawnPosition}.");
+}
 
 /*
     private void DebugAgentState()

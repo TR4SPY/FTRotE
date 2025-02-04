@@ -208,7 +208,7 @@ namespace PLAYERTWO.ARPGProject
                     $"QuestsCompleted={PlayerBehaviorLogger.Instance.questsCompleted}" +
                     $"PotionsUsed={PlayerBehaviorLogger.Instance.potionsUsed}" +
                     $"ZonesDiscovered={PlayerBehaviorLogger.Instance.zonesDiscovered}" +
-                    $"AchievementsUnlocked={PlayerBehaviorLogger.Instance.achievementsUnlocked}" +
+                    // $"AchievementsUnlocked={PlayerBehaviorLogger.Instance.achievementsUnlocked}" +
                     $"PlayerType={QuestionnaireManager.Instance.playerType}" +
                     $"CurrentDynamicPlayerType={PlayerBehaviorLogger.Instance.currentDynamicPlayerType}" +
                     $"PlayTime={character.totalPlayTime}");
