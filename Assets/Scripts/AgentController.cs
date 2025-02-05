@@ -13,8 +13,8 @@ public class AgentController : Agent
 {
     private Entity entity; // Referencja do Entity
     private EntityAI entityAI; // Referencja do EntityAI
-    private float stuckTimer = 0f;
-    private Vector3 lastPosition;
+    //private float stuckTimer = 0f;
+    //private Vector3 lastPosition;
     private bool isResetting = false;
     private bool agentWantsToMove = false;
     private float interactionTimeout = 10f; // Maksymalny czas na osiągnięcie celu (w sekundach)
@@ -38,10 +38,17 @@ public class AgentController : Agent
     private float inactivityTimer = 0f; // Timer do śledzenia braku aktywności
     private const float inactivityThreshold = 60f; // Limit braku aktywności (w sekundach)
     private int actionsTaken = 0; // Licznik wykonanych akcji
-    private const int maxActionsPerEpisode = 1000; // Maksymalna liczba akcji w epizodzie
+    //private const int maxActionsPerEpisode = 1000; // Maksymalna liczba akcji w epizodzie
     private int maxZones;
     private int maxNPCs;
     private int  maxWaypoints; 
+private int collisionCount = 0; // Licznik kolizji
+private float lastCollisionTime = 0f; // Ostatni czas kolizji
+
+private Vector3 stuckCheckLastPosition;
+private int stuckCounter = 0;
+private const int stuckThreshold = 50; // Liczba klatek, po których uznajemy, że agent utknął
+private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie uznać agenta za „utkniętego”
 
     public Transform target; // Cel agenta
     public bool isAI = true; // Flaga do identyfikacji jako AI Agent
@@ -520,34 +527,34 @@ public class AgentController : Agent
         StartCoroutine(WaitForEnemyDeath(targetEntity));
     }
     private IEnumerator WaitForEnemyDeath(Entity targetEntity)
-{
-    float timeout = 2f; // Maksymalnie 2 sekundy czekania
-    float elapsed = 0f;
-
-    while (!targetEntity.isDead && elapsed < timeout)
     {
-        elapsed += Time.deltaTime;
-        yield return null;
-    }
+        float timeout = 2f; // Maksymalnie 2 sekundy czekania
+        float elapsed = 0f;
 
-    if (targetEntity.isDead)
-    {
-        // Zabezpieczenie: sprawdź, czy to NIE jest agent
-        if (!targetEntity.isAgent)
+        while (!targetEntity.isDead && elapsed < timeout)
         {
-            Debug.Log($"[Agent {name}] Killed enemy: {targetEntity.name}");
-            agentLogger?.LogEnemyKilled(targetEntity.name);
-
-            AddReward(1.5f); 
-            inactivityTimer = 0f;
-            Debug.Log($"[Agent {name}] Reward +1.5 for killing an enemy.");
+            elapsed += Time.deltaTime;
+            yield return null;
         }
-        else
+
+        if (targetEntity.isDead)
         {
-            Debug.LogWarning($"[Agent {name}] Attempted to log own death as enemy kill. Skipping...");
+            // Zabezpieczenie: sprawdź, czy to NIE jest agent
+            if (!targetEntity.isAgent)
+            {
+                Debug.Log($"[Agent {name}] Killed enemy: {targetEntity.name}");
+                agentLogger?.LogEnemyKilled(targetEntity.name);
+
+                AddReward(1.5f); 
+                inactivityTimer = 0f;
+                Debug.Log($"[Agent {name}] Reward +1.5 for killing an enemy.");
+            }
+            else
+            {
+                Debug.LogWarning($"[Agent {name}] Attempted to log own death as enemy kill. Skipping...");
+            }
         }
     }
-}
     private void SetRandomTarget()
     {
         var targets = Object.FindObjectsByType<ZoneTrigger>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
@@ -736,49 +743,58 @@ public class AgentController : Agent
         base.OnDisable();
     }
 
-    private void OnCollisionEnter(Collision collision)
+
+
+private void OnCollisionEnter(Collision collision)
+{
+    if (collision.gameObject.CompareTag("Obstacle"))
     {
-        if (collision.gameObject.CompareTag("Obstacle")) // Przeszkody muszą mieć tag "Obstacle"
-        {
-            Debug.Log($"Obstacle detected: {collision.gameObject.name}. Avoiding obstacle.");
-            Vector3 avoidDirection = (transform.position - collision.contacts[0].point).normalized;
-            agentWantsToMove = true;
-            entity.MoveTo(transform.position + avoidDirection * 3f); // Przesunięcie o 3 jednostki od przeszkody
-        }
+        Debug.Log($"[Agent {name}] Obstacle detected: {collision.gameObject.name}. Trying to avoid.");
+
+        // Zwiększamy licznik kolizji
+        collisionCount++;
+        lastCollisionTime = Time.time;
+
+        // Losowy kierunek ucieczki, aby agent nie wpadał w pętlę
+        Vector3 randomEscapeDirection = new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f)).normalized;
+
+        // Im więcej kolizji, tym dalej próbuje się przesunąć
+        float escapeDistance = Mathf.Clamp(3f + collisionCount, 3f, 10f); 
+
+        // Wykonanie ruchu w losowym kierunku
+        entity.MoveTo(transform.position + randomEscapeDirection * escapeDistance);
+
+        agentWantsToMove = true;
     }
+}
 
     private void CheckIfStuck()
+{
+    float distanceMoved = Vector3.Distance(transform.position, stuckCheckLastPosition);
+
+    if (distanceMoved < stuckDistanceThreshold)
     {
-        float movementThreshold = 0.5f; // Większy próg ruchu
-        float stuckCheckTime = 5f; // Czas, po którym uznajemy, że agent utknął
+        stuckCounter++;
 
-        if (!agentWantsToMove)
+        if (stuckCounter > stuckThreshold)
         {
-            stuckTimer = 0f;
-            lastPosition = transform.position;
-            return;
-        }
+            Debug.Log($"[Agent {name}] Detected as stuck! Attempting to escape...");
 
-        float distMoved = Vector3.Distance(transform.position, lastPosition);
-        if (distMoved < movementThreshold && agentWantsToMove)
-        {
-            stuckTimer += Time.deltaTime;
-            if (stuckTimer > stuckCheckTime)
-            {
-                Debug.Log($"[Agent {name}] Detected as stuck! Choosing new direction.");
+            // LOSOWY ruch, by wydostać się z pułapki
+            Vector3 randomDirection = new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f)).normalized;
+            entity.MoveTo(transform.position + randomDirection * 5f); // Przesunięcie o 5 jednostek
 
-                stuckTimer = 0f;
-                wanderTarget = Vector3.zero; // Resetowanie celu
-                WanderAround(new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f)).normalized);
-            }
+            stuckCounter = 0; // Reset licznika po „próbie ucieczki”
         }
-        else
-        {
-            stuckTimer = 0f;
-        }
-
-        lastPosition = transform.position;
     }
+    else
+    {
+        stuckCounter = 0; // Agent się porusza, więc resetujemy licznik
+    }
+
+    stuckCheckLastPosition = transform.position;
+}
+
 
     private void CheckInteractionTimeout()
     {
@@ -804,49 +820,49 @@ public class AgentController : Agent
         }
     }
 
-private bool deathLogged = false; // Flaga do sprawdzania, czy śmierć została zalogowana
+    private bool deathLogged = false; // Flaga do sprawdzania, czy śmierć została zalogowana
 
-private void HandleAgentDeath()
-{
-    if (entity != null && entity.isDead)
+    private void HandleAgentDeath()
     {
-        Debug.Log($"[Agent AI] {entity.name} has died. Logging death...");
-
-        AddReward(-1.5f);  // Zmniejszona kara za śmierć, aby była mniej surowa
-
-        if (agentLogger != null)
+        if (entity != null && entity.isDead)
         {
-            agentLogger.LogAgentDeath(entity);
-            Debug.Log($"[Agent AI] Death logged successfully.");
-            agentLogger.episodeCount++;
-        }
+            Debug.Log($"[Agent AI] {entity.name} has died. Logging death...");
 
-        if (ShouldEndEpisode())
-        {
-            Debug.Log($"[Agent {name}] Agent has died, but all objectives are complete. Ending episode.");
-            EndAgentEpisode(); // Zakończenie epizodu, jeśli wszystkie cele zostały spełnione
-        }
-        else
-        {
-            Revive(); // Ożywienie agenta bez kończenia epizodu
+            AddReward(-1.5f);  // Zmniejszona kara za śmierć, aby była mniej surowa
+
+            if (agentLogger != null)
+            {
+                agentLogger.LogAgentDeath(entity);
+                Debug.Log($"[Agent AI] Death logged successfully.");
+                agentLogger.episodeCount++;
+            }
+
+            if (ShouldEndEpisode())
+            {
+                Debug.Log($"[Agent {name}] Agent has died, but all objectives are complete. Ending episode.");
+                EndAgentEpisode(); // Zakończenie epizodu, jeśli wszystkie cele zostały spełnione
+            }
+            else
+            {
+                Revive(); // Ożywienie agenta bez kończenia epizodu
+            }
         }
     }
-}
 
-private void Revive()
-{
-    Debug.Log($"[Agent {name}] Reviving...");
-    entity.Revive();
-    entity.stats.health = entity.stats.maxHealth;
+    private void Revive()
+    {
+        Debug.Log($"[Agent {name}] Reviving...");
+        entity.Revive();
+        entity.stats.health = entity.stats.maxHealth;
 
-    Vector3 spawnPosition = new Vector3(Random.Range(-50f, 50f), 1f, Random.Range(-50f, 50f));
-    entity.Teleport(spawnPosition, Quaternion.identity);
+        Vector3 spawnPosition = new Vector3(Random.Range(-50f, 50f), 1f, Random.Range(-50f, 50f));
+        entity.Teleport(spawnPosition, Quaternion.identity);
 
-    entity.SetCollidersEnabled(true);
-    agentLogger?.ResetAgentDeathLog();  // Reset flagi po odrodzeniu agenta
+        entity.SetCollidersEnabled(true);
+        agentLogger?.ResetAgentDeathLog();  // Reset flagi po odrodzeniu agenta
 
-    Debug.Log($"[Agent {name}] Revived with {entity.stats.health} HP at {spawnPosition}.");
-}
+        Debug.Log($"[Agent {name}] Revived with {entity.stats.health} HP at {spawnPosition}.");
+    }
 
 /*
     private void DebugAgentState()
@@ -854,6 +870,23 @@ private void Revive()
         Debug.Log($"Agent Position: {transform.position}, Target: {target?.name ?? "None"}, StuckTimer: {stuckTimer}, InteractionTimer: {interactionTimer}");
     }
 */
+    private void CheckInactivityPenalty()
+    {
+        inactivityTimer += Time.deltaTime;
+
+        if (inactivityTimer >= 30f && inactivityTimer < 60f)
+        {
+            AddReward(-0.5f);
+            Debug.Log($"[Agent {name}] Inactivity penalty applied: -0.5 after 30 seconds.");
+        }
+
+        if (inactivityTimer >= 60f)
+        {
+            AddReward(-1.0f);
+            Debug.Log($"[Agent {name}] Inactivity penalty applied: -1.0 after 60 seconds. Ending episode.");
+            EndEpisode();
+        }
+    }
 
     void Update()
     {
@@ -866,6 +899,7 @@ private void Revive()
     }
         CheckIfStuck();
         CheckInteractionTimeout();
+        CheckInactivityPenalty();
 
         if (Time.frameCount % 30 == 0) // Log every 30 frames
         {

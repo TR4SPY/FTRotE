@@ -252,7 +252,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b882328a26068f244bf946a642bdfac3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ignoreCulling: 0
+  ignoreCulling: 1
   targetTags:
   - Entity/Player
   - Entity/Summoned
