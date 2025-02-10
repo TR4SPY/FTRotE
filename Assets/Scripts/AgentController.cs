@@ -230,7 +230,7 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
         }
 
         ContinueExploration(moveDir);
-
+        
         // Zwiększanie timera bezczynności, jeśli agent się nie porusza
         inactivityTimer += Time.deltaTime;
 
@@ -278,8 +278,7 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
 
             if (interactedNPCs.Contains(closestNPC.name))
             {
-                AddReward(-0.2f); // Kara za próbę ponownej interakcji
-                Debug.Log($"[Agent {name}] Penalty for duplicate interaction with {closestNPC.name}: -0.2");
+                AddReward(-0.05f); // Mniejsza kara za ponowną interakcję
                 return false;
             }
 
@@ -291,18 +290,13 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
             else
             {
                 interactedNPCs.Add(closestNPC.name);
-                inactivityTimer = 0f; // Reset timera bezczynności po udanej interakcji
+                inactivityTimer = 0f; // Reset timera bezczynności
 
                 closestNPC.Interact(entity);
                 agentLogger?.LogNpcInteraction();
 
-                AddReward(1.0f); // Zbalansowana nagroda za interakcję z NPC
+                AddReward(1.0f);
                 Debug.Log($"[Agent {name}] Successfully interacted with {closestNPC.name}. Reward: +1.0");
-
-                if (ShouldEndEpisode())
-                {
-                    EndAgentEpisode();
-                }
 
                 return true;
             }
@@ -331,7 +325,7 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
 
             if (visitedWaypoints.Contains(waypointID))
             {
-                AddReward(-0.1f); // Kara za próbę odkrycia już odwiedzonego waypointu
+                AddReward(-0.05f); // Kara za próbę odkrycia już odwiedzonego waypointu
                 Debug.Log($"[Agent {name}] Penalty for revisiting waypoint {waypointID}: -0.1");
                 return false;
             }
@@ -545,7 +539,7 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
                 Debug.Log($"[Agent {name}] Killed enemy: {targetEntity.name}");
                 agentLogger?.LogEnemyKilled(targetEntity.name);
 
-                AddReward(1.5f); 
+                AddReward(1.0f); 
                 inactivityTimer = 0f;
                 Debug.Log($"[Agent {name}] Reward +1.5 for killing an enemy.");
             }
@@ -743,58 +737,60 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
         base.OnDisable();
     }
 
-
-
-private void OnCollisionEnter(Collision collision)
-{
-    if (collision.gameObject.CompareTag("Obstacle"))
+    private void OnCollisionEnter(Collision collision)
     {
-        Debug.Log($"[Agent {name}] Obstacle detected: {collision.gameObject.name}. Trying to avoid.");
-
-        // Zwiększamy licznik kolizji
-        collisionCount++;
-        lastCollisionTime = Time.time;
-
-        // Losowy kierunek ucieczki, aby agent nie wpadał w pętlę
-        Vector3 randomEscapeDirection = new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f)).normalized;
-
-        // Im więcej kolizji, tym dalej próbuje się przesunąć
-        float escapeDistance = Mathf.Clamp(3f + collisionCount, 3f, 10f); 
-
-        // Wykonanie ruchu w losowym kierunku
-        entity.MoveTo(transform.position + randomEscapeDirection * escapeDistance);
-
-        agentWantsToMove = true;
-    }
-}
-
-    private void CheckIfStuck()
-{
-    float distanceMoved = Vector3.Distance(transform.position, stuckCheckLastPosition);
-
-    if (distanceMoved < stuckDistanceThreshold)
-    {
-        stuckCounter++;
-
-        if (stuckCounter > stuckThreshold)
+        if (collision.gameObject.CompareTag("Obstacle"))
         {
-            Debug.Log($"[Agent {name}] Detected as stuck! Attempting to escape...");
+            Debug.Log($"[Agent {name}] Obstacle detected: {collision.gameObject.name}. Adjusting path...");
 
-            // LOSOWY ruch, by wydostać się z pułapki
-            Vector3 randomDirection = new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f)).normalized;
-            entity.MoveTo(transform.position + randomDirection * 5f); // Przesunięcie o 5 jednostek
+            // Zwiększenie licznika kolizji
+            collisionCount++;
+            lastCollisionTime = Time.time;
 
-            stuckCounter = 0; // Reset licznika po „próbie ucieczki”
+            // Wybór nowego kierunku omijania przeszkody
+            Vector3 escapeDirection = (transform.position - collision.contacts[0].point).normalized;
+
+            // Dynamiczne zwiększenie dystansu przy wielu kolizjach
+            float escapeDistance = Mathf.Clamp(3f + collisionCount * 1.5f, 3f, 10f);
+
+            // Sprawdzenie, czy agent nie wchodzi w nieskończoną pętlę kolizji
+            if (collisionCount > 3)
+            {
+                escapeDirection = new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f)).normalized;
+                collisionCount = 0; // Reset licznika po zastosowaniu alternatywnego rozwiązania
+            }
+
+            entity.MoveTo(transform.position + escapeDirection * escapeDistance);
+            agentWantsToMove = true;
         }
     }
-    else
+
+    private void CheckIfStuck()
     {
-        stuckCounter = 0; // Agent się porusza, więc resetujemy licznik
+        float distanceMoved = Vector3.Distance(transform.position, stuckCheckLastPosition);
+
+        if (distanceMoved < stuckDistanceThreshold)
+        {
+            stuckCounter++;
+
+            if (stuckCounter > stuckThreshold)
+            {
+                Debug.Log($"[Agent {name}] Stuck detected! Attempting to escape...");
+
+                // Przesunięcie w losowy kierunek
+                Vector3 escapeDirection = new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f)).normalized;
+                entity.MoveTo(transform.position + escapeDirection * 5f); // Przesunięcie o 5 jednostek
+
+                stuckCounter = 0; // Reset licznika po próbie ucieczki
+            }
+        }
+        else
+        {
+            stuckCounter = 0; // Agent się porusza, więc resetujemy licznik
+        }
+
+        stuckCheckLastPosition = transform.position;
     }
-
-    stuckCheckLastPosition = transform.position;
-}
-
 
     private void CheckInteractionTimeout()
     {

@@ -18,6 +18,7 @@ TagManager:
   - Synty Small Farm
   - Entity/AI_Agent
   - Waypoint
+  - Obstacle
   layers:
   - Default
   - TransparentFX
