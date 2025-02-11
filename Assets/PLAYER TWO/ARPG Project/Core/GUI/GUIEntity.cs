@@ -40,6 +40,7 @@ namespace PLAYERTWO.ARPGProject
         protected GUISkillSlot m_currentSkill;
 
         protected GUIConsumableSlot[] m_consumableSlots;
+        public GUIConsumableSlot[] ConsumableSlots => m_consumableSlots;
         protected GUISkillSlot[] m_skillSlots;
 
         protected virtual void InitializeEntity() => m_entity = Level.instance.player;

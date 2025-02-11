@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System.Collections.Generic;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -141,20 +142,32 @@ namespace PLAYERTWO.ARPGProject
         {
             if (onMerchant)
             {
-#if UNITY_ANDROID || UNITY_IOS
+        #if UNITY_ANDROID || UNITY_IOS
                 HandleBuy();
-#endif
+        #endif
                 return;
             }
 
-            if (m_blacksmith.isOpen)
+            if (item.IsConsumable())
+            {
+                TryMovePotionToHotbar();
+            }
+            else if (m_blacksmith.isOpen)
+            {
                 HandleBlacksmithEquip();
+            }
             else if (m_stash.isOpen)
+            {
                 HandleMoveToStash();
+            }
             else if (m_merchant.isOpen)
+            {
                 HandleSell();
+            }
             else
+            {
                 HandleEquip();
+            }
         }
 
         protected virtual void HandleBuy()
@@ -377,6 +390,94 @@ namespace PLAYERTWO.ARPGProject
             {
                 m_hovering = false;
                 GUIItemInspector.instance.Hide();
+            }
+        }
+
+        private void TryMovePotionToHotbar()
+        {
+            var hud = GUIEntity.instance; // Referencja do GUI hotbaru
+
+            if (hud == null)
+            {
+                Debug.LogWarning("GUIEntity.instance is null. Cannot move potion to hotbar.");
+                return;
+            }
+
+            List<GUIConsumableSlot> availableSlots = new List<GUIConsumableSlot>();
+            GUIConsumableSlot freeSlot = null;
+
+            // Szukamy wszystkich pasujących slotów oraz pierwszego wolnego slotu
+            foreach (var slot in hud.ConsumableSlots)
+            {
+                if (slot.item != null && slot.item.item.data == item.data) 
+                {
+                    availableSlots.Add(slot); // Zapisujemy wszystkie sloty z tym samym potionem
+                }
+                if (slot.item == null && freeSlot == null)
+                {
+                    freeSlot = slot; // Znajdujemy pierwszy wolny slot
+                }
+            }
+
+            // Nowa logika: Dodajemy miksturę do wszystkich dostępnych slotów, aż się skończy
+            foreach (var slot in availableSlots)
+            {
+                if (item.stack <= 0)
+                    break; // Jeśli inventory ma już 0 potions, kończymy pętlę
+
+                int maxStack = item.data.stackCapacity;
+                int spaceLeft = maxStack - slot.item.item.stack;
+
+                if (spaceLeft > 0) // Jeśli w danym slocie jest jeszcze miejsce
+                {
+                    int amountToAdd = Mathf.Min(spaceLeft, item.stack);
+                    slot.item.item.stack += amountToAdd;
+                    item.stack -= amountToAdd;
+
+                    slot.item.UpdateStackText();
+
+                    Debug.Log($"Added {amountToAdd} potions to hotbar slot. Remaining in inventory: {item.stack}");
+                }
+            }
+
+            // Jeśli nadal zostały potions, przenosimy je do wolnego slotu
+            if (item.stack > 0 && freeSlot != null)
+            {
+                freeSlot.Equip(this);
+                GUI.instance.Deselect();
+                Debug.Log("Remaining potions moved to free slot.");
+            }
+
+            // Jeśli potion w inventory ma 0 stacków, usuwamy go poprawnie
+            if (item.stack == 0)
+            {
+                Debug.Log("Potion stack is 0, removing from inventory.");
+
+                // Usuń z inventory
+                bool removed = Level.instance.player.inventory.instance.TryRemoveItem(item);
+                if (!removed)
+                {
+                    Debug.LogError($"Failed to remove {item.GetName()} from inventory!");
+                }
+
+                // Ręczne usunięcie z siatki inventory
+                var inventory = Level.instance.player.inventory.instance;
+                if (inventory.items.ContainsKey(item))
+                {
+                    var position = inventory.items[item];
+                    inventory.items.Remove(item);
+                    Debug.Log($"Removed {item.GetName()} from inventory grid at {position.row}, {position.column}");
+                }
+
+                // Usuń z GUI inventory
+                var guiInventory = GUI.instance.GetComponentInChildren<GUIInventory>();
+                if (guiInventory != null)
+                {
+                    guiInventory.TryRemove(this);
+                    guiInventory.UpdateSlots(); // Wymuszone odświeżenie siatki inventory
+                }
+
+                Destroy(gameObject); // Usuń ikonę potiona z GUI
             }
         }
     }

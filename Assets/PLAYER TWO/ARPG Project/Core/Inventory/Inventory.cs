@@ -222,8 +222,17 @@ namespace PLAYERTWO.ARPGProject
         public virtual bool TryRemoveItem(ItemInstance item)
         {
             if (!items.ContainsKey(item))
+            {
+                Debug.LogWarning($"TryRemoveItem failed: Item {item.GetName()} not found in inventory.");
                 return false;
+            }
 
+            Debug.Log($"Removing {item.GetName()} from inventory.");
+
+            var position = items[item]; // Pobierz pozycję przedmiotu w siatce
+            items.Remove(item); // Usuń z listy przedmiotów
+
+            // Usuń przedmiot z siatki inventory (grid)
             for (int i = 0; i < rows; i++)
             {
                 for (int j = 0; j < columns; j++)
@@ -235,8 +244,8 @@ namespace PLAYERTWO.ARPGProject
                 }
             }
 
-            items.Remove(item);
-            onItemRemoved?.Invoke();
+            onItemRemoved?.Invoke(); // Wywołaj event usunięcia
+            Debug.Log($"Item {item.GetName()} fully removed from inventory.");
             return true;
         }
 

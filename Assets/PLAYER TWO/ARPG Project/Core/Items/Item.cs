@@ -46,5 +46,10 @@ namespace PLAYERTWO.ARPGProject
         {
             return Instantiate(prefab, slot);
         }
+
+        public string GetName()
+        {
+            return name;
+        }
     }
 }

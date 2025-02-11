@@ -146,17 +146,44 @@ namespace PLAYERTWO.ARPGProject
         /// <returns>Returns true if the Inventory was able to remove the item.</returns>
         public virtual bool TryRemove(GUIItem item)
         {
-            var position = m_inventory.FindPosition(item.item);
-
-            if (item.item != null && m_inventory.TryRemoveItem(item.item))
+            if (item.item == null)
             {
-                item.SetLastPosition(this, position);
-                UpdateSlots();
-                PlayAudio(removeClip);
-                return true;
+                Debug.LogWarning("TryRemove failed: Item is null.");
+                return false;
             }
 
-            return false;
+            var position = m_inventory.FindPosition(item.item);
+
+            // Czy przedmiot nadal istnieje przed próbą usunięcia
+            if (!m_inventory.items.ContainsKey(item.item))
+            {
+                Debug.LogWarning($"TryRemove skipped: {item.item.GetName()} already removed from inventory.");
+                return false;
+            }
+
+            if (!m_inventory.TryRemoveItem(item.item))
+            {
+                Debug.LogError($"TryRemove failed: Unable to remove {item.item.GetName()} from inventory.");
+                return false;
+            }
+
+            item.SetLastPosition(this, position);
+            UpdateSlots();
+
+            // Ostateczne usunięcie z GUI
+            if (m_inventory.items.ContainsKey(item.item))
+            {
+                m_inventory.items.Remove(item.item);
+            }
+
+            if (position.row >= 0 && position.column >= 0)
+            {
+                m_slots[position.row, position.column].SetFree();
+                m_slots[position.row, position.column].Reset();
+            }
+
+            PlayAudio(removeClip);
+            return true;
         }
 
         /// <summary>
@@ -312,7 +339,7 @@ namespace PLAYERTWO.ARPGProject
             }
         }
 
-        protected virtual void UpdateSlots()
+        public virtual void UpdateSlots()
         {
             for (int i = 0; i < m_inventory.rows; i++)
             {

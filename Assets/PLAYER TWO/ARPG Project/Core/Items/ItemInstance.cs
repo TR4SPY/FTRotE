@@ -107,12 +107,39 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         /// <param name="other">The Item Instance you want to try stack.</param>
         /// <returns>Returns true if it was able to stack the item.</returns>
-        public virtual bool TryStack(ItemInstance other)
+        public bool TryStack(ItemInstance other)
         {
-            if (!CanStack(other)) return false;
+            if (other == null)
+            {
+                Debug.Log("TryStack failed: Other item is null.");
+                return false;
+            }
 
-            stack += other.stack;
+            if (!CanStack(other))
+            {
+                Debug.Log($"TryStack failed: Cannot stack {other.GetName()} with {GetName()}.");
+                return false;
+            }
+
+            int maxStack = data.stackCapacity;
+            if (stack >= maxStack)
+            {
+                Debug.Log($"TryStack failed: Stack is already full ({stack}/{maxStack}).");
+                return false;
+            }
+
+            int amountToAdd = Mathf.Min(maxStack - stack, other.stack);
+            stack += amountToAdd;
+            other.stack -= amountToAdd;
+
+            Debug.Log($"Stacking successful! {GetName()} stack is now {stack}/{maxStack}.");
+
             return true;
+        }
+
+        public string GetName()
+        {
+            return data != null ? data.GetName() : "Unknown Item";
         }
 
         /// <summary>
