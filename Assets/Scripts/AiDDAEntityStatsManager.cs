@@ -52,7 +52,14 @@ namespace AI_DDA.Assets.Scripts
 
         public float GetMultiplier(string key)
         {
-            return DifficultyMultipliers.ContainsKey(key) ? DifficultyMultipliers[key] : 1.0f;
+            return key switch
+            {
+                "Strength" => DifficultyManager.Instance?.CurrentStrengthMultiplier ?? 1.0f,
+                "Dexterity" => DifficultyManager.Instance?.CurrentDexterityMultiplier ?? 1.0f,
+                "Vitality" => DifficultyManager.Instance?.CurrentVitalityMultiplier ?? 1.0f,
+                "Energy" => DifficultyManager.Instance?.CurrentEnergyMultiplier ?? 1.0f,
+                _ => 1.0f
+            };
         }
 
         public float GetAverageMultiplier()

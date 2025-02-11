@@ -8,6 +8,11 @@ namespace PLAYERTWO.ARPGProject
     [AddComponentMenu("PLAYER TWO/ARPG Project/Entity/Entity Stats Manager")]
     public partial class EntityStatsManager : MonoBehaviour
     {
+        private int initialStrength;
+        private int initialDexterity;
+        private int initialVitality;
+        private int initialEnergy;
+
         public UnityEvent onLevelUp;
         public UnityEvent onRecalculate;
         public UnityEvent onHealthChanged;
@@ -227,29 +232,34 @@ namespace PLAYERTWO.ARPGProject
         /// 
         public virtual void Initialize()
         {
-            // Jeśli już zainicjowane, zakończ
             if (initialized)
                 return;
 
             Debug.Log($"Initializing stats for {gameObject.name}");
 
-            // Sprawdź, czy DifficultyManager.Instance jest dostępny
+            // Sprawdzenie, czy DifficultyManager.Instance jest dostępny
             if (DifficultyManager.Instance == null)
             {
                 Debug.LogError("DifficultyManager.Instance is null! Skipping stats adjustment.");
                 return;
             }
 
-            // Inicjalizuj przedmioty i umiejętności
+            // Zapis pierwotnych wartości
+            initialStrength = strength;
+            initialDexterity = dexterity;
+            initialVitality = vitality;
+            initialEnergy = energy;
+
+            // Inicjalizacja przedmiotów i umiejętności
             InitializeItems();
             InitializeSkills();
             Recalculate();
             Revitalize();
 
-            // Zaznacz jako zainicjowane
+            // Zaznaczenie jako zainicjowane
             initialized = true;
 
-            // Dostosuj statystyki tylko dla wrogów
+            // Dostowowanie statystyk tylko dla wrogów
             if (gameObject.CompareTag("Entity/Enemy"))
             {
                 ApplyDifficultyModifiers();
@@ -486,6 +496,14 @@ namespace PLAYERTWO.ARPGProject
         }
 
         /// <summary>
+        /// Metody do pobierania bazowych wartości
+        /// </summary>
+        public int GetBaseStrength() => initialStrength;
+        public int GetBaseDexterity() => initialDexterity;
+        public int GetBaseVitality() => initialVitality;
+        public int GetBaseEnergy() => initialEnergy;
+
+        /// <summary>
         /// Recalculates the points for all the Entity's dynamic stats.
         /// </summary>
         public virtual void Recalculate()
@@ -566,18 +584,19 @@ namespace PLAYERTWO.ARPGProject
                 return;
             }
 
-            if (dexterity <= 0 || strength <= 0)
+            if (dexterity <= 0 || strength <= 0 || vitality <= 0 || energy <= 0)
             {
-                Debug.LogWarning($"Invalid stats for {gameObject.name}: Dexterity={dexterity}, Strength={strength}. Skipping adjustment.");
+                Debug.LogWarning($"Invalid stats for {gameObject.name}: Dexterity={dexterity}, Strength={strength}, Vitality={vitality}, Energy={energy}. Skipping adjustment.");
                 return;
             }
 
             dexterity = Mathf.Max(1, (int)(dexterity * DifficultyManager.Instance.CurrentDexterityMultiplier));
             strength = Mathf.Max(1, (int)(strength * DifficultyManager.Instance.CurrentStrengthMultiplier));
+            vitality = Mathf.Max(1, (int)(vitality * DifficultyManager.Instance.CurrentVitalityMultiplier)); // Nowe
+            energy = Mathf.Max(1, (int)(energy * DifficultyManager.Instance.CurrentEnergyMultiplier)); // Nowe
 
-            Debug.Log($"Adjusted stats for {gameObject.name}: Dexterity={dexterity}, Strength={strength}");
+            Debug.Log($"Adjusted stats for {gameObject.name}: Dexterity={dexterity}, Strength={strength}, Vitality={vitality}, Energy={energy}");
         }
-
 
         /// <summary>
         /// Add experience points to the Entity.

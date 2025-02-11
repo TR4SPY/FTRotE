@@ -8,6 +8,9 @@ namespace PLAYERTWO.ARPGProject
     [AddComponentMenu("PLAYER TWO/ARPG Project/GUI/GUI")]
     public class GUI : Singleton<GUI>
     {
+        [SerializeField] private GUIWindowsManager windowsManager; // referencja do GUI Windows Manager
+        [SerializeField] private GameObject gameMenu; // Referencja do menu gry
+        
         public UnityEvent<GUIItem> onSelectItem;
         public UnityEvent<GUIItem> onDeselectItem;
 
@@ -83,7 +86,8 @@ namespace PLAYERTWO.ARPGProject
 #if UNITY_WEBGL
             m_toggleMenuWebGL.performed += _ => onToggleMenu.Invoke();
 #else
-            m_toggleMenu.performed += _ => onToggleMenu.Invoke();
+            //m_toggleMenu.performed += _ => onToggleMenu.Invoke();
+            m_toggleMenu.performed += _ => HandleEscape(); // Zmiana tutaj!
 #endif
             m_dropItem.performed += _ => DropItem();
             m_toggleCollectiblesNames.performed += _ => onToggleCollectiblesNames.Invoke();
@@ -157,6 +161,44 @@ namespace PLAYERTWO.ARPGProject
             }
         }
 
+        private void HandleEscape()
+        {
+            if (windowsManager == null)
+            {
+                Debug.LogError("GUIWindowsManager is not assigned in GUI.cs!");
+                return;
+            }
+
+            // Jeśli menu gry jest otwarte, ESC powinno je zamknąć
+            if (gameMenu != null && gameMenu.activeSelf)
+            {
+                ToggleGameMenu();
+                return;
+            }
+
+            // Jeśli są otwarte okna, zamykamy tylko jedno na raz
+            if (windowsManager.HasOpenWindows())
+            {
+                windowsManager.CloseLastOpenedWindow();
+                return;
+            }
+
+            // Jeśli nie ma już żadnych okien, otwieramy menu gry
+            ToggleGameMenu();
+        }
+
+        public void ToggleGameMenu()
+        {
+            if (gameMenu == null)
+            {
+                Debug.LogError("Game Menu is not assigned in GUI.cs!");
+                return;
+            }
+
+            bool isActive = gameMenu.activeSelf;
+            gameMenu.SetActive(!isActive);
+            Debug.Log($"Game Menu {(isActive ? "closed" : "opened")}");
+        }
 
         private Vector3 GetRandomDropPosition()
         {

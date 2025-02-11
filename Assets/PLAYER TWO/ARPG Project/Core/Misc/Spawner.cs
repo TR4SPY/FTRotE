@@ -93,18 +93,33 @@ namespace PLAYERTWO.ARPGProject
                 if (entity.stats != null)
                 {
                     entity.stats.dexterity = entity.stats.dexterity > 0 
-                        ? (int)(entity.stats.dexterity * DifficultyManager.Instance.CurrentDexterityMultiplier)
+                        ? Mathf.Max(1, (int)(entity.stats.dexterity * DifficultyManager.Instance.CurrentDexterityMultiplier))
                         : 10; // Domyślna wartość, jeśli brak inicjalizacji
 
                     entity.stats.strength = entity.stats.strength > 0 
-                        ? (int)(entity.stats.strength * DifficultyManager.Instance.CurrentStrengthMultiplier)
+                        ? Mathf.Max(1, (int)(entity.stats.strength * DifficultyManager.Instance.CurrentStrengthMultiplier))
                         : 5; // Domyślna wartość, jeśli brak inicjalizacji
 
+                    entity.stats.vitality = entity.stats.vitality > 0 
+                        ? Mathf.Max(1, (int)(entity.stats.vitality * DifficultyManager.Instance.CurrentVitalityMultiplier))
+                        : 8; // Domyślna wartość, jeśli brak inicjalizacji
+
+                    entity.stats.energy = entity.stats.energy > 0 
+                        ? Mathf.Max(1, (int)(entity.stats.energy * DifficultyManager.Instance.CurrentEnergyMultiplier))
+                        : 6; // Domyślna wartość, jeśli brak inicjalizacji
+
+                    // Automatyczna aktualizacja statystyk
+                    entity.stats.Recalculate();
+
                     Debug.Log($"Spawned enemy {entity.name}: " +
-                            $"Dexterity={entity.stats.dexterity}, " +
-                            $"Strength={entity.stats.strength}, " +
-                            $"Multipliers: Dexterity={DifficultyManager.Instance.CurrentDexterityMultiplier}, " +
-                            $"Strength={DifficultyManager.Instance.CurrentStrengthMultiplier}");
+                        $"Dexterity={entity.stats.dexterity}, " +
+                        $"Strength={entity.stats.strength}, " +
+                        $"Vitality={entity.stats.vitality}, " +
+                        $"Energy={entity.stats.energy}, " +
+                        $"Multipliers: Dexterity={DifficultyManager.Instance.CurrentDexterityMultiplier}, " +
+                        $"Strength={DifficultyManager.Instance.CurrentStrengthMultiplier}, " +
+                        $"Vitality={DifficultyManager.Instance.CurrentVitalityMultiplier}, " +
+                        $"Energy={DifficultyManager.Instance.CurrentEnergyMultiplier}");
                 }
                 else
                 {

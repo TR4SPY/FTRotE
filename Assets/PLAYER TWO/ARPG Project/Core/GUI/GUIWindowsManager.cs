@@ -1,10 +1,14 @@
 using UnityEngine;
+using System.Collections.Generic;
+using UnityEngine.InputSystem;
 
 namespace PLAYERTWO.ARPGProject
 {
     [AddComponentMenu("PLAYER TWO/ARPG Project/GUI/GUI Windows Manager")]
     public class GUIWindowsManager : Singleton<GUIWindowsManager>
     {
+        [SerializeField] private GUI gui;
+
         [Tooltip("A reference to the GUI Skills Manager.")]
         public GUISkillsManager skills;
 
@@ -22,6 +26,13 @@ namespace PLAYERTWO.ARPGProject
 
         [Tooltip("A reference to the GUI Blacksmith.")]
         public GUIBlacksmith blacksmith;
+
+        [Tooltip("A reference to all GUI Windows in the game.")]
+        private List<GUIWindow> windows;
+
+        [Tooltip("Reference to the Game Menu.")]
+        public GameObject gameMenu;
+
 
         [Tooltip("A reference to the Stash Window.")]
         public GUIWindow stashWindow;
@@ -79,13 +90,43 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void Start()
         {
-            var windows = GetComponentsInChildren<GUIWindow>(true);
+            gui = FindFirstObjectByType<GUI>();
+
+            windows = new List<GUIWindow>(GetComponentsInChildren<GUIWindow>(true));
 
             foreach (var window in windows)
             {
                 window.onOpen.AddListener(() => m_audio?.PlayUiEffect(openClip));
                 window.onClose.AddListener(() => m_audio?.PlayUiEffect(closeClip));
             }
+
+            Debug.Log($"GUIWindowsManager initialized. Found {windows.Count} windows.");
+        }
+        
+        public bool HasOpenWindows()
+        {
+            return windows.Exists(w => w.isOpen);
+        }
+
+        public void CloseLastOpenedWindow()
+        {
+            GUIWindow lastWindow = GetLastOpenedWindow();
+            if (lastWindow != null)
+            {
+                lastWindow.Hide();
+            }
+        }
+
+        private GUIWindow GetLastOpenedWindow()
+        {
+            for (int i = windows.Count - 1; i >= 0; i--)
+            {
+                if (windows[i] != null && windows[i].isOpen)
+                {
+                    return windows[i];
+                }
+            }
+            return null;
         }
     }
 }

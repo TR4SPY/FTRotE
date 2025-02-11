@@ -140,6 +140,8 @@ namespace PLAYERTWO.ARPGProject
                       $"Strength={DifficultyManager.Instance.CurrentStrengthMultiplier}, " +
                       $"Vitality={DifficultyManager.Instance.CurrentVitalityMultiplier}, " +
                       $"Energy={DifficultyManager.Instance.CurrentEnergyMultiplier}");
+
+            DifficultyManager.Instance.ApplyDifficultyToExistingEnemies();
         }
 
         public void LoadLogsForCharacter(CharacterInstance character)

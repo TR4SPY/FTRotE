@@ -92,12 +92,20 @@ namespace AI_DDA.Assets.Scripts
             {
                 if (entity.stats != null)
                 {
+                    // Resetujemy statystyki przeciwnika do bazowych wartości przed zastosowaniem mnożników!
+                    entity.stats.strength = entity.stats.GetBaseStrength();
+                    entity.stats.dexterity = entity.stats.GetBaseDexterity();
+                    entity.stats.vitality = entity.stats.GetBaseVitality();
+                    entity.stats.energy = entity.stats.GetBaseEnergy();
+
+                    // Teraz stosujemy mnożniki AI-DDA
                     entity.stats.strength = Mathf.Max(1, (int)(entity.stats.strength * CurrentStrengthMultiplier));
                     entity.stats.dexterity = Mathf.Max(1, (int)(entity.stats.dexterity * CurrentDexterityMultiplier));
-                    entity.stats.vitality = Mathf.Max(1, (int)(entity.stats.vitality * CurrentDexterityMultiplier));
-                    entity.stats.energy = Mathf.Max(1, (int)(entity.stats.energy * CurrentDexterityMultiplier));
+                    entity.stats.vitality = Mathf.Max(1, (int)(entity.stats.vitality * CurrentVitalityMultiplier));
+                    entity.stats.energy = Mathf.Max(1, (int)(entity.stats.energy * CurrentEnergyMultiplier));
 
-                    entity.stats.Recalculate(); // Przeliczenie statystyk po zmianie mnożników
+                    // Przeliczamy pozostałe statystyki
+                    entity.stats.Recalculate();
 
                     Debug.Log($"Adjusted stats for {entity.name}: Strength={entity.stats.strength}, Dexterity={entity.stats.dexterity}, Vitality={entity.stats.vitality}, Energy={entity.stats.energy}");
                 }
