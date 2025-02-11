@@ -76,9 +76,6 @@ namespace AI_DDA.Assets.Scripts
     [Tooltip("Liczba pokonanych wrogów.")]
     public int enemiesDefeated = 0;
 
-    [Tooltip("Liczba unikniętych walk.")]
-    public int enemiesAvoided = 0;
-
     [Tooltip("Liczba użytych mikstur.")]
     public int potionsUsed = 0;
 
@@ -392,10 +389,26 @@ namespace AI_DDA.Assets.Scripts
             }
         }
 
-        public void LogEnemyAvoided(string actor, string enemyName)
+        public void ExportPlayerData()
         {
-            enemiesAvoided++;
-            Debug.Log($"{actor} avoided enemy: {enemyName}. Total avoided: {enemiesAvoided}");
+            string filePath = Path.Combine(Application.persistentDataPath, "player_logs.csv");
+
+            // Jeśli plik nie istnieje, dodajemy nagłówek
+            if (!File.Exists(filePath))
+            {
+                File.WriteAllText(filePath, "playerDeaths,enemiesDefeated,totalCombatTime,enemiesAvoided,potionsUsed,zonesDiscovered,npcInteractions,waypointsDiscovered,achievementsUnlocked,currentDynamicPlayerType,difficultyMultiplier,difficultyLevel\n");
+            }
+
+            // Pobranie aktualnego poziomu trudności
+            int currentDifficulty = DifficultyManager.Instance.GetCurrentDifficulty();
+
+            // Tworzenie wpisu do CSV
+            string logEntry = $"{playerDeaths},{enemiesDefeated},{totalCombatTime},{potionsUsed},{zonesDiscovered},{npcInteractions},{waypointsDiscovered},{unlockedAchievements.Count},{currentDynamicPlayerType},{difficultyMultiplier},{currentDifficulty}\n";
+
+            // Zapis do pliku
+            File.AppendAllText(filePath, logEntry);
+
+            Debug.Log("Player data exported to CSV.");
         }
 
         public void ApplySettingsFromGameSettings()

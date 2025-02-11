@@ -15,7 +15,8 @@ namespace AI_DDA.Assets.Scripts
 
         public float CurrentDexterityMultiplier = 1.0f; // Domyślnie 100%
         public float CurrentStrengthMultiplier = 1.0f; // Domyślnie 100%
-        public float CurrentSpeedMultiplier = 1.0f;  // Domyślnie 100%
+        public float CurrentVitalityMultiplier = 1.0f; // Domyślnie 100%
+        public float CurrentEnergyMultiplier = 1.0f; // Domyślnie 100%
 
         public PlayerBehaviorLogger playerLogger;
 
@@ -50,19 +51,22 @@ namespace AI_DDA.Assets.Scripts
             {
                 CurrentDexterityMultiplier *= 0.9f;
                 CurrentStrengthMultiplier *= 0.8f;
-                CurrentSpeedMultiplier *= 0.9f;
+                CurrentVitalityMultiplier *= 0.95f;
+                CurrentEnergyMultiplier *= 0.95f; 
+
                 logger.ResetLogs();
-                Debug.Log($"Difficulty decreased: Dexterity={CurrentDexterityMultiplier}, Strength={CurrentStrengthMultiplier}, Speed={CurrentSpeedMultiplier}");
-                return;
+                Debug.Log($"Difficulty decreased: Dexterity={CurrentDexterityMultiplier}, Strength={CurrentStrengthMultiplier}, Vitality={CurrentVitalityMultiplier}, Energy={CurrentEnergyMultiplier}");                return;
             }
 
             if (logger.difficultyMultiplier >= 10 && logger.difficultyMultiplier % 10 == 0)
             {
                 CurrentDexterityMultiplier *= 1.1f;
                 CurrentStrengthMultiplier *= 1.2f;
-                CurrentSpeedMultiplier *= 1.1f;
+                CurrentVitalityMultiplier *= 1.05f;
+                CurrentEnergyMultiplier *= 1.05f;
+
                 logger.ResetLogs();
-                Debug.Log($"Difficulty increased: Dexterity={CurrentDexterityMultiplier}, Strength={CurrentStrengthMultiplier}, Speed={CurrentSpeedMultiplier}");
+                Debug.Log($"Difficulty increased: Dexterity={CurrentDexterityMultiplier}, Strength={CurrentStrengthMultiplier}, Vitality={CurrentVitalityMultiplier}, Energy={CurrentEnergyMultiplier}");
             }
             else
             {
@@ -75,8 +79,8 @@ namespace AI_DDA.Assets.Scripts
         public void ApplyDifficultyToExistingEnemies()
         {
             var entities = Object.FindObjectsByType<Entity>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
-                                  .Where(e => e.CompareTag("Entity/Enemy") && e.gameObject.layer == LayerMask.NameToLayer("Entities"))
-                                  .ToList();
+                                .Where(e => e.CompareTag("Entity/Enemy") && e.gameObject.layer == LayerMask.NameToLayer("Entities"))
+                                .ToList();
 
             if (entities.Count == 0)
             {
@@ -88,9 +92,14 @@ namespace AI_DDA.Assets.Scripts
             {
                 if (entity.stats != null)
                 {
-                    entity.stats.dexterity = Mathf.Max(1, (int)(entity.stats.dexterity * CurrentDexterityMultiplier));
                     entity.stats.strength = Mathf.Max(1, (int)(entity.stats.strength * CurrentStrengthMultiplier));
-                    Debug.Log($"Adjusted stats for {entity.name}: Dexterity={entity.stats.dexterity}, Strength={entity.stats.strength}");
+                    entity.stats.dexterity = Mathf.Max(1, (int)(entity.stats.dexterity * CurrentDexterityMultiplier));
+                    entity.stats.vitality = Mathf.Max(1, (int)(entity.stats.vitality * CurrentDexterityMultiplier));
+                    entity.stats.energy = Mathf.Max(1, (int)(entity.stats.energy * CurrentDexterityMultiplier));
+
+                    entity.stats.Recalculate(); // Przeliczenie statystyk po zmianie mnożników
+
+                    Debug.Log($"Adjusted stats for {entity.name}: Strength={entity.stats.strength}, Dexterity={entity.stats.dexterity}, Vitality={entity.stats.vitality}, Energy={entity.stats.energy}");
                 }
                 else
                 {
@@ -103,7 +112,7 @@ namespace AI_DDA.Assets.Scripts
 
         public void LoadDifficultyForCharacter(CharacterInstance character)
         {
-            if (isDifficultyLoaded) return; // Unikaj wielokrotnego ładowania
+            if (isDifficultyLoaded) return; // Unika wielokrotnego ładowania
 
             if (character == null)
             {
@@ -113,7 +122,8 @@ namespace AI_DDA.Assets.Scripts
 
             CurrentDexterityMultiplier = character.GetMultiplier("Dexterity");
             CurrentStrengthMultiplier = character.GetMultiplier("Strength");
-            CurrentSpeedMultiplier = character.GetMultiplier("Speed");
+            CurrentVitalityMultiplier = character.GetMultiplier("Vitality");
+            CurrentEnergyMultiplier = character.GetMultiplier("Energy");
 
             isDifficultyLoaded = true;
             Debug.Log($"Loaded Difficulty for character: {character.name}");
@@ -160,7 +170,8 @@ namespace AI_DDA.Assets.Scripts
         {
             CurrentDexterityMultiplier = 1.0f;
             CurrentStrengthMultiplier = 1.0f;
-            CurrentSpeedMultiplier = 1.0f;
+            CurrentVitalityMultiplier = 1.0f;
+            CurrentEnergyMultiplier = 1.0f;
 
             if (playerLogger != null)
             {
@@ -168,6 +179,11 @@ namespace AI_DDA.Assets.Scripts
             }
 
             Debug.Log("Difficulty reset to default values.");
+        }
+
+        public int GetCurrentDifficulty()
+        {
+            return Mathf.RoundToInt((CurrentDexterityMultiplier + CurrentStrengthMultiplier + CurrentVitalityMultiplier + CurrentEnergyMultiplier) / 4.0f * 10);
         }
 
         private void Awake()

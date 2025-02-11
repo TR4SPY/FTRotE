@@ -13,7 +13,8 @@ namespace PLAYERTWO.ARPGProject
         // Globalne mnożniki trudności
         public float dexterityMultiplier = 1.0f;
         public float strengthMultiplier = 1.0f;
-        public float speedMultiplier = 1.0f;
+        public float vitalityMultiplier = 1.0f;
+        public float energyMultiplier = 1.0f;
 
         public GameSerializer(Game game)
         {
@@ -22,9 +23,10 @@ namespace PLAYERTWO.ARPGProject
             {
                 dexterityMultiplier = DifficultyManager.Instance.CurrentDexterityMultiplier;
                 strengthMultiplier = DifficultyManager.Instance.CurrentStrengthMultiplier;
-                speedMultiplier = DifficultyManager.Instance.CurrentSpeedMultiplier;
+                vitalityMultiplier = DifficultyManager.Instance.CurrentVitalityMultiplier;
+                energyMultiplier = DifficultyManager.Instance.CurrentEnergyMultiplier;
 
-                Debug.Log($"Saving DifficultyManager: Dexterity={dexterityMultiplier}, Strength={strengthMultiplier}, Speed={speedMultiplier}");
+                Debug.Log($"Saving DifficultyManager: Dexterity={dexterityMultiplier}, Strength={strengthMultiplier}, Vitality={vitalityMultiplier}, Energy={energyMultiplier}");
             }
 
             InitializeCharacters(game.characters);
@@ -58,9 +60,10 @@ namespace PLAYERTWO.ARPGProject
             {
                 DifficultyManager.Instance.CurrentDexterityMultiplier = dexterityMultiplier;
                 DifficultyManager.Instance.CurrentStrengthMultiplier = strengthMultiplier;
-                DifficultyManager.Instance.CurrentSpeedMultiplier = speedMultiplier;
+                vitalityMultiplier = DifficultyManager.Instance.CurrentVitalityMultiplier;
+                energyMultiplier = DifficultyManager.Instance.CurrentEnergyMultiplier;
 
-                Debug.Log($"Loaded DifficultyManager: Dexterity={dexterityMultiplier}, Strength={strengthMultiplier}, Speed={speedMultiplier}");
+                Debug.Log($"Loaded DifficultyManager: Dexterity={dexterityMultiplier}, Strength={strengthMultiplier}, Vitality={vitalityMultiplier}, Energy={energyMultiplier}");
             }
             else
             {

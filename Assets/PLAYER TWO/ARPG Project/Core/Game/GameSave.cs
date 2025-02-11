@@ -86,7 +86,7 @@ namespace PLAYERTWO.ARPGProject
             using var stream = new FileStream(path, FileMode.Create);
             formatter.Serialize(stream, data);
 
-            Debug.Log($"Saved DifficultyManager: Dexterity={data.dexterityMultiplier}, Strength={data.strengthMultiplier}, Speed={data.speedMultiplier}");
+            Debug.Log($"Saved DifficultyManager: Dexterity={data.dexterityMultiplier}, Strength={data.strengthMultiplier}, Vitality={data.vitalityMultiplier}, Energy={data.energyMultiplier}");
         }
 
         protected virtual GameSerializer LoadBinary()
@@ -106,9 +106,10 @@ namespace PLAYERTWO.ARPGProject
                     {
                         DifficultyManager.Instance.CurrentDexterityMultiplier = data.dexterityMultiplier;
                         DifficultyManager.Instance.CurrentStrengthMultiplier = data.strengthMultiplier;
-                        DifficultyManager.Instance.CurrentSpeedMultiplier = data.speedMultiplier;
+                        DifficultyManager.Instance.CurrentVitalityMultiplier = data.vitalityMultiplier;
+                        DifficultyManager.Instance.CurrentEnergyMultiplier = data.energyMultiplier;
 
-                        Debug.Log($"Loaded DifficultyManager: Dexterity={data.dexterityMultiplier}, Strength={data.strengthMultiplier}, Speed={data.speedMultiplier}");
+                        Debug.Log($"Loaded DifficultyManager: Dexterity={data.dexterityMultiplier}, Strength={data.strengthMultiplier}, Vitality={data.vitalityMultiplier}, Energy={data.energyMultiplier}");
                     }
 
                     return data;
@@ -132,12 +133,13 @@ namespace PLAYERTWO.ARPGProject
 
             DifficultyManager.Instance.CurrentDexterityMultiplier = character.GetMultiplier("Dexterity");
             DifficultyManager.Instance.CurrentStrengthMultiplier = character.GetMultiplier("Strength");
-            DifficultyManager.Instance.CurrentSpeedMultiplier = character.GetMultiplier("Speed");
-
+            DifficultyManager.Instance.CurrentVitalityMultiplier = character.GetMultiplier("Vitality");
+            DifficultyManager.Instance.CurrentEnergyMultiplier = character.GetMultiplier("Energy");
             Debug.Log($"Loaded Difficulty for {character.name}: " +
                       $"Dexterity={DifficultyManager.Instance.CurrentDexterityMultiplier}, " +
                       $"Strength={DifficultyManager.Instance.CurrentStrengthMultiplier}, " +
-                      $"Speed={DifficultyManager.Instance.CurrentSpeedMultiplier}");
+                      $"Vitality={DifficultyManager.Instance.CurrentVitalityMultiplier}, " +
+                      $"Energy={DifficultyManager.Instance.CurrentEnergyMultiplier}");
         }
 
         public void LoadLogsForCharacter(CharacterInstance character)
@@ -224,12 +226,14 @@ namespace PLAYERTWO.ARPGProject
 
             character.SetMultiplier("Dexterity", DifficultyManager.Instance.CurrentDexterityMultiplier);
             character.SetMultiplier("Strength", DifficultyManager.Instance.CurrentStrengthMultiplier);
-            character.SetMultiplier("Speed", DifficultyManager.Instance.CurrentSpeedMultiplier);
+            character.SetMultiplier("Vitality", DifficultyManager.Instance.CurrentVitalityMultiplier);
+            character.SetMultiplier("Energy", DifficultyManager.Instance.CurrentEnergyMultiplier);
 
             Debug.Log($"Saved Difficulty for {character.name}: " +
                     $"Dexterity={character.GetMultiplier("Dexterity")}, " +
                     $"Strength={character.GetMultiplier("Strength")}, " +
-                    $"Speed={character.GetMultiplier("Speed")}");
+                    $"Vitality={character.GetMultiplier("Vitality")}, " +
+                    $"Energy={character.GetMultiplier("Energy")}");
         }
 
         public void SaveLogsForCharacter(CharacterInstance character)
