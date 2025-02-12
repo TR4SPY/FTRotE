@@ -111,20 +111,20 @@ namespace PLAYERTWO.ARPGProject
         {
             if (other == null)
             {
-                Debug.Log("TryStack failed: Other item is null.");
+                // Debug.Log("TryStack failed: Other item is null.");
                 return false;
             }
 
             if (!CanStack(other))
             {
-                Debug.Log($"TryStack failed: Cannot stack {other.GetName()} with {GetName()}.");
+                // Debug.Log($"TryStack failed: Cannot stack {other.GetName()} with {GetName()}.");
                 return false;
             }
 
             int maxStack = data.stackCapacity;
             if (stack >= maxStack)
             {
-                Debug.Log($"TryStack failed: Stack is already full ({stack}/{maxStack}).");
+                // Debug.Log($"TryStack failed: Stack is already full ({stack}/{maxStack}).");
                 return false;
             }
 
@@ -132,7 +132,7 @@ namespace PLAYERTWO.ARPGProject
             stack += amountToAdd;
             other.stack -= amountToAdd;
 
-            Debug.Log($"Stacking successful! {GetName()} stack is now {stack}/{maxStack}.");
+            // Debug.Log($"Stacking successful! {GetName()} stack is now {stack}/{maxStack}.");
 
             return true;
         }

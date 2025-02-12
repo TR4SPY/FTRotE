@@ -227,7 +227,7 @@ namespace PLAYERTWO.ARPGProject
                 return false;
             }
 
-            Debug.Log($"Removing {item.GetName()} from inventory.");
+            // Debug.Log($"Removing {item.GetName()} from inventory.");
 
             var position = items[item]; // Pobierz pozycję przedmiotu w siatce
             items.Remove(item); // Usuń z listy przedmiotów
@@ -245,7 +245,7 @@ namespace PLAYERTWO.ARPGProject
             }
 
             onItemRemoved?.Invoke(); // Wywołaj event usunięcia
-            Debug.Log($"Item {item.GetName()} fully removed from inventory.");
+            // Debug.Log($"Item {item.GetName()} fully removed from inventory.");
             return true;
         }
 

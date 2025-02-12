@@ -157,7 +157,7 @@ namespace PLAYERTWO.ARPGProject
             // Czy przedmiot nadal istnieje przed próbą usunięcia
             if (!m_inventory.items.ContainsKey(item.item))
             {
-                Debug.LogWarning($"TryRemove skipped: {item.item.GetName()} already removed from inventory.");
+                // Debug.LogWarning($"TryRemove skipped: {item.item.GetName()} already removed from inventory.");
                 return false;
             }
 

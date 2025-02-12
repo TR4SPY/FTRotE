@@ -60,9 +60,9 @@ namespace PLAYERTWO.ARPGProject
             this.currentPoints = currentPoints;
 
             if (stats.availablePoints > 0)
-                addButton.interactable = true;
+                addButton.transform.localScale = Vector3.one;
 
-            removeButton.interactable = false;
+            removeButton.transform.localScale = Vector3.zero;
             UpdateText();
         }
 
@@ -73,11 +73,11 @@ namespace PLAYERTWO.ARPGProject
         {
             distributedPoints += 1;
             stats.availablePoints -= 1;
-            removeButton.interactable = true;
+            removeButton.transform.localScale = Vector3.one;
             m_audio.PlayUiEffect(addPointClip);
 
             if (this.stats.availablePoints == 0)
-                addButton.interactable = false;
+                addButton.transform.localScale = Vector3.zero;
 
             UpdateText();
         }
@@ -89,11 +89,11 @@ namespace PLAYERTWO.ARPGProject
         {
             distributedPoints -= 1;
             stats.availablePoints += 1;
-            addButton.interactable = true;
+            addButton.transform.localScale = Vector3.one;
             m_audio.PlayUiEffect(removePointClip);
 
             if (distributedPoints == 0)
-                removeButton.interactable = false;
+                removeButton.transform.localScale = Vector3.zero;
 
             UpdateText();
         }
@@ -119,17 +119,14 @@ namespace PLAYERTWO.ARPGProject
         {
             stats.onPointsChanged += (availablePoints) =>
             {
-                addButton.interactable = availablePoints > 0;
+                addButton.transform.localScale = availablePoints > 0 ? Vector3.one : Vector3.zero;
             };
 
             addButton.onClick.AddListener(AddPoint);
             removeButton.onClick.AddListener(SubPoint);
 
-            if (stats.availablePoints == 0)
-                addButton.interactable = false;
-
-            if (distributedPoints == 0)
-                removeButton.interactable = false;
+            addButton.transform.localScale = stats.availablePoints > 0 ? Vector3.one : Vector3.zero;
+            removeButton.transform.localScale = distributedPoints > 0 ? Vector3.one : Vector3.zero;
 
             UpdateText();
         }

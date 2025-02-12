@@ -436,7 +436,7 @@ namespace PLAYERTWO.ARPGProject
 
                     slot.item.UpdateStackText();
 
-                    Debug.Log($"Added {amountToAdd} potions to hotbar slot. Remaining in inventory: {item.stack}");
+                    // Debug.Log($"Added {amountToAdd} potions to hotbar slot. Remaining in inventory: {item.stack}");
                 }
             }
 
@@ -445,13 +445,13 @@ namespace PLAYERTWO.ARPGProject
             {
                 freeSlot.Equip(this);
                 GUI.instance.Deselect();
-                Debug.Log("Remaining potions moved to free slot.");
+               // Debug.Log("Remaining potions moved to free slot.");
             }
 
             // Jeśli potion w inventory ma 0 stacków, usuwamy go poprawnie
             if (item.stack == 0)
             {
-                Debug.Log("Potion stack is 0, removing from inventory.");
+                // Debug.Log("Potion stack is 0, removing from inventory.");
 
                 // Usuń z inventory
                 bool removed = Level.instance.player.inventory.instance.TryRemoveItem(item);
@@ -466,7 +466,7 @@ namespace PLAYERTWO.ARPGProject
                 {
                     var position = inventory.items[item];
                     inventory.items.Remove(item);
-                    Debug.Log($"Removed {item.GetName()} from inventory grid at {position.row}, {position.column}");
+                    // Debug.Log($"Removed {item.GetName()} from inventory grid at {position.row}, {position.column}");
                 }
 
                 // Usuń z GUI inventory
