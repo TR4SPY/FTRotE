@@ -125,6 +125,7 @@ namespace PLAYERTWO.ARPGProject
 
             if (currentCharacter.currentScene != null)
                 GameScenes.instance.LoadScene(currentCharacter.currentScene);
+                GUIWindowsManager.Instance?.ResetWindowsState();
         }
 
         /// <summary>

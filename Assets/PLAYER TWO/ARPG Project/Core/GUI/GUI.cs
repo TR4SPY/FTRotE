@@ -87,7 +87,9 @@ namespace PLAYERTWO.ARPGProject
             m_toggleMenuWebGL.performed += _ => onToggleMenu.Invoke();
 #else
             //m_toggleMenu.performed += _ => onToggleMenu.Invoke();
-            m_toggleMenu.performed += _ => HandleEscape(); // Zmiana tutaj!
+            //m_toggleMenu.performed += _ => HandleEscape(); // Zmiana tutaj!
+            m_toggleMenu.performed -= _ => HandleEscape();
+            m_toggleMenu.performed += _ => HandleEscape();
 #endif
             m_dropItem.performed += _ => DropItem();
             m_toggleCollectiblesNames.performed += _ => onToggleCollectiblesNames.Invoke();
@@ -163,27 +165,26 @@ namespace PLAYERTWO.ARPGProject
 
         private void HandleEscape()
         {
+            Debug.Log($"HandleEscape() called at {Time.time}");
+
             if (windowsManager == null)
             {
                 Debug.LogError("GUIWindowsManager is not assigned in GUI.cs!");
                 return;
             }
 
-            // Jeśli menu gry jest otwarte, ESC powinno je zamknąć
             if (gameMenu != null && gameMenu.activeSelf)
             {
                 ToggleGameMenu();
                 return;
             }
 
-            // Jeśli są otwarte okna, zamykamy tylko jedno na raz
             if (windowsManager.HasOpenWindows())
             {
                 windowsManager.CloseLastOpenedWindow();
                 return;
             }
 
-            // Jeśli nie ma już żadnych okien, otwieramy menu gry
             ToggleGameMenu();
         }
 
@@ -197,7 +198,14 @@ namespace PLAYERTWO.ARPGProject
 
             bool isActive = gameMenu.activeSelf;
             gameMenu.SetActive(!isActive);
-            Debug.Log($"Game Menu {(isActive ? "closed" : "opened")}");
+
+            // Odtwarzanie dźwięku otwierania/zamykania menu
+            GameAudio.instance.PlayUiEffect(isActive ? windowsManager.closeClip : windowsManager.openClip);
+
+            // Pauza gry bez użycia GamePause.Instance
+            Time.timeScale = isActive ? 1 : 0; // 1 = normalna gra, 0 = pauza
+
+            Debug.Log($"Game Menu {(isActive ? "closed" : "opened")}, Game Paused: {!isActive}");
         }
 
         private Vector3 GetRandomDropPosition()

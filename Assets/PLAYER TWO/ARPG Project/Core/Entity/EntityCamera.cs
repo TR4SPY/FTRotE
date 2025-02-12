@@ -98,6 +98,9 @@ namespace PLAYERTWO.ARPGProject
                 ref m_rotationVelocity,
                 scrollSmoothTime
             );
+
+            if (float.IsNaN(m_distance)) m_distance = maxDistance;
+            if (float.IsNaN(m_rotation)) m_rotation = 0;
         }
 
         protected virtual void HandleTransform()
@@ -112,8 +115,8 @@ namespace PLAYERTWO.ARPGProject
 
             if (float.IsNaN(target.x) || float.IsNaN(target.y) || float.IsNaN(target.z))
             {
-                Debug.LogError($"Target position is invalid: {target}");
-                return;
+                Debug.LogError($"Target position is invalid: {target}. Resetting to Vector3.zero.");
+                target = Vector3.zero;
             }
 
             var rotation = Quaternion.Euler(angle, m_rotation, 0);
@@ -126,9 +129,12 @@ namespace PLAYERTWO.ARPGProject
             }
             else
             {
-                Debug.LogError($"New camera position is invalid: {newPosition}");
+                Debug.LogError($"New camera position is invalid: {newPosition}. Resetting.");
+                transform.position = target + new Vector3(0, 5, -10);
+                transform.rotation = Quaternion.Euler(angle, 0, 0);
             }
         }
+
 
         protected virtual void HandleMovement()
         {
@@ -182,6 +188,8 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void LateUpdate()
         {
+            if (Time.timeScale == 0) return;
+            
             HandlePointer();
             HandleMovement();
         }

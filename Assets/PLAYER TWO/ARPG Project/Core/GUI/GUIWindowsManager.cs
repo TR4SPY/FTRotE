@@ -57,6 +57,18 @@ namespace PLAYERTWO.ARPGProject
         public AudioClip closeClip;
 
         protected GameAudio m_audio => GameAudio.instance;
+        public static GUIWindowsManager Instance { get; private set; }
+
+        protected override void Awake()
+        {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            Instance = this;
+            base.Awake();
+        }
 
         /// <summary>
         /// Returns the reference to the GUI Player Inventory.
@@ -102,7 +114,15 @@ namespace PLAYERTWO.ARPGProject
 
             Debug.Log($"GUIWindowsManager initialized. Found {windows.Count} windows.");
         }
-        
+
+        public void ResetWindowsState()
+        {
+            foreach (var window in windows)
+            {
+                window.Hide(); // Zamknij wszystkie okna
+            }
+        }
+
         public bool HasOpenWindows()
         {
             return windows.Exists(w => w.isOpen);
