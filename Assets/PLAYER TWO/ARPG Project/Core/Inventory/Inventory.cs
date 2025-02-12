@@ -200,7 +200,13 @@ namespace PLAYERTWO.ARPGProject
             if (!CanInsertItem(item, row, column))
                 return false;
 
-            items.Add(item, new(row, column));
+            if (items.ContainsKey(item))
+            {
+                Debug.LogWarning($"TryInsertItem skipped: {item.GetName()} is already in inventory.");
+                return false;
+            }
+
+            items.Add(item, new InventoryCell(row, column));
 
             for (int i = row; i < row + item.rows; i++)
             {
@@ -210,7 +216,7 @@ namespace PLAYERTWO.ARPGProject
                 }
             }
 
-            onItemInserted?.Invoke(item, new(row, column));
+            onItemInserted?.Invoke(item, new InventoryCell(row, column));
             return true;
         }
 

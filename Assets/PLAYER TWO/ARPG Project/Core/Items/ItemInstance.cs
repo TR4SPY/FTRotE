@@ -108,34 +108,42 @@ namespace PLAYERTWO.ARPGProject
         /// <param name="other">The Item Instance you want to try stack.</param>
         /// <returns>Returns true if it was able to stack the item.</returns>
         public bool TryStack(ItemInstance other)
-        {
-            if (other == null)
-            {
-                // Debug.Log("TryStack failed: Other item is null.");
-                return false;
-            }
+{
+    if (other == null)
+    {
+        Debug.LogWarning("[STACK] TryStack failed: Other item is null.");
+        return false;
+    }
 
-            if (!CanStack(other))
-            {
-                // Debug.Log($"TryStack failed: Cannot stack {other.GetName()} with {GetName()}.");
-                return false;
-            }
+    if (!CanStack(other))
+    {
+        Debug.LogWarning($"[STACK] TryStack failed: Cannot stack {other.GetName()} with {GetName()}.");
+        return false;
+    }
 
-            int maxStack = data.stackCapacity;
-            if (stack >= maxStack)
-            {
-                // Debug.Log($"TryStack failed: Stack is already full ({stack}/{maxStack}).");
-                return false;
-            }
+    int maxStack = data.stackCapacity;
+    if (stack >= maxStack)
+    {
+        Debug.LogWarning($"[STACK] TryStack failed: Stack is already full ({stack}/{maxStack}).");
+        return false;
+    }
 
-            int amountToAdd = Mathf.Min(maxStack - stack, other.stack);
-            stack += amountToAdd;
-            other.stack -= amountToAdd;
+    int amountToAdd = Mathf.Min(maxStack - stack, other.stack);
+    stack += amountToAdd;
+    other.stack -= amountToAdd;
 
-            // Debug.Log($"Stacking successful! {GetName()} stack is now {stack}/{maxStack}.");
+    Debug.Log($"[STACK] Stacking successful! {GetName()} stack is now {stack}/{maxStack}. Other stack: {other.stack}");
 
-            return true;
-        }
+    // 🔥 Jeśli cały stack z ekwipunku został przeniesiony, usuń go
+    if (other.stack == 0)
+    {
+        Debug.Log($"[STACK] {other.GetName()} stack in inventory is now 0. Removing from inventory.");
+        Level.instance.player.inventory.instance.TryRemoveItem(other);
+        GUI.instance.GetComponentInChildren<GUIInventory>()?.UpdateSlots();
+    }
+
+    return true;
+}
 
         public string GetName()
         {
