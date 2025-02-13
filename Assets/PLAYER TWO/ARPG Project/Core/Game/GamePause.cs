@@ -17,7 +17,7 @@ namespace PLAYERTWO.ARPGProject
         public virtual void Pause(bool value)
         {
             Time.timeScale = value ? 0 : 1;
-            Debug.Log($"GamePause: Paused={value}");
+            // Debug.Log($"GamePause: Paused={value}");
         }
     }
 }

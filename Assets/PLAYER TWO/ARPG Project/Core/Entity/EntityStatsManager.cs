@@ -235,7 +235,7 @@ namespace PLAYERTWO.ARPGProject
             if (initialized)
                 return;
 
-            Debug.Log($"Initializing stats for {gameObject.name}");
+            // Debug.Log($"Initializing stats for {gameObject.name}");
 
             // Sprawdzenie, czy DifficultyManager.Instance jest dostępny
             if (DifficultyManager.Instance == null)

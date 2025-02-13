@@ -276,11 +276,15 @@ namespace AI_DDA.Assets.Scripts
             zonesDiscovered = characterInstance.zonesDiscovered;
             currentDynamicPlayerType = characterInstance.currentDynamicPlayerType;
 
+            unlockedAchievements = new List<string>(characterInstance.unlockedAchievements); 
+            int achievementCount = unlockedAchievements.Count;
+
             Debug.Log($"Loaded Player Behavior Logs for {characterInstance.name}: " +
                     $"Deaths={playerDeaths}, Defeated={enemiesDefeated}, " +
                     $"CombatTime={totalCombatTime}, NPCInteractions={npcInteractions}, " +
                     $"WaypointsDiscovered={waypointsDiscovered}, QuestsCompleted={questsCompleted}, " +
                     $"PotionsUsed={potionsUsed}, ZonesDiscovered={zonesDiscovered}, " +
+                    $"AchievementsUnlocked={achievementCount}, " + 
                     $"currentDynamicPlayerType={currentDynamicPlayerType}");
         }
 
@@ -290,10 +294,10 @@ namespace AI_DDA.Assets.Scripts
         public void UpdatePlayerType()
         {
             // Scoring logic
-            int achieverScore = questsCompleted + waypointsDiscovered;
-            int explorerScore = zonesDiscovered + waypointsDiscovered;
-            int socializerScore = npcInteractions;
-            int killerScore = enemiesDefeated + (int)(totalCombatTime / 60);
+            int achieverScore = (questsCompleted * 2) + (unlockedAchievements.Count * 2);
+            int explorerScore = (zonesDiscovered * 2) + waypointsDiscovered;
+            int socializerScore = (npcInteractions * 3) + questsCompleted;
+            int killerScore = (int)(enemiesDefeated * 0.5) + (int)(totalCombatTime / 120); 
 
             // Determine dominant type
             string newPlayerType = DetermineDominantType(achieverScore, explorerScore, socializerScore, killerScore);
@@ -354,6 +358,7 @@ namespace AI_DDA.Assets.Scripts
                 writer.WriteLine($"Zones Discovered: {zonesDiscovered}");
                 writer.WriteLine($"Quests Completed: {questsCompleted}");
                 writer.WriteLine($"Waypoints Discovered: {waypointsDiscovered}");
+                writer.WriteLine($"Unlocked Achievements: {unlockedAchievements.Count}");
                 writer.WriteLine($"Current Difficulty Multiplier: {difficultyMultiplier}");
                 writer.WriteLine($"Player Type based on questionnaire: {characterInstance.playerType}");
                 writer.WriteLine($"Current Dynamic Player Type: {currentDynamicPlayerType}");

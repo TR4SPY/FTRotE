@@ -165,11 +165,11 @@ namespace PLAYERTWO.ARPGProject
 
         private void HandleEscape()
         {
-            Debug.Log($"HandleEscape() called at {Time.time}");
+            // Debug.Log($"HandleEscape() called at {Time.time}");
 
             if (windowsManager == null)
             {
-                Debug.LogError("GUIWindowsManager is not assigned in GUI.cs!");
+                // Debug.LogError("GUIWindowsManager is not assigned in GUI.cs!");
                 return;
             }
 
@@ -192,7 +192,7 @@ namespace PLAYERTWO.ARPGProject
         {
             if (gameMenu == null)
             {
-                Debug.LogError("Game Menu is not assigned in GUI.cs!");
+                // Debug.LogError("Game Menu is not assigned in GUI.cs!");
                 return;
             }
 
@@ -205,7 +205,7 @@ namespace PLAYERTWO.ARPGProject
             // Pauza gry bez użycia GamePause.Instance
             Time.timeScale = isActive ? 1 : 0; // 1 = normalna gra, 0 = pauza
 
-            Debug.Log($"Game Menu {(isActive ? "closed" : "opened")}, Game Paused: {!isActive}");
+            // Debug.Log($"Game Menu {(isActive ? "closed" : "opened")}, Game Paused: {!isActive}");
         }
 
         private Vector3 GetRandomDropPosition()

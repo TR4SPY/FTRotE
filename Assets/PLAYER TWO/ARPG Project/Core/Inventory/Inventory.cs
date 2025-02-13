@@ -202,7 +202,7 @@ namespace PLAYERTWO.ARPGProject
 
             if (items.ContainsKey(item))
             {
-                Debug.LogWarning($"TryInsertItem skipped: {item.GetName()} is already in inventory.");
+                // Debug.LogWarning($"TryInsertItem skipped: {item.GetName()} is already in inventory.");
                 return false;
             }
 

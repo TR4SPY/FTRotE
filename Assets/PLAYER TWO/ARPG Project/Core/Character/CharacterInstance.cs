@@ -49,6 +49,7 @@ namespace PLAYERTWO.ARPGProject
         public int npcInteractions = 0;
         public int questsCompleted = 0;
         public int waypointsDiscovered = 0;
+        public int achievementsUnlocked = 0;
         public bool questionnaireCompleted = false;
         public string playerType = "Undefined";
         public string currentDynamicPlayerType = "Unknown";
@@ -214,7 +215,7 @@ namespace PLAYERTWO.ARPGProject
                 quests = CharacterQuests.CreateFromSerializer(serializer.quests),
                 scenes = CharacterScenes.CreateFromSerializer(serializer.scenes),
 
-                // Wczytaj logi
+                // Wczytanie logów
                 playerDeaths = serializer.playerDeaths,
                 enemiesDefeated = serializer.enemiesDefeated,
                 totalCombatTime = serializer.totalCombatTime,
@@ -225,31 +226,35 @@ namespace PLAYERTWO.ARPGProject
                 questsCompleted = serializer.questsCompleted,
                 waypointsDiscovered = serializer.waypointsDiscovered,
                 questionnaireCompleted = serializer.questionnaireCompleted,
-                // achievementsUnlocked = serializer.achievementsUnlocked,
                 playerType = serializer.playerType,
                 currentDynamicPlayerType = serializer.currentDynamicPlayerType,
                 totalPlayTime = serializer.totalPlayTime,
 
-                // Wczytaj odwiedzone strefy
+                // Wczytanie odwiedzonych stref
                 visitedZones = serializer.visitedZones != null
                     ? new HashSet<string>(serializer.visitedZones)
                     : new HashSet<string>(),
 
-                // Wczytaj odwiedzone waypointy
+                // Wczytanie odwiedzonych waypointów
                 activatedWaypoints = serializer.activatedWaypoints != null
                     ? new HashSet<int>(serializer.activatedWaypoints)
                     : new HashSet<int>(),
 
-                // **NOWOŚĆ: Wczytaj odblokowane osiągnięcia**
+                // Wczytanie odblokowanych osiągnięć jako liczbę
                 unlockedAchievements = serializer.unlockedAchievements != null
                     ? new List<string>(serializer.unlockedAchievements)
-                    : new List<string>()
+                    : new List<string>(),
+
+                achievementsUnlocked = serializer.unlockedAchievements != null
+                    ? serializer.unlockedAchievements.Count
+                    : 0
             };
 
             // Wczytaj mnożniki trudności
             characterInstance.SetMultiplier("Dexterity", serializer.dexterityMultiplier);
             characterInstance.SetMultiplier("Strength", serializer.strengthMultiplier);
-            characterInstance.SetMultiplier("Speed", serializer.speedMultiplier);
+            characterInstance.SetMultiplier("Vitality", serializer.vitalityMultiplier);
+            characterInstance.SetMultiplier("Energy", serializer.energyMultiplier);
 
             return characterInstance;
         }

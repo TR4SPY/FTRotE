@@ -148,7 +148,7 @@ namespace PLAYERTWO.ARPGProject
             {
                 if (child.name == pointName)
                 {
-                    Debug.Log($"Attachment point '{pointName}' found at: {child.name}");
+                    // Debug.Log($"Attachment point '{pointName}' found at: {child.name}");
                     return child;
                 }
             }
@@ -181,7 +181,7 @@ namespace PLAYERTWO.ARPGProject
                     if (itemManager.leftHandShieldSlot != null)
                     {
                         shield.Instantiate(itemManager.leftHandShieldSlot);
-                        Debug.Log($"Attached shield: {shield.name} to {itemManager.leftHandShieldSlot.name}");
+                        // Debug.Log($"Attached shield: {shield.name} to {itemManager.leftHandShieldSlot.name}");
                     }
                     else
                     {
@@ -206,7 +206,7 @@ namespace PLAYERTWO.ARPGProject
                     if (attachmentPoint != null)
                     {
                         blade.InstantiateRightHand(attachmentPoint);
-                        Debug.Log($"Attached blade: {blade.name} to {attachmentPoint.name}");
+                        // Debug.Log($"Attached blade: {blade.name} to {attachmentPoint.name}");
                     }
                     else
                     {
@@ -219,7 +219,7 @@ namespace PLAYERTWO.ARPGProject
                     if (itemManager.rightHandSlot != null && itemManager.leftHandSlot != null)
                     {
                         bow.Instantiate(itemManager.rightHandSlot, itemManager.leftHandSlot);
-                        Debug.Log($"Attached bow: {bow.name} using {itemManager.rightHandSlot.name} and {itemManager.leftHandSlot.name}");
+                        // Debug.Log($"Attached bow: {bow.name} using {itemManager.rightHandSlot.name} and {itemManager.leftHandSlot.name}");
                     }
                     else
                     {
@@ -256,7 +256,7 @@ namespace PLAYERTWO.ARPGProject
                         // Przypisz mesh i materiały
                         targetRenderer.sharedMesh = armor.mesh;
                         targetRenderer.materials = armor.materials;
-                        Debug.Log($"Assigned armor: {armor.name} to renderer: {targetRenderer.name}");
+                        // Debug.Log($"Assigned armor: {armor.name} to renderer: {targetRenderer.name}");
                     }
                     else
                     {
@@ -302,7 +302,6 @@ namespace PLAYERTWO.ARPGProject
 
                 if (characterInstance.data.classPrefab != null)
                 {
-                    //Debug.LogError($"Brak prefab w characterInstance {characterInstance.name}!");
                     GameObject characterObject = Instantiate(characterInstance.data.classPrefab, position, Quaternion.identity);
                     characterObject.transform.SetParent(centerPoint); // Przypisz jako dziecko do punktu centralnego
 
@@ -346,7 +345,7 @@ namespace PLAYERTWO.ARPGProject
 
             if (existingGUI != null)
             {
-                Debug.Log($"GUI already exists for character {characterObject.name}. Skipping creation.");
+                // Debug.Log($"GUI already exists for character {characterObject.name}. Skipping creation.");
                 return;
             }
 
@@ -403,7 +402,7 @@ namespace PLAYERTWO.ARPGProject
 
         public void RefreshCharacterDisplay()
         {
-            Debug.Log("RefreshCharacterDisplay called.");
+            // Debug.Log("RefreshCharacterDisplay called.");
 
             var characters = Game.instance.characters;
 

@@ -398,7 +398,7 @@ namespace PLAYERTWO.ARPGProject
     var hud = GUIEntity.instance;
     if (hud == null)
     {
-        Debug.LogWarning("GUIEntity.instance is null. Cannot move potion to hotbar.");
+        // Debug.LogWarning("GUIEntity.instance is null. Cannot move potion to hotbar.");
         return;
     }
 
@@ -417,7 +417,6 @@ namespace PLAYERTWO.ARPGProject
         }
     }
 
-    // 🔥 PRÓBA STACKOWANIA DO ISTNIEJĄCYCH SLOTÓW W HOTBARZE
     foreach (var slot in availableSlots)
     {
         if (item.stack <= 0)
@@ -433,35 +432,32 @@ namespace PLAYERTWO.ARPGProject
             item.stack -= amountToAdd;
 
             slot.item.UpdateStackText();
-            Debug.Log($"[HOTBAR] Added {amountToAdd} potions to existing stack. Remaining in inventory: {item.stack}");
+            // Debug.Log($"[HOTBAR] Added {amountToAdd} potions to existing stack. Remaining in inventory: {item.stack}");
         }
     }
 
-    // 🔥 JEŚLI ZOSTAŁY POTIONY, PRZENOSIMY DO NOWEGO SLOTU
     if (item.stack > 0 && freeSlot != null)
     {
-        Debug.Log($"[HOTBAR] Moving {item.stack} potions to new free slot.");
+        // Debug.Log($"[HOTBAR] Moving {item.stack} potions to new free slot.");
 
         freeSlot.Equip(this); // Przeniesienie przedmiotu do hotbara
 
         var inventory = Level.instance.player.inventory.instance;
         inventory.TryRemoveItem(item);
 
-        // 🔥 WYMUSZONA AKTUALIZACJA GUI
         var guiInventory = GUI.instance.GetComponentInChildren<GUIInventory>();
         if (guiInventory != null)
         {
-            Debug.Log("[HOTBAR] Updating inventory slots to remove 'ghost' slot.");
+            // Debug.Log("[HOTBAR] Updating inventory slots to remove 'ghost' slot.");
             guiInventory.UpdateSlots();
         }
 
         GUI.instance.Deselect();
     }
 
-    // 🔥 JEŚLI STACK W EKWIPUNKU JEST 0, USUWAMY PRZEDMIOT CAŁKOWICIE
     if (item.stack == 0)
     {
-        Debug.Log("[HOTBAR] Potion stack is 0, removing from inventory and GUI.");
+        // Debug.Log("[HOTBAR] Potion stack is 0, removing from inventory and GUI.");
 
         var inventory = Level.instance.player.inventory.instance;
         bool removed = inventory.TryRemoveItem(item);
@@ -471,7 +467,7 @@ namespace PLAYERTWO.ARPGProject
         }
         else
         {
-            Debug.Log($"[HOTBAR] {item.GetName()} successfully removed from inventory.");
+            // Debug.Log($"[HOTBAR] {item.GetName()} successfully removed from inventory.");
         }
 
         var guiInventory = GUI.instance.GetComponentInChildren<GUIInventory>();
@@ -480,7 +476,7 @@ namespace PLAYERTWO.ARPGProject
             guiInventory.UpdateSlots();
         }
 
-        Debug.Log($"[HOTBAR] Destroying game object {gameObject.name}");
+        // Debug.Log($"[HOTBAR] Destroying game object {gameObject.name}");
         Destroy(gameObject);
     }
 }

@@ -111,20 +111,20 @@ namespace PLAYERTWO.ARPGProject
 {
     if (other == null)
     {
-        Debug.LogWarning("[STACK] TryStack failed: Other item is null.");
+        // Debug.LogWarning("[STACK] TryStack failed: Other item is null.");
         return false;
     }
 
     if (!CanStack(other))
     {
-        Debug.LogWarning($"[STACK] TryStack failed: Cannot stack {other.GetName()} with {GetName()}.");
+        // Debug.LogWarning($"[STACK] TryStack failed: Cannot stack {other.GetName()} with {GetName()}.");
         return false;
     }
 
     int maxStack = data.stackCapacity;
     if (stack >= maxStack)
     {
-        Debug.LogWarning($"[STACK] TryStack failed: Stack is already full ({stack}/{maxStack}).");
+        // Debug.LogWarning($"[STACK] TryStack failed: Stack is already full ({stack}/{maxStack}).");
         return false;
     }
 
@@ -132,12 +132,12 @@ namespace PLAYERTWO.ARPGProject
     stack += amountToAdd;
     other.stack -= amountToAdd;
 
-    Debug.Log($"[STACK] Stacking successful! {GetName()} stack is now {stack}/{maxStack}. Other stack: {other.stack}");
+    // Debug.Log($"[STACK] Stacking successful! {GetName()} stack is now {stack}/{maxStack}. Other stack: {other.stack}");
 
     // 🔥 Jeśli cały stack z ekwipunku został przeniesiony, usuń go
     if (other.stack == 0)
     {
-        Debug.Log($"[STACK] {other.GetName()} stack in inventory is now 0. Removing from inventory.");
+        // Debug.Log($"[STACK] {other.GetName()} stack in inventory is now 0. Removing from inventory.");
         Level.instance.player.inventory.instance.TryRemoveItem(other);
         GUI.instance.GetComponentInChildren<GUIInventory>()?.UpdateSlots();
     }

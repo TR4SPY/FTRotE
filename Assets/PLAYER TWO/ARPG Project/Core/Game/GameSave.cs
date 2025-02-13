@@ -173,7 +173,10 @@ namespace PLAYERTWO.ARPGProject
                 Game.instance.currentCharacter.totalPlayTime = character.totalPlayTime;
             }
 
+            // Wczytaj listę osiągnięć i zapisz liczbę zdobytych osiągnięć
             PlayerBehaviorLogger.Instance.unlockedAchievements = new List<string>(character.unlockedAchievements);
+            int achievementsUnlocked = PlayerBehaviorLogger.Instance.unlockedAchievements.Count;
+
             #if UNITY_2023_1_OR_NEWER
             AchievementManager achievementManager = Object.FindFirstObjectByType<AchievementManager>();
             #else
@@ -185,38 +188,35 @@ namespace PLAYERTWO.ARPGProject
                 achievementManager.CheckAchievements(PlayerBehaviorLogger.Instance);
             }
 
-
+            // Wczytywanie statystyk gracza
             PlayerBehaviorLogger.Instance.playerDeaths = character.playerDeaths;
             PlayerBehaviorLogger.Instance.enemiesDefeated = character.enemiesDefeated;
             PlayerBehaviorLogger.Instance.totalCombatTime = character.totalCombatTime;
             PlayerBehaviorLogger.Instance.npcInteractions = character.npcInteractions;
-
             PlayerBehaviorLogger.Instance.waypointsDiscovered = character.waypointsDiscovered;
             PlayerBehaviorLogger.Instance.questsCompleted = character.questsCompleted;
             PlayerBehaviorLogger.Instance.potionsUsed = character.potionsUsed;
             PlayerBehaviorLogger.Instance.zonesDiscovered = character.zonesDiscovered;
-            // PlayerBehaviorLogger.Instance.unlockedAchievements = character.unlockedAchievements;
-            QuestionnaireManager.Instance.playerType = character.playerType;
             PlayerBehaviorLogger.Instance.currentDynamicPlayerType = character.currentDynamicPlayerType;
-            // PlayerBehaviorLogger.Instance.unlockedAchievements = new List<string>(character.unlockedAchievements);
 
-             // Wczytaj łączny czas gry
+            // Wczytaj łączny czas gry
             PlayerBehaviorLogger.Instance.lastUpdateTime = Time.time; // Inicjalizacja czasu
 
             Debug.Log($"Loaded Player Behavior Logs for {character.name}: " +
                     $"Deaths={PlayerBehaviorLogger.Instance.playerDeaths}, " +
                     $"Defeated={PlayerBehaviorLogger.Instance.enemiesDefeated}, " +
                     $"CombatTime={PlayerBehaviorLogger.Instance.totalCombatTime}, " +
-                    $"NPCInteractions={PlayerBehaviorLogger.Instance.npcInteractions}" +
-                    $"WaypointsDiscovered={PlayerBehaviorLogger.Instance.waypointsDiscovered}" +
-                    $"QuestsCompleted={PlayerBehaviorLogger.Instance.questsCompleted}" +
-                    $"PotionsUsed={PlayerBehaviorLogger.Instance.potionsUsed}" +
-                    $"ZonesDiscovered={PlayerBehaviorLogger.Instance.zonesDiscovered}" +
-                    // $"AchievementsUnlocked={PlayerBehaviorLogger.Instance.achievementsUnlocked}" +
-                    $"PlayerType={QuestionnaireManager.Instance.playerType}" +
-                    $"CurrentDynamicPlayerType={PlayerBehaviorLogger.Instance.currentDynamicPlayerType}" +
+                    $"NPCInteractions={PlayerBehaviorLogger.Instance.npcInteractions}, " +
+                    $"WaypointsDiscovered={PlayerBehaviorLogger.Instance.waypointsDiscovered}, " +
+                    $"QuestsCompleted={PlayerBehaviorLogger.Instance.questsCompleted}, " +
+                    $"PotionsUsed={PlayerBehaviorLogger.Instance.potionsUsed}, " +
+                    $"ZonesDiscovered={PlayerBehaviorLogger.Instance.zonesDiscovered}, " +
+                    $"AchievementsUnlocked={achievementsUnlocked}, " +
+                    $"PlayerType={QuestionnaireManager.Instance.playerType}, " +
+                    $"CurrentDynamicPlayerType={PlayerBehaviorLogger.Instance.currentDynamicPlayerType}, " +
                     $"PlayTime={character.totalPlayTime}");
         }
+
 
         public void SaveDifficultyForCharacter(CharacterInstance character)
         {
@@ -240,18 +240,16 @@ namespace PLAYERTWO.ARPGProject
 
         public void SaveLogsForCharacter(CharacterInstance character)
         {
-                if (PlayerBehaviorLogger.Instance == null)
+            if (PlayerBehaviorLogger.Instance == null)
             {
                 Debug.LogWarning("PlayerBehaviorLogger.Instance is null. Skipping player behavior logs save.");
                 return;
             }
 
             // Zapisz całkowity czas gry
-            //character.totalPlayTime = Game.instance.currentCharacter.totalPlayTime;
-            // Zapisz łączny czas gry
             character.totalPlayTime += Time.time - PlayerBehaviorLogger.Instance.lastUpdateTime;
 
-
+            // Zapisz podstawowe statystyki
             character.playerDeaths = PlayerBehaviorLogger.Instance.playerDeaths;
             character.enemiesDefeated = PlayerBehaviorLogger.Instance.enemiesDefeated;
             character.totalCombatTime = PlayerBehaviorLogger.Instance.totalCombatTime;
@@ -260,13 +258,16 @@ namespace PLAYERTWO.ARPGProject
             character.questsCompleted = PlayerBehaviorLogger.Instance.questsCompleted;
             character.potionsUsed = PlayerBehaviorLogger.Instance.potionsUsed;
             character.zonesDiscovered = PlayerBehaviorLogger.Instance.zonesDiscovered;
-            // character.unlockedAchievements = PlayerBehaviorLogger.Instance.unlockedAchievements;
-            // character.playerType = QuestionnaireManager.Instance.playerType;
+
+            // Zapisanie liczby zdobytych osiągnięć zamiast pełnej listy
+            character.unlockedAchievements = new List<string>(PlayerBehaviorLogger.Instance.unlockedAchievements);
+            int achievementsUnlocked = character.unlockedAchievements.Count;
+
+            // Zapisanie typu gracza
             character.playerType = QuestionnaireManager.Instance?.playerType ?? "Undefined";
             character.currentDynamicPlayerType = PlayerBehaviorLogger.Instance?.currentDynamicPlayerType ?? "Unknown";
-            character.unlockedAchievements = new List<string>(PlayerBehaviorLogger.Instance.unlockedAchievements);
 
-            Debug.Log($"Saved Player Behavior Logs for {character.name}");
+            Debug.Log($"Saved Player Behavior Logs for {character.name} | AchievementsUnlocked={achievementsUnlocked}");
         }
 
         protected virtual void SaveJSON()

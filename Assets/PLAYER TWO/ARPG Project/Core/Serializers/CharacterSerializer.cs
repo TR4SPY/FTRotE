@@ -26,7 +26,8 @@ namespace PLAYERTWO.ARPGProject
         // Dodane pola dla mnożników trudności
         public float dexterityMultiplier = 1.0f;
         public float strengthMultiplier = 1.0f;
-        public float speedMultiplier = 1.0f;
+        public float vitalityMultiplier = 1.0f;
+        public float energyMultiplier = 1.0f;
 
         // Pola dla logów gracza
         public int playerDeaths;
@@ -35,7 +36,7 @@ namespace PLAYERTWO.ARPGProject
         public int potionsUsed;
         public int difficultyMultiplier;
         public int zonesDiscovered;
-        // public int achievementsUnlocked;
+        public int achievementsUnlocked;
         public List<string> unlockedAchievements;
         public int npcInteractions;
         public int questsCompleted;
@@ -70,7 +71,8 @@ namespace PLAYERTWO.ARPGProject
             // Zapisywanie mnożników z CharacterInstance
             dexterityMultiplier = character.GetMultiplier("Dexterity");
             strengthMultiplier = character.GetMultiplier("Strength");
-            speedMultiplier = character.GetMultiplier("Speed");
+            vitalityMultiplier = character.GetMultiplier("Vitality");
+            energyMultiplier = character.GetMultiplier("Energy");
 
             // Save logs
             playerDeaths = character.playerDeaths;
@@ -81,19 +83,20 @@ namespace PLAYERTWO.ARPGProject
             potionsUsed = character.potionsUsed;
             waypointsDiscovered = character.waypointsDiscovered;
             zonesDiscovered = character.zonesDiscovered;
-           // achievementsUnlocked = character.achievementsUnlocked;
             playerType = character.playerType;
             currentDynamicPlayerType = character.currentDynamicPlayerType;
             totalPlayTime = character.totalPlayTime;
 
             // Save questionnaire completion status
-           questionnaireCompleted = character.questionnaireCompleted;
-            // Waypoints and Zones lists
+            questionnaireCompleted = character.questionnaireCompleted;
+
             unlockedAchievements = character.unlockedAchievements != null ? new List<string>(character.unlockedAchievements) : new List<string>();
+            achievementsUnlocked = unlockedAchievements.Count;
+
             visitedZones = character.visitedZones != null ? new List<string>(character.visitedZones) : new List<string>();
             activatedWaypoints = character.activatedWaypoints != null ? new List<int>(character.activatedWaypoints) : new List<int>();
 
-           // Debug.Log($"Character '{name}' serialized with visited zones: {string.Join(", ", visitedZones)}, activated waypoints: {string.Join(", ", activatedWaypoints)}, and logs: PlayerDeaths={playerDeaths}, EnemiesDefeated={enemiesDefeated}");
+            Debug.Log($"Character '{name}' serialized with visited zones: {string.Join(", ", visitedZones)}, activated waypoints: {string.Join(", ", activatedWaypoints)}, and logs: PlayerDeaths={playerDeaths}, EnemiesDefeated={enemiesDefeated}, AchievementsUnlocked={achievementsUnlocked}");
         }
 
         public virtual string ToJson() => JsonUtility.ToJson(this);
