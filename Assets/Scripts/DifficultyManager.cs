@@ -1,10 +1,8 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Events;
-using System.Collections;
 using PLAYERTWO.ARPGProject;
 
 namespace AI_DDA.Assets.Scripts
@@ -13,10 +11,10 @@ namespace AI_DDA.Assets.Scripts
     {
         public static DifficultyManager Instance;
 
-        public float CurrentDexterityMultiplier = 1.0f; // Domyślnie 100%
-        public float CurrentStrengthMultiplier = 1.0f; // Domyślnie 100%
-        public float CurrentVitalityMultiplier = 1.0f; // Domyślnie 100%
-        public float CurrentEnergyMultiplier = 1.0f; // Domyślnie 100%
+        public float CurrentDexterityMultiplier = 1.0f;
+        public float CurrentStrengthMultiplier = 1.0f;
+        public float CurrentVitalityMultiplier = 1.0f;
+        public float CurrentEnergyMultiplier = 1.0f;
 
         public PlayerBehaviorLogger playerLogger;
 
@@ -35,47 +33,36 @@ namespace AI_DDA.Assets.Scripts
                     ReassignPlayerLogger(newLogger);
                     Debug.Log("PlayerBehaviorLogger found and assigned.");
                 }
-                yield return null; // Czekaj jedną klatkę
+                yield return null; 
             }
         }
 
-        public void AdjustDifficulty(PlayerBehaviorLogger logger)
+        /// <summary>
+        /// Nowa metoda AI-DDA: Machine Learning dostarcza przewidywaną trudność.
+        /// </summary>
+        public void SetDifficultyFromAI(float difficultyLevel)
         {
-            if (logger == null)
-            {
-                Debug.LogError("Logger is null in AdjustDifficulty.");
-                return;
-            }
+            Debug.Log($"[AI-DDA] Setting difficulty based on AI Prediction: {difficultyLevel}");
 
-            if (logger.playerDeaths >= 3 && logger.playerDeaths % 3 == 0)
-            {
-                CurrentDexterityMultiplier *= 0.9f;
-                CurrentStrengthMultiplier *= 0.8f;
-                CurrentVitalityMultiplier *= 0.95f;
-                CurrentEnergyMultiplier *= 0.95f; 
+            // AI może zwrócić poziom trudności np. od 0 do 10, więc przeliczamy na mnożniki
+            CurrentDexterityMultiplier = 1.0f + (difficultyLevel * 0.1f);
+            CurrentStrengthMultiplier = 1.0f + (difficultyLevel * 0.15f);
+            CurrentVitalityMultiplier = 1.0f + (difficultyLevel * 0.1f);
+            CurrentEnergyMultiplier = 1.0f + (difficultyLevel * 0.05f);
 
-                logger.ResetLogs();
-                Debug.Log($"Difficulty decreased: Dexterity={CurrentDexterityMultiplier}, Strength={CurrentStrengthMultiplier}, Vitality={CurrentVitalityMultiplier}, Energy={CurrentEnergyMultiplier}");                return;
-            }
+            Debug.Log($"[AI-DDA] Current multipliers -> " +
+                      $"Dexterity: {CurrentDexterityMultiplier}, " +
+                      $"Strength: {CurrentStrengthMultiplier}, " +
+                      $"Vitality: {CurrentVitalityMultiplier}, " +
+                      $"Energy: {CurrentEnergyMultiplier}");
 
-            if (logger.difficultyMultiplier >= 10 && logger.difficultyMultiplier % 10 == 0)
-            {
-                CurrentDexterityMultiplier *= 1.1f;
-                CurrentStrengthMultiplier *= 1.2f;
-                CurrentVitalityMultiplier *= 1.05f;
-                CurrentEnergyMultiplier *= 1.05f;
-
-                logger.ResetLogs();
-                Debug.Log($"Difficulty increased: Dexterity={CurrentDexterityMultiplier}, Strength={CurrentStrengthMultiplier}, Vitality={CurrentVitalityMultiplier}, Energy={CurrentEnergyMultiplier}");
-            }
-            else
-            {
-                Debug.Log("No changes to difficulty.");
-            }
 
             ApplyDifficultyToExistingEnemies();
         }
 
+        /// <summary>
+        /// Aktualizuje statystyki przeciwników zgodnie z poziomem trudności.
+        /// </summary>
         public void ApplyDifficultyToExistingEnemies()
         {
             var entities = Object.FindObjectsByType<Entity>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
@@ -92,22 +79,14 @@ namespace AI_DDA.Assets.Scripts
             {
                 if (entity.stats != null)
                 {
-                    // Resetujemy statystyki przeciwnika do bazowych wartości przed zastosowaniem mnożników!
-                    entity.stats.strength = entity.stats.GetBaseStrength();
-                    entity.stats.dexterity = entity.stats.GetBaseDexterity();
-                    entity.stats.vitality = entity.stats.GetBaseVitality();
-                    entity.stats.energy = entity.stats.GetBaseEnergy();
+                    entity.stats.strength = Mathf.Max(1, (int)(entity.stats.GetBaseStrength() * CurrentStrengthMultiplier));
+                    entity.stats.dexterity = Mathf.Max(1, (int)(entity.stats.GetBaseDexterity() * CurrentDexterityMultiplier));
+                    entity.stats.vitality = Mathf.Max(1, (int)(entity.stats.GetBaseVitality() * CurrentVitalityMultiplier));
+                    entity.stats.energy = Mathf.Max(1, (int)(entity.stats.GetBaseEnergy() * CurrentEnergyMultiplier));
 
-                    // Teraz stosujemy mnożniki AI-DDA
-                    entity.stats.strength = Mathf.Max(1, (int)(entity.stats.strength * CurrentStrengthMultiplier));
-                    entity.stats.dexterity = Mathf.Max(1, (int)(entity.stats.dexterity * CurrentDexterityMultiplier));
-                    entity.stats.vitality = Mathf.Max(1, (int)(entity.stats.vitality * CurrentVitalityMultiplier));
-                    entity.stats.energy = Mathf.Max(1, (int)(entity.stats.energy * CurrentEnergyMultiplier));
-
-                    // Przeliczamy pozostałe statystyki
                     entity.stats.Recalculate();
 
-                    Debug.Log($"Adjusted stats for {entity.name}: Strength={entity.stats.strength}, Dexterity={entity.stats.dexterity}, Vitality={entity.stats.vitality}, Energy={entity.stats.energy}");
+                    Debug.Log($"[AI-DDA] Adjusted stats for {entity.name}: Strength={entity.stats.strength}, Dexterity={entity.stats.dexterity}, Vitality={entity.stats.vitality}, Energy={entity.stats.energy}");
                 }
                 else
                 {
@@ -120,7 +99,7 @@ namespace AI_DDA.Assets.Scripts
 
         public void LoadDifficultyForCharacter(CharacterInstance character)
         {
-            if (isDifficultyLoaded) return; // Unika wielokrotnego ładowania
+            if (isDifficultyLoaded) return;
 
             if (character == null)
             {
@@ -133,8 +112,11 @@ namespace AI_DDA.Assets.Scripts
             CurrentVitalityMultiplier = character.GetMultiplier("Vitality");
             CurrentEnergyMultiplier = character.GetMultiplier("Energy");
 
+            float predictedDifficulty = AIModel.Instance.PredictDifficulty(PlayerBehaviorLogger.Instance);
+            SetDifficultyFromAI(predictedDifficulty);
+
             isDifficultyLoaded = true;
-            Debug.Log($"Loaded Difficulty for character: {character.name}");
+            Debug.Log($"Loaded Difficulty for character: {character.name}, AI Predicted: {predictedDifficulty}");
             ApplyDifficultyToExistingEnemies();
         }
 
@@ -142,14 +124,7 @@ namespace AI_DDA.Assets.Scripts
         {
             if (Keyboard.current.pKey.wasPressedThisFrame)
             {
-                if (playerLogger != null)
-                {
-                    AdjustDifficulty(playerLogger);
-                }
-                else
-                {
-                    Debug.LogError("PlayerBehaviorLogger not found!");
-                }
+                Debug.Log("[AI-DDA] Manual difficulty adjustment test.");
             }
         }
 
@@ -199,7 +174,7 @@ namespace AI_DDA.Assets.Scripts
             if (Instance == null)
             {
                 Instance = this;
-                DontDestroyOnLoad(gameObject); // Zapewnia, że obiekt nie zostanie zniszczony podczas zmiany scen
+                DontDestroyOnLoad(gameObject);
                 Debug.Log("DifficultyManager instance assigned.");
             }
             else

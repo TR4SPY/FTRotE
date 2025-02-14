@@ -155,20 +155,20 @@ namespace AI_DDA.Assets.Scripts
     {
         difficultyMultiplier++;
 
-        // Reset flagi po osiągnięciu kolejnego progu 10
         if (difficultyMultiplier % 10 != 0)
         {
             difficultyAdjusted = false;
         }
 
-        // Wywołaj AdjustDifficulty tylko przy wielokrotności 10 i gdy trudność jeszcze nie została dostosowana
         if (difficultyMultiplier % 10 == 0 && !difficultyAdjusted)
         {
-            DifficultyManager.Instance.AdjustDifficulty(this);
-            difficultyAdjusted = true; // Flaga oznaczająca, że trudność została dostosowana
-            Debug.Log($"Difficulty Multiplier is now: {difficultyMultiplier}");
+            float predictedDifficulty = AIModel.Instance.PredictDifficulty(this);
+            DifficultyManager.Instance.SetDifficultyFromAI(predictedDifficulty);
+            difficultyAdjusted = true;
+            Debug.Log($"[AI-DDA] Difficulty Multiplier updated: {difficultyMultiplier}, AI predicted: {predictedDifficulty}");
         }
     }
+
     public void LogEnemiesDefeated(Entity entity)
     {
         string actor = GetActor(entity); // Automatyczne rozpoznanie aktora
@@ -188,7 +188,11 @@ namespace AI_DDA.Assets.Scripts
 
             playerDeaths++;
             Debug.Log($"{actor} died! Total deaths: {playerDeaths}");
-            DifficultyManager.Instance.AdjustDifficulty(this); // Adjust difficulty dynamically
+
+            // Machine Learning decyduje, czy zmniejszyć trudność po śmierci gracza
+            float predictedDifficulty = AIModel.Instance.PredictDifficulty(this);
+            DifficultyManager.Instance.SetDifficultyFromAI(predictedDifficulty);
+
             UpdatePlayerType(); // Recalculate player type
             achievementManager?.CheckAchievements(this); // Check achievements in real-time
         }
