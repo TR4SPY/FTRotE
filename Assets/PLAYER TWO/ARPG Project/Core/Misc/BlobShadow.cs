@@ -10,31 +10,58 @@ namespace PLAYERTWO.ARPGProject
         public Transform source;
 
         [Tooltip("The maximum distance to cast the ray.")]
-        public float maxGroundDistance = 10f;
+        public float maxGroundDistance = 1f;
 
         [Tooltip("The offset from the ground.")]
-        public float groundOffset = 0.01f;
+        public float groundOffset = 0.25f;
 
         [Tooltip("The layer mask to use for the ground.")]
-        public LayerMask groundLayer = 1 << 0;
+        public LayerMask groundLayer;
 
-        protected virtual void LateUpdate()
+        private void Awake()
+        {
+            // Ustawienie warstwy "Terrain" w momencie uruchomienia gry
+            groundLayer = 1 << LayerMask.NameToLayer("Terrain");
+        }
+
+        private void LateUpdate()
         {
             if (source == null)
                 return;
 
-            var colliding = Physics.Raycast(source.position, Vector3.down,
-                out RaycastHit hit, maxGroundDistance, groundLayer);
+            // Sprawdza, czy jest teren
+            Terrain terrain = Terrain.activeTerrain;
+            bool foundGround = false;
+            Vector3 newPosition = transform.position;
 
-            if (colliding)
+            if (terrain != null)
             {
-                transform.position = hit.point + Vector3.up * groundOffset;
+                // Pobiera wysokość terenu w miejscu gracza
+                float terrainHeight = terrain.SampleHeight(source.position);
+                newPosition = new Vector3(source.position.x, terrainHeight + groundOffset, source.position.z);
+                foundGround = true;
+            }
+
+            // Jeśli nie znaleziono gruntu w terenie, wykonaj Raycast w dół, aby znaleźć inne powierzchnie
+            if (Physics.Raycast(source.position, Vector3.down, out RaycastHit hit, maxGroundDistance, groundLayer))
+            {
+                newPosition = hit.point + Vector3.up * groundOffset;
+                transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal); // Dopasowanie do nachylenia terenu
+                foundGround = true;
+            }
+
+            // Jeśli znaleziono grunt, ustaw nową pozycję
+            if (foundGround)
+            {
+                transform.position = newPosition;
 
                 if (!gameObject.activeSelf)
                     gameObject.SetActive(true);
             }
             else if (gameObject.activeSelf)
+            {
                 gameObject.SetActive(false);
+            }
         }
     }
 }
