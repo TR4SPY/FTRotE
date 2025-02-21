@@ -1,97 +1,84 @@
 import pandas as pd
-import random
+import numpy as np
 
-# Liczba sztucznych graczy do wygenerowania
-num_samples = 500
-types = ["Killer", "Explorer", "Achiever", "Socializer"]
+# ===== PARAMETRY GENERACJI =====
+num_samples = 10000  # Ilość generowanych próbek
+initial_difficulty = 5  # Startowy poziom trudności
 
-# Definicja zakresów wartości dla każdego typu gracza
-type_ranges = {
-    "Killer": {
-        "Player Deaths": (0, 5),
-        "Enemies Defeated": (50, 300),
-        "Total Combat Time": (500, 5000),
-        "NPC Interactions": (0, 5),
-        "Potions Used": (5, 50),
-        "Zones Discovered": (1, 5),
-        "Quests Completed": (0, 10),
-        "Waypoints Discovered": (1, 5),
-        "Unlocked Achievements": (0, 5),
-        "Total Play Time": (500, 5000),
-        "Current Difficulty Multiplier": (0, 10),
-    },
-    "Explorer": {
-        "Player Deaths": (0, 3),
-        "Enemies Defeated": (5, 50),
-        "Total Combat Time": (100, 1000),
-        "NPC Interactions": (5, 50),
-        "Potions Used": (1, 20),
-        "Zones Discovered": (10, 50),
-        "Quests Completed": (5, 30),
-        "Waypoints Discovered": (10, 50),
-        "Unlocked Achievements": (5, 20),
-        "Total Play Time": (1000, 8000),
-        "Current Difficulty Multiplier": (0, 10),
-    },
-    "Achiever": {
-        "Player Deaths": (1, 4),
-        "Enemies Defeated": (20, 150),
-        "Total Combat Time": (300, 3000),
-        "NPC Interactions": (10, 40),
-        "Potions Used": (10, 40),
-        "Zones Discovered": (5, 20),
-        "Quests Completed": (20, 100),
-        "Waypoints Discovered": (5, 30),
-        "Unlocked Achievements": (10, 50),
-        "Total Play Time": (1500, 7000),
-        "Current Difficulty Multiplier": (0, 10),
-    },
-    "Socializer": {
-        "Player Deaths": (0, 3),
-        "Enemies Defeated": (0, 30),
-        "Total Combat Time": (0, 500),
-        "NPC Interactions": (20, 100),
-        "Potions Used": (0, 10),
-        "Zones Discovered": (3, 15),
-        "Quests Completed": (5, 40),
-        "Waypoints Discovered": (5, 30),
-        "Unlocked Achievements": (5, 25),
-        "Total Play Time": (2000, 9000),
-        "Current Difficulty Multiplier": (0, 10),
-    },
-}
+# Zakres wartości dla różnych zmiennych
+player_deaths_range = (0, 15)  # Ile razy gracz mógł umrzeć
+enemies_defeated_range = (0, 200)  # Ile przeciwników pokonał
+total_combat_time_range = (10, 5000)  # Czas walki w sekundach
+potions_used_range = (0, 50)  # Liczba użytych mikstur
+waypoints_discovered_range = (0, 20)  # Ilość odkrytych waypointów
+zones_discovered_range = (0, 10)  # Ilość odkrytych stref
+quests_completed_range = (0, 20)  # Liczba ukończonych misji
+npc_interactions_range = (0, 50)  # Ile razy gracz wchodził w interakcję z NPC
+achievements_unlocked_range = (0, 10)  # Liczba zdobytych osiągnięć
 
-# Tworzenie pustej listy na dane
+# ===== FUNKCJA OBLICZAJĄCA POZIOM TRUDNOŚCI =====
+def calculate_difficulty(player_deaths, enemies_defeated, potions_used):
+    difficulty = initial_difficulty
+    difficulty -= player_deaths * 1.0  # Każdy zgon obniża trudność o 1
+    difficulty += (enemies_defeated / 10)  # 10 zabitych podnosi trudność o 1
+    difficulty -= (potions_used * 0.05)  # Każda mikstura obniża trudność o 0.05
+    return max(1.0, min(10.0, difficulty))  # Trudność w zakresie 1-10
+
+# ===== FUNKCJA OBLICZAJĄCA TYP GRACZA =====
+def determine_dynamic_player_type(quests_completed, waypoints_discovered, zones_discovered, npc_interactions, enemies_defeated, total_combat_time, achievements_unlocked):
+    achiever_score = (quests_completed * 2) + (achievements_unlocked * 2)
+    explorer_score = (zones_discovered * 2) + waypoints_discovered
+    socializer_score = (npc_interactions * 3) + quests_completed
+    killer_score = (int(enemies_defeated * 0.5) + int(total_combat_time / 120))
+
+    max_score = max(achiever_score, explorer_score, socializer_score, killer_score)
+
+    if max_score == achiever_score:
+        return "Achiever"
+    elif max_score == explorer_score:
+        return "Explorer"
+    elif max_score == socializer_score:
+        return "Socializer"
+    elif max_score == killer_score:
+        return "Killer"
+    return "Undefined"
+
+# ===== GENEROWANIE DANYCH =====
 data = []
+for _ in range(num_samples):
+    player_deaths = np.random.randint(*player_deaths_range)
+    enemies_defeated = np.random.randint(*enemies_defeated_range)
+    total_combat_time = np.random.randint(*total_combat_time_range)
+    potions_used = np.random.randint(*potions_used_range)
+    waypoints_discovered = np.random.randint(*waypoints_discovered_range)
+    zones_discovered = np.random.randint(*zones_discovered_range)
+    quests_completed = np.random.randint(*quests_completed_range)
+    npc_interactions = np.random.randint(*npc_interactions_range)
+    achievements_unlocked = np.random.randint(*achievements_unlocked_range)
 
-# Generowanie sztucznych graczy
-for i in range(num_samples):
-    player_type = random.choice(types)  # Losowy typ gracza
-    values = {key: random.randint(*type_ranges[player_type][key]) for key in type_ranges[player_type]}
-    
-    # Przypisanie dynamicznego typu gracza
-    values["Current Dynamic Player Type"] = player_type
-    
-    # Symulowany typ gracza na podstawie ankiety (może, ale nie musi zgadzać się z dynamicznym)
-    values["Player Type based on questionnaire"] = random.choice(types)
-    
-    # Nazwa gracza (fikcyjna)
-    values["Character Name"] = f"Player_{i+1}"
-    
-    data.append(values)
+    # Obliczamy poziom trudności na podstawie reguł
+    difficulty = calculate_difficulty(player_deaths, enemies_defeated, potions_used)
 
-# Tworzenie DataFrame
-df = pd.DataFrame(data)
+    # Obliczamy dynamiczny typ gracza
+    player_type = determine_dynamic_player_type(
+        quests_completed, waypoints_discovered, zones_discovered, npc_interactions, enemies_defeated, total_combat_time, achievements_unlocked
+    )
 
-# Ustawienie kolejności kolumn zgodnie z oryginalnym datasetem
-df = df[
-    ["Character Name", "Total Play Time", "Player Deaths", "Enemies Defeated", "Total Combat Time",
-     "NPC Interactions", "Potions Used", "Zones Discovered", "Quests Completed", "Waypoints Discovered",
-     "Unlocked Achievements", "Current Difficulty Multiplier", "Player Type based on questionnaire",
-     "Current Dynamic Player Type"]
+    data.append([
+        player_deaths, enemies_defeated, total_combat_time, potions_used,
+        waypoints_discovered, zones_discovered, quests_completed, npc_interactions,
+        achievements_unlocked, difficulty, player_type
+    ])
+
+# ===== TWORZENIE DATASETU =====
+columns = [
+    "Player Deaths", "Enemies Defeated", "Total Combat Time", "Potions Used",
+    "Waypoints Discovered", "Zones Discovered", "Quests Completed", "NPC Interactions",
+    "Achievements Unlocked", "Current Difficulty Multiplier", "Current Dynamic Player Type"
 ]
 
-# Zapis do CSV
-df.to_csv("generated_dataset.csv", index=False)
+df = pd.DataFrame(data, columns=columns)
 
-print("Sztuczne dane zostały wygenerowane i zapisane jako `generated_dataset.csv`!")
+# ===== ZAPIS DO CSV =====
+df.to_csv("dataset_generated.csv", index=False)
+print(f"✅ Wygenerowano nowy dataset: dataset_generated.csv (liczba próbek: {len(df)})")

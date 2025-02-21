@@ -1,164 +1,95 @@
-using System.Collections;
 using UnityEngine;
-using UnityEngine.Networking;
-using System.Text;
-using System.Diagnostics;
-using System;
-using System.IO;
-using PLAYERTWO.ARPGProject;
+using Unity.Sentis;
 
-namespace AI_DDA.Assets.Scripts
+public class AIModel : MonoBehaviour
 {
-    public class AIModel : MonoBehaviour
+    public static AIModel Instance;
+    public ModelAsset modelAsset;  // Przypisujemy model w Unity Inspectorze
+    private Model runtimeModel;
+    private Worker worker;
+    private TensorShape inputShape;
+
+    // ✅ Wartości mean i std wpisane na stałe (zamiast wczytywać plik)
+    private readonly float[] mean = { 5.96f, 79.21f, 2873.45f, 17.85f };
+    private readonly float[] std = { 6.32f, 59.88f, 1423.89f, 9.75f };
+
+    private void Awake()
     {
-        public static AIModel Instance;
-        private string rlServerUrl = "http://localhost:5000"; // RL Serwer
-
-        private void Awake()
+        if (Instance == null)
         {
-            if (Instance == null)
-            {
-                Instance = this;
-                DontDestroyOnLoad(gameObject);
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+            LoadModel();
         }
-
-        /// <summary>
-        /// Pobiera `totalPlayTime` z `Game.instance.currentCharacter.totalPlayTime`
-        /// </summary>
-        private float GetTotalPlayTime()
+        else
         {
-            if (Game.instance != null && Game.instance.currentCharacter != null)
-            {
-                return Game.instance.currentCharacter.totalPlayTime;
-            }
-            else
-            {
-                UnityEngine.Debug.LogError("[AI-DDA] Error: Game instance or character is null!");
-                return 0.0f; // Jeśli coś nie działa, zwracamy 0
-            }
-        }
-
-        /// <summary>
-        /// Predykcja początkowej trudności (XGBoost)
-        /// </summary>
-        public float PredictDifficulty(PlayerBehaviorLogger playerLogger)
-        {
-            string pythonPath = "/home/tr4spy/.pyenv/shims/python";
-            string scriptPath = Path.Combine(Application.streamingAssetsPath, "ai_model.py");
-
-            float totalPlayTime = GetTotalPlayTime(); // Pobieramy totalPlayTime z `Game.instance`
-
-            // Argumenty dla XGBoost
-            string arguments = $"{totalPlayTime.ToString(System.Globalization.CultureInfo.InvariantCulture)} " +
-                               $"{playerLogger.playerDeaths} {playerLogger.enemiesDefeated} {playerLogger.totalCombatTime.ToString(System.Globalization.CultureInfo.InvariantCulture)} " +
-                               $"{playerLogger.npcInteractions} {playerLogger.potionsUsed} {playerLogger.questsCompleted} " +
-                               $"{playerLogger.waypointsDiscovered} {playerLogger.zonesDiscovered} {playerLogger.unlockedAchievements.Count}";
-
-            UnityEngine.Debug.Log($"[AI-DDA] Sending XGBoost Prediction Request: {arguments}");
-
-            ProcessStartInfo psi = new ProcessStartInfo
-            {
-                FileName = pythonPath,
-                Arguments = $"\"{scriptPath}\" {arguments}",
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
-
-            using (Process process = Process.Start(psi))
-            {
-                string result = process.StandardOutput.ReadToEnd().Trim();
-                process.WaitForExit();
-
-                if (float.TryParse(result, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float difficulty))
-                {
-                    UnityEngine.Debug.Log($"[AI-DDA] Initial XGBoost Difficulty: {difficulty}");
-                    return difficulty;
-                }
-                else
-                {
-                    UnityEngine.Debug.LogError($"AI-DDA: Failed to parse difficulty prediction: '{result}'");
-                    return 5.0f; // Domyślna wartość
-                }
-            }
-        }
-
-        /// <summary>
-        /// Dynamiczne dostosowanie trudności przez RL
-        /// </summary>
-        public void SendStatsToRL(PlayerBehaviorLogger logger)
-        {
-            StartCoroutine(SendStatsCoroutine(logger));
-        }
-
-        private IEnumerator SendStatsCoroutine(PlayerBehaviorLogger logger)
-        {
-            float totalPlayTime = GetTotalPlayTime();
-
-            string jsonData = JsonUtility.ToJson(new RLData(logger, totalPlayTime));
-
-            using (UnityWebRequest request = new UnityWebRequest(rlServerUrl, "POST"))
-            {
-                byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonData);
-                request.uploadHandler = new UploadHandlerRaw(bodyRaw);
-                request.downloadHandler = new DownloadHandlerBuffer();
-                request.SetRequestHeader("Content-Type", "application/json");
-
-                yield return request.SendWebRequest();
-
-                if (request.result == UnityWebRequest.Result.Success)
-                {
-                    string responseText = request.downloadHandler.text;
-                    RLResponse response = JsonUtility.FromJson<RLResponse>(responseText);
-                    DifficultyManager.Instance.SetDifficultyFromAI(response.difficulty);
-                    UnityEngine.Debug.Log($"[AI-DDA] RL Adjusted Difficulty to: {response.difficulty}");
-                }
-                else
-                {
-                    UnityEngine.Debug.LogError($"[AI-DDA] RL Communication Failed: {request.error}");
-                }
-            }
+            Destroy(gameObject);
         }
     }
 
-    [Serializable]
-    public class RLData
+    private void LoadModel()
     {
-        public float totalPlayTime;
-        public int playerDeaths;
-        public int enemiesDefeated;
-        public float totalCombatTime;
-        public int npcInteractions;
-        public int potionsUsed;
-        public int questsCompleted;
-        public int waypointsDiscovered;
-        public int zonesDiscovered;
-        public int unlockedAchievements;
-
-        public RLData(PlayerBehaviorLogger logger, float playTime)
+        if (modelAsset == null)
         {
-            totalPlayTime = playTime;
-            playerDeaths = logger.playerDeaths;
-            enemiesDefeated = logger.enemiesDefeated;
-            totalCombatTime = logger.totalCombatTime;
-            npcInteractions = logger.npcInteractions;
-            potionsUsed = logger.potionsUsed;
-            questsCompleted = logger.questsCompleted;
-            waypointsDiscovered = logger.waypointsDiscovered;
-            zonesDiscovered = logger.zonesDiscovered;
-            unlockedAchievements = logger.unlockedAchievements.Count;
+            Debug.LogError("[AI-DDA] Model ONNX nie został przypisany w Inspectorze!");
+            return;
         }
+
+        runtimeModel = ModelLoader.Load(modelAsset);
+        worker = new Worker(runtimeModel, BackendType.GPUCompute); // Możesz zmienić na BackendType.CPU
+        inputShape = new TensorShape(1, 4);  // 🔹 Model przyjmuje 4 wartości wejściowe
+
+        Debug.Log("[AI-DDA] Model załadowany i gotowy do predykcji.");
     }
 
-    [Serializable]
-    public class RLResponse
+    public float PredictDifficulty(float playerDeaths, float enemiesDefeated, float totalCombatTime, float potionsUsed)
     {
-        public float difficulty;
+        if (worker == null)
+        {
+            Debug.LogError("[AI-DDA] Worker nie został poprawnie zainicjalizowany!");
+            return 5.0f;  // Domyślny poziom trudności
+        }
+
+        // ✅ **Normalizacja danych wejściowych**
+        //float normDeaths = (playerDeaths * 2 - mean[0]) / std[0];
+        //float normEnemies = (enemiesDefeated * 1.5f - mean[1]) / std[1];
+        //float normCombatTime = (totalCombatTime - mean[2]) / std[2];
+        //float normPotions = (potionsUsed * 3 - mean[3]) / std[3];
+
+        float normDeaths = (playerDeaths * 3 - mean[0]) / std[0];
+        float normEnemies = (enemiesDefeated * 2.5f - mean[1]) / std[1]; // ⚡ Większy wpływ
+        float normCombatTime = (totalCombatTime - mean[2]) / std[2];
+        float normPotions = (potionsUsed * 3 - mean[3]) / std[3];
+
+        float[] inputStats = new float[] { normDeaths, normEnemies, normCombatTime, normPotions };
+
+        Debug.Log($"[AI-DDA] Normalized Input Stats -> Deaths: {normDeaths}, Enemies: {normEnemies}, Combat Time: {normCombatTime}, Potions: {normPotions}");
+
+        using var inputTensor = new Tensor<float>(inputShape, inputStats);
+        
+        worker.Schedule(inputTensor);  // **✅ Uruchamiamy obliczenia**
+        
+        using var outputTensor = worker.PeekOutput().ReadbackAndClone() as Tensor<float>;  // **✅ Używamy ReadbackAndClone()**
+        
+        if (outputTensor == null)
+        {
+            Debug.LogError("[AI-DDA] Brak poprawnego wyjścia z modelu!");
+            return 5.0f;
+        }
+
+        float rawPrediction = outputTensor[0];  // **✅ Pobieramy pierwszą wartość z tensora**
+
+        // **🔥 Korekta skalowania**
+        //float adjustedPrediction = rawPrediction * 9 + 1; // Skalujemy do [1-10]
+        float adjustedPrediction = rawPrediction * 4 + 5;
+
+        Debug.Log($"[AI-DDA] Raw Prediction: {rawPrediction}, Adjusted: {adjustedPrediction}");
+
+        return Mathf.Clamp(adjustedPrediction, 1.0f, 10.0f);
+    }
+
+    private void OnDestroy()
+    {
+        worker?.Dispose();
     }
 }

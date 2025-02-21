@@ -148,36 +148,57 @@ namespace AI_DDA.Assets.Scripts
             UpdatePlayerType(); // Recalculate player type
         }
 
-            /// <summary>
-    /// Zaloguj pokonanie wroga.
-    /// </summary>
-    public void LogDifficultyMultiplier()
-    {
-        difficultyMultiplier++;
-
-        if (difficultyMultiplier % 10 != 0)
+        public void PredictAndApplyDifficulty()
         {
-            difficultyAdjusted = false;
-        }
+            if (AIModel.Instance == null || DifficultyManager.Instance == null)
+            {
+                Debug.LogError("AIModel or DifficultyManager is missing!");
+                return;
+            }
 
-        if (difficultyMultiplier % 10 == 0 && !difficultyAdjusted)
-        {
-            float predictedDifficulty = AIModel.Instance.PredictDifficulty(this);
+            Debug.Log($"[AI-DDA] Player Stats -> Deaths: {playerDeaths}, Enemies: {enemiesDefeated}, Combat Time: {totalCombatTime}, Potions: {potionsUsed}");
+
+            float predictedDifficulty = AIModel.Instance.PredictDifficulty(
+                playerDeaths,
+                enemiesDefeated,
+                totalCombatTime,
+                potionsUsed
+            );
+
             DifficultyManager.Instance.SetDifficultyFromAI(predictedDifficulty);
-            difficultyAdjusted = true;
-            Debug.Log($"[AI-DDA] Difficulty Multiplier updated: {difficultyMultiplier}, AI predicted: {predictedDifficulty}");
+            Debug.Log($"[AI-DDA] Updated Difficulty based on AI Prediction: {predictedDifficulty}");
         }
-    }
 
-    public void LogEnemiesDefeated(Entity entity)
-    {
-        string actor = GetActor(entity); // Automatyczne rozpoznanie aktora
+        public void LogDifficultyMultiplier()
+        {
+            difficultyMultiplier++;
 
-        enemiesDefeated++;
-        Debug.Log($"{actor} defeated an enemy! Total: {enemiesDefeated}");
-        UpdatePlayerType(); // Recalculate player type
-        achievementManager?.CheckAchievements(this); // Check achievements in real-time
-    }
+            /*
+            if (difficultyMultiplier % 10 != 0)
+            {
+                difficultyAdjusted = false;
+            }
+
+            if (difficultyMultiplier % 10 == 0 && !difficultyAdjusted)
+            {
+                PredictAndApplyDifficulty();  // 🔹 Teraz używamy metody AI-DDA
+                difficultyAdjusted = true;
+            }
+            */
+
+            PredictAndApplyDifficulty();
+        }
+
+        public void LogEnemiesDefeated(Entity entity)
+        {
+            string actor = GetActor(entity); // Automatyczne rozpoznanie aktora
+
+            enemiesDefeated++;
+            Debug.Log($"{actor} defeated an enemy! Total: {enemiesDefeated}");
+            UpdatePlayerType(); // Recalculate player type
+            achievementManager?.CheckAchievements(this); // Check achievements in real-time
+            PredictAndApplyDifficulty(); 
+        }
 
         /// <summary>
         /// Zaloguj śmierć gracza.
@@ -190,8 +211,7 @@ namespace AI_DDA.Assets.Scripts
             Debug.Log($"{actor} died! Total deaths: {playerDeaths}");
 
             // Machine Learning decyduje, czy zmniejszyć trudność po śmierci gracza
-            float predictedDifficulty = AIModel.Instance.PredictDifficulty(this);
-            DifficultyManager.Instance.SetDifficultyFromAI(predictedDifficulty);
+            PredictAndApplyDifficulty(); 
 
             UpdatePlayerType(); // Recalculate player type
             achievementManager?.CheckAchievements(this); // Check achievements in real-time
@@ -250,6 +270,7 @@ namespace AI_DDA.Assets.Scripts
             Debug.Log($"{actor} used a potion! Total: {potionsUsed}");
             UpdatePlayerType(); // Recalculate player type
             achievementManager?.CheckAchievements(this); // Check achievements in real-time
+            PredictAndApplyDifficulty(); 
         }
 
         public void LogCurrentDynamicPlayerType()

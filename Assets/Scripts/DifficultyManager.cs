@@ -15,8 +15,6 @@ namespace AI_DDA.Assets.Scripts
         public float CurrentStrengthMultiplier = 1.0f;
         public float CurrentVitalityMultiplier = 1.0f;
         public float CurrentEnergyMultiplier = 1.0f;
-        private float lastRLUpdateTime = 0f;
-        private float rlUpdateInterval = 30f; 
 
         public PlayerBehaviorLogger playerLogger;
 
@@ -40,26 +38,19 @@ namespace AI_DDA.Assets.Scripts
         }
 
         /// <summary>
-        /// Machine Learning dostarcza przewidywaną trudność.
-        /// Reinforcement Learning dynamicznie dostosowuje trudność na podstawie bieżącej rozgrywki.
+        /// Nowa metoda AI-DDA: Machine Learning dostarcza przewidywaną trudność.
         /// </summary>
-        public void SetDifficultyFromAI(float rlDifficultyAdjustment)
+        public void SetDifficultyFromAI(float difficultyLevel)
         {
-            // Pobranie trudności przewidzianej przez XGBoost
-            float predictedDifficulty = AIModel.Instance.PredictDifficulty(PlayerBehaviorLogger.Instance);
+            Debug.Log($"[AI-DDA] Setting difficulty based on AI Prediction: {difficultyLevel}");
 
-            // RL może zmienić trudność maksymalnie o ±1
-            float newDifficulty = Mathf.Clamp(predictedDifficulty + rlDifficultyAdjustment, predictedDifficulty - 1f, predictedDifficulty + 1f);
+            // Skalujemy poziom trudności na podstawie modelu AI
+            CurrentDexterityMultiplier = 1.0f + (difficultyLevel * 0.1f);
+            CurrentStrengthMultiplier = 1.0f + (difficultyLevel * 0.15f);
+            CurrentVitalityMultiplier = 1.0f + (difficultyLevel * 0.1f);
+            CurrentEnergyMultiplier = 1.0f + (difficultyLevel * 0.05f);
 
-            Debug.Log($"[AI-DDA] Predicted Difficulty (XGBoost): {predictedDifficulty}, RL Adjustment: {rlDifficultyAdjustment}, Final Difficulty: {newDifficulty}");
-
-            // Przekształcenie wartości trudności na mnożniki statystyk
-            CurrentDexterityMultiplier = 1.0f + (newDifficulty * 0.1f);
-            CurrentStrengthMultiplier = 1.0f + (newDifficulty * 0.15f);
-            CurrentVitalityMultiplier = 1.0f + (newDifficulty * 0.1f);
-            CurrentEnergyMultiplier = 1.0f + (newDifficulty * 0.05f);
-
-            Debug.Log($"[AI-DDA] Adjusted multipliers -> " +
+            Debug.Log($"[AI-DDA] Current multipliers -> " +
                     $"Dexterity: {CurrentDexterityMultiplier}, " +
                     $"Strength: {CurrentStrengthMultiplier}, " +
                     $"Vitality: {CurrentVitalityMultiplier}, " +
@@ -68,9 +59,8 @@ namespace AI_DDA.Assets.Scripts
             ApplyDifficultyToExistingEnemies();
         }
 
-
         /// <summary>
-        /// Dynamiczna aktualizacja statystyk przeciwników w oparciu o poziom trudności (ML + RL).
+        /// Aktualizuje statystyki przeciwników zgodnie z poziomem trudności.
         /// </summary>
         public void ApplyDifficultyToExistingEnemies()
         {
@@ -95,7 +85,7 @@ namespace AI_DDA.Assets.Scripts
 
                     entity.stats.Recalculate();
 
-                    Debug.Log($"[AI-DDA] Updated enemy {entity.name}: Strength={entity.stats.strength}, Dexterity={entity.stats.dexterity}, Vitality={entity.stats.vitality}, Energy={entity.stats.energy}");
+                    Debug.Log($"[AI-DDA] Adjusted stats for {entity.name}: Strength={entity.stats.strength}, Dexterity={entity.stats.dexterity}, Vitality={entity.stats.vitality}, Energy={entity.stats.energy}");
                 }
                 else
                 {
@@ -121,28 +111,35 @@ namespace AI_DDA.Assets.Scripts
             CurrentVitalityMultiplier = character.GetMultiplier("Vitality");
             CurrentEnergyMultiplier = character.GetMultiplier("Energy");
 
-            float predictedDifficulty = AIModel.Instance.PredictDifficulty(PlayerBehaviorLogger.Instance);
+            // 🔹 Pobranie danych gracza z PlayerBehaviorLogger
+            var logger = PlayerBehaviorLogger.Instance;
+            if (logger == null)
+            {
+                Debug.LogWarning("PlayerBehaviorLogger is null, cannot predict difficulty.");
+                return;
+            }
+
+            // 🔹 Użycie nowego modelu AI do predykcji
+            float predictedDifficulty = AIModel.Instance.PredictDifficulty(
+                logger.playerDeaths,
+                logger.enemiesDefeated,
+                logger.totalCombatTime,
+                logger.potionsUsed
+            );
+
             SetDifficultyFromAI(predictedDifficulty);
 
             isDifficultyLoaded = true;
-            Debug.Log($"[AI-DDA] Loaded Difficulty for {character.name}, AI Predicted: {predictedDifficulty}");
+            Debug.Log($"Loaded Difficulty for character: {character.name}, AI Predicted: {predictedDifficulty}");
+
             ApplyDifficultyToExistingEnemies();
         }
 
         private void Update()
         {
-            if (Keyboard.current != null && Keyboard.current.pKey.wasPressedThisFrame)
+            if (Keyboard.current.pKey.wasPressedThisFrame)
             {
                 Debug.Log("[AI-DDA] Manual difficulty adjustment test.");
-                AIModel.Instance.SendStatsToRL(PlayerBehaviorLogger.Instance);
-            }
-
-            // Automatyczne wysyłanie statystyk do RL co 30 sekund
-            if (Time.time - lastRLUpdateTime >= rlUpdateInterval)
-            {
-                Debug.Log("[AI-DDA] Automatically sending stats to RL for difficulty adjustment.");
-                AIModel.Instance.SendStatsToRL(PlayerBehaviorLogger.Instance);
-                lastRLUpdateTime = Time.time;
             }
         }
 
@@ -179,7 +176,7 @@ namespace AI_DDA.Assets.Scripts
                 playerLogger.ResetLogs();
             }
 
-            Debug.Log("[AI-DDA] Difficulty reset to default values.");
+            Debug.Log("Difficulty reset to default values.");
         }
 
         public int GetCurrentDifficulty()
@@ -193,7 +190,7 @@ namespace AI_DDA.Assets.Scripts
             {
                 Instance = this;
                 DontDestroyOnLoad(gameObject);
-                Debug.Log("[AI-DDA] DifficultyManager instance assigned.");
+                Debug.Log("DifficultyManager instance assigned.");
             }
             else
             {

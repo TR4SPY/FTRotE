@@ -321,15 +321,15 @@ namespace PLAYERTWO.ARPGProject
             StopAllCoroutines();
             LoseTarget();
 
-            // Logowanie śmierci przeciwnika - DODANO 29 GRUDNIA 2024 - 0001
             var playerLogger = Object.FindFirstObjectByType<PlayerBehaviorLogger>();
             if (playerLogger != null)
             {
                 playerLogger.LogDifficultyMultiplier();
-                //playerLogger.LogEnemiesDefeated();
+
                 var entity = GetComponent<Entity>();
                 if (entity != null)
                 {
+                    // Tu wywoływana jest LogEnemiesDefeated, która w środku zrobi: XGBoost -> SetDifficultyXGBoostAndRL(...)
                     playerLogger.LogEnemiesDefeated(entity);
                 }
             }
