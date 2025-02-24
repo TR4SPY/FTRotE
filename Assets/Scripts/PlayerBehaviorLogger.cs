@@ -1,5 +1,3 @@
-//  - DODANO 29 GRUDNIA 2024 - 0001
-
 using System;
 using System.IO;
 using System.Collections.Generic;
@@ -26,10 +24,15 @@ namespace AI_DDA.Assets.Scripts
                     _instance = Object.FindObjectOfType<PlayerBehaviorLogger>();
                     #endif
 
-                   /* if (_instance == null)
+                   /*   UNCOMMENT IN CASE OF INSTANCE ISSUES
+
+                   if (_instance == null)
                     {
                         Debug.LogError("PlayerBehaviorLogger.Instance was accessed, but no instance exists in the scene.");
-                    } */
+                    } 
+                    
+                    */
+
                 }
                 return _instance;
             }
@@ -42,7 +45,7 @@ namespace AI_DDA.Assets.Scripts
             if (_instance == null)
             {
                 _instance = this;
-                // DontDestroyOnLoad(gameObject);
+                // DontDestroyOnLoad(gameObject);   //  IN CASE OF INSTANCE ISSUES
             }
             else if (_instance != this)
             {
@@ -50,60 +53,60 @@ namespace AI_DDA.Assets.Scripts
             }
         }
 
-    private bool difficultyAdjusted = false; // Flaga dla wielokrotności 10
+    private bool difficultyAdjusted = false;
     private HashSet<string> discoveredZones = new HashSet<string>();
     private HashSet<int> discoveredWaypoints = new HashSet<int>();
     public AchievementManager achievementManager { get; private set; }
 
-    // == GRACZ ==
+    // == PLAYER DATA ==
     [Header("Player Stats")]
-    [Tooltip("Liczba śmierci gracza.")]
+    [Tooltip("Amount of Player deaths.")]
     public int playerDeaths = 0;
 
-    [Tooltip("Liczba ukończonych misji.")]
+    [Tooltip("Amount of Quests completed.")]
     public int questsCompleted = 0;
 
-    [Tooltip("Lista zdobytych osiągnięć.")]
+    [Tooltip("List of Unlocked achievements.")]
     public List<string> unlockedAchievements = new List<string>();
-    // public int achievementsUnlocked = 0;
+    // public int achievementsUnlocked = 0; // OLD - NO LONGER USED
 
-    // == WALKA ==
+    // == COMBAT DATA ==
     [Space(10)]
     [Header("Combat Stats")]
-    [Tooltip("Łączny czas walki w sekundach.")]
+    [Tooltip("Total combat time in seconds.")]
     public float totalCombatTime = 0f;
 
-    [Tooltip("Liczba pokonanych wrogów.")]
+    [Tooltip("Amount of defeated enemies.")]
     public int enemiesDefeated = 0;
 
-    [Tooltip("Liczba użytych mikstur.")]
+    [Tooltip("Amount of potions used.")]
     public int potionsUsed = 0;
 
-    // == EKSPLORACJA ==
+    // == EXPLORATION DATA ==
     [Space(10)]
     [Header("Exploration Stats")]
-    [Tooltip("Liczba odkrytych stref.")]
+    [Tooltip("Amount of discovered zones.")]
     public int zonesDiscovered = 0;
 
-    [Tooltip("Liczba interakcji z NPC.")]
+    [Tooltip("Amount of NPC interactions.")]
     public int npcInteractions = 0;
 
-    [Tooltip("Liczba odkrytych waypointów.")]
+    [Tooltip("Amount of discovered waypoints.")]
     public int waypointsDiscovered = 0;
 
-    // == SYSTEM ==
+    // == SYSTEM DATA ==
     [Space(10)]
     [Header("System Stats")]
-    [Tooltip("Mnożnik trudności, domyślnie bazuje na enemiesDefeated % 10.")]
+    [Tooltip("Difficulty multiplier for AI models.")]
     public int difficultyMultiplier = 0;
 
-    [Tooltip("Czy logowanie jest włączone.")]
+    [Tooltip("Is logging of data enabled?")]
     public bool isLoggingEnabled { get; set; } = true;
 
-    [Tooltip("Aktualny dynamiczny typ gracza.")]
+    [Tooltip("Current dynamic Bartle's player type.")]
     public string currentDynamicPlayerType = "Unknown";
 
-    [Tooltip("Czas ostatniej aktualizacji wartości.")]
+    [Tooltip("Time of last update.")]
     public float lastUpdateTime;
 
     private void Start()
@@ -130,34 +133,29 @@ namespace AI_DDA.Assets.Scripts
 
     private float combatStartTime;
 
-        /// <summary>
-        /// Wywołaj na początku walki.
-        /// </summary>
         public void StartCombat()
         {
             combatStartTime = Time.time;
         }
 
-        /// <summary>
-        /// Wywołaj po zakończeniu walki.
-        /// </summary>
         public void EndCombat()
         {
             totalCombatTime += Time.time - combatStartTime;
-            // Debug.Log($"Combat Time: {totalCombatTime}");
-            UpdatePlayerType(); // Recalculate player type
+            // Debug.Log($"Combat Time: {totalCombatTime}");    //  DEBUG - Total Combat Time
+            UpdatePlayerType();
         }
 
         public void PredictAndApplyDifficulty()
         {
-            if (AIModel.Instance == null || DifficultyManager.Instance == null)
+            if (AIModel.Instance == null || DifficultyManager.Instance == null || RLModel.Instance == null)
             {
-                Debug.LogError("AIModel or DifficultyManager is missing!");
+                Debug.LogError("MLP model, RL model, or DifficultyManager is missing!");
                 return;
             }
 
             Debug.Log($"[AI-DDA] Player Stats -> Deaths: {playerDeaths}, Enemies: {enemiesDefeated}, Combat Time: {totalCombatTime}, Potions: {potionsUsed}");
 
+            // Multilayer Perceptron ONNX - 1st Model Prediction
             float predictedDifficulty = AIModel.Instance.PredictDifficulty(
                 playerDeaths,
                 enemiesDefeated,
@@ -165,15 +163,21 @@ namespace AI_DDA.Assets.Scripts
                 potionsUsed
             );
 
-            DifficultyManager.Instance.SetDifficultyFromAI(predictedDifficulty);
-            Debug.Log($"[AI-DDA] Updated Difficulty based on AI Prediction: {predictedDifficulty}");
+            // Reinforcement Learning ONNX - 2nd Model Correction
+            float adjustedDifficulty = RLModel.Instance.AdjustDifficulty(predictedDifficulty);
+
+            // DifficultyManager - Difficulty update
+            DifficultyManager.Instance.SetDifficultyFromAI(adjustedDifficulty);
+
+            Debug.Log($"[AI-DDA] MLP Prediction: {predictedDifficulty}, RL Correction: {adjustedDifficulty}");    //  DEBUG - MLP & RL adjusting outputs
         }
 
         public void LogDifficultyMultiplier()
         {
             difficultyMultiplier++;
 
-            /*
+            /*  OLD - NO LONGER USED
+
             if (difficultyMultiplier % 10 != 0)
             {
                 difficultyAdjusted = false;
@@ -181,9 +185,10 @@ namespace AI_DDA.Assets.Scripts
 
             if (difficultyMultiplier % 10 == 0 && !difficultyAdjusted)
             {
-                PredictAndApplyDifficulty();  // 🔹 Teraz używamy metody AI-DDA
+                PredictAndApplyDifficulty();
                 difficultyAdjusted = true;
             }
+
             */
 
             PredictAndApplyDifficulty();
@@ -191,63 +196,59 @@ namespace AI_DDA.Assets.Scripts
 
         public void LogEnemiesDefeated(Entity entity)
         {
-            string actor = GetActor(entity); // Automatyczne rozpoznanie aktora
+            string actor = GetActor(entity);
 
             enemiesDefeated++;
             Debug.Log($"{actor} defeated an enemy! Total: {enemiesDefeated}");
-            UpdatePlayerType(); // Recalculate player type
-            achievementManager?.CheckAchievements(this); // Check achievements in real-time
+            UpdatePlayerType();
+            achievementManager?.CheckAchievements(this);
             PredictAndApplyDifficulty(); 
         }
 
-        /// <summary>
-        /// Zaloguj śmierć gracza.
-        /// </summary>
         public void LogPlayerDeath(Entity entity)
         {
-            string actor = GetActor(entity); // Automatyczne rozpoznanie aktora
+            string actor = GetActor(entity);
 
             playerDeaths++;
             Debug.Log($"{actor} died! Total deaths: {playerDeaths}");
 
-            // Machine Learning decyduje, czy zmniejszyć trudność po śmierci gracza
             PredictAndApplyDifficulty(); 
 
-            UpdatePlayerType(); // Recalculate player type
-            achievementManager?.CheckAchievements(this); // Check achievements in real-time
+            UpdatePlayerType();
+            achievementManager?.CheckAchievements(this);
         }
 
         public void LogAreaDiscovered(Entity entity, string zoneName)
         {
-            string actor = GetActor(entity); // Automatyczne rozpoznanie aktora
+            string actor = GetActor(entity);
 
             if (!discoveredZones.Contains(zoneName))
             {
                 discoveredZones.Add(zoneName);
                 zonesDiscovered++;
                 Debug.Log($"{actor} discovered a new area: {zoneName}");
-                UpdatePlayerType(); // Recalculate player type
-                achievementManager?.CheckAchievements(this); // Check achievements in real-time
+                UpdatePlayerType();
+                achievementManager?.CheckAchievements(this);
             }
         }
 
         public void LogWaypointDiscovery(Entity entity, int waypointID)
         {
-            string actor = GetActor(entity); // Automatyczne rozpoznanie aktora
+            string actor = GetActor(entity);
 
             if (!discoveredWaypoints.Contains(waypointID))
             {
                 discoveredWaypoints.Add(waypointID);
                 waypointsDiscovered++;
                 Debug.Log($"{actor} discovered a new waypoint: {waypointID}");
-                UpdatePlayerType(); // Recalculate player type
-                achievementManager?.CheckAchievements(this); // Check achievements in real-time
+                UpdatePlayerType();
+                achievementManager?.CheckAchievements(this);
             }
         }
 
         public void LogNpcInteraction(Entity entity)
         {
-            string actor = GetActor(entity); // Rozpoznaj, czy to gracz, czy AI Agent
+            string actor = GetActor(entity);
             npcInteractions++;
             Debug.Log($"{actor} interacted with an NPC! Total: {npcInteractions}");
             UpdatePlayerType();
@@ -258,18 +259,18 @@ namespace AI_DDA.Assets.Scripts
         {
             questsCompleted++;
             Debug.Log($"Quest completed! Total: {questsCompleted}");
-            UpdatePlayerType(); // Recalculate player type
-            achievementManager?.CheckAchievements(this); // Sprawdź osiągnięcia w czasie rzeczywistym
+            UpdatePlayerType();
+            achievementManager?.CheckAchievements(this);
         }
 
         public void LogPotionsUsed(Entity entity)
         {
-            string actor = GetActor(entity); // Automatyczne rozpoznanie aktora
+            string actor = GetActor(entity);
 
             potionsUsed++;
             Debug.Log($"{actor} used a potion! Total: {potionsUsed}");
-            UpdatePlayerType(); // Recalculate player type
-            achievementManager?.CheckAchievements(this); // Check achievements in real-time
+            UpdatePlayerType();
+            achievementManager?.CheckAchievements(this);
             PredictAndApplyDifficulty(); 
         }
 
@@ -313,21 +314,18 @@ namespace AI_DDA.Assets.Scripts
                     $"currentDynamicPlayerType={currentDynamicPlayerType}");
         }
 
-        /// <summary>
-        /// Updates the player's type based on current metrics.
-        /// </summary>
         public void UpdatePlayerType()
         {
-            // Scoring logic
+            //  Logic of score system
             int achieverScore = (questsCompleted * 2) + (unlockedAchievements.Count * 2);
             int explorerScore = (zonesDiscovered * 2) + waypointsDiscovered;
             int socializerScore = (npcInteractions * 3) + questsCompleted;
             int killerScore = (int)(enemiesDefeated * 0.5) + (int)(totalCombatTime / 120); 
 
-            // Determine dominant type
+            //  Determining of Bartle's Player Type
             string newPlayerType = DetermineDominantType(achieverScore, explorerScore, socializerScore, killerScore);
 
-            // Update if changed
+            //  Updating Bartle's Player Type if changed (Dynamically)
             if (newPlayerType != currentDynamicPlayerType)
             {
                 Debug.Log($"Player type updated: {currentDynamicPlayerType} -> {newPlayerType}");
@@ -335,9 +333,6 @@ namespace AI_DDA.Assets.Scripts
             }
         }
 
-        /// <summary>
-        /// Determines the dominant player type.
-        /// </summary>
         private string DetermineDominantType(int achiever, int explorer, int socializer, int killer)
         {
             int maxScore = Mathf.Max(achiever, explorer, socializer, killer);
@@ -358,7 +353,7 @@ namespace AI_DDA.Assets.Scripts
                 Directory.CreateDirectory(directoryPath);
             }
 
-            // Pobierz aktualną instancję postaci z Game.instance
+            // Getting current instance of character from Game.instance
             var characterInstance = Game.instance?.currentCharacter;
             if (characterInstance == null)
             {
@@ -396,18 +391,18 @@ namespace AI_DDA.Assets.Scripts
             if (!unlockedAchievements.Contains(achievementName))
             {
                 unlockedAchievements.Add(achievementName);
-                // achievementsUnlocked++;
+                // achievementsUnlocked++;  //  OLD - NO LONGER USED
 
                 Debug.Log($"Achievement unlocked: {achievementName}");
 
-                // Pobranie aktualnej postaci gracza
+                //  Getting current character
                 var characterInstance = Game.instance?.currentCharacter;
 
                 if (characterInstance != null)
                 {
                     characterInstance.unlockedAchievements = new List<string>(unlockedAchievements);
 
-                    // Zapisanie osiągnięcia do systemu zapisów gry
+                    // Saving achievements to the Game Save system
                     Game.instance.GetComponent<GameSave>().SaveLogsForCharacter(characterInstance);
 
                     Debug.Log($"Achievement '{achievementName}' saved for {characterInstance.name}.");
@@ -423,22 +418,18 @@ namespace AI_DDA.Assets.Scripts
         {
             string filePath = Path.Combine(Application.persistentDataPath, "player_logs.csv");
 
-            // Jeśli plik nie istnieje, dodajemy nagłówek
             if (!File.Exists(filePath))
             {
                 File.WriteAllText(filePath, "playerDeaths,enemiesDefeated,totalCombatTime,enemiesAvoided,potionsUsed,zonesDiscovered,npcInteractions,waypointsDiscovered,achievementsUnlocked,currentDynamicPlayerType,difficultyMultiplier,difficultyLevel\n");
             }
 
-            // Pobranie aktualnego poziomu trudności
             int currentDifficulty = DifficultyManager.Instance.GetCurrentDifficulty();
 
-            // Tworzenie wpisu do CSV
             string logEntry = $"{playerDeaths},{enemiesDefeated},{totalCombatTime},{potionsUsed},{zonesDiscovered},{npcInteractions},{waypointsDiscovered},{unlockedAchievements.Count},{currentDynamicPlayerType},{difficultyMultiplier},{currentDifficulty}\n";
 
-            // Zapis do pliku
             File.AppendAllText(filePath, logEntry);
 
-            Debug.Log("Player data exported to CSV.");
+            Debug.Log("Player data exported to CSV.");  //  DEBUG - Player data saved to CSV
         }
 
         public void ApplySettingsFromGameSettings()
@@ -446,7 +437,7 @@ namespace AI_DDA.Assets.Scripts
             if (GameSettings.instance != null)
             {
                 isLoggingEnabled = GameSettings.instance.GetSaveLogs();
-                Debug.Log($"PlayerBehaviorLogger: Logging is {(isLoggingEnabled ? "Enabled" : "Disabled")} from settings.");
+                Debug.Log($"PlayerBehaviorLogger: Logging is {(isLoggingEnabled ? "Enabled" : "Disabled")} from settings.");    //  DEBUG - 1:0 of PBL logging
             }
         }
 
@@ -464,12 +455,12 @@ namespace AI_DDA.Assets.Scripts
                 achievementManager = UnityEngine.Object.FindFirstObjectByType<AchievementManager>();
             }
 
-            // achievementManager?.CheckAchievements(this);
+            // achievementManager?.CheckAchievements(this); //  OLD - NO LONGER USED
         }
 
         public static string FormatPlayTime(float totalSeconds)
         {
-            int days = (int)(totalSeconds / 86400); // 1 dzień = 86400 sekund
+            int days = (int)(totalSeconds / 86400); // 1 day = 86400 seconds
             int hours = (int)((totalSeconds % 86400) / 3600);
             int minutes = (int)((totalSeconds % 3600) / 60);
             int seconds = (int)(totalSeconds % 60);
@@ -489,18 +480,15 @@ namespace AI_DDA.Assets.Scripts
             Debug.Log($"AI Agent discovered zone: {zoneName}");
         }
 
-        /// <summary>
-        /// Resetowanie logów (opcjonalne).
-        /// </summary>
         public void ResetLogs()
         {
             Debug.Log("Resetting logs...");
-            //playerDeaths = 0;
             difficultyMultiplier = 0;
-            //enemiesDefeated = 0;
-            //totalCombatTime = 0f;
-            //potionsUsed = 0;
             difficultyAdjusted = false;
+            // playerDeaths = 0;
+            // enemiesDefeated = 0;
+            // totalCombatTime = 0f;
+            // potionsUsed = 0;
         }
     }
 }

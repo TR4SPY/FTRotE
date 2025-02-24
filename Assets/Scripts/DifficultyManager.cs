@@ -37,14 +37,10 @@ namespace AI_DDA.Assets.Scripts
             }
         }
 
-        /// <summary>
-        /// Nowa metoda AI-DDA: Machine Learning dostarcza przewidywaną trudność.
-        /// </summary>
         public void SetDifficultyFromAI(float difficultyLevel)
         {
             Debug.Log($"[AI-DDA] Setting difficulty based on AI Prediction: {difficultyLevel}");
 
-            // Skalujemy poziom trudności na podstawie modelu AI
             CurrentDexterityMultiplier = 1.0f + (difficultyLevel * 0.1f);
             CurrentStrengthMultiplier = 1.0f + (difficultyLevel * 0.15f);
             CurrentVitalityMultiplier = 1.0f + (difficultyLevel * 0.1f);
@@ -59,9 +55,6 @@ namespace AI_DDA.Assets.Scripts
             ApplyDifficultyToExistingEnemies();
         }
 
-        /// <summary>
-        /// Aktualizuje statystyki przeciwników zgodnie z poziomem trudności.
-        /// </summary>
         public void ApplyDifficultyToExistingEnemies()
         {
             var entities = Object.FindObjectsByType<Entity>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
@@ -111,7 +104,6 @@ namespace AI_DDA.Assets.Scripts
             CurrentVitalityMultiplier = character.GetMultiplier("Vitality");
             CurrentEnergyMultiplier = character.GetMultiplier("Energy");
 
-            // 🔹 Pobranie danych gracza z PlayerBehaviorLogger
             var logger = PlayerBehaviorLogger.Instance;
             if (logger == null)
             {
@@ -119,7 +111,6 @@ namespace AI_DDA.Assets.Scripts
                 return;
             }
 
-            // 🔹 Użycie nowego modelu AI do predykcji
             float predictedDifficulty = AIModel.Instance.PredictDifficulty(
                 logger.playerDeaths,
                 logger.enemiesDefeated,
