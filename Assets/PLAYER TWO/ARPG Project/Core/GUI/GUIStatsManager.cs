@@ -52,6 +52,14 @@ namespace PLAYERTWO.ARPGProject
 
         [Tooltip("A reference to the GUI Stats Attributes representing energy points.")]
         public GUIStatsAttribute energy;
+
+        [Header("Main Buttons")]
+        [Tooltip("A reference to the Apply button.")]
+        public Button applyButton;
+
+        [Tooltip("A reference to the Cancel button.")]
+        public Button cancelButton;
+
         public CharacterInstance characterInstance;
 
         protected Entity m_entity;
@@ -76,6 +84,20 @@ namespace PLAYERTWO.ARPGProject
                 onPointsChanged?.Invoke(m_availablePoints);
                 availablePointsText.text = m_availablePoints.ToString();
             }
+        }
+
+        /// <summary>
+        /// Update Cancel & Apply buttons via checking if there are any points distributed.
+        /// </summary>
+        public void UpdateApplyCancelButtons()
+        {
+            bool shouldShow = strength.distributedPoints > 0 ||
+                            dexterity.distributedPoints > 0 ||
+                            vitality.distributedPoints > 0 ||
+                            energy.distributedPoints > 0;
+
+            applyButton.gameObject.SetActive(shouldShow);
+            cancelButton.gameObject.SetActive(shouldShow);
         }
 
         //protected virtual void InitializeEntity() => m_entity = Level.instance.player;
@@ -155,8 +177,25 @@ namespace PLAYERTWO.ARPGProject
         /// <summary>
         /// Applies all distributed points to the Player's Stats Manager.
         /// </summary>
-        public virtual void Apply() => m_entity.stats.BulkDistribute(strength.distributedPoints,
-            dexterity.distributedPoints, vitality.distributedPoints, energy.distributedPoints);
+        public void Apply()
+        {
+            m_entity.stats.BulkDistribute(strength.distributedPoints, dexterity.distributedPoints, vitality.distributedPoints, energy.distributedPoints);
+            Refresh();
+            UpdateApplyCancelButtons();
+        }
+
+       /// <summary>
+        /// Cancel all the changes, gives back all the distributed points.
+        /// </summary>
+        public void Cancel()
+        {
+            strength.Reset(m_entity.stats.strength);
+            dexterity.Reset(m_entity.stats.dexterity);
+            vitality.Reset(m_entity.stats.vitality);
+            energy.Reset(m_entity.stats.energy);
+
+            UpdateApplyCancelButtons();
+        }
 
         /// <summary>
         /// Refreshes all attributes to display the current values.
@@ -186,6 +225,7 @@ namespace PLAYERTWO.ARPGProject
             InitializeCallbacks();
             InitializeTexts();
             Refresh();
+            UpdateApplyCancelButtons();
         }
     }
 }

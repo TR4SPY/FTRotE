@@ -41,6 +41,9 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("A reference to the Button used to cancel the Quest.")]
         public Button cancel;
 
+        [Tooltip("A reference to the Button used to manually complete the Quest.")]
+        public Button complete;
+
         protected GUIWindow m_window;
 
         /// <summary>
@@ -67,6 +70,7 @@ namespace PLAYERTWO.ARPGProject
             accept.onClick.AddListener(Accept);
             decline.onClick.AddListener(Decline);
             cancel.onClick.AddListener(Cancel);
+            complete.onClick.AddListener(CompleteQuest);
         }
 
         /// <summary>
@@ -112,6 +116,22 @@ namespace PLAYERTWO.ARPGProject
             UpdateTexts();
         }
 
+        public void CompleteQuest()
+        {
+            if (!quest)
+                return;
+
+            // Sprawdź, czy gracz nadal ma wymagany przedmiot
+            if (quest.requiresManualCompletion && !Game.instance.currentCharacter.inventory.HasItem(quest.requiredItem.data))
+            {
+                Debug.LogWarning("Player no longer has the required item! Cannot complete quest.");
+                return; // Blokujemy zakończenie questa
+            }
+
+            Game.instance.quests.CompleteManualQuest(quest);
+            window.Toggle();
+        }
+
         protected virtual void UpdateTexts()
         {
             title.text = quest.title;
@@ -119,7 +139,7 @@ namespace PLAYERTWO.ARPGProject
             objective.text = quest.objective;
             rewards.text = quest.GetRewardText();
         }
-
+        
         protected virtual void UpdateButtons()
         {
             if (!quest)
@@ -128,9 +148,22 @@ namespace PLAYERTWO.ARPGProject
             var isLog = Game.instance.quests.ContainsQuest(quest);
             logActions.SetActive(isLog);
             giverActions.SetActive(!isLog);
+
+            // Dynamiczne sprawdzenie ekwipunku
+            bool hasRequiredItem = Game.instance.currentCharacter.inventory.HasItem(quest.requiredItem.data);
+            complete.gameObject.SetActive(quest.requiresManualCompletion && hasRequiredItem);
         }
 
-        protected virtual void Start() => InitializeCallbacks();
+        protected virtual void OnInventoryUpdated()
+        {
+            UpdateButtons(); // Odśwież UI, jeśli zmieni się ekwipunek
+        }
+
+        protected virtual void Start()
+        {
+            InitializeCallbacks();
+            Game.instance.currentCharacter.inventory.onInventoryUpdated += UpdateButtons;
+        }
 
         protected virtual void OnEnable() => UpdateButtons();
     }

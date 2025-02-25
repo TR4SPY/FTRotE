@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using System.Collections.Generic;
 
 namespace PLAYERTWO.ARPGProject
@@ -12,11 +13,19 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("A reference to the Game Object that contains all equipped Skill slots.")]
         public GameObject equippedSkillsContainer;
 
+        [Header("Main Buttons")]
+        [Tooltip("A reference to the Apply button.")]
+        public Button applyButton;
+
+        [Tooltip("A reference to the Cancel button.")]
+        public Button cancelButton;
+
         protected GUISkillSlot[] m_availableSkillsSlots;
         protected GUISkillSlot[] m_equippedSkillsSlots;
 
         protected List<Skill> m_availableSkills;
         protected List<Skill> m_equippedSkills;
+        private List<Skill> equippedSkillsBefore;
 
         protected Entity m_entity;
 
@@ -116,6 +125,8 @@ namespace PLAYERTWO.ARPGProject
                     break;
                 }
             }
+
+            UpdateButtons();
         }
 
         /// <summary>
@@ -128,6 +139,7 @@ namespace PLAYERTWO.ARPGProject
 
             m_equippedSkills[index] = null;
             RefreshEquippedSkills();
+            UpdateButtons();
         }
 
         /// <summary>
@@ -173,6 +185,34 @@ namespace PLAYERTWO.ARPGProject
         }
 
         /// <summary>
+        /// Aktualizuje widoczność przycisków Apply i Cancel.
+        /// </summary>
+        public void UpdateButtons()
+        {
+            bool shouldShow = !CompareSkills();
+
+            applyButton.gameObject.SetActive(shouldShow);
+            cancelButton.gameObject.SetActive(shouldShow);
+        }
+
+        /// <summary>
+        /// Sprawdza, czy obecne skille są identyczne z zapisanymi.
+        /// </summary>
+        private bool CompareSkills()
+        {
+            if (equippedSkillsBefore == null || equippedSkillsBefore.Count != m_equippedSkills.Count)
+                return false;
+
+            for (int i = 0; i < equippedSkillsBefore.Count; i++)
+            {
+                if (equippedSkillsBefore[i] != m_equippedSkills[i])
+                    return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// Refreshes the available and equipped skills slots.
         /// </summary>
         public virtual void Refresh()
@@ -187,6 +227,20 @@ namespace PLAYERTWO.ARPGProject
         public virtual void Apply()
         {
             m_entity.skills.SetEquippedSkills(m_equippedSkills.ToArray());
+            
+            equippedSkillsBefore = new List<Skill>(m_equippedSkills);
+            UpdateButtons();
+        }
+
+        /// <summary>
+        /// Cancel all the changes and revert back to the initial state.
+        /// </summary>
+        public void Cancel()
+        {
+            m_equippedSkills = new List<Skill>(equippedSkillsBefore);
+            RefreshEquippedSkills();
+
+            UpdateButtons();
         }
 
         protected virtual void Start()
@@ -196,6 +250,9 @@ namespace PLAYERTWO.ARPGProject
             InitializeLists();
             InitializeCallbacks();
             Refresh();
+
+            equippedSkillsBefore = new List<Skill>(m_equippedSkills);
+            UpdateButtons();
         }
     }
 }

@@ -5,7 +5,7 @@ namespace PLAYERTWO.ARPGProject
     [CreateAssetMenu(fileName = "New Quest", menuName = "PLAYER TWO/ARPG Project/Quest/Quest")]
     public class Quest : ScriptableObject
     {
-        public enum CompletingMode { ReachScene, Progress, Trigger }
+        public enum CompletingMode { ReachScene, Progress, Trigger, FetchAfterKill }
 
         [Header("Main Settings")]
         [Tooltip("The title of the Quest.")]
@@ -41,6 +41,16 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The key of the progress, e.g. name of the enemy, used when the completing mode is 'Progress.'")]
         public string progressKey;
 
+        [Header("Fetch Quest Settings")]
+        [Tooltip("The item the player needs to return.")]
+        public QuestItemReward requiredItem;
+
+        [Tooltip("The name of the NPC who will receive the item.")]
+        public string returnToNPC;
+        
+        [Tooltip("If true, the player must manually complete the quest at the NPC.")]
+        public bool requiresManualCompletion;
+
         /// <summary>
         /// Returns true if this Quest has any rewards.
         /// </summary>
@@ -61,6 +71,8 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         public bool IsTrigger() => completingMode == CompletingMode.Trigger;
 
+        public bool IsFetchAfterKill() => completingMode == CompletingMode.FetchAfterKill;
+
         /// <summary>
         /// Returns true if a given scene name matches the Quest's destination scene name.
         /// </summary>
@@ -72,6 +84,7 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         /// <param name="key">The progress key you want to compare.</param>
         public bool IsProgressKey(string key) => progressKey.CompareTo(key) == 0;
+        
 
         /// <summary>
         /// Returns the formatted reward text.

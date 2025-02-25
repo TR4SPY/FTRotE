@@ -100,5 +100,38 @@ namespace PLAYERTWO.ARPGProject
                 }
             }
         }
+
+        /// <summary>
+        /// Returns true if the FetchAfterKill quest is ready for completion.
+        /// </summary>
+        public bool CanCompleteFetchAfterKill()
+        {
+            if (!data.IsFetchAfterKill()) return false;
+            if (RequiresManualCompletion()) return false; // Jeśli wymaga manualnego zakończenia, nie kończymy automatycznie.
+
+            QuestGiver returnNPC = QuestGiver.FindReturnNPC(data.returnToNPC);
+            return PlayerHasItem(data.requiredItem) && TalkedToNPC(returnNPC);
+        }
+
+        public bool RequiresManualCompletion()
+        {
+            return data.requiresManualCompletion;
+        }
+
+        /// <summary>
+        /// Checks if the player has the required quest item.
+        /// </summary>
+        private bool PlayerHasItem(QuestItemReward item)
+        {
+            return Game.instance.currentCharacter.inventory.HasItem(item.data);
+        }
+
+        /// <summary>
+        /// Checks if the player has interacted with the required NPC.
+        /// </summary>
+        private bool TalkedToNPC(QuestGiver npc)
+        {
+            return npc != null && npc.state == QuestGiver.State.QuestInProgress;
+        }
     }
 }

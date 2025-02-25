@@ -80,6 +80,47 @@ namespace PLAYERTWO.ARPGProject
             return null;
         }
 
+        public static QuestGiver FindReturnNPC(string npcId)
+        {
+        #if UNITY_2023_1_OR_NEWER
+            var npcs = Object.FindObjectsByType<QuestGiver>(FindObjectsSortMode.None);
+        #else
+            var npcs = Object.FindObjectsOfType<QuestGiver>();
+        #endif
+
+            foreach (var npc in npcs)
+            {
+                if (npc.name == npcId)
+                {
+                    return npc;
+                }
+            }
+
+            Debug.LogWarning($"NPC {npcId} not found in the scene.");
+            return null;
+        }
+
+        public void ReceiveFetchItem(QuestItemReward item)
+        {
+            if (Game.instance.currentCharacter.inventory.HasItem(item.data))
+            {
+                if (Game.instance.currentCharacter.inventory.RemoveItem(item.data))
+                {
+                    Debug.Log($"Item {item.data.name} returned to {name}. Quest completed!");
+                    Game.instance.quests.RemoveQuest(CurrentQuest());
+                    ChangeStateTo(State.None);
+                }
+                else
+                {
+                    Debug.LogWarning($"Failed to remove item {item.data.name} from inventory.");
+                }
+            }
+            else
+            {
+                Debug.Log($"Player does not have {item.data.name} yet.");
+            }
+        }
+
         protected override void OnInteract(object other)
         {
             if (!(other is Entity entity)) return;
@@ -147,8 +188,25 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void OnQuestCompleted(QuestInstance instance)
         {
-            if (!MatchesQuest(instance))
+            if (!MatchesQuest(instance)) return;
+
+            var quest = instance.data;
+
+            if (quest.IsFetchAfterKill())
+            {
+                QuestGiver returnNPC = FindReturnNPC(quest.returnToNPC);
+
+                if (returnNPC != null)
+                {
+                    Debug.Log($"Quest '{quest.title}' requires the player to return {quest.requiredItem.data.name} to NPC {returnNPC.name}.");
+                    returnNPC.ReceiveFetchItem(quest.requiredItem);
+                }
+                else
+                {
+                    Debug.LogWarning($"Quest '{quest.title}' has no assigned NPC! Check returnToNPC.");
+                }
                 return;
+            }
 
             ChangeStateTo(CurrentQuest() ? State.QuestAvailable : State.None);
         }

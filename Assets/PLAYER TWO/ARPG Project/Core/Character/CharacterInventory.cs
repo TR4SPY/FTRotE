@@ -16,6 +16,7 @@ namespace PLAYERTWO.ARPGProject
         public CharacterInventory(Character data) => Initialize(data.inventory, data.initialMoney);
 
         public CharacterInventory(CharacterInventoryItem[] items, int money) => Initialize(items, money);
+        public event System.Action onInventoryUpdated;
 
         public virtual void InitializeInventory(EntityInventory inventory)
         {
@@ -59,6 +60,35 @@ namespace PLAYERTWO.ARPGProject
             }
 
             return new CharacterInventory(items.ToArray(), serializer.money);
+        }
+
+        public bool HasItem(Item item)
+        {
+            foreach (var inventoryItem in currentItems.Keys)
+            {
+                if (inventoryItem.data == item)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        public bool RemoveItem(Item item)
+        {
+            foreach (var inventoryItem in currentItems.Keys)
+            {
+                if (inventoryItem.data == item)
+                {
+                    bool removed = m_inventory.instance.TryRemoveItem(inventoryItem);
+                    if (removed)
+                    {
+                        onInventoryUpdated?.Invoke(); // Powiadom UI o zmianie ekwipunku
+                    }
+                    return removed;
+                }
+            }
+            return false;
         }
     }
 }

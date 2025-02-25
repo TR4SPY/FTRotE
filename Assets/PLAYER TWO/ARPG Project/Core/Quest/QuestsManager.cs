@@ -1,5 +1,6 @@
 //  ZMODYFIKOWANO 31 GRUDNIA 2024
 
+using UnityEngine;
 using System.Collections.Generic;
 using AI_DDA.Assets.Scripts;
 
@@ -134,10 +135,35 @@ namespace PLAYERTWO.ARPGProject
                     quest.progress++;
                     onProgressChanged?.Invoke(quest);
 
+                    // Standardowe questy kończą się po osiągnięciu progu
                     if (quest.progress == quest.data.targetProgress)
-                        CompleteQuest(quest);
+                    {
+                        if (quest.data.IsFetchAfterKill())
+                        {
+                            Debug.Log($"Quest '{quest.data.title}' requires item return to {quest.data.returnToNPC}.");
+                        }
+                        else
+                        {
+                            CompleteQuest(quest);
+                        }
+                    }
                 }
             }
+        }
+        
+        public void CompleteManualQuest(Quest quest)
+        {
+            if (!TryGetQuest(quest, out var instance))
+                return;
+
+            if (!instance.RequiresManualCompletion()) return; // Upewnij się, że quest wymaga manualnego zakończenia.
+
+            // Nagrody i zakończenie questa
+            if (Level.instance.player)
+                instance.Reward(Level.instance.player);
+
+            instance.Complete();
+            onQuestCompleted?.Invoke(instance);
         }
 
         /// <summary>

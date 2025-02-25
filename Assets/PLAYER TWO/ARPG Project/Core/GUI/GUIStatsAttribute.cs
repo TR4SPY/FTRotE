@@ -76,11 +76,13 @@ namespace PLAYERTWO.ARPGProject
             removeButton.transform.localScale = Vector3.one;
             m_audio.PlayUiEffect(addPointClip);
 
-            if (this.stats.availablePoints == 0)
+            if (stats.availablePoints == 0)
                 addButton.transform.localScale = Vector3.zero;
 
             UpdateText();
+            stats.UpdateApplyCancelButtons();
         }
+
 
         /// <summary>
         /// Decreases the points of this attribute.
@@ -96,6 +98,7 @@ namespace PLAYERTWO.ARPGProject
                 removeButton.transform.localScale = Vector3.zero;
 
             UpdateText();
+            stats.UpdateApplyCancelButtons();
         }
 
         /// <summary>
