@@ -81,16 +81,22 @@ namespace PLAYERTWO.ARPGProject
         /// <summary>
         /// Returns the current Character Instance of this Game session.
         /// </summary>
+        private bool alreadyLoaded = false;
+
         public CharacterInstance currentCharacter
         {
             get
             {
-                LoadGameData();
+                if (!alreadyLoaded)
+                {
+                    alreadyLoaded = true;
+                    LoadGameData();
+                }
 
                 if (m_currentCharacterId < 0 || m_currentCharacterId >= characters.Count)
                 {
                     if (characters.Count == 0)
-                        CreateCharacter("PLAYERTWO", 0);
+                        CreateCharacter("Player", 0);
 
                     m_currentCharacterId = 0;
                 }
@@ -176,6 +182,7 @@ namespace PLAYERTWO.ARPGProject
                 return;
 
             var data = GameSave.instance.Load();
+            // Debug.Log($"[Game] Loaded {data?.characters.Count ?? 0} characters from save."); //  DEBUG - In case of issues with currentCharacter ID
 
             m_gameLoaded = true;
 

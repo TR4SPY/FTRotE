@@ -68,7 +68,7 @@ namespace PLAYERTWO.ARPGProject
             image.enabled = value;
         }
 
-        protected virtual void AddIconToMinimap() => MinimapHUD.instance.AddIcon(this);
+        public virtual void AddIconToMinimap() => MinimapHUD.instance.AddIcon(this);
 
         protected virtual void Awake()
         {
@@ -77,6 +77,15 @@ namespace PLAYERTWO.ARPGProject
             Rescale(initialSize);
             SetVisibility(initialVisibility);
             AddIconToMinimap();
+
+            if (TryGetComponent(out Entity entity))
+            {
+                entity.onRevive.AddListener(() =>
+                {
+                    SetVisibility(true);
+                    AddIconToMinimap();
+                });
+            }
         }
 
         protected virtual void OnEnable() => SetVisibility(true);

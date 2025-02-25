@@ -657,6 +657,13 @@ namespace PLAYERTWO.ARPGProject
             stats.Revitalize();
             states.ChangeTo<IdleEntityState>();
             onRevive.Invoke();
+
+            MinimapIcon minimapIcon = GetComponent<MinimapIcon>();
+            if (minimapIcon != null)
+            {
+                minimapIcon.SetVisibility(true);
+                minimapIcon.AddIconToMinimap();
+            }
         }
 
         /// <summary>

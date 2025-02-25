@@ -3,6 +3,7 @@ using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Actuators;
 using System.Collections;
+using PLAYERTWO.ARPGProject;
 
 namespace AI_DDA.Assets.Scripts
 {
@@ -89,6 +90,8 @@ namespace AI_DDA.Assets.Scripts
                 currentDifficulty = baseDifficulty;
                 adjustedDifficulty = baseDifficulty;
                 RequestDecision();
+
+                        // Debug.Log($"[AI-DDA] Adjusting difficulty. Current: {currentDifficulty}, Adjusted: {adjustedDifficulty}, Character: {Game.instance.currentCharacter.name}"); //  DEBUG - In case of issues with currentCharacter ID
             }
 
             return adjustedDifficulty;
