@@ -59,8 +59,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   difficultyText: {fileID: 5846541595113274090}
-  increaseColor: {r: 1, g: 0, b: 0, a: 1}
-  decreaseColor: {r: 0, g: 1, b: 0, a: 1}
+  increaseColor: {r: 1, g: 0.49349722, b: 0, a: 1}
+  decreaseColor: {r: 0, g: 0.936227, b: 0.94589, a: 1}
+  buffColor: {r: 0, g: 0.6956136, b: 0, a: 1}
+  weakenColor: {r: 0.82695496, g: 0, b: 0, a: 1}
 --- !u!1 &5846541595113274088
 GameObject:
   m_ObjectHideFlags: 0

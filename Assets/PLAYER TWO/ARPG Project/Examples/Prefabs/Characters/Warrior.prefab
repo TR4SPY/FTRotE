@@ -411,6 +411,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   isAgent: 0
+  isPlayer: 1
   targetTags:
   - Entity/Enemy
   moveSpeed: 6
@@ -420,7 +421,6 @@ MonoBehaviour:
   hitbox: {fileID: 2957117558929388001}
   autoCollectItems: 0
   autoCollectCoolDown: 0.1
-  isPlayer: 1
 --- !u!114 &2957117560480157709
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -615,6 +615,8 @@ MonoBehaviour:
   criticalDamageAudios: []
   flashOnDamage: 1
   damageColor: {r: 1, g: 0, b: 0, a: 1}
+  difficultyText: {fileID: 5846541594109319412, guid: cdc6cb0473ed7c388a93bfc432bbf07a, type: 3}
+  difficultyTextOffset: {x: 0, y: 2, z: 0}
   meshRenderers: []
   levelUpAudio: {fileID: 8300000, guid: e4e5ae8263bfe2147a3b508407c48dd4, type: 3}
   levelUpParticle: {fileID: 1076616961480193563}
@@ -661,18 +663,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerDeaths: 0
-  difficultyMultiplier: 0
-  enemiesDefeated: 0
+  questsCompleted: 0
+  unlockedAchievements: []
   totalCombatTime: 0
+  enemiesDefeated: 0
   potionsUsed: 0
   zonesDiscovered: 0
   npcInteractions: 0
-  questsCompleted: 0
   waypointsDiscovered: 0
+  difficultyMultiplier: 0
   currentDynamicPlayerType: Unknown
   lastUpdateTime: 0
-  achievementsUnlocked: 0
-  unlockedAchievements: []
 --- !u!114 &4119923726096340576
 MonoBehaviour:
   m_ObjectHideFlags: 0

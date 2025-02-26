@@ -180,6 +180,12 @@ namespace PLAYERTWO.ARPGProject
                 return;
             }
 
+            if (m_entity.CompareTag("Entity/Player")) // 🔹 Ignorujemy zmiany dla gracza
+            {
+                Debug.Log($"[AI-DDA] Skipping DifficultyText for {gameObject.name} (Player).");
+                return;
+            }
+
             if (m_entity.isDead) // Sprawdzamy, czy przeciwnik jest martwy
             {
                 Debug.Log($"[AI-DDA] Skipping DifficultyText for {gameObject.name} because it's dead.");
@@ -200,7 +206,11 @@ namespace PLAYERTWO.ARPGProject
             if (instance.TryGetComponent(out DifficultyText text))
             {
                 text.target = transform;
-                text.SetText(increased);
+
+                string message = increased ? "Difficulty Increased" : "Difficulty Decreased";
+                Color textColor = increased ? text.increaseColor : text.decreaseColor;
+
+                text.SetText(message, textColor);
                 Debug.Log($"[AI-DDA] DifficultyText instantiated at {origin}");
             }
             else

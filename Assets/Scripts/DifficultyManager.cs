@@ -71,6 +71,12 @@ namespace AI_DDA.Assets.Scripts
 
             foreach (var enemy in enemies)
             {
+                if (enemy.isDead) 
+                {
+                    Debug.Log($"[AI-DDA] Skipping difficulty update for {enemy.name} (dead).");
+                    continue;
+                }
+
                 if (enemy.stats != null)
                 {
                     int oldStrength = enemy.stats.strength;
@@ -89,6 +95,12 @@ namespace AI_DDA.Assets.Scripts
                                     enemy.stats.vitality > oldVitality || enemy.stats.energy > oldEnergy);
                     bool decreased = (enemy.stats.strength < oldStrength || enemy.stats.dexterity < oldDexterity ||
                                     enemy.stats.vitality < oldVitality || enemy.stats.energy < oldEnergy);
+
+                    if (increased && decreased)
+                    {
+                        increased = false;
+                        decreased = false;
+                    }
 
                     EntityFeedback entityFeedback = enemy.GetComponent<EntityFeedback>();
                     if (entityFeedback != null && (increased || decreased))

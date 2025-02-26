@@ -30,6 +30,16 @@ namespace PLAYERTWO.ARPGProject
         protected const string k_effectsVolumeKey = "settings/effectsVolume";
         protected const string k_uiEffectsVolumeKey = "settings/uiEffectsVolume";
 
+        public bool GetDisplayDifficulty() => PlayerPrefs.GetInt("DisplayDifficulty", 1) == 1;
+        public void SetDisplayDifficulty(bool value) => PlayerPrefs.SetInt("DisplayDifficulty", value ? 1 : 0);
+
+        public int GetDifficultyDisplayOption() => PlayerPrefs.GetInt("DifficultyDisplayOption", 0);
+        public void SetDifficultyDisplayOption(int option) => PlayerPrefs.SetInt("DifficultyDisplayOption", option);
+
+        public bool GetDisplayDamage() => PlayerPrefs.GetInt("DisplayDamage", 1) == 1;
+        public void SetDisplayDamage(bool value) => PlayerPrefs.SetInt("DisplayDamage", value ? 1 : 0);
+
+
         protected GameAudio m_audio => GameAudio.instance;
 
         private const string SaveLogsKey = "SaveLogs";
