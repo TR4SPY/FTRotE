@@ -291,6 +291,8 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 6aa3d25a4c5725b448ebb3bad6423782, type: 3}
   flashOnDamage: 1
   damageColor: {r: 1, g: 0, b: 0, a: 1}
+  difficultyText: {fileID: 5846541594109319412, guid: cdc6cb0473ed7c388a93bfc432bbf07a, type: 3}
+  difficultyTextOffset: {x: 0, y: 2, z: 0}
   meshRenderers:
   - {fileID: 3568323814382832931}
   levelUpAudio: {fileID: 0}

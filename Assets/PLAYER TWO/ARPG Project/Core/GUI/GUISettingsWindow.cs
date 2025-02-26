@@ -1,146 +1,88 @@
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Rendering;
-using AI_DDA.Assets.Scripts;
 
 namespace PLAYERTWO.ARPGProject
 {
     [AddComponentMenu("PLAYER TWO/ARPG Project/GUI/GUI Settings Window")]
     public class GUISettingsWindow : GUIWindow
     {
-        [Header("Game Settings")]
-        [Tooltip("References the dropdown used to display the game's resolutions.")]
-        public TMP_Dropdown resolution;
+        [Header("Settings Windows")]
+        public GUIWindow soundSettingsWindow;
+        public GUIWindow graphicsSettingsWindow;
+        public GUIWindow uiSettingsWindow;
+        public GUIWindow researchSettingsWindow;
 
-        [Tooltip("References the toggle that controls the full screen state.")]
-        public Toggle fullScreen;
+        [Header("Main Settings Menu")]
+        public GameObject mainSettings;
 
-        [Tooltip("References the toggle that controls the post-processing state.")]
-        public Toggle postProcessing;
-
-        [Tooltip("References the toggle that controls saving of the logs.")]
-        public Toggle saveLogsToggle;
-
-        [Tooltip("References the music volume slider.")]
-        public Slider musicVolume;
-
-        [Tooltip("References the effects volume slider.")]
-        public Slider effectsVolume;
-
-        [Tooltip("References the ui effects volume slider.")]
-        public Slider uiVolume;
-
-        [Header("References")]
-        [Tooltip("The Volume component controlling post-processing effects.")]
-        public Volume postProcessingVolume;
-        protected GameSettings m_settings => GameSettings.instance;
+        [Header("Navigation Buttons")]
+        public Button soundSettingsButton;
+        public Button graphicsSettingsButton;
+        public Button uiSettingsButton;
+        public Button researchSettingsButton;
 
         protected override void Start()
         {
             base.Start();
+            ShowMainSettings();
+            
+            if (soundSettingsButton != null)
+                soundSettingsButton.onClick.AddListener(ShowSoundSettings);
+            else
+                Debug.LogError("[Settings] Sound Settings Button is NULL! Assign it in the Inspector.");
 
-            InitializeResolution();
-            InitializeFullScreen();
-            InitializePostProcessing();
-            InitializeMusicVolume();
-            InitializeEffectsVolume();
-            InitializeUIEffectsVolume();
-            InitializeSaveLogs(); // Dodajemy obsługę logów
-            saveLogsToggle.onValueChanged.AddListener(OnSaveLogsToggleChanged);
+            if (graphicsSettingsButton != null)
+                graphicsSettingsButton.onClick.AddListener(ShowGraphicsSettings);
+            else
+                Debug.LogError("[Settings] Graphics Settings Button is NULL! Assign it in the Inspector.");
+            if (uiSettingsButton != null)
+                uiSettingsButton.onClick.AddListener(ShowUISettings);
+            else
+                Debug.LogError("[Settings] UI Settings Button is NULL! Assign it in the Inspector.");
+            if (researchSettingsButton != null)
+                researchSettingsButton.onClick.AddListener(ShowResearchSettings);
+            else
+                Debug.LogError("[Settings] Research Settings Button is NULL! Assign it in the Inspector.");
         }
 
-        protected virtual void OnDisable() => m_settings?.Save();
-
-        protected virtual void OnApplicationFocus(bool hasFocus)
+        /// <summary>
+        /// Pokazuje menu główne i ukrywa wszystkie okna ustawień.
+        /// </summary>
+        public void ShowMainSettings()
         {
-            if (!hasFocus)
-                m_settings.Save();
+            mainSettings.SetActive(true);
         }
 
-        protected virtual void InitializeResolution()
+        /// <summary>
+        /// Otwiera ustawienia dźwięku.
+        /// </summary>
+        public void ShowSoundSettings()
         {
-            resolution.ClearOptions();
-            resolution.AddOptions(m_settings.GetResolutions());
-            resolution.value = m_settings.GetResolution();
-            resolution.onValueChanged.AddListener(m_settings.SetResolution);
-#if UNITY_WEBGL
-            resolution.interactable = false;
-#endif
+            soundSettingsWindow.Show();
         }
 
-        protected virtual void InitializeFullScreen()
+        /// <summary>
+        /// Otwiera ustawienia graficzne.
+        /// </summary>
+        public void ShowGraphicsSettings()
         {
-            fullScreen.isOn = m_settings.GetFullScreen();
-            fullScreen.onValueChanged.AddListener(m_settings.SetFullScreen);
+            graphicsSettingsWindow.Show();
         }
 
-/*
-        protected virtual void InitializePostProcessing()
+        /// <summary>
+        /// Otwiera ustawienia interfejsu.
+        /// </summary>
+        public void ShowUISettings()
         {
-            postProcessing.isOn = m_settings.GetPostProcessing();
-            postProcessing.onValueChanged.AddListener(m_settings.SetPostProcessing);
-        }
-*/
-
-        protected virtual void InitializePostProcessing()
-        {
-            // Ustaw początkowy stan Toggle zgodnie z aktualnym ustawieniem
-            bool isPostProcessingEnabled = m_settings.GetPostProcessing();
-            postProcessing.isOn = isPostProcessingEnabled;
-
-            // Ustaw aktywność Volume w oparciu o początkowe ustawienie
-            if (postProcessingVolume != null)
-                postProcessingVolume.enabled = isPostProcessingEnabled;
-
-            // Dodaj listener do Toggle
-            postProcessing.onValueChanged.AddListener(SetPostProcessingState);
+            uiSettingsWindow.Show();
         }
 
-        protected virtual void SetPostProcessingState(bool isEnabled)
+        /// <summary>
+        /// Otwiera ustawienia badań (research).
+        /// </summary>
+        public void ShowResearchSettings()
         {
-            // Zapisz ustawienie w Settings
-            m_settings.SetPostProcessing(isEnabled);
-
-            // Włącz/wyłącz Volume
-            if (postProcessingVolume != null)
-                postProcessingVolume.enabled = isEnabled;
-        }
-
-        protected virtual void InitializeMusicVolume()
-        {
-            musicVolume.value = m_settings.GetMusicVolume();
-            musicVolume.onValueChanged.AddListener(m_settings.SetMusicVolume);
-        }
-
-        protected virtual void InitializeEffectsVolume()
-        {
-            effectsVolume.value = m_settings.GetEffectsVolume();
-            effectsVolume.onValueChanged.AddListener(m_settings.SetEffectsVolume);
-        }
-
-        protected virtual void InitializeUIEffectsVolume()
-        {
-            uiVolume.value = m_settings.GetUIEffectsVolume();
-            uiVolume.onValueChanged.AddListener(m_settings.SetUIEffectsVolume);
-        }
-
-        protected virtual void InitializeSaveLogs()
-        {
-            saveLogsToggle.isOn = m_settings.GetSaveLogs();
-            saveLogsToggle.onValueChanged.AddListener(OnSaveLogsToggleChanged);
-        }
-
-        private void OnSaveLogsToggleChanged(bool isOn)
-        {
-            m_settings.SetSaveLogs(isOn);
-
-            if (PlayerBehaviorLogger.Instance != null)
-            {
-                PlayerBehaviorLogger.Instance.isLoggingEnabled = isOn;
-            }
-
-            Debug.Log($"Save Logs is now: {(isOn ? "Enabled" : "Disabled")}");
+            researchSettingsWindow.Show();
         }
     }
 }

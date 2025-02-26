@@ -111,6 +111,9 @@ namespace PLAYERTWO.ARPGProject
                     // Automatyczna aktualizacja statystyk
                     entity.stats.Recalculate();
 
+                    // Oznacz przeciwnika jako "starego" po spawnie, aby nie pokazywać DifficultyText
+                    entity.stats.isNewlySpawned = false;
+
                     Debug.Log($"Spawned enemy {entity.name}: " +
                         $"Dexterity={entity.stats.dexterity}, " +
                         $"Strength={entity.stats.strength}, " +

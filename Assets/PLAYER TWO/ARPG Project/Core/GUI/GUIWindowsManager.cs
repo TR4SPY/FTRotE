@@ -33,6 +33,8 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("Reference to the Game Menu.")]
         public GameObject gameMenu;
 
+        [Tooltip("A reference to the Settings Window.")]
+        public GUISettingsWindow settingsWindow;
 
         [Tooltip("A reference to the Stash Window.")]
         public GUIWindow stashWindow;
@@ -104,6 +106,11 @@ namespace PLAYERTWO.ARPGProject
         {
             gui = FindFirstObjectByType<GUI>();
 
+            if (settingsWindow == null)
+            {
+                Debug.LogError("[GUIWindowsManager] settingsWindow is NULL! Assign it in the Inspector.");
+            }
+            
             windows = new List<GUIWindow>(GetComponentsInChildren<GUIWindow>(true));
 
             foreach (var window in windows)

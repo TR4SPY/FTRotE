@@ -35,6 +35,13 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The color of the flash when the Entity takes damage.")]
         public Color damageColor = Color.red;
 
+        [Header("Difficulty Change Text")]
+        [Tooltip("A prefab that shows up when the Entity's difficulty is adjusted.")]
+        public GameObject difficultyText;
+
+        [Tooltip("The position offset for difficulty change text.")]
+        public Vector3 difficultyTextOffset = new(0, 2, 0);
+
         [Tooltip("The skinned mesh renderers that flash when the Entity takes damage.")]
         public SkinnedMeshRenderer[] meshRenderers;
 
@@ -160,6 +167,48 @@ namespace PLAYERTWO.ARPGProject
 
             material.color = initialColor;
             m_isFlashing = false;
+        }
+
+        /// <summary>
+        /// Wyświetla komunikat o zmianie trudności nad przeciwnikiem.
+        /// </summary>
+        public void ShowDifficultyChange(bool increased)
+        {
+            if (m_entity == null || m_entity.stats == null)
+            {
+                Debug.LogError($"[AI-DDA] Entity or stats are NULL on {gameObject.name}! Skipping DifficultyText.");
+                return;
+            }
+
+            if (m_entity.isDead) // Sprawdzamy, czy przeciwnik jest martwy
+            {
+                Debug.Log($"[AI-DDA] Skipping DifficultyText for {gameObject.name} because it's dead.");
+                return;
+            }
+
+            if (difficultyText == null)
+            {
+                Debug.LogError($"[AI-DDA] difficultyText is NULL on {gameObject.name}! Check the prefab assignment.");
+                return;
+            }
+
+            Debug.Log($"[AI-DDA] ShowDifficultyChange() called for {gameObject.name}. Increased: {increased}");
+
+            var origin = transform.position + difficultyTextOffset;
+            var instance = Instantiate(difficultyText, origin, Quaternion.identity);
+
+            if (instance.TryGetComponent(out DifficultyText text))
+            {
+                text.target = transform;
+                text.SetText(increased);
+                Debug.Log($"[AI-DDA] DifficultyText instantiated at {origin}");
+            }
+            else
+            {
+                Debug.LogError("[AI-DDA] Instantiated object does not have DifficultyText component!");
+            }
+
+            Destroy(instance, 4f);
         }
 
         protected virtual void Start()

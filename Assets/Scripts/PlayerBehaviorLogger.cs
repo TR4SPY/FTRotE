@@ -203,6 +203,7 @@ namespace AI_DDA.Assets.Scripts
             UpdatePlayerType();
             achievementManager?.CheckAchievements(this);
             PredictAndApplyDifficulty(); 
+            DifficultyManager.Instance?.UpdateAllEnemyStats();
         }
 
         public void LogPlayerDeath(Entity entity)
@@ -215,7 +216,8 @@ namespace AI_DDA.Assets.Scripts
             PredictAndApplyDifficulty(); 
 
             UpdatePlayerType();
-            achievementManager?.CheckAchievements(this);
+            achievementManager?.CheckAchievements(this);    
+            DifficultyManager.Instance?.UpdateAllEnemyStats();
         }
 
         public void LogAreaDiscovered(Entity entity, string zoneName)

@@ -52,37 +52,55 @@ namespace AI_DDA.Assets.Scripts
                     $"Vitality: {CurrentVitalityMultiplier}, " +
                     $"Energy: {CurrentEnergyMultiplier}");
 
-            ApplyDifficultyToExistingEnemies();
+            UpdateAllEnemyStats();
         }
 
-        public void ApplyDifficultyToExistingEnemies()
+        public void UpdateAllEnemyStats()
         {
-            var entities = Object.FindObjectsByType<Entity>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
+            Debug.Log("[AI-DDA] Updating difficulty for all existing enemies...");
+
+            var enemies = Object.FindObjectsByType<Entity>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
                                 .Where(e => e.CompareTag("Entity/Enemy") && e.gameObject.layer == LayerMask.NameToLayer("Entities"))
                                 .ToList();
 
-            if (entities.Count == 0)
+            if (enemies.Count == 0)
             {
-                Debug.LogWarning("No enemies found to apply difficulty.");
+                Debug.LogWarning("[AI-DDA] No enemies found to update.");
                 return;
             }
 
-            foreach (var entity in entities)
+            foreach (var enemy in enemies)
             {
-                if (entity.stats != null)
+                if (enemy.stats != null)
                 {
-                    entity.stats.strength = Mathf.Max(1, (int)(entity.stats.GetBaseStrength() * CurrentStrengthMultiplier));
-                    entity.stats.dexterity = Mathf.Max(1, (int)(entity.stats.GetBaseDexterity() * CurrentDexterityMultiplier));
-                    entity.stats.vitality = Mathf.Max(1, (int)(entity.stats.GetBaseVitality() * CurrentVitalityMultiplier));
-                    entity.stats.energy = Mathf.Max(1, (int)(entity.stats.GetBaseEnergy() * CurrentEnergyMultiplier));
+                    int oldStrength = enemy.stats.strength;
+                    int oldDexterity = enemy.stats.dexterity;
+                    int oldVitality = enemy.stats.vitality;
+                    int oldEnergy = enemy.stats.energy;
 
-                    entity.stats.Recalculate();
+                    enemy.stats.strength = Mathf.Max(1, (int)(enemy.stats.GetBaseStrength() * CurrentStrengthMultiplier));
+                    enemy.stats.dexterity = Mathf.Max(1, (int)(enemy.stats.GetBaseDexterity() * CurrentDexterityMultiplier));
+                    enemy.stats.vitality = Mathf.Max(1, (int)(enemy.stats.GetBaseVitality() * CurrentVitalityMultiplier));
+                    enemy.stats.energy = Mathf.Max(1, (int)(enemy.stats.GetBaseEnergy() * CurrentEnergyMultiplier));
 
-                    Debug.Log($"[AI-DDA] Adjusted stats for {entity.name}: Strength={entity.stats.strength}, Dexterity={entity.stats.dexterity}, Vitality={entity.stats.vitality}, Energy={entity.stats.energy}");
+                    enemy.stats.Recalculate();
+
+                    bool increased = (enemy.stats.strength > oldStrength || enemy.stats.dexterity > oldDexterity ||
+                                    enemy.stats.vitality > oldVitality || enemy.stats.energy > oldEnergy);
+                    bool decreased = (enemy.stats.strength < oldStrength || enemy.stats.dexterity < oldDexterity ||
+                                    enemy.stats.vitality < oldVitality || enemy.stats.energy < oldEnergy);
+
+                    EntityFeedback entityFeedback = enemy.GetComponent<EntityFeedback>();
+                    if (entityFeedback != null && (increased || decreased))
+                    {
+                        entityFeedback.ShowDifficultyChange(increased);
+                    }
+
+                    Debug.Log($"[AI-DDA] Updated stats for {enemy.name}: Strength={enemy.stats.strength}, Dexterity={enemy.stats.dexterity}, Vitality={enemy.stats.vitality}, Energy={enemy.stats.energy}");
                 }
                 else
                 {
-                    Debug.LogWarning($"Entity {entity.name} has no stats. Skipping difficulty adjustment.");
+                    Debug.LogWarning($"[AI-DDA] Entity {enemy.name} has no stats. Skipping update.");
                 }
             }
         }
@@ -123,7 +141,7 @@ namespace AI_DDA.Assets.Scripts
             isDifficultyLoaded = true;
             Debug.Log($"Loaded Difficulty for character: {character.name}, AI Predicted: {predictedDifficulty}");
 
-            ApplyDifficultyToExistingEnemies();
+            UpdateAllEnemyStats();
         }
 
         private void Update()

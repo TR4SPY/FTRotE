@@ -61,6 +61,8 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("If true, the Entity will be immune to stun.")]
         public bool immuneToStun;
 
+        public bool isNewlySpawned { get; set; } = true;
+
         protected int m_health;
         protected int m_mana;
         protected int m_experience;
@@ -590,12 +592,26 @@ namespace PLAYERTWO.ARPGProject
                 return;
             }
 
-            dexterity = Mathf.Max(1, (int)(dexterity * DifficultyManager.Instance.CurrentDexterityMultiplier));
-            strength = Mathf.Max(1, (int)(strength * DifficultyManager.Instance.CurrentStrengthMultiplier));
-            vitality = Mathf.Max(1, (int)(vitality * DifficultyManager.Instance.CurrentVitalityMultiplier)); // Nowe
-            energy = Mathf.Max(1, (int)(energy * DifficultyManager.Instance.CurrentEnergyMultiplier)); // Nowe
+            int oldStrength = strength;
+            int oldDexterity = dexterity;
+            int oldVitality = vitality;
+            int oldEnergy = energy;
 
-            Debug.Log($"Adjusted stats for {gameObject.name}: Dexterity={dexterity}, Strength={strength}, Vitality={vitality}, Energy={energy}");
+            strength = Mathf.Max(1, (int)(strength * DifficultyManager.Instance.CurrentStrengthMultiplier));
+            dexterity = Mathf.Max(1, (int)(dexterity * DifficultyManager.Instance.CurrentDexterityMultiplier));
+            vitality = Mathf.Max(1, (int)(vitality * DifficultyManager.Instance.CurrentVitalityMultiplier)); 
+            energy = Mathf.Max(1, (int)(energy * DifficultyManager.Instance.CurrentEnergyMultiplier)); 
+
+            bool increased = (strength > oldStrength || dexterity > oldDexterity || vitality > oldVitality || energy > oldEnergy);
+            bool decreased = (strength < oldStrength || dexterity < oldDexterity || vitality < oldVitality || energy < oldEnergy);
+
+            EntityFeedback entityFeedback = GetComponent<EntityFeedback>();
+            if (entityFeedback != null && (increased || decreased))
+            {
+                entityFeedback.ShowDifficultyChange(increased);
+            }
+
+            Debug.Log($"Adjusted stats for {gameObject.name}: Strength={strength}, Dexterity={dexterity}, Vitality={vitality}, Energy={energy}");
         }
 
         /// <summary>
