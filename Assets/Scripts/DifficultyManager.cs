@@ -116,6 +116,11 @@ namespace AI_DDA.Assets.Scripts
                 }
             }
         }
+        
+        public float GetAdjustedDifficulty()
+        {
+            return RLModel.Instance != null ? RLModel.Instance.AdjustDifficulty(CurrentStrengthMultiplier) : 5f;
+        }
 
         private bool isDifficultyLoaded = false;
 

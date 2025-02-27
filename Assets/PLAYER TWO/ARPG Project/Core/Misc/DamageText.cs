@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -29,6 +30,35 @@ namespace PLAYERTWO.ARPGProject
         /// The transform of the object receiving damage.
         /// </summary>
         public Transform target { get; set; }
+
+        public static List<DamageText> activeTexts = new List<DamageText>();
+
+        private void Awake()
+        {
+            if (!GameSettings.instance.GetDisplayDamageText())
+            {
+                gameObject.SetActive(false);
+                return;
+            }
+
+            activeTexts.Add(this);
+        }
+
+        private void OnDestroy()
+        {
+            activeTexts.Remove(this);
+        }
+
+        public static void ToggleAll(bool isEnabled)
+        {
+            foreach (var text in activeTexts)
+            {
+                if (text != null)
+                    text.gameObject.SetActive(isEnabled);
+            }
+
+            Debug.Log($"[AI-DDA] DamageText global visibility set to: {isEnabled}");
+        }
 
         /// <summary>
         /// Sets the text to the damage text.

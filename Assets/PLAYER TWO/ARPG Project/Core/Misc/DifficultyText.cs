@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
+using AI_DDA.Assets.Scripts;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -24,8 +26,50 @@ namespace PLAYERTWO.ARPGProject
         protected float m_lifeTime;
         public Transform target { get; set; }
 
+        public static List<DifficultyText> activeTexts = new List<DifficultyText>(); // Lista aktywnych instancji
+
         private float previousDifficulty;
         private int previousStrength, previousDexterity, previousVitality, previousEnergy;
+        
+        private void Awake()
+{
+    if (!GameSettings.instance.GetDisplayDifficulty())
+    {
+        gameObject.SetActive(false);
+        return;
+    }
+
+    int option = GameSettings.instance.GetDifficultyTextOption();
+    bool isPlayerText = option == 1;
+    bool isEnemyText = option == 0;
+
+    if (gameObject.CompareTag("Entity/Player") && isPlayerText)
+    {
+        ShowDifficultyForPlayer();
+        return;
+    }
+
+    if ((gameObject.CompareTag("Entity/Enemy") && !isEnemyText) || 
+        (gameObject.CompareTag("Entity/Player") && !isPlayerText))
+    {
+        gameObject.SetActive(false);
+        return;
+    }
+
+    // 🔹 Upewniamy się, że obiekt ma Billboard, aby zawsze był skierowany do kamery
+    if (!TryGetComponent<Billboard>(out _))
+    {
+        gameObject.AddComponent<Billboard>();
+    }
+
+    activeTexts.Add(this);
+}
+
+
+        private void OnDestroy()
+        {
+            activeTexts.Remove(this); // Usuwamy instancję po zniszczeniu obiektu
+        }
 
         /// <summary>
         /// Ustawia wartości początkowe do porównania.
@@ -78,6 +122,46 @@ namespace PLAYERTWO.ARPGProject
             previousVitality = newVitality;
             previousEnergy = newEnergy;
         }
+        private void ShowDifficultyForPlayer()
+{
+    float adjustedDifficulty = DifficultyManager.Instance.GetAdjustedDifficulty(); 
+    string message = adjustedDifficulty > previousDifficulty ? "Difficulty Increased" : "Difficulty Decreased";
+    Color textColor = adjustedDifficulty > previousDifficulty ? increaseColor : decreaseColor;
+
+    // 🔹 Usuwamy istniejące teksty nad graczem, aby uniknąć duplikacji
+    List<DifficultyText> textsToRemove = new List<DifficultyText>(activeTexts);
+    foreach (var difficultyTextInstance in textsToRemove)
+    {
+        if (difficultyTextInstance != null && difficultyTextInstance.gameObject.CompareTag("Entity/Player"))
+        {
+            Destroy(difficultyTextInstance.gameObject);
+        }
+    }
+
+    // 🔹 Tworzymy dynamicznie `DifficultyText` nad graczem
+    var player = GameObject.FindGameObjectWithTag("Entity/Player");
+    if (player == null)
+    {
+        Debug.LogError("[AI-DDA] No player found! Cannot instantiate DifficultyText.");
+        return;
+    }
+
+    var origin = player.transform.position + new Vector3(0, 2f, 0); // Umieszczamy tekst nad głową gracza
+    var instance = Instantiate(this, origin, Quaternion.identity);
+    
+    if (instance.TryGetComponent(out DifficultyText difficultyText))
+    {
+        difficultyText.target = player.transform; // 🔹 Przypisujemy target do gracza
+        difficultyText.SetText(message, textColor);
+        Debug.Log($"[AI-DDA] Player DifficultyText instantiated: {message}");
+    }
+    else
+    {
+        Debug.LogError("[AI-DDA] Instantiated object does not have DifficultyText component!");
+    }
+
+    previousDifficulty = adjustedDifficulty;
+}
 
         /// <summary>
         /// Ustawia tekst i kolor.
@@ -103,6 +187,20 @@ namespace PLAYERTWO.ARPGProject
 
             m_lifeTime += Time.deltaTime;
             transform.position += Vector3.up * Time.deltaTime;
+        }
+
+        /// <summary>
+        /// 🔹 Włącza/wyłącza wszystkie `DifficultyText` w grze.
+        /// </summary>
+        public static void ToggleAll(bool isEnabled)
+        {
+            foreach (var text in activeTexts)
+            {
+                if (text != null)
+                    text.gameObject.SetActive(isEnabled);
+            }
+
+            Debug.Log($"[AI-DDA] DifficultyText global visibility set to: {isEnabled}");
         }
     }
 }

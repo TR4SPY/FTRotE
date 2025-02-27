@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using AI_DDA.Assets.Scripts;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -173,53 +174,64 @@ namespace PLAYERTWO.ARPGProject
         /// Wyświetla komunikat o zmianie trudności nad przeciwnikiem.
         /// </summary>
         public void ShowDifficultyChange(bool increased)
-        {
-            if (m_entity == null || m_entity.stats == null)
-            {
-                Debug.LogError($"[AI-DDA] Entity or stats are NULL on {gameObject.name}! Skipping DifficultyText.");
-                return;
-            }
+{
+    if (m_entity == null || m_entity.stats == null)
+    {
+        Debug.LogError($"[AI-DDA] Entity or stats are NULL on {gameObject.name}! Skipping DifficultyText.");
+        return;
+    }
 
-            if (m_entity.CompareTag("Entity/Player")) // 🔹 Ignorujemy zmiany dla gracza
-            {
-                Debug.Log($"[AI-DDA] Skipping DifficultyText for {gameObject.name} (Player).");
-                return;
-            }
+    if (m_entity.isDead) 
+    {
+        Debug.Log($"[AI-DDA] Skipping DifficultyText for {gameObject.name} because it's dead.");
+        return;
+    }
 
-            if (m_entity.isDead) // Sprawdzamy, czy przeciwnik jest martwy
-            {
-                Debug.Log($"[AI-DDA] Skipping DifficultyText for {gameObject.name} because it's dead.");
-                return;
-            }
+    if (DifficultyManager.Instance == null)
+    {
+        Debug.LogError("[AI-DDA] DifficultyManager instance is NULL!");
+        return;
+    }
 
-            if (difficultyText == null)
-            {
-                Debug.LogError($"[AI-DDA] difficultyText is NULL on {gameObject.name}! Check the prefab assignment.");
-                return;
-            }
+    int difficultyOption = GameSettings.instance.GetDifficultyTextOption(); 
+    bool showOverEnemies = difficultyOption == 0;
+    bool showOverPlayer = difficultyOption == 1;
 
-            Debug.Log($"[AI-DDA] ShowDifficultyChange() called for {gameObject.name}. Increased: {increased}");
+    if (showOverEnemies && !m_entity.CompareTag("Entity/Enemy"))
+    {
+        return;
+    }
 
-            var origin = transform.position + difficultyTextOffset;
-            var instance = Instantiate(difficultyText, origin, Quaternion.identity);
+    if (showOverPlayer && !m_entity.CompareTag("Entity/Player"))
+    {
+        return;
+    }
 
-            if (instance.TryGetComponent(out DifficultyText text))
-            {
-                text.target = transform;
+    if (difficultyText == null)
+    {
+        Debug.LogError($"[AI-DDA] difficultyText is NULL on {gameObject.name}! Check the prefab assignment.");
+        return;
+    }
 
-                string message = increased ? "Difficulty Increased" : "Difficulty Decreased";
-                Color textColor = increased ? text.increaseColor : text.decreaseColor;
+    Vector3 origin = transform.position + new Vector3(0, 2f, 0);
+    var instance = Instantiate(difficultyText, origin, Quaternion.identity);
 
-                text.SetText(message, textColor);
-                Debug.Log($"[AI-DDA] DifficultyText instantiated at {origin}");
-            }
-            else
-            {
-                Debug.LogError("[AI-DDA] Instantiated object does not have DifficultyText component!");
-            }
+    if (instance.TryGetComponent(out DifficultyText text))
+    {
+        text.target = transform; // 🔹 Upewniamy się, że tekst śledzi gracza
+        text.SetText(
+            increased ? "Difficulty Increased" : "Difficulty Decreased",
+            increased ? text.increaseColor : text.decreaseColor
+        );
+        Debug.Log($"[AI-DDA] DifficultyText instantiated at {origin} for {gameObject.name}");
+    }
+    else
+    {
+        Debug.LogError("[AI-DDA] Instantiated object does not have DifficultyText component!");
+    }
 
-            Destroy(instance, 4f);
-        }
+    Destroy(instance, 4f);
+}
 
         protected virtual void Start()
         {

@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
+using AI_DDA.Assets.Scripts;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -31,14 +32,8 @@ namespace PLAYERTWO.ARPGProject
         protected const string k_uiEffectsVolumeKey = "settings/uiEffectsVolume";
 
         public bool GetDisplayDifficulty() => PlayerPrefs.GetInt("DisplayDifficulty", 1) == 1;
-        public void SetDisplayDifficulty(bool value) => PlayerPrefs.SetInt("DisplayDifficulty", value ? 1 : 0);
-
-        public int GetDifficultyDisplayOption() => PlayerPrefs.GetInt("DifficultyDisplayOption", 0);
-        public void SetDifficultyDisplayOption(int option) => PlayerPrefs.SetInt("DifficultyDisplayOption", option);
-
-        public bool GetDisplayDamage() => PlayerPrefs.GetInt("DisplayDamage", 1) == 1;
-        public void SetDisplayDamage(bool value) => PlayerPrefs.SetInt("DisplayDamage", value ? 1 : 0);
-
+        public int GetDifficultyTextOption() => PlayerPrefs.GetInt("DifficultyTextOption", 0);
+        public bool GetDisplayDamageText() => PlayerPrefs.GetInt("DisplayDamageText", 1) == 1;
 
         protected GameAudio m_audio => GameAudio.instance;
 
@@ -111,6 +106,58 @@ namespace PLAYERTWO.ARPGProject
 #else
             SetRenderingResolution(option);
 #endif
+        }
+        
+        public void SetDifficultyTextOption(int option)
+        {
+            PlayerPrefs.SetInt("DifficultyTextOption", option);
+            PlayerPrefs.Save();
+        }
+
+        public void SetDisplayDifficulty(bool value)
+        {
+            PlayerPrefs.SetInt("DisplayDifficulty", value ? 1 : 0);
+            PlayerPrefs.Save();
+
+            DifficultyText.ToggleAll(value);
+
+            Debug.Log($"[GameSettings] Display Difficulty set to: {value}");
+        }
+
+        public void ToggleDifficultyText()
+        {
+            bool isEnabled = GetDisplayDifficulty();
+            DifficultyText.ToggleAll(isEnabled);
+        }
+
+        public void UpdateDifficultyTextTarget()
+{
+    int option = GetDifficultyTextOption();
+
+    // 🔹 Usuwamy stare teksty przed zmianą opcji
+    List<DifficultyText> textsToRemove = new List<DifficultyText>(DifficultyText.activeTexts);
+    foreach (var text in textsToRemove)
+    {
+        if (text == null) continue;
+
+        bool shouldBeRemoved = (text.gameObject.CompareTag("Entity/Enemy") && option == 1) || 
+                               (text.gameObject.CompareTag("Entity/Player") && option == 0);
+
+        if (shouldBeRemoved)
+        {
+            Destroy(text.gameObject); // 🔹 Usuwamy stare napisy, zamiast tylko je wyłączać
+        }
+    }
+
+    Debug.Log($"[AI-DDA] DifficultyText updated to option: {option}");
+}
+
+        public void SetDisplayDamageText(bool value)
+        {
+            PlayerPrefs.SetInt("DisplayDamageText", value ? 1 : 0);
+            PlayerPrefs.Save();
+            
+            DamageText.ToggleAll(value); // 🔹 Włącza/wyłącza DamageText w całej grze
         }
 
         protected virtual void SetScreenResolution(int option)
@@ -189,9 +236,15 @@ namespace PLAYERTWO.ARPGProject
             PlayerPrefs.SetInt(k_resolutionKey, m_currentResolution);
             PlayerPrefs.SetInt(k_fullScreenKey, m_currentFullScreen ? 1 : 0);
             PlayerPrefs.SetInt(k_postProcessingKey, m_currentPostProcessing ? 1 : 0);
+
+            PlayerPrefs.SetInt("DisplayDifficulty", GetDisplayDifficulty() ? 1 : 0);
+            PlayerPrefs.SetInt("DifficultyTextOption", GetDifficultyTextOption());
+            PlayerPrefs.SetInt("DisplayDamageText", GetDisplayDamageText() ? 1 : 0);
+
             PlayerPrefs.SetFloat(k_musicVolumeKey, m_currentMusicVolume);
             PlayerPrefs.SetFloat(k_effectsVolumeKey, m_currentEffectsVolume);
             PlayerPrefs.SetFloat(k_uiEffectsVolumeKey, m_currentUiEffectsVolume);
+            
             PlayerPrefs.Save();
         }
 
@@ -215,6 +268,12 @@ namespace PLAYERTWO.ARPGProject
             SetMusicVolume(musicVolume);
             SetEffectsVolume(effectsVolume);
             SetUIEffectsVolume(uiEffectsVolume);
+
+            bool displayDifficulty = PlayerPrefs.GetInt("DisplayDifficulty", 1) == 1;
+            bool displayDamageText = PlayerPrefs.GetInt("DisplayDamageText", 1) == 1;
+            int difficultyTextOption = PlayerPrefs.GetInt("DifficultyTextOption", 0);
+
+            SetDisplayDifficulty(displayDifficulty);
         }
     }
 }
