@@ -52,7 +52,7 @@ namespace PLAYERTWO.ARPGProject
 
         [Tooltip("The particle instantiated when the Entity levels up.")]
         public ParticleSystem levelUpParticle;
-
+        private bool isDisplayingDifficultyChange;
         protected Entity m_entity;
 
         protected bool m_isFlashing;
@@ -143,17 +143,16 @@ namespace PLAYERTWO.ARPGProject
         {
             var elapsedTime = 0f;
             var flashColor = damageColor;
-            Color initialColor = Color.white; // Domyślny kolor, na wypadek braku `_Color` w materiale.
+            Color initialColor = Color.white;
 
-            // Sprawdź, czy materiał ma właściwość `_Color`
             if (material.HasProperty("_Color"))
             {
                 initialColor = material.color;
             }
             else
             {
-                Debug.LogWarning($"Material '{material.name}' does not have a '_Color' property.");
-                yield break; // Przerwij coroutine, ponieważ materiał nie ma właściwości `_Color`.
+                // Debug.LogWarning($"Material '{material.name}' does not have a '_Color' property.");
+                yield break; 
             }
 
             m_isFlashing = true;
@@ -173,65 +172,58 @@ namespace PLAYERTWO.ARPGProject
         /// <summary>
         /// Wyświetla komunikat o zmianie trudności nad przeciwnikiem.
         /// </summary>
-        public void ShowDifficultyChange(bool increased)
-{
-    if (m_entity == null || m_entity.stats == null)
-    {
-        Debug.LogError($"[AI-DDA] Entity or stats are NULL on {gameObject.name}! Skipping DifficultyText.");
-        return;
-    }
+        public void ShowDifficultyChange(DifficultyText.MessageType messageType)
+        {
+            if (isDisplayingDifficultyChange) return;
+            isDisplayingDifficultyChange = true;
+            StartCoroutine(ResetDisplayFlag());
 
-    if (m_entity.isDead) 
-    {
-        Debug.Log($"[AI-DDA] Skipping DifficultyText for {gameObject.name} because it's dead.");
-        return;
-    }
+            if (m_entity == null || m_entity.stats == null) 
+                return;
+            if (m_entity.isDead) 
+                return;
+            if (DifficultyManager.Instance == null)
+            {
+                Debug.LogError("[AI-DDA] DifficultyManager instance is NULL!");
+                return;
+            }
 
-    if (DifficultyManager.Instance == null)
-    {
-        Debug.LogError("[AI-DDA] DifficultyManager instance is NULL!");
-        return;
-    }
+            int difficultyOption = GameSettings.instance.GetDifficultyTextOption(); 
+            bool showOverEnemies = (difficultyOption == 0);
+            bool showOverPlayer  = (difficultyOption == 1);
+            if (showOverEnemies && !m_entity.CompareTag("Entity/Enemy"))
+                return;
+            if (showOverPlayer && !m_entity.CompareTag("Entity/Player"))
+                return;
 
-    int difficultyOption = GameSettings.instance.GetDifficultyTextOption(); 
-    bool showOverEnemies = difficultyOption == 0;
-    bool showOverPlayer = difficultyOption == 1;
+            if (difficultyText == null)
+            {
+                Debug.LogError($"[AI-DDA] difficultyText is NULL on {gameObject.name}! Check the prefab assignment.");
+                return;
+            }
 
-    if (showOverEnemies && !m_entity.CompareTag("Entity/Enemy"))
-    {
-        return;
-    }
+            Vector3 origin = transform.position + new Vector3(0, 2f, 0);
+            var instance = Instantiate(difficultyText, origin, Quaternion.identity);
 
-    if (showOverPlayer && !m_entity.CompareTag("Entity/Player"))
-    {
-        return;
-    }
+            if (instance.TryGetComponent(out DifficultyText text))
+            {
+                text.target = transform; 
+                text.SetMessageType(messageType);
+                Debug.Log($"[AI-DDA] DifficultyText instantiated at {origin} for {gameObject.name}");
+            }
+            else
+            {
+                Debug.LogError("[AI-DDA] Instantiated object does not have DifficultyText component!");
+            }
 
-    if (difficultyText == null)
-    {
-        Debug.LogError($"[AI-DDA] difficultyText is NULL on {gameObject.name}! Check the prefab assignment.");
-        return;
-    }
+            Destroy(instance, 4f);
+        }
 
-    Vector3 origin = transform.position + new Vector3(0, 2f, 0);
-    var instance = Instantiate(difficultyText, origin, Quaternion.identity);
-
-    if (instance.TryGetComponent(out DifficultyText text))
-    {
-        text.target = transform; // 🔹 Upewniamy się, że tekst śledzi gracza
-        text.SetText(
-            increased ? "Difficulty Increased" : "Difficulty Decreased",
-            increased ? text.increaseColor : text.decreaseColor
-        );
-        Debug.Log($"[AI-DDA] DifficultyText instantiated at {origin} for {gameObject.name}");
-    }
-    else
-    {
-        Debug.LogError("[AI-DDA] Instantiated object does not have DifficultyText component!");
-    }
-
-    Destroy(instance, 4f);
-}
+        private IEnumerator ResetDisplayFlag()
+        {
+            yield return new WaitForSeconds(0.5f);
+            isDisplayingDifficultyChange = false;
+        }
 
         protected virtual void Start()
         {

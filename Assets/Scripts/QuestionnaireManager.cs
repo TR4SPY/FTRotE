@@ -60,7 +60,7 @@ namespace AI_DDA.Assets.Scripts
             { "Killer", 0 }
         };
 
-        public Text playerTypeAttributeText; // Odniesienie do pola w StatsWindow
+        public Text playerTypeAttributeText;
 
         public string playerType = "Undefined";
 
@@ -71,20 +71,16 @@ namespace AI_DDA.Assets.Scripts
 
         public void ProcessAnswers()
         {
-            // Wyczyszczenie poprzednich wyników
             ResetScores();
 
-            // Przetwarzanie odpowiedzi z dropdownów
             AddScore(question1Dropdown.value);
             AddScore(question2Dropdown.value);
             AddScore(question3Dropdown.value);
             AddScore(question4Dropdown.value);
             AddScore(question5Dropdown.value);
 
-            // Określenie dominującego typu
             string dominantType = GetDominantPlayerType();
 
-            // Wyświetlenie wyniku w StatsWindow
             if (playerTypeAttributeText != null)
             {
                 playerTypeAttributeText.text = dominantType;
@@ -95,7 +91,6 @@ namespace AI_DDA.Assets.Scripts
                 Game.instance.currentCharacter.playerType = playerType;
             }
 
-            // Zamknij okno
             gameObject.SetActive(false);
         }
 

@@ -14,16 +14,12 @@ namespace AI_DDA.Assets.Scripts
         {
             if (string.IsNullOrEmpty(npcName))
             {
-                npcName = gameObject.name; // Ustaw nazwę na nazwę obiektu, jeśli nie została określona
+                npcName = gameObject.name;
             }
         }
 
-        /// <summary>
-        /// Loguje interakcję z tym NPC.
-        /// </summary>
         public void LogInteraction(Collider other)
         {
-            // Sprawdź, czy interakcja pochodzi od gracza lub Agenta AI
             bool isPlayer = other.CompareTag(GameTags.Player);
             bool isAI = other.GetComponent<AgentController>()?.isAI == true;
 
@@ -39,7 +35,6 @@ namespace AI_DDA.Assets.Scripts
                 return;
             }
 
-            // Jeśli interakcja pochodzi od gracza
             if (isPlayer)
             {
                 var entity = other.GetComponent<Entity>();
@@ -54,7 +49,6 @@ namespace AI_DDA.Assets.Scripts
                 }
             }
 
-            // Jeśli interakcja pochodzi od Agenta AI
             if (isAI)
             {
                 var entity = other.GetComponent<Entity>();

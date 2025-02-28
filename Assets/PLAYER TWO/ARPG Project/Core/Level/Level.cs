@@ -54,13 +54,10 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void RestoreState()
         {
-            // Sprawdź, czy scena istnieje w danych postaci
             if (!currentCharacter.scenes.TryGetScene(currentScene.name, out var scene)) return;
 
-            // Zaktualizuj dynamicznie listę entities
             UpdateTrackedEntities();
 
-            // Przywróć stan dla każdej zapisanej jednostki w scenie
             for (int i = 0; i < scene.entities.Length; i++)
             {
                 if (i >= entities.Length) break;
@@ -70,12 +67,10 @@ namespace PLAYERTWO.ARPGProject
 
                 if (scene.entities[i].health == 0)
                 {
-                    // Wyłącz obiekt, jeśli zdrowie wynosi 0
                     entities[i].gameObject.SetActive(false);
                 }
                 else
                 {
-                    // Upewnij się, że statystyki jednostki są poprawnie zainicjalizowane
                     if (entities[i].stats != null)
                     {
                         entities[i].stats.Initialize();
@@ -89,7 +84,6 @@ namespace PLAYERTWO.ARPGProject
                 }
             }
 
-            // Przywróć stan punktów nawigacyjnych
             for (int i = 0; i < scene.waypoints.Length; i++)
             {
                 if (i >= waypoints.waypoints.Count) break;
@@ -100,16 +94,12 @@ namespace PLAYERTWO.ARPGProject
                 waypoints.waypoints[i].active = scene.waypoints[i].active;
             }
 
-            // Przywróć bieżący punkt nawigacyjny, jeśli istnieje
             if (scene.currentWaypointIndex >= 0 &&
                 scene.currentWaypointIndex < waypoints.waypoints.Count)
                 waypoints.currentWaypoint = waypoints.waypoints[scene.currentWaypointIndex];
 
-            // Przywróć stan przedmiotów misji i innych obiektów w scenie
             RestoreQuestItems(scene);
             RestoreGameObjects(scene);
-
-            // Dostosuj statystyki istniejących jednostek do aktualnego poziomu trudności
             ApplyDifficultyToEntities();
         }
 
@@ -146,19 +136,10 @@ namespace PLAYERTWO.ARPGProject
         {
             Debug.Log("Initializing Level...");
 
-            // Inicjalizuj gracza
             InitializePlayer();
-
-            // Przywróć stan świata z zapisanego stanu
             RestoreState();
-
-            // Zaktualizuj listę przeciwników w scenie
             UpdateTrackedEntities();
-
-            // Zastosuj bieżące mnożniki trudności do wszystkich przeciwników
             ApplyDifficultyToEntities();
-
-            // Sprawdź, czy wszystkie dane misji w scenie są aktualne
             EvaluateQuestScene();
 
             Debug.Log("Level initialized successfully.");
@@ -166,36 +147,31 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void UpdateTrackedEntities()
         {
-            // Znajdź wszystkie obiekty z tagiem "Entity/Enemy" na warstwie "Entities"
             var foundEntities = Object.FindObjectsByType<Entity>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
                 .Where(entity => entity.CompareTag("Entity/Enemy") && entity.gameObject.layer == LayerMask.NameToLayer("Entities"))
                 .ToArray();
 
-            // Przypisz znalezione obiekty do listy entities
             entities = foundEntities;
 
-            // Debugowanie
-            Debug.Log($"Tracked {entities.Length} entities:");
+            //Debug.Log($"Tracked {entities.Length} entities:");
             foreach (var entity in entities)
             {
-                Debug.Log($" - {entity.name}");
+               // Debug.Log($" - {entity.name}");
             }
         }
 
         public virtual void AddEntityToTracking(Entity entity)
         {
-            // Sprawdź, czy przeciwnik jest poprawny
             if (entity == null || !entity.CompareTag("Entity/Enemy") || entity.gameObject.layer != LayerMask.NameToLayer("Entities"))
                 return;
 
-            // Dodaj przeciwnika do listy
             var tempList = entities.ToList();
             if (!tempList.Contains(entity))
             {
                 tempList.Add(entity);
                 entities = tempList.ToArray();
 
-                Debug.Log($"Entity {entity.name} added to tracking. Total entities: {entities.Length}");
+                // Debug.Log($"Entity {entity.name} added to tracking. Total entities: {entities.Length}");
             }
         }
 
@@ -203,7 +179,7 @@ namespace PLAYERTWO.ARPGProject
         /// <summary>
         /// Applies the current difficulty settings to all tracked entities.
         /// </summary>
-        protected virtual void ApplyDifficultyToEntities()
+        public virtual void ApplyDifficultyToEntities()
         {
             if (entities == null || entities.Length == 0)
             {
@@ -219,8 +195,10 @@ namespace PLAYERTWO.ARPGProject
                     {
                         entity.stats.dexterity = (int)(entity.stats.dexterity * DifficultyManager.Instance.CurrentDexterityMultiplier);
                         entity.stats.strength = (int)(entity.stats.strength * DifficultyManager.Instance.CurrentStrengthMultiplier);
+                        entity.stats.vitality = (int)(entity.stats.vitality * DifficultyManager.Instance.CurrentVitalityMultiplier);
+                        entity.stats.energy = (int)(entity.stats.energy * DifficultyManager.Instance.CurrentEnergyMultiplier);
 
-                        Debug.Log($"Adjusted stats for {entity.name}: Dexterity={entity.stats.dexterity}, Strength={entity.stats.strength}");
+                       // Debug.Log($"Adjusted stats for {entity.name}: Dexterity={entity.stats.dexterity}, Strength={entity.stats.strength}, Vitality={entity.stats.vitality}, Energy={entity.stats.energy}");
                     }
                     else
                     {

@@ -41,7 +41,7 @@ namespace AI_DDA.Assets.Scripts
             worker = new Worker(runtimeModel, BackendType.CPU);  // Changed to CPU for compatibility
             inputShape = new TensorShape(1, 4);  // Checking if model does not require [4] instead of [1,4]
 
-            Debug.Log("[AI-DDA] MLP Model has been loaded and is ready to predict.");   //  DEBUG - MLP has been loaded
+            // Debug.Log("[AI-DDA] MLP Model has been loaded and is ready to predict.");   //  DEBUG - MLP has been loaded
         }
 
         public float PredictDifficulty(float playerDeaths, float enemiesDefeated, float totalCombatTime, float potionsUsed)
@@ -60,7 +60,7 @@ namespace AI_DDA.Assets.Scripts
 
             float[] inputStats = new float[] { normDeaths, normEnemies, normCombatTime, normPotions };
 
-            Debug.Log($"[AI-DDA] Normalized Input -> Deaths: {normDeaths}, Enemies: {normEnemies}, Combat Time: {normCombatTime}, Potions: {normPotions}"); //  DEBUG - Normalization
+            // Debug.Log($"[AI-DDA] Normalized Input -> Deaths: {normDeaths}, Enemies: {normEnemies}, Combat Time: {normCombatTime}, Potions: {normPotions}"); //  DEBUG - Normalization
 
             using var inputTensor = new Tensor<float>(inputShape, inputStats);
             
@@ -78,7 +78,7 @@ namespace AI_DDA.Assets.Scripts
 
             float adjustedPrediction = Mathf.Clamp(rawPrediction * 5 + 5, 1.0f, 10.0f);
 
-            Debug.Log($"[AI-DDA] MLP raw prediction: {rawPrediction}, adjusted: {adjustedPrediction}"); //  DEBUG - MLP raw & adjusted prediction values
+            // Debug.Log($"[AI-DDA] MLP raw prediction: {rawPrediction}, adjusted: {adjustedPrediction}"); //  DEBUG - MLP raw & adjusted prediction values
 
             return adjustedPrediction;
         }

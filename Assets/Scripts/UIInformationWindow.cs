@@ -42,7 +42,7 @@ namespace AI_DDA.Assets.Scripts
         protected virtual void Start()
         {
             InitializeCallbacks();
-            ShowInformationList(); // Domyślnie pokaż listę informacji
+            ShowInformationList();
         }
 
         protected virtual void InitializeCallbacks()

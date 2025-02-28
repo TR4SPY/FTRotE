@@ -43,7 +43,7 @@ namespace PLAYERTWO.ARPGProject
             {
                 Initialize();
                 m_initialized = true;
-                Debug.Log($"Singleton<{typeof(T).Name}> initialized.");
+                // Debug.Log($"Singleton<{typeof(T).Name}> initialized.");
             }
         }
     }

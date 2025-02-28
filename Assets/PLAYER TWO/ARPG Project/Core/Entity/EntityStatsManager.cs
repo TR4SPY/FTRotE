@@ -261,11 +261,12 @@ namespace PLAYERTWO.ARPGProject
             // Zaznaczenie jako zainicjowane
             initialized = true;
 
-            // Dostowowanie statystyk tylko dla wrogów
+            /*
             if (gameObject.CompareTag("Entity/Enemy"))
             {
                 ApplyDifficultyModifiers();
             }
+            */
         }
 
         protected virtual void InitializeItems()
@@ -578,42 +579,6 @@ namespace PLAYERTWO.ARPGProject
             onLevelUp?.Invoke();
         }
 
-        protected virtual void ApplyDifficultyModifiers()
-        {
-            if (DifficultyManager.Instance == null)
-            {
-                Debug.LogError("DifficultyManager.Instance is null! Skipping stats adjustment.");
-                return;
-            }
-
-            if (dexterity <= 0 || strength <= 0 || vitality <= 0 || energy <= 0)
-            {
-                Debug.LogWarning($"Invalid stats for {gameObject.name}: Dexterity={dexterity}, Strength={strength}, Vitality={vitality}, Energy={energy}. Skipping adjustment.");
-                return;
-            }
-
-            int oldStrength = strength;
-            int oldDexterity = dexterity;
-            int oldVitality = vitality;
-            int oldEnergy = energy;
-
-            strength = Mathf.Max(1, (int)(strength * DifficultyManager.Instance.CurrentStrengthMultiplier));
-            dexterity = Mathf.Max(1, (int)(dexterity * DifficultyManager.Instance.CurrentDexterityMultiplier));
-            vitality = Mathf.Max(1, (int)(vitality * DifficultyManager.Instance.CurrentVitalityMultiplier)); 
-            energy = Mathf.Max(1, (int)(energy * DifficultyManager.Instance.CurrentEnergyMultiplier)); 
-
-            bool increased = (strength > oldStrength || dexterity > oldDexterity || vitality > oldVitality || energy > oldEnergy);
-            bool decreased = (strength < oldStrength || dexterity < oldDexterity || vitality < oldVitality || energy < oldEnergy);
-
-            EntityFeedback entityFeedback = GetComponent<EntityFeedback>();
-            if (entityFeedback != null && (increased || decreased))
-            {
-                entityFeedback.ShowDifficultyChange(increased);
-            }
-
-            Debug.Log($"Adjusted stats for {gameObject.name}: Strength={strength}, Dexterity={dexterity}, Vitality={vitality}, Energy={energy}");
-        }
-
         /// <summary>
         /// Add experience points to the Entity.
         /// </summary>
@@ -628,7 +593,6 @@ namespace PLAYERTWO.ARPGProject
             if (experience >= nextLevelExp)
                 LevelUp();
 
-            // Sprawdzenie poziomu po dodaniu doświadczenia
             // PlayerBehaviorLogger.Instance.CheckPlayerLevel();
             PlayerBehaviorLogger.Instance.achievementManager?.CheckAchievements(PlayerBehaviorLogger.Instance);
         }

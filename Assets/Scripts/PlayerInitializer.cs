@@ -8,7 +8,6 @@ namespace AI_DDA.Assets.Scripts
     {
         private void Start()
         {
-            // Assign the PlayerBehaviorLogger to the DifficultyManager
             var difficultyManager = Object.FindFirstObjectByType<DifficultyManager>();
             if (difficultyManager != null)
             {
@@ -19,8 +18,18 @@ namespace AI_DDA.Assets.Scripts
             {
                 Debug.LogError("DifficultyManager not found in the scene!");
             }
+            
+            var rlModel = Object.FindFirstObjectByType<RLModel>();
+            if (rlModel != null)
+            {
+                rlModel.SetPlayerLogger(GetComponent<PlayerBehaviorLogger>());
+                Debug.Log("[AI-DDA] PlayerBehaviorLogger assigned to RLModel dynamically.");
+            }
+            else
+            {
+                Debug.LogError("[AI-DDA] RLModel not found in the scene!");
+            }
 
-            // Load logs for the current character
             var playerLogger = GetComponent<PlayerBehaviorLogger>();
             if (playerLogger != null)
             {

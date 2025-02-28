@@ -26,7 +26,6 @@ namespace AI_DDA.Assets.Scripts
 
         private void Start()
         {
-            // Inicjalizacja Collidera
             InitializeCollider();
 
 #if UNITY_2023_1_OR_NEWER
@@ -46,7 +45,7 @@ namespace AI_DDA.Assets.Scripts
             bool isPlayer = other.CompareTag(GameTags.Player);
             bool isAI = other.GetComponent<AgentController>()?.isAI == true;
 
-            if (!isPlayer && !isAI) return; // Ignoruj, jeśli to nie gracz ani AI Agent
+            if (!isPlayer && !isAI) return;
 
             if (other.CompareTag("Entity/AI_Agent"))
             {
@@ -59,11 +58,10 @@ namespace AI_DDA.Assets.Scripts
                         return;
                     }
 
-                    // Sprawdzenie, czy agent rzeczywiście się ruszał w stronę tej strefy
                     if (agentController.GetTargetName() == zoneName)
                     {
                         Debug.Log($"[ZoneTrigger] AI Agent reached and confirmed discovery of '{zoneName}'.");
-                        agentController.DiscoverZone(zoneName, true); // Ostateczna weryfikacja odkrycia
+                        agentController.DiscoverZone(zoneName, true);
                     }
                 }
             }
@@ -74,7 +72,6 @@ namespace AI_DDA.Assets.Scripts
                 return;
             }
 
-            // Jeśli obiekt to gracz
             if (isPlayer)
             {
                 var currentCharacter = Game.instance.currentCharacter;
@@ -97,13 +94,10 @@ namespace AI_DDA.Assets.Scripts
                     return;
                 }
 
-                // Dodaj strefę do odwiedzonych
                 currentCharacter.visitedZones.Add(zoneName);
 
-                // Zapis stanu gry
                 GameSave.instance.Save();
 
-                // Logowanie odkrycia strefy
                 var entity = other.GetComponent<Entity>();
                 if (entity != null)
                 {
@@ -111,17 +105,15 @@ namespace AI_DDA.Assets.Scripts
                 }
                 //PlayerBehaviorLogger.Instance?.LogAreaDiscovered(zoneName);
 
-                // Wyświetlenie informacji o strefie w GUI
                 guiZoneHUD?.ShowZone(zoneStatus, zoneName, zoneDescription);
 
                 Debug.Log($"Zone '{zoneName}' discovered and saved for character '{currentCharacter.name}'.");
             }
 
-            // Jeśli obiekt to AI Agent
             if (isAI)
             {
                 Debug.Log($"AI Agent discovered zone '{zoneName}'.");
-                PlayerBehaviorLogger.Instance?.LogAgentZoneDiscovery(zoneName); // Logowanie dla AI
+                PlayerBehaviorLogger.Instance?.LogAgentZoneDiscovery(zoneName);
             }
         }
     }

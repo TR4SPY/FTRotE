@@ -141,7 +141,7 @@ namespace PLAYERTWO.ARPGProject
                       $"Vitality={DifficultyManager.Instance.CurrentVitalityMultiplier}, " +
                       $"Energy={DifficultyManager.Instance.CurrentEnergyMultiplier}");
 
-            DifficultyManager.Instance.UpdateAllEnemyStats();
+            // DifficultyManager.Instance.UpdateAllEnemyStats();
         }
 
         public void LoadLogsForCharacter(CharacterInstance character)
@@ -167,13 +167,11 @@ namespace PLAYERTWO.ARPGProject
                 }
             }
 
-            // Wczytanie całkowitego czasu gry
             if (Game.instance.currentCharacter != null)
             {
                 Game.instance.currentCharacter.totalPlayTime = character.totalPlayTime;
             }
 
-            // Wczytaj listę osiągnięć i zapisz liczbę zdobytych osiągnięć
             PlayerBehaviorLogger.Instance.unlockedAchievements = new List<string>(character.unlockedAchievements);
             int achievementsUnlocked = PlayerBehaviorLogger.Instance.unlockedAchievements.Count;
 
@@ -188,7 +186,6 @@ namespace PLAYERTWO.ARPGProject
                 achievementManager.CheckAchievements(PlayerBehaviorLogger.Instance);
             }
 
-            // Wczytywanie statystyk gracza
             PlayerBehaviorLogger.Instance.playerDeaths = character.playerDeaths;
             PlayerBehaviorLogger.Instance.enemiesDefeated = character.enemiesDefeated;
             PlayerBehaviorLogger.Instance.totalCombatTime = character.totalCombatTime;
@@ -199,8 +196,7 @@ namespace PLAYERTWO.ARPGProject
             PlayerBehaviorLogger.Instance.zonesDiscovered = character.zonesDiscovered;
             PlayerBehaviorLogger.Instance.currentDynamicPlayerType = character.currentDynamicPlayerType;
 
-            // Wczytaj łączny czas gry
-            PlayerBehaviorLogger.Instance.lastUpdateTime = Time.time; // Inicjalizacja czasu
+            PlayerBehaviorLogger.Instance.lastUpdateTime = Time.time;
 
             Debug.Log($"Loaded Player Behavior Logs for {character.name}: " +
                     $"Deaths={PlayerBehaviorLogger.Instance.playerDeaths}, " +
@@ -246,10 +242,8 @@ namespace PLAYERTWO.ARPGProject
                 return;
             }
 
-            // Zapisz całkowity czas gry
             character.totalPlayTime += Time.time - PlayerBehaviorLogger.Instance.lastUpdateTime;
 
-            // Zapisz podstawowe statystyki
             character.playerDeaths = PlayerBehaviorLogger.Instance.playerDeaths;
             character.enemiesDefeated = PlayerBehaviorLogger.Instance.enemiesDefeated;
             character.totalCombatTime = PlayerBehaviorLogger.Instance.totalCombatTime;
@@ -259,11 +253,9 @@ namespace PLAYERTWO.ARPGProject
             character.potionsUsed = PlayerBehaviorLogger.Instance.potionsUsed;
             character.zonesDiscovered = PlayerBehaviorLogger.Instance.zonesDiscovered;
 
-            // Zapisanie liczby zdobytych osiągnięć zamiast pełnej listy
             character.unlockedAchievements = new List<string>(PlayerBehaviorLogger.Instance.unlockedAchievements);
             int achievementsUnlocked = character.unlockedAchievements.Count;
 
-            // Zapisanie typu gracza
             character.playerType = QuestionnaireManager.Instance?.playerType ?? "Undefined";
             character.currentDynamicPlayerType = PlayerBehaviorLogger.Instance?.currentDynamicPlayerType ?? "Unknown";
 

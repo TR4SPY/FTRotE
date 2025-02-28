@@ -20,7 +20,6 @@ namespace PLAYERTWO.ARPGProject
 
         private void Awake()
         {
-            // Ustawienie warstwy "Terrain" w momencie uruchomienia gry
             groundLayer = 1 << LayerMask.NameToLayer("Terrain");
         }
 
@@ -29,28 +28,24 @@ namespace PLAYERTWO.ARPGProject
             if (source == null)
                 return;
 
-            // Sprawdza, czy jest teren
             Terrain terrain = Terrain.activeTerrain;
             bool foundGround = false;
             Vector3 newPosition = transform.position;
 
             if (terrain != null)
             {
-                // Pobiera wysokość terenu w miejscu gracza
                 float terrainHeight = terrain.SampleHeight(source.position);
                 newPosition = new Vector3(source.position.x, terrainHeight + groundOffset, source.position.z);
                 foundGround = true;
             }
 
-            // Jeśli nie znaleziono gruntu w terenie, wykonaj Raycast w dół, aby znaleźć inne powierzchnie
             if (Physics.Raycast(source.position, Vector3.down, out RaycastHit hit, maxGroundDistance, groundLayer))
             {
                 newPosition = hit.point + Vector3.up * groundOffset;
-                transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal); // Dopasowanie do nachylenia terenu
+                transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
                 foundGround = true;
             }
 
-            // Jeśli znaleziono grunt, ustaw nową pozycję
             if (foundGround)
             {
                 transform.position = newPosition;

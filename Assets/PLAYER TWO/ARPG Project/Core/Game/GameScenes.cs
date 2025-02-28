@@ -109,31 +109,26 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual IEnumerator LoadSceneRoutine(string scene, bool setAsCharacterScene)
         {
+            // 1. Rozpoczynamy asynchroniczne wczytywanie sceny
             var operation = SceneManager.LoadSceneAsync(scene);
-
             loadingScreen.SetActive(true);
 
+            // 2. Czekamy, aż scene się w pełni załaduje
             while (!operation.isDone)
             {
                 loadingSlider.value = operation.progress;
                 yield return null;
             }
 
+            // 3. Jeśli ma to być główna scena dla postaci - ustawiamy
             if (setAsCharacterScene)
                 Game.instance.currentCharacter.currentScene = scene;
 
-            // Jeśli to scena "Title", resetuj trudność
-            if (scene == "Title")
-            {
-                if (DifficultyManager.Instance != null && Game.instance.currentCharacter == null)
-                {
-                    DifficultyManager.Instance.ResetDifficulty();
-                    Debug.Log("Difficulty reset in Title scene.");
-                }
-            }
-
+            // (opcjonalnie) Teleport gracza w zaplanowane miejsce
             TeleportPlayer();
             ClearNextSceneCoordinates();
+
+            // Schowaj loading screen i odpal fadeIn, dźwięki itp.
             loadingScreen.SetActive(false);
             Fader.instance.FadeIn();
             GameAudio.instance.PlayEffect(loadFinishClip);

@@ -12,14 +12,12 @@ namespace AI_DDA.Assets.Scripts
 
         public void CheckAchievements(PlayerBehaviorLogger logger)
         {
-            // Osiągnięcie: Pokonanie pierwszego wroga
             if (!logger.unlockedAchievements.Contains("First Blood") && logger.enemiesDefeated >= 1)
             {
                 logger.LogAchievement("First Blood");
                 ShowAchievementInUI("Achievement Unlocked!", "First Blood", "You defeated your first enemy.");
             }
 
-            // Osiągnięcie: Zabicie 20 przeciwników
             if (!logger.unlockedAchievements.Contains("Monster Slayer") && logger.enemiesDefeated >= 20)
             {
                 logger.LogAchievement("Monster Slayer");
@@ -36,7 +34,6 @@ namespace AI_DDA.Assets.Scripts
                 }
             }
 
-            // Osiągnięcie: Wykonanie 4 questów
             if (!logger.unlockedAchievements.Contains("Quest Hero") && logger.questsCompleted >= 4)
             {
                 logger.LogAchievement("Quest Hero");
@@ -58,8 +55,6 @@ namespace AI_DDA.Assets.Scripts
             }
         }
 
-
-        // Kolejka przechowująca osiągnięcia do wyświetlenia
         private Queue<(string status, string name, string description)> achievementQueue = new Queue<(string, string, string)>();
 
         public void ShowAchievementInUI(string status, string name, string description)
@@ -75,7 +70,6 @@ namespace AI_DDA.Assets.Scripts
                 if (GUIAchievementsHUD == null)
                 {
                     Debug.LogWarning($"GUIAchievementsHUD is NULL. Queuing achievement: {name}");
-                    // Dodaj osiągnięcie do kolejki, jeśli GUI nie jest gotowe
                     achievementQueue.Enqueue((status, name, description));
                     return;
                 }
@@ -85,7 +79,6 @@ namespace AI_DDA.Assets.Scripts
             GUIAchievementsHUD.ShowAchievement(status, name, description);
         }
 
-        // Obsługa kolejki w każdej klatce gry
         private void Update()
         {
             if (GUIAchievementsHUD != null && achievementQueue.Count > 0)
@@ -112,7 +105,7 @@ namespace AI_DDA.Assets.Scripts
                 }
                 else
                 {
-                    Debug.Log("GUIAchievementsHUD successfully initialized in Awake.");
+                   // Debug.Log("GUIAchievementsHUD successfully initialized in Awake.");
                 }
             }
         }

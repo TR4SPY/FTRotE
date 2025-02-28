@@ -14,8 +14,10 @@ namespace AI_DDA.Assets.Scripts
         private float adjustedDifficulty;
         private PlayerBehaviorLogger playerLogger;
 
-        private float lastDecisionTime = 0f;  //    Last decision time of RL
-        private float decisionInterval = 5f; // Interval for RL to make decisions (default: every 5 seconds)
+        private float lastDecisionTime = 0f;
+        private float decisionInterval = 5f;
+        private float lastLogTime = 0f;
+        private float logCooldown = 10f; 
 
         protected override void Awake()
         {
@@ -44,7 +46,13 @@ namespace AI_DDA.Assets.Scripts
             }
 
             playerLogger = PlayerBehaviorLogger.Instance;
-            Debug.Log("[AI-DDA] RLModel successfully found PlayerBehaviorLogger.");
+            // Debug.Log("[AI-DDA] RLModel successfully found PlayerBehaviorLogger.");
+        }
+
+        public void SetPlayerLogger(PlayerBehaviorLogger logger)
+        {
+            playerLogger = logger;
+            Debug.Log("[AI-DDA] PlayerBehaviorLogger assigned to RLModel.");
         }
 
         public override void CollectObservations(VectorSensor sensor)
@@ -67,9 +75,14 @@ namespace AI_DDA.Assets.Scripts
 
             float correction = actions.ContinuousActions[0];
             adjustedDifficulty = Mathf.Clamp(currentDifficulty + correction, 1f, 10f);
+
             DifficultyManager.Instance.SetDifficultyFromAI(adjustedDifficulty);
 
-            Debug.Log($"[AI-DDA] MLP prediction: {currentDifficulty}, RL adjustment: {adjustedDifficulty}");
+            if (Time.time - lastLogTime >= logCooldown)
+            {
+                Debug.Log($"[AI-DDA] MLP prediction: {currentDifficulty}, RL adjustment: {adjustedDifficulty}");
+                lastLogTime = Time.time;
+            }
 
             float error = Mathf.Abs(currentDifficulty - adjustedDifficulty);
             float reward = Mathf.Clamp(1.0f - error / 10f, 0f, 1f);
@@ -81,20 +94,21 @@ namespace AI_DDA.Assets.Scripts
             adjustedDifficulty = currentDifficulty;
         }
 
-        public float AdjustDifficulty(float baseDifficulty)
+        public float GetCurrentDifficulty()
         {
-            // Reinforcement Learning time limiter to limit decision spamming
-            if (Time.time - lastDecisionTime >= decisionInterval)
-            {
-                lastDecisionTime = Time.time;
-                currentDifficulty = baseDifficulty;
-                adjustedDifficulty = baseDifficulty;
-                RequestDecision();
-
-                        // Debug.Log($"[AI-DDA] Adjusting difficulty. Current: {currentDifficulty}, Adjusted: {adjustedDifficulty}, Character: {Game.instance.currentCharacter.name}"); //  DEBUG - In case of issues with currentCharacter ID
-            }
-
+            Debug.Log($"[AI-DDA] GetCurrentDifficulty() called, returning: {adjustedDifficulty}");
             return adjustedDifficulty;
+        }
+
+        public void AdjustDifficulty(float baseDifficulty)
+        {
+            lastDecisionTime = Time.time;
+            currentDifficulty = baseDifficulty;
+            adjustedDifficulty = baseDifficulty;
+
+            RequestDecision();  
+
+            // return adjustedDifficulty;
         }
     }
 }

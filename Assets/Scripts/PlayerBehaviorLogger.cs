@@ -109,6 +109,9 @@ namespace AI_DDA.Assets.Scripts
     [Tooltip("Time of last update.")]
     public float lastUpdateTime;
 
+    private float lastPredictionTime = 0f;
+    private float predictionCooldown = 2f;
+
     private void Start()
         {
             UpdatePlayerType();
@@ -153,7 +156,15 @@ namespace AI_DDA.Assets.Scripts
                 return;
             }
 
-            Debug.Log($"[AI-DDA] Player Stats -> Deaths: {playerDeaths}, Enemies: {enemiesDefeated}, Combat Time: {totalCombatTime}, Potions: {potionsUsed}");
+            // Debug.Log($"[AI-DDA] Player Stats -> Deaths: {playerDeaths}, Enemies: {enemiesDefeated}, Combat Time: {totalCombatTime}, Potions: {potionsUsed}");   //  DEBUG
+
+            if (Time.time - lastPredictionTime < predictionCooldown)
+            {
+                // Debug.Log("[AI-DDA] Skipping duplicate difficulty prediction.");
+                return;
+            }
+            
+            lastPredictionTime = Time.time;
 
             // Multilayer Perceptron ONNX - 1st Model Prediction
             float predictedDifficulty = AIModel.Instance.PredictDifficulty(
@@ -164,12 +175,7 @@ namespace AI_DDA.Assets.Scripts
             );
 
             // Reinforcement Learning ONNX - 2nd Model Correction
-            float adjustedDifficulty = RLModel.Instance.AdjustDifficulty(predictedDifficulty);
-
-            // DifficultyManager - Difficulty update
-            DifficultyManager.Instance.SetDifficultyFromAI(adjustedDifficulty);
-
-            Debug.Log($"[AI-DDA] MLP Prediction: {predictedDifficulty}, RL Correction: {adjustedDifficulty}");    //  DEBUG - MLP & RL adjusting outputs
+            RLModel.Instance.AdjustDifficulty(predictedDifficulty);
         }
 
         public void LogDifficultyMultiplier()
@@ -203,7 +209,7 @@ namespace AI_DDA.Assets.Scripts
             UpdatePlayerType();
             achievementManager?.CheckAchievements(this);
             PredictAndApplyDifficulty(); 
-            DifficultyManager.Instance?.UpdateAllEnemyStats();
+            // DifficultyManager.Instance?.UpdateAllEnemyStats();
         }
 
         public void LogPlayerDeath(Entity entity)
@@ -217,7 +223,7 @@ namespace AI_DDA.Assets.Scripts
 
             UpdatePlayerType();
             achievementManager?.CheckAchievements(this);    
-            DifficultyManager.Instance?.UpdateAllEnemyStats();
+            // DifficultyManager.Instance?.UpdateAllEnemyStats();
         }
 
         public void LogAreaDiscovered(Entity entity, string zoneName)

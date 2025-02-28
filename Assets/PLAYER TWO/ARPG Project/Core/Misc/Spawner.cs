@@ -27,7 +27,7 @@ namespace PLAYERTWO.ARPGProject
         public Entity[] entities;
 
         [Tooltip("The maximum number of active entities.")]
-        public int maxEntities = 20; // Limit aktywnych przeciwników
+        public int maxEntities = 20;
 
         protected Entity m_tempEntity;
         protected List<Entity> m_entities = new();
@@ -53,8 +53,7 @@ namespace PLAYERTWO.ARPGProject
         {
             if (m_entities.Count >= maxEntities)
             {
-                Debug.Log("Max entity count reached. Spawn aborted.");
-                return; // Nie spawnuj więcej, jeśli osiągnięto limit
+                return;
             }
 
             var random = Random.insideUnitSphere;
@@ -62,77 +61,37 @@ namespace PLAYERTWO.ARPGProject
             var direction = new Vector3(random.x, 0, random.y);
             var position = transform.position + direction * radius;
 
-            // Użyj Physics.Raycast, aby upewnić się, że pozycja jest nad terenem
-            if (Physics.Raycast(position + Vector3.up * 10f, Vector3.down, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Terrain")))
+            if (Physics.Raycast(position + Vector3.up * 10f, Vector3.down, out RaycastHit hit,
+                                Mathf.Infinity, LayerMask.GetMask("Terrain")))
             {
-                position = hit.point + Vector3.up * 0.5f; // Ustaw pozycję nad powierzchnią
+                position = hit.point + Vector3.up * 0.5f;
             }
             else
             {
                 Debug.LogWarning("No terrain detected for spawning. Skipping spawn.");
-                return; // Anuluj spawn, jeśli nie znaleziono terenu
+                return;
             }
 
             var rotation = Quaternion.LookRotation(direction, Vector3.up);
             m_tempEntity = GetRandomEntity();
-
-            // Instancjuj jednostkę
             var entity = Instantiate(m_tempEntity, position, rotation);
-
-            // Dodaj do listy w Level.cs
             Level.instance.AddEntityToTracking(entity);
 
-            // Upewnij się, że DifficultyManager.Instance istnieje
-            if (DifficultyManager.Instance == null)
+            if (entity.stats != null)
             {
-                Debug.LogWarning("DifficultyManager.Instance is null. Enemy stats not adjusted.");
+                entity.stats.Initialize();
+                entity.stats.isNewlySpawned = true;
+                DifficultyManager.Instance.ApplyCurrentDifficultyToNewEnemy(entity);
             }
             else
             {
-                // Dostosowanie trudności
-                if (entity.stats != null)
-                {
-                    entity.stats.dexterity = entity.stats.dexterity > 0 
-                        ? Mathf.Max(1, (int)(entity.stats.dexterity * DifficultyManager.Instance.CurrentDexterityMultiplier))
-                        : 10; // Domyślna wartość, jeśli brak inicjalizacji
-
-                    entity.stats.strength = entity.stats.strength > 0 
-                        ? Mathf.Max(1, (int)(entity.stats.strength * DifficultyManager.Instance.CurrentStrengthMultiplier))
-                        : 5; // Domyślna wartość, jeśli brak inicjalizacji
-
-                    entity.stats.vitality = entity.stats.vitality > 0 
-                        ? Mathf.Max(1, (int)(entity.stats.vitality * DifficultyManager.Instance.CurrentVitalityMultiplier))
-                        : 8; // Domyślna wartość, jeśli brak inicjalizacji
-
-                    entity.stats.energy = entity.stats.energy > 0 
-                        ? Mathf.Max(1, (int)(entity.stats.energy * DifficultyManager.Instance.CurrentEnergyMultiplier))
-                        : 6; // Domyślna wartość, jeśli brak inicjalizacji
-
-                    // Automatyczna aktualizacja statystyk
-                    entity.stats.Recalculate();
-
-                    // Oznacz przeciwnika jako "starego" po spawnie, aby nie pokazywać DifficultyText
-                    entity.stats.isNewlySpawned = false;
-
-                    Debug.Log($"Spawned enemy {entity.name}: " +
-                        $"Dexterity={entity.stats.dexterity}, " +
-                        $"Strength={entity.stats.strength}, " +
-                        $"Vitality={entity.stats.vitality}, " +
-                        $"Energy={entity.stats.energy}, " +
-                        $"Multipliers: Dexterity={DifficultyManager.Instance.CurrentDexterityMultiplier}, " +
-                        $"Strength={DifficultyManager.Instance.CurrentStrengthMultiplier}, " +
-                        $"Vitality={DifficultyManager.Instance.CurrentVitalityMultiplier}, " +
-                        $"Energy={DifficultyManager.Instance.CurrentEnergyMultiplier}");
-                }
-                else
-                {
-                    Debug.LogWarning($"Entity {entity.name} has no stats. Difficulty adjustment skipped.");
-                }
+                Debug.LogWarning($"[AI-DDA] Spawned entity {entity.name} has no stats. Skipping difficulty adjustment.");
             }
 
-            // Dodaj przeciwnika do listy lokalnej i nasłuchuj śmierci
             m_entities.Add(entity);
             entity.onDie.AddListener(() => OnEntityDie(entity));
+
+            Debug.Log($"[AI-DDA] Spawned enemy {entity.name} at {position}. Current difficulty: {RLModel.Instance.GetCurrentDifficulty()}");
         }
 
         protected virtual void OnEntityDie(Entity entity)
@@ -149,7 +108,7 @@ namespace PLAYERTWO.ARPGProject
         {
             yield return m_waitForRespawnDelay;
 
-            if (m_entities.Count < maxEntities) // Sprawdzaj limit przed dodaniem
+            if (m_entities.Count < maxEntities)
                 Spawn();
         }
 

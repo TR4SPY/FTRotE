@@ -31,7 +31,7 @@ namespace AI_DDA.Assets.Scripts
                 m_group = gameObject.AddComponent<CanvasGroup>();
 
             m_group.alpha = 0;
-            m_group.interactable = false; // Blokuje interakcje w trakcie animacji
+            m_group.interactable = false;
             m_group.blocksRaycasts = false;
         }
 
@@ -46,7 +46,7 @@ namespace AI_DDA.Assets.Scripts
             achievementName.text = name;
             achievementDescription.text = description;
 
-            HUDManager.Instance.RequestDisplay(this); // Dodanie do kolejki
+            HUDManager.Instance.RequestDisplay(this);
         }
 
         public void Show()
@@ -77,7 +77,7 @@ namespace AI_DDA.Assets.Scripts
             m_group.alpha = 1;
             yield return m_waitForHideDelay;
 
-            Hide(); // Automatyczne ukrywanie po czasie
+            Hide();
         }
 
         protected IEnumerator HideRoutine()
@@ -94,9 +94,9 @@ namespace AI_DDA.Assets.Scripts
 
     m_group.alpha = 0;
 
-    yield return new WaitForSeconds(0.1f); // Krótki bufor czasowy
+    yield return new WaitForSeconds(0.1f);
 
-    HUDManager.Instance.OnHUDHidden(this); // Informacja o zakończeniu
+    HUDManager.Instance.OnHUDHidden(this);
 }
 
 

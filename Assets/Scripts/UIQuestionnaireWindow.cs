@@ -36,14 +36,13 @@ namespace AI_DDA.Assets.Scripts
         [Tooltip("The Audio Clip that plays when starting the game.")]
         public AudioClip startGameAudio;
 
-        private GamePause gamePause; // Local reference to GamePause
+        private GamePause gamePause;
 
         protected GameAudio m_audio => GameAudio.instance;
 
         protected virtual void Start()
         {
             languageList.SetActive(false);
-             // Find GamePause in the scene using the modern method
             if (gamePause == null)
             {
                 gamePause = Object.FindFirstObjectByType<GamePause>();
@@ -68,16 +67,14 @@ namespace AI_DDA.Assets.Scripts
                 Debug.Log("Questionnaire already completed for this character. Skipping.");
                 questionnaireList.SetActive(false);
                 languageList.SetActive(false);
-                PauseGame(false); // Ensure the game is unpaused
+                PauseGame(false);
             }
             else
             {
-                // Delay the game pause to ensure everything is loaded
-                StartCoroutine(ShowQuestionnaireWithDelay()); // Delay for the game to load
+                StartCoroutine(ShowQuestionnaireWithDelay());
             }
         }
 
-        // Mark the questionnaire as completed when the "All Done" button is clicked
         protected virtual void InitializeCallbacks()
         {
             allDoneButton.onClick.AddListener(() =>
@@ -86,13 +83,13 @@ namespace AI_DDA.Assets.Scripts
 
                 if (currentCharacter != null)
                 {
-                    currentCharacter.questionnaireCompleted = true; // Mark as completed
-                    GameSave.instance.Save(); // Save the updated state
+                    currentCharacter.questionnaireCompleted = true;
+                    GameSave.instance.Save();
                     Debug.Log($"Questionnaire completed for character: {currentCharacter.name}");
                 }
                 
                 questionnaireList.SetActive(false);
-                PauseGame(false); // Unpause the game
+                PauseGame(false);
             });
 
             languageButton.onClick.AddListener(ShowLanguageList);
@@ -104,17 +101,14 @@ namespace AI_DDA.Assets.Scripts
 
         private IEnumerator ShowQuestionnaireWithDelay()
         {
-            // Minimalny czas oczekiwania
             float minWaitTime = 1f;
             float startTime = Time.realtimeSinceStartup;
 
-            // Czekaj, aż gra będzie gotowa
             while (!IsGameReady())
             {
                 yield return null;
             }
 
-            // Jeśli minimalny czas nie minął, poczekaj dodatkowe sekundy
             float elapsedTime = Time.realtimeSinceStartup - startTime;
             if (elapsedTime < minWaitTime)
             {
@@ -124,7 +118,7 @@ namespace AI_DDA.Assets.Scripts
             Debug.Log("Showing questionnaire for the first time.");
             questionnaireList.SetActive(true);
             InitializeCallbacks();
-            PauseGame(true); // Pause the game for the questionnaire
+            PauseGame(true);
         }
 
         private bool IsGameReady()

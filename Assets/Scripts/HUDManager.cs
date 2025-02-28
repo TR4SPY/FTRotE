@@ -21,7 +21,7 @@ public class HUDManager : MonoBehaviour
                 if (instance == null)
                 {
                     instance = new GameObject("HUDManager").AddComponent<HUDManager>();
-                    Debug.LogWarning("HUDManager was not found in the scene. A new instance has been created.");
+                    // Debug.LogWarning("HUDManager was not found in the scene. A new instance has been created.");
                 }
             }
             return instance;
@@ -30,14 +30,14 @@ public class HUDManager : MonoBehaviour
 
     private Queue<IHUD> hudQueue = new Queue<IHUD>();
     private IHUD activeHUD = null;
-    private bool isAnimating = false; // Blokada animacji
+    private bool isAnimating = false;
 
     public void RequestDisplay(IHUD hud)
     {
         if (activeHUD == hud || hudQueue.Contains(hud))
         {
             Debug.Log($"[HUDManager] HUD '{hud}' is already queued or active.");
-            return; // Zapobiega duplikacji
+            return;
         }
 
         if (activeHUD == null && !isAnimating)
@@ -58,12 +58,12 @@ public class HUDManager : MonoBehaviour
         if (activeHUD == hud)
         {
             activeHUD = null;
-            isAnimating = false; // Odblokowanie po zakończeniu animacji
+            isAnimating = false;
 
             if (hudQueue.Count > 0)
             {
                 activeHUD = hudQueue.Dequeue();
-                isAnimating = true; // Ponownie blokuje przed kolejnym HUD
+                isAnimating = true;
                 activeHUD.Show();
             }
         }

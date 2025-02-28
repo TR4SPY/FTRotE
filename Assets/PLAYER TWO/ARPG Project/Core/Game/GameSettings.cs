@@ -41,7 +41,7 @@ namespace PLAYERTWO.ARPGProject
 
         public bool GetSaveLogs()
         {
-            return PlayerPrefs.GetInt(SaveLogsKey, 1) == 1; // Domyślnie włączone (1)
+            return PlayerPrefs.GetInt(SaveLogsKey, 1) == 1; // Turned ON in default (1)
         }
 
         public void SetSaveLogs(bool isEnabled)
@@ -50,7 +50,6 @@ namespace PLAYERTWO.ARPGProject
             PlayerPrefs.Save();
         }
 
-        // Zabezpieczenie przed brakiem PostProcessToggler
         protected PostProcessToggler m_postProcess
         {
             get
@@ -134,7 +133,6 @@ namespace PLAYERTWO.ARPGProject
 {
     int option = GetDifficultyTextOption();
 
-    // 🔹 Usuwamy stare teksty przed zmianą opcji
     List<DifficultyText> textsToRemove = new List<DifficultyText>(DifficultyText.activeTexts);
     foreach (var text in textsToRemove)
     {
@@ -145,7 +143,7 @@ namespace PLAYERTWO.ARPGProject
 
         if (shouldBeRemoved)
         {
-            Destroy(text.gameObject); // 🔹 Usuwamy stare napisy, zamiast tylko je wyłączać
+            Destroy(text.gameObject);
         }
     }
 
@@ -157,7 +155,7 @@ namespace PLAYERTWO.ARPGProject
             PlayerPrefs.SetInt("DisplayDamageText", value ? 1 : 0);
             PlayerPrefs.Save();
             
-            DamageText.ToggleAll(value); // 🔹 Włącza/wyłącza DamageText w całej grze
+            DamageText.ToggleAll(value);
         }
 
         protected virtual void SetScreenResolution(int option)

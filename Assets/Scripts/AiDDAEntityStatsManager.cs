@@ -31,7 +31,6 @@ namespace AI_DDA.Assets.Scripts
         {
             base.Start();
 
-            // Inicjalizacja bazowych mnożników dla AI-DDA
             DifficultyMultipliers["Strength"] = 1.0f;
             DifficultyMultipliers["Dexterity"] = 1.0f;
             DifficultyMultipliers["Vitality"] = 1.0f;
@@ -79,7 +78,7 @@ namespace AI_DDA.Assets.Scripts
             vitality = Mathf.Max(1, (int)(vitality * vitalityMultiplier));
             energy = Mathf.Max(1, (int)(energy * energyMultiplier));
 
-            Recalculate(); // Automatyczne przeliczenie reszty statystyk
+            Recalculate();
         }
     }
 }
