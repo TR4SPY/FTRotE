@@ -87,18 +87,29 @@ namespace PLAYERTWO.ARPGProject
         {
             if (!entity) return;
 
+            int finalExperience = data.experience;
+            int finalCoins = data.coins;
+
+            if (data.extraRewards && Game.instance.currentCharacter.currentDynamicPlayerType == "Achiever")
+            {
+                finalExperience += data.additionalExperience;
+                finalCoins += data.additionalCoins;
+            }
+
             if (entity.stats)
-                entity.stats.AddExperience(data.experience);
+                entity.stats.AddExperience(finalExperience);
 
             if (entity.inventory)
             {
-                entity.inventory.instance.money += data.coins;
+                entity.inventory.instance.money += finalCoins;
 
                 foreach (var item in data.items)
                 {
                     entity.inventory.instance.TryAddItem(item.CreateItemInstance());
                 }
             }
+
+            Debug.Log($"[AI-DDA] Reward granted: {finalExperience} EXP, {finalCoins} coins to {entity.name}");
         }
 
         /// <summary>

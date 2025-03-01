@@ -21,6 +21,9 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The list of Quests this Quest Giver offers to the Player.")]
         public Quest[] quests;
 
+        [Tooltip("Additional quests available only for Achiever-type Players.")]
+        public Quest[] additionalQuests;
+
         [Space(10)]
         public UnityEvent<State> onStateChange;
 
@@ -71,7 +74,9 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         public virtual Quest CurrentQuest()
         {
-            foreach (var quest in quests)
+            var isAchiever = (Game.instance.currentCharacter.currentDynamicPlayerType == "Achiever");
+
+            foreach (var quest in isAchiever ? additionalQuests.Concat(quests) : quests)
             {
                 if (!m_manager.TryGetQuest(quest, out var instance) || !instance.completed)
                     return quest;

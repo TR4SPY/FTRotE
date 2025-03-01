@@ -34,6 +34,16 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The items gained by completing this Quest.")]
         public QuestItemReward[] items;
 
+        [Header("Extra Reward Settings")]
+        [Tooltip("If checked, additional rewards will be applied for Achiever-type players.")]
+        public bool extraRewards;
+
+        [Tooltip("Extra experience points for Achiever-type players.")]
+        public int additionalExperience;
+
+        [Tooltip("Extra coins for Achiever-type players.")]
+        public int additionalCoins;
+
         [Header("Progression Settings")]
         [Tooltip("The name of the destination scene used when the completing mode is 'Reach Scene.'")]
         public string destinationScene;
@@ -92,16 +102,40 @@ namespace PLAYERTWO.ARPGProject
         public string GetRewardText()
         {
             var text = "";
+            int finalExperience = experience;
+            int finalCoins = coins;
+
+            if (extraRewards && Game.instance.currentCharacter.currentDynamicPlayerType == "Achiever")
+            {
+                finalExperience += additionalExperience;
+                finalCoins += additionalCoins;
+            }
 
             if (!hasReward) return "None";
-            if (experience > 0) text += $"{experience} exp";
-            if (coins > 0) text += $"\n{coins} coins";
+            if (finalExperience > 0) text += $"{finalExperience} exp";
+            if (finalCoins > 0) text += $"\n{finalCoins} coins";
 
             foreach (var item in items)
                 if (item.data)
                     text += $"\n{item.data.name}";
 
             return text;
+        }
+
+        public int GetTotalExperience()
+        {
+            if (extraRewards && Game.instance.currentCharacter.currentDynamicPlayerType == "Achiever")
+                return experience + additionalExperience;
+
+            return experience;
+        }
+
+        public int GetTotalCoins()
+        {
+            if (extraRewards && Game.instance.currentCharacter.currentDynamicPlayerType == "Achiever")
+                return coins + additionalCoins;
+
+            return coins;
         }
     }
 }

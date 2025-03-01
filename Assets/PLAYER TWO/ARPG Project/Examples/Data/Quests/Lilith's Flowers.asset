@@ -20,9 +20,16 @@ MonoBehaviour:
   objective: Collect 5 Lilith's Flowers
   targetProgress: 5
   completingMode: 1
-  hasReward: 1
   experience: 2500
   coins: 2000
   items: []
+  extraRewards: 0
+  additionalExperience: 0
+  additionalCoins: 0
   destinationScene: 
   progressKey: lilith flower
+  requiredItem:
+    data: {fileID: 0}
+    attributes: 0
+  returnToNPC: 
+  requiresManualCompletion: 0

@@ -196,7 +196,7 @@ namespace PLAYERTWO.ARPGProject
 
             return m_entity;
         }
-
+        
         public static CharacterInstance CreateFromSerializer(CharacterSerializer serializer)
         {
             var data = GameDatabase.instance.FindElementById<Character>(serializer.characterId);
