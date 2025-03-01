@@ -78,14 +78,12 @@ namespace AI_DDA.Assets.Scripts
             int finalExperience = experience;
             int finalCoins = coins;
 
-            // ✅ Achiever dostaje dodatkowe nagrody
             if (extraRewards && character.currentDynamicPlayerType == "Achiever")
             {
                 finalExperience += additionalExperience;
                 finalCoins += additionalCoins;
             }
 
-            // ✅ Dodawanie doświadczenia
             if (entity.stats != null)
             {
                     entity.stats.AddExperience(finalExperience);
@@ -96,7 +94,6 @@ namespace AI_DDA.Assets.Scripts
                 Debug.LogError($"[AI-DDA] Entity.stats is NULL for {entity.name}!");
             }
 
-            // ✅ Dodawanie złota
             if (entity.inventory != null)
             {
                     entity.inventory.instance.money += finalCoins;

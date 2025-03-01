@@ -165,6 +165,21 @@ namespace PLAYERTWO.ARPGProject
             instance.Complete();
             onQuestCompleted?.Invoke(instance);
         }
+        
+        /// <summary>
+        /// Zwraca pierwszy dostępny nieukończony quest.
+        /// </summary>
+        /// <summary>
+        public Quest GetNextAvailableQuest()
+        {
+            foreach (var questInstance in m_quests)
+            {
+                if (!questInstance.completed) // Szukamy pierwszego nieukończonego questa
+                    return questInstance.data; // Zwracamy oryginalny Quest
+            }
+
+            return null; // Jeśli nie ma dostępnych questów, zwracamy null
+        }
 
         /// <summary>
         /// Triggers the completion of a given Quest from the active quests list.

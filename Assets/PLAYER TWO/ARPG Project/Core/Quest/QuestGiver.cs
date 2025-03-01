@@ -26,6 +26,8 @@ namespace PLAYERTWO.ARPGProject
 
         [Space(10)]
         public UnityEvent<State> onStateChange;
+        public Dialog assignedDialog;
+
 
         /// <summary>
         /// The current state of the Quest Giver.
@@ -130,6 +132,18 @@ namespace PLAYERTWO.ARPGProject
         {
             if (!(other is Entity entity)) return;
 
+            if (assignedDialog != null)
+            {
+                if (GUIWindowsManager.instance.dialogWindow == null)
+                {
+                    Debug.LogError("dialogWindow is NULL in GUIWindowsManager! Ensure it is assigned.");
+                    return;
+                }
+
+                GUIWindowsManager.instance.dialogWindow.Show(entity, this, assignedDialog);
+                return;
+            }
+            
             var current = CurrentQuest();
             if (!current) return;
 

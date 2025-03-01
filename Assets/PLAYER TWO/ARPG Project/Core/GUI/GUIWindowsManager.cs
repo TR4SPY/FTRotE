@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
+using AI_DDA.Assets.Scripts;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -50,6 +51,10 @@ namespace PLAYERTWO.ARPGProject
 
         [Tooltip("A reference to the GUI Questionnaire.")]
         public GUIWindow questionnaireWindow;
+
+        [Tooltip("A reference to the GUI Dialog Window.")]
+        public GUIDialogWindow dialogWindow;
+
 
         [Header("Audio Settings")]
         [Tooltip("The Audio Clip that plays when opening windows.")]

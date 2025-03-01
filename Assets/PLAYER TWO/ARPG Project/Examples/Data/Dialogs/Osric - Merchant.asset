@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 771f6ee7f348f39b18544bf344247ed9, type: 3}
+  m_Name: Osric - Merchant
+  m_EditorClassIdentifier: 
+  pages:
+  - dialogText: "Ah, a new face in Ashenvale! \nWelcome, welcome! The name\u2019s
+      Osric Thornveil, purveyor of the finest goods this side of the Vale. If it
+      can be bought, sold, or found\u2026 chances are, I have it\u2014or I know someone
+      who does.\nWhatever you need\u2014supplies, weapons, potions, or\u2026 shall
+      we say, more delicate acquisitions\u2014I can procure it for the right price.\n\nSo,
+      tell me\u2026 what are you looking for?"
+    options:
+    - optionText: I'd like to hear more.
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 4
+    - optionText: Do you have a quest for me?
+      isForSocializer: 1
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 1
+    - optionText: Let me see your goods.
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 2
+    - optionText: Anything exclusive for me?
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 1
+      action: 5
+  - dialogText: "Now, don\u2019t let my humble stall fool you. I wasn\u2019t always
+      a merchant, you see. Once, I was a traveler like yourself, peddling wares from
+      city to city, from the grand markets of Eldoria to the hidden bazaars of the
+      Shadow Coast. But, let\u2019s just say\u2026 circumstances led me to settle
+      down here. A few too many enemies, a few too many debts, and well\u2026 Ashenvale
+      is a good place to disappear for a while."
+    options:
+    - optionText: Tell me more...
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 4
+  - dialogText: TESTOWY DIALOG 3
+    options: []
+  dialogTitle: Osric - Merchant

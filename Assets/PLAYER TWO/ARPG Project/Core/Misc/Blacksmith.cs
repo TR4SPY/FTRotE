@@ -17,6 +17,7 @@ namespace PLAYERTWO.ARPGProject
         protected Entity m_entity;
 
         protected GUIBlacksmith m_blacksmithWindow => GUIWindowsManager.instance.blacksmith;
+        public Dialog assignedDialog;
 
         /// <summary>
         /// Tries to repair a given Item Instance.
@@ -91,6 +92,18 @@ namespace PLAYERTWO.ARPGProject
         {
             if (!(other is Entity entity)) return;
 
+            if (assignedDialog != null)
+            {
+                if (GUIWindowsManager.instance.dialogWindow == null)
+                {
+                    Debug.LogError("dialogWindow is NULL in GUIWindowsManager! Ensure it is assigned.");
+                    return;
+                }
+
+                GUIWindowsManager.instance.dialogWindow.Show(entity, this, assignedDialog);
+                return;
+            }
+                   
             if (m_blacksmithWindow == null)
             {
                 Debug.LogWarning("Blacksmith.OnInteract: m_blacksmithWindow is null! Ensure it is assigned in the inspector.");

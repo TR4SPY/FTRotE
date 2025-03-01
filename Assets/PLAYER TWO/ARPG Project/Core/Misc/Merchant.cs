@@ -40,6 +40,7 @@ namespace PLAYERTWO.ARPGProject
 
         [Tooltip("The shopping sections/categories available on the Merchant.")]
         public Section[] sections;
+        public Dialog assignedDialog;
 
         /// <summary>
         /// Returns a dictionary of inventories using their section title as key.
@@ -78,6 +79,18 @@ namespace PLAYERTWO.ARPGProject
         {
             if (!(other is Entity entity)) return;
 
+            if (assignedDialog != null)
+            {
+                if (GUIWindowsManager.instance.dialogWindow == null)
+                {
+                    Debug.LogError("dialogWindow is NULL in GUIWindowsManager! Ensure it is assigned.");
+                    return;
+                }
+
+                GUIWindowsManager.instance.dialogWindow.Show(entity, this, assignedDialog);
+                return;
+            }
+            
             var interactionLogger = GetComponent<NpcInteractionLogger>();
             if (interactionLogger != null)
             {
@@ -95,19 +108,16 @@ namespace PLAYERTWO.ARPGProject
             {
                 Debug.LogWarning("NpcInteractionLogger not found on Merchant. Cannot log interaction.");
             }
+        }
 
-            if (entity.isPlayer)
-            {
-                GUIWindowsManager.instance.merchantWindow.Show();
-                GUIWindowsManager.instance.inventoryWindow.Show();
-                m_guiMerchant.SetMerchant(this);
+        public void OpenMerchantShop()
+        {
 
-                Debug.Log("Merchant interacted with by player. UI opened.");
-            }
-            else
-            {
-                Debug.Log("Merchant interacted with by AI Agent. UI not opened.");
-            }
+                            GUIWindowsManager.instance.merchantWindow.Show();
+                            GUIWindowsManager.instance.inventoryWindow.Show();
+                            m_guiMerchant.SetMerchant(this);
+
+                            Debug.Log("Merchant interacted with by player. UI opened.");
         }
 
         protected override void Start()
