@@ -13,7 +13,9 @@ namespace AI_DDA.Assets.Scripts
             [TextArea(5, 10)]
             public string dialogText;
             public List<DialogOption> options = new List<DialogOption>();
+            public bool showOnce = false;
         }
+
 
         [System.Serializable]
         public class DialogOption
@@ -24,6 +26,7 @@ namespace AI_DDA.Assets.Scripts
             public bool isForKiller;
             public bool isForExplorer;
             public DialogAction action;
+            public int nextPageIndex = -1;
         }
 
         public enum DialogAction
@@ -38,10 +41,47 @@ namespace AI_DDA.Assets.Scripts
 
         public List<DialogPage> pages = new List<DialogPage>();
         public string dialogTitle;
+        private HashSet<int> viewedPages = new HashSet<int>();
+        private Dictionary<int, int> selectedPaths = new Dictionary<int, int>();
+        private int lastPathChoice = -1;
+        
+        public bool ShouldShowPage(int pageIndex)
+        {
+            var character = Game.instance.currentCharacter;
+            return character != null && !character.viewedDialogPages.Contains(pageIndex);
+        }
 
-        /// <summary>
-        /// Pobiera maksymalnie 4 opcje dla aktualnej strony, uwzględniając typ gracza.
-        /// </summary>
+        public void MarkPageAsViewed(int pageIndex)
+        {
+            var character = Game.instance.currentCharacter;
+            if (character != null)
+            {
+                character.viewedDialogPages.Add(pageIndex);
+            }
+        }
+
+        public void SetPathChoice(int fromPage, int toPage)
+        {
+            var character = Game.instance.currentCharacter;
+            if (character != null)
+            {
+                character.selectedDialogPaths[fromPage] = toPage;
+            }
+        }
+
+        public int GetNextPageFromPath(int currentPage)
+        {
+            var character = Game.instance.currentCharacter;
+            return character != null && character.selectedDialogPaths.ContainsKey(currentPage)
+                ? character.selectedDialogPaths[currentPage]
+                : -1;
+        }
+
+        public int GetLastPathChoice()
+        {
+            return lastPathChoice;
+        }
+
         public List<DialogOption> GetFilteredOptions(int pageIndex, string playerType)
         {
             List<DialogOption> filteredOptions = new List<DialogOption>();

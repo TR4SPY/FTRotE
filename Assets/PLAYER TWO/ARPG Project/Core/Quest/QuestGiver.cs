@@ -143,9 +143,6 @@ namespace PLAYERTWO.ARPGProject
                 GUIWindowsManager.instance.dialogWindow.Show(entity, this, assignedDialog);
                 return;
             }
-            
-            var current = CurrentQuest();
-            if (!current) return;
 
             // Logowanie interakcji przy użyciu Collidera
             var interactionLogger = GetComponent<NpcInteractionLogger>();
@@ -166,17 +163,14 @@ namespace PLAYERTWO.ARPGProject
             {
                 Debug.LogWarning("NpcInteractionLogger not found on QuestGiver. Cannot log interaction.");
             }
+        }
+        public void OpenQuestDialog()
+        {
+                var current = CurrentQuest();
+                if (!current) return;
 
-            // Otwórz UI tylko dla gracza
-            if (entity.isPlayer)
-            {
                 GUIWindowsManager.instance.quest.SetQuest(current);
                 Debug.Log("QuestGiver interacted with by player. Quest UI opened.");
-            }
-            else
-            {
-                Debug.Log("QuestGiver interacted with by AI Agent. UI not opened.");
-            }
         }
 
         /// <summary>

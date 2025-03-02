@@ -13,52 +13,180 @@ MonoBehaviour:
   m_Name: Eldric - Monk
   m_EditorClassIdentifier: 
   pages:
-  - dialogText: TESTOWY DIALOG 1
+  - dialogText: "Are you a lost soul seeking answers? The road is long, weary one,
+      and few who walk it truly know where they are headed. But tell me\u2026 do
+      you seek something more than coin? More than steel? More than faith... perhaps?"
     options:
-    - optionText: I'd like to hear more.
+    - optionText: What do you mean?
       isForSocializer: 0
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 0
       action: 4
+      nextPageIndex: -1
     - optionText: Do you have a quest for me?
-      isForSocializer: 1
-      isForAchiever: 0
-      isForKiller: 0
-      isForExplorer: 0
-      action: 1
-    - optionText: Let me see your goods.
       isForSocializer: 0
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 0
-      action: 2
-    - optionText: Anything exclusive for me?
+      action: 1
+      nextPageIndex: -1
+    - optionText: Where is Varethyn?
       isForSocializer: 0
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 1
       action: 5
-    hideOption1: 0
-    hideOption2: 0
-    hideOption3: 0
-    hideOption4: 0
-  - dialogText: TESTOWY DIALOG 2
+      nextPageIndex: -1
+    showOnce: 1
+  - dialogText: "I am Eldric Valeheart, humble keeper of the shrine and servant to
+      the unseen balance that governs our world. Some call it fate, others call it
+      the will of the gods. I call it the great thread\u2014the unseen weave that
+      binds all things, from the mighty to the meek."
     options:
-    - optionText: Tell me more...
+    - optionText: Please continue...
       isForSocializer: 0
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 0
       action: 4
-    hideOption1: 0
-    hideOption2: 0
-    hideOption3: 0
-    hideOption4: 0
-  - dialogText: TESTOWY DIALOG 3
+      nextPageIndex: -1
+    - optionText: How can I help you?
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 1
+      nextPageIndex: -1
+    showOnce: 1
+  - dialogText: "Ashenvale is a place of quiet resilience, yet I feel the winds of
+      change stirring in the leaves. Shadows stretch where they should not, and the
+      whispers of the river grow restless. You may not see it yet, but something
+      old stirs beneath this land. The question is\u2026 when the time comes, will
+      you be standing on the side of light or lost in the dark?"
+    options:
+    - optionText: Side of LIGHT of course!
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 4
+      nextPageIndex: 3
+    - optionText: The DARK side!
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 4
+      nextPageIndex: 6
+    showOnce: 1
+  - dialogText: "Then you walk a noble path. One of discipline, sacrifice\u2026 and,
+      perhaps, suffering. For those who walk in the light must bear its weight, even
+      when the darkness tempts them with ease. But you\u2026 I see strength in you,
+      the kind that does not waver in the face of hardship. That is rare, traveler.
+      And it is needed now more than ever."
+    options:
+    - optionText: I am here to protect it!
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 4
+      nextPageIndex: -1
+    showOnce: 1
+  - dialogText: Ashenvale is in danger, though most do not see it. Shadows creep
+      where they should not, and an unseen hand stirs the balance of this land. If
+      you are willing, there is much I could ask of you. Guidance for the lost, aid
+      for the suffering, strength against those who would see this land fall to ruin.
+    options:
+    - optionText: Go ahead.
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 4
+      nextPageIndex: -1
+    showOnce: 1
+  - dialogText: Will you stand as a guardian of balance? Will you lend your blade
+      to those who cannot defend themselves?
+    options:
+    - optionText: Yes, I will!
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 4
+      nextPageIndex: 10
+    showOnce: 1
+  - dialogText: ...I feared as much.
+    options:
+    - optionText: Don't be foolish!
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 4
+      nextPageIndex: -1
+    showOnce: 1
+  - dialogText: "The night calls to many, offering power without cost, knowledge
+      without wisdom, freedom without purpose. But darkness is a hungry thing, traveler.
+      It takes and takes\u2026 until nothing remains but the echoes of what you once
+      were."
+    options:
+    - optionText: Just tell me your knowledge!
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 4
+      nextPageIndex: -1
+    showOnce: 1
+  - dialogText: "You will find no guidance from me. Those who walk in shadow do not
+      seek wisdom, only control. Do not mistake my words for hatred\u2014I do not
+      condemn you, for every path is chosen by its traveler. But understand this:
+      should your steps bring ruin upon Ashenvale, I will not stand idly by."
+    options:
+    - optionText: It's fine by me, I don't care.
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 4
+      nextPageIndex: -1
+    showOnce: 1
+  - dialogText: Go, then. Seek whatever it is you crave. But do not return expecting
+      my hand in fellowship.
+    options:
+    - optionText: Oh well...
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 4
+      nextPageIndex: -1
+    showOnce: 1
+  - dialogText: "But forgive an old monk his musings. You must be tired from your
+      journey. If you seek guidance, the shrine is open to all. If your wounds are
+      of the body, I have remedies. If they are of the soul\u2026 well, those are
+      harder to mend."
+    options:
+    - optionText: What can I do for you?
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 1
+      nextPageIndex: -1
+    - optionText: Is there anything...
+      isForSocializer: 1
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 5
+      nextPageIndex: -1
+    showOnce: 0
+  - dialogText: "May the path ahead be clear, traveler\u2026 and may you tread it
+      wisely."
     options: []
-    hideOption1: 0
-    hideOption2: 0
-    hideOption3: 0
-    hideOption4: 0
-  dialogTitle: Alex - Merchant
+    showOnce: 0
+  dialogTitle: Eldric - Monk

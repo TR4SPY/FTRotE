@@ -23,7 +23,22 @@ namespace AI_DDA.Assets.Scripts
             this.player = player;
             currentNPC = npc;
             currentDialog = dialog;
-            currentPageIndex = 0;
+
+            int rememberedPath = currentDialog.GetLastPathChoice();
+    
+            if (rememberedPath != -1)
+            {
+                currentPageIndex = rememberedPath;
+            }
+            else
+            {
+                currentPageIndex = 0;
+                while (currentPageIndex < currentDialog.pages.Count && !currentDialog.ShouldShowPage(currentPageIndex))
+                {
+                    currentPageIndex++;
+                }
+            }
+
             SetupDialog();
         }
 
@@ -69,7 +84,11 @@ namespace AI_DDA.Assets.Scripts
                     OpenBlacksmithWindow();
                     break;
                 case Dialog.DialogAction.ContinueDialog:
-                    ContinueDialog();
+                    if (option.nextPageIndex != -1)
+                    {
+                        currentDialog.SetPathChoice(currentPageIndex, option.nextPageIndex);
+                    }
+                    ContinueDialog(option.nextPageIndex);
                     break;
                 case Dialog.DialogAction.Exclusive:
                     OpenExclusiveWindow();
@@ -80,29 +99,54 @@ namespace AI_DDA.Assets.Scripts
             }
         }
 
-        private void ContinueDialog()
+        private void ContinueDialog(int targetPageIndex = -1)
         {
-            if (currentDialog == null || currentPageIndex + 1 >= currentDialog.pages.Count)
+            
+            if (currentDialog == null) return;
+
+            currentDialog.MarkPageAsViewed(currentPageIndex);
+
+            
+            int rememberedPath = currentDialog.GetNextPageFromPath(currentPageIndex);
+            if (rememberedPath != -1)
             {
-                Close();
-                return;
+                targetPageIndex = rememberedPath;
             }
 
-            currentPageIndex++;
+            if (targetPageIndex == -1)
+            {
+                if (currentPageIndex + 1 >= currentDialog.pages.Count)
+                {
+                    Close();
+                    return;
+                }
+                targetPageIndex = currentPageIndex + 1;
+            }
+
+            currentPageIndex = targetPageIndex;
+            
+            while (!currentDialog.ShouldShowPage(currentPageIndex))
+            {
+                currentPageIndex++;
+                if (currentPageIndex >= currentDialog.pages.Count)
+                {
+                    Close();
+                    return;
+                }
+            }
+
             SetupDialog();
         }
 
         private void OpenQuestWindow()
         {
-            var nextQuest = Game.instance.quests.GetNextAvailableQuest();
-            if (nextQuest != null)
+            if (!(currentNPC is QuestGiver questGiver))
             {
-                GUIWindowsManager.instance.quest.SetQuest(nextQuest);
+                Debug.LogError("[AI-DDA] Błąd: currentNPC nie jest QuestGiverem!");
+                return;
             }
-            else
-            {
-                Debug.Log("[AI-DDA] Brak dostępnych questów!");
-            }
+
+            questGiver.OpenQuestDialog();
         }
 
         private void OpenMerchantWindow()
@@ -113,12 +157,18 @@ namespace AI_DDA.Assets.Scripts
                 return;
             }
 
-            merchant.OpenMerchantShop(); // ✅ Teraz poprawnie wywołujemy metodę na instancji Merchanta
+            merchant.OpenMerchantShop();
         }
 
         private void OpenBlacksmithWindow()
         {
-            GUIWindowsManager.instance.blacksmith.Show();
+            if (!(currentNPC is Blacksmith blacksmith))
+            {
+                Debug.LogError("[AI-DDA] Błąd: currentNPC nie jest Blacksmith!");
+                return;
+            }
+            
+            blacksmith.OpenBlackSmithService(player);
         }
 
         private void OpenExclusiveWindow()

@@ -103,28 +103,6 @@ namespace PLAYERTWO.ARPGProject
                 GUIWindowsManager.instance.dialogWindow.Show(entity, this, assignedDialog);
                 return;
             }
-                   
-            if (m_blacksmithWindow == null)
-            {
-                Debug.LogWarning("Blacksmith.OnInteract: m_blacksmithWindow is null! Ensure it is assigned in the inspector.");
-                return;
-            }
-
-            if (entity.inventory == null)
-            {
-                Debug.LogWarning("Blacksmith.OnInteract: Entity has no inventory! Skipping interaction.");
-                return;
-            }
-
-            if (entity != m_entity)
-            {
-                m_entity = entity;
-
-                m_entity.inventory.onItemAdded.AddListener((_) => m_blacksmithWindow.Refresh());
-                m_entity.inventory.onItemInserted.AddListener((_) => m_blacksmithWindow.Refresh());
-                m_entity.inventory.onItemRemoved.AddListener(m_blacksmithWindow.Refresh);
-                m_entity.items.onChanged.AddListener(m_blacksmithWindow.Refresh);
-            }
 
             // Logowanie interakcji przy użyciu Collidera
             var interactionLogger = GetComponent<NpcInteractionLogger>();
@@ -145,18 +123,36 @@ namespace PLAYERTWO.ARPGProject
             {
                 Debug.LogWarning("NpcInteractionLogger not found on Blacksmith. Cannot log interaction.");
             }
-
-            // Otwórz UI tylko dla gracza
-            if (entity.isPlayer)
-            {
-                m_blacksmithWindow.Show(this);
-                Debug.Log("Blacksmith interacted with by player. UI opened.");
-            }
-            else
-            {
-                Debug.Log("Blacksmith interacted with by AI Agent. UI not opened.");
-            }
         }
 
+        public void OpenBlackSmithService(object other)
+        {
+            if (!(other is Entity entity)) return;
+
+            if (m_blacksmithWindow == null)
+            {
+                Debug.LogWarning("Blacksmith.OnInteract: m_blacksmithWindow is null! Ensure it is assigned in the inspector.");
+                return;
+            }
+
+            if (entity.inventory == null)
+            {
+                Debug.LogWarning("Blacksmith.OnInteract: Entity has no inventory! Skipping interaction.");
+                return;
+            }
+            
+            if (entity != m_entity)
+            {
+                m_entity = entity;
+
+                m_entity.inventory.onItemAdded.AddListener((_) => m_blacksmithWindow.Refresh());
+                m_entity.inventory.onItemInserted.AddListener((_) => m_blacksmithWindow.Refresh());
+                m_entity.inventory.onItemRemoved.AddListener(m_blacksmithWindow.Refresh);
+                m_entity.items.onChanged.AddListener(m_blacksmithWindow.Refresh);
+            }
+
+            m_blacksmithWindow.Show(this);
+            Debug.Log("Blacksmith interacted with by player. UI opened.");
+            }
+        }
     }
-}

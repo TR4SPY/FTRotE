@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: Dain - Guard
   m_EditorClassIdentifier: 
   pages:
-  - dialogText: TESTOWY DIALOG 1
+  - dialogText: "Halt. State your name and your business in Ashenvale.\n\n...Hmph.
+      Another traveler. You lot come and go like the wind, thinking this village
+      is just another stop along the road. But Ashenvale is not some wayward inn
+      on your map\u2014it is our home. And my duty is to keep it safe."
     options:
     - optionText: I'd like to hear more.
       isForSocializer: 0
@@ -21,29 +24,19 @@ MonoBehaviour:
       isForKiller: 0
       isForExplorer: 0
       action: 4
+      nextPageIndex: -1
     - optionText: Do you have a quest for me?
-      isForSocializer: 1
+      isForSocializer: 0
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 0
       action: 1
-    - optionText: Let me see your goods.
-      isForSocializer: 0
-      isForAchiever: 0
-      isForKiller: 0
-      isForExplorer: 0
-      action: 2
-    - optionText: Anything exclusive for me?
-      isForSocializer: 0
-      isForAchiever: 0
-      isForKiller: 0
-      isForExplorer: 1
-      action: 5
-    hideOption1: 0
-    hideOption2: 0
-    hideOption3: 0
-    hideOption4: 0
-  - dialogText: TESTOWY DIALOG 2
+      nextPageIndex: -1
+    showOnce: 0
+  - dialogText: "I am Dain Havenguard, Captain of the Ashenvale Watch. Bandits lurk
+      in the forests, beasts prowl beyond the river, and lately\u2026 well, let\u2019s
+      just say the shadows seem darker than usual. I don\u2019t trust coincidence,
+      nor do I trust strangers. You\u2019d do well to remember that."
     options:
     - optionText: Tell me more...
       isForSocializer: 0
@@ -51,14 +44,54 @@ MonoBehaviour:
       isForKiller: 0
       isForExplorer: 0
       action: 4
-    hideOption1: 0
-    hideOption2: 0
-    hideOption3: 0
-    hideOption4: 0
-  - dialogText: TESTOWY DIALOG 3
-    options: []
-    hideOption1: 0
-    hideOption2: 0
-    hideOption3: 0
-    hideOption4: 0
-  dialogTitle: Alex - Merchant
+      nextPageIndex: -1
+    - optionText: What about that mission?
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 1
+      nextPageIndex: -1
+    showOnce: 0
+  - dialogText: "But I am not unreasonable. If you mean no harm and pull your weight,
+      you\u2019ll find no trouble from me. Stay within the law, respect the people,
+      and we won\u2019t have a problem. Cross the line, and you\u2019ll find out
+      exactly how fast a man in armor can move."
+    options:
+    - optionText: Understood.
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 4
+      nextPageIndex: -1
+    - optionText: Let's cut to business, shall we?
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 1
+      nextPageIndex: -1
+    showOnce: 0
+  - dialogText: "Now, if you're here looking for work, the village always has needs.
+      A missing farmer, a stolen shipment, creatures sighted too close to the walls\u2026
+      there\u2019s never a shortage of problems. But don\u2019t expect a hero\u2019s
+      welcome. Do the job, get paid, move on. That\u2019s how things work here. Just
+      don\u2019t give me a reason to keep my eyes on you. I hate wasting time."
+    options:
+    - optionText: Any particular tasks?
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 1
+      nextPageIndex: -1
+    - optionText: Anything exclusive for me?
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 1
+      isForExplorer: 0
+      action: 5
+      nextPageIndex: -1
+    showOnce: 0
+  dialogTitle: Dain - Guard

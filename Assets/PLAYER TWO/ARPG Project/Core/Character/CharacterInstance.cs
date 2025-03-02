@@ -23,13 +23,12 @@ namespace PLAYERTWO.ARPGProject
             { "Speed", 1.0f }
         };
 
-        // Zbiór odwiedzonych stref
         public HashSet<string> visitedZones = new HashSet<string>();
-
-        // Zbiór odwiedzonych waypointów
         public HashSet<int> activatedWaypoints = new HashSet<int>();
-        
-        // Zbiór osiągnięć
+        public HashSet<int> viewedDialogPages = new HashSet<int>();
+
+        public Dictionary<int, int> selectedDialogPaths = new Dictionary<int, int>();
+
         public List<string> unlockedAchievements = new List<string>();
 
         public CharacterEquipments equipments;
@@ -38,7 +37,6 @@ namespace PLAYERTWO.ARPGProject
         public CharacterQuests quests;
         public CharacterScenes scenes;
 
-        // Logi i statystyki gracza
         public int playerDeaths = 0;
         public int enemiesDefeated = 0;
         public float totalCombatTime = 0f;
@@ -53,11 +51,12 @@ namespace PLAYERTWO.ARPGProject
         public bool questionnaireCompleted = false;
         public string playerType = "Undefined";
         public string currentDynamicPlayerType = "Unknown";
-        public float totalPlayTime = 0f; // Łączny czas gry w sekundach
+        public float totalPlayTime = 0f;
         protected Entity m_entity;
 
         public Vector3 currentPosition => m_entity ? m_entity.position : initialPosition;
         public Quaternion currentRotation => m_entity ? m_entity.transform.rotation : initialRotation;
+        public bool HasViewedDialogPage(int pageIndex) => viewedDialogPages.Contains(pageIndex);
 
         public CharacterInstance() { }
 
@@ -122,6 +121,24 @@ namespace PLAYERTWO.ARPGProject
             }
 
             return equippedPrefabs;
+        }
+
+        public void MarkDialogPageAsViewed(int pageIndex)
+        {
+            if (!viewedDialogPages.Contains(pageIndex))
+            {
+                viewedDialogPages.Add(pageIndex);
+            }
+        }
+
+        public void SetDialogPathChoice(int fromPage, int toPage)
+        {
+            selectedDialogPaths[fromPage] = toPage;
+        }
+
+        public int GetDialogNextPage(int currentPage)
+        {
+            return selectedDialogPaths.ContainsKey(currentPage) ? selectedDialogPaths[currentPage] : -1;
         }
 
         /// <summary>
@@ -215,7 +232,6 @@ namespace PLAYERTWO.ARPGProject
                 quests = CharacterQuests.CreateFromSerializer(serializer.quests),
                 scenes = CharacterScenes.CreateFromSerializer(serializer.scenes),
 
-                // Wczytanie logów
                 playerDeaths = serializer.playerDeaths,
                 enemiesDefeated = serializer.enemiesDefeated,
                 totalCombatTime = serializer.totalCombatTime,
@@ -230,17 +246,17 @@ namespace PLAYERTWO.ARPGProject
                 currentDynamicPlayerType = serializer.currentDynamicPlayerType,
                 totalPlayTime = serializer.totalPlayTime,
 
-                // Wczytanie odwiedzonych stref
+                viewedDialogPages = new HashSet<int>(serializer.viewedDialogPages),
+                selectedDialogPaths = new Dictionary<int, int>(serializer.selectedDialogPaths),
+                
                 visitedZones = serializer.visitedZones != null
                     ? new HashSet<string>(serializer.visitedZones)
                     : new HashSet<string>(),
 
-                // Wczytanie odwiedzonych waypointów
                 activatedWaypoints = serializer.activatedWaypoints != null
                     ? new HashSet<int>(serializer.activatedWaypoints)
                     : new HashSet<int>(),
 
-                // Wczytanie odblokowanych osiągnięć jako liczbę
                 unlockedAchievements = serializer.unlockedAchievements != null
                     ? new List<string>(serializer.unlockedAchievements)
                     : new List<string>(),

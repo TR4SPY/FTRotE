@@ -12,6 +12,15 @@ namespace PLAYERTWO.ARPGProject
 
         public string name;
         public string scene;
+        public string playerType;
+        public string currentDynamicPlayerType;
+        
+        public Dictionary<int, int> selectedDialogPaths = new Dictionary<int, int>();
+
+        public List<string> unlockedAchievements;
+        public List<string> visitedZones = new List<string>();
+        public List<int> activatedWaypoints = new List<int>();
+        public List<int> viewedDialogPages = new List<int>();
 
         public UnitySerializer.Vector3 position;
         public UnitySerializer.Vector3 rotation;
@@ -23,36 +32,25 @@ namespace PLAYERTWO.ARPGProject
         public QuestsSerializer quests;
         public ScenesSerializer scenes;
 
-        // Dodane pola dla mnożników trudności
         public float dexterityMultiplier = 1.0f;
         public float strengthMultiplier = 1.0f;
         public float vitalityMultiplier = 1.0f;
         public float energyMultiplier = 1.0f;
+        public float totalCombatTime;
+        public float totalPlayTime = 0f; 
 
-        // Pola dla logów gracza
+
         public int playerDeaths;
         public int enemiesDefeated;
-        public float totalCombatTime;
         public int potionsUsed;
         public int difficultyMultiplier;
         public int zonesDiscovered;
         public int achievementsUnlocked;
-        public List<string> unlockedAchievements;
         public int npcInteractions;
         public int questsCompleted;
-        public bool questionnaireCompleted = false;
-        public string playerType;
-        public string currentDynamicPlayerType;
-        public float totalPlayTime = 0f; 
-
-        // Lista odwiedzonych stref
-        public List<string> visitedZones = new List<string>();
-
-        // Lista aktywowanych waypointów
-        public List<int> activatedWaypoints = new List<int>();
-
-        // Dodaj pole do zapisu liczby odkrytych waypointów
         public int waypointsDiscovered = 0;
+        
+        public bool questionnaireCompleted = false;
 
         public CharacterSerializer(CharacterInstance character)
         {
@@ -68,7 +66,6 @@ namespace PLAYERTWO.ARPGProject
             quests = new QuestsSerializer(character.quests);
             scenes = new ScenesSerializer(character.scenes);
 
-            // Zapisywanie mnożników z CharacterInstance
             dexterityMultiplier = character.GetMultiplier("Dexterity");
             strengthMultiplier = character.GetMultiplier("Strength");
             vitalityMultiplier = character.GetMultiplier("Vitality");
@@ -87,7 +84,6 @@ namespace PLAYERTWO.ARPGProject
             currentDynamicPlayerType = character.currentDynamicPlayerType;
             totalPlayTime = character.totalPlayTime;
 
-            // Save questionnaire completion status
             questionnaireCompleted = character.questionnaireCompleted;
 
             unlockedAchievements = character.unlockedAchievements != null ? new List<string>(character.unlockedAchievements) : new List<string>();
@@ -96,6 +92,9 @@ namespace PLAYERTWO.ARPGProject
             visitedZones = character.visitedZones != null ? new List<string>(character.visitedZones) : new List<string>();
             activatedWaypoints = character.activatedWaypoints != null ? new List<int>(character.activatedWaypoints) : new List<int>();
 
+            viewedDialogPages = new List<int>(character.viewedDialogPages);
+            selectedDialogPaths = new Dictionary<int, int>(character.selectedDialogPaths);
+            
             Debug.Log($"Character '{name}' serialized with visited zones: {string.Join(", ", visitedZones)}, activated waypoints: {string.Join(", ", activatedWaypoints)}, and logs: PlayerDeaths={playerDeaths}, EnemiesDefeated={enemiesDefeated}, AchievementsUnlocked={achievementsUnlocked}");
         }
 
