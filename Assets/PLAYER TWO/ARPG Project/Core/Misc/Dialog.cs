@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using System.Collections.Generic;
 using PLAYERTWO.ARPGProject;
@@ -12,10 +13,12 @@ namespace AI_DDA.Assets.Scripts
         {
             [TextArea(5, 10)]
             public string dialogText;
+            public string specialCondition = "";
+
             public List<DialogOption> options = new List<DialogOption>();
             public bool showOnce = false;
+            public bool isSpecial = false;
         }
-
 
         [System.Serializable]
         public class DialogOption
@@ -27,6 +30,7 @@ namespace AI_DDA.Assets.Scripts
             public bool isForExplorer;
             public DialogAction action;
             public int nextPageIndex = -1;
+            public SpecialCondition specialConditionToSet = SpecialCondition.None;
         }
 
         public enum DialogAction
@@ -36,50 +40,61 @@ namespace AI_DDA.Assets.Scripts
             OpenShop,
             OpenBlacksmith,
             ContinueDialog,
-            Exclusive
+            Exclusive,
+            SetSpecialCondition
         }
 
         public List<DialogPage> pages = new List<DialogPage>();
         public string dialogTitle;
-        private HashSet<int> viewedPages = new HashSet<int>();
         private Dictionary<int, int> selectedPaths = new Dictionary<int, int>();
         private int lastPathChoice = -1;
         
         public bool ShouldShowPage(int pageIndex)
         {
             var character = Game.instance.currentCharacter;
-            return character != null && !character.viewedDialogPages.Contains(pageIndex);
-        }
+            if (character == null) return false;
 
-        public void MarkPageAsViewed(int pageIndex)
-        {
-            var character = Game.instance.currentCharacter;
-            if (character != null)
+            var currentPage = pages[pageIndex];
+
+            Debug.Log($"[ShouldShowPage] pageIndex={pageIndex}, showOnce={currentPage.showOnce}, " +
+              $"special={currentPage.isSpecial}, cond={currentPage.specialCondition}, " +
+              $"charCondition={character.specialCondition}, alreadyViewed={character.HasViewedDialogPage(pageIndex)}");
+
+            if (currentPage.isSpecial)
             {
-                character.viewedDialogPages.Add(pageIndex);
+                if (string.IsNullOrEmpty(currentPage.specialCondition)) return false;
+                
+                if (!Enum.TryParse<SpecialCondition>(currentPage.specialCondition, out SpecialCondition pageCondition) || character.specialCondition != pageCondition)
+                {
+                    return false;
+                }
             }
+
+            return !currentPage.showOnce || !character.HasViewedDialogPage(pageIndex);
         }
 
         public void SetPathChoice(int fromPage, int toPage)
         {
-            var character = Game.instance.currentCharacter;
-            if (character != null)
-            {
-                character.selectedDialogPaths[fromPage] = toPage;
-            }
+            selectedPaths[fromPage] = toPage;
+            lastPathChoice = toPage;
         }
 
         public int GetNextPageFromPath(int currentPage)
         {
-            var character = Game.instance.currentCharacter;
-            return character != null && character.selectedDialogPaths.ContainsKey(currentPage)
-                ? character.selectedDialogPaths[currentPage]
-                : -1;
+            return selectedPaths.ContainsKey(currentPage) ? selectedPaths[currentPage] : -1;
         }
 
         public int GetLastPathChoice()
         {
+            Debug.Log($"[Dialog] lastPathChoice przed resetem: {lastPathChoice}");
+
             return lastPathChoice;
+        }
+
+        public void ResetPathChoices()
+        {
+            selectedPaths.Clear();
+            lastPathChoice = -1;
         }
 
         public List<DialogOption> GetFilteredOptions(int pageIndex, string playerType)

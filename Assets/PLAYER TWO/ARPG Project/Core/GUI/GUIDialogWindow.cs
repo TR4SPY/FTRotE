@@ -24,8 +24,16 @@ namespace AI_DDA.Assets.Scripts
             currentNPC = npc;
             currentDialog = dialog;
 
+            if (Game.instance.currentCharacter.viewedDialogPages.Count == 0) 
+            {
+                Debug.Log("[GUIDialogWindow] Nowa postać - resetujemy lastPathChoice!");
+                currentDialog.ResetPathChoices(); // Trzeba dodać metodę resetującą w `Dialog`
+            }
+
+            // Pobranie zapamiętanej ścieżki dialogu
             int rememberedPath = currentDialog.GetLastPathChoice();
-    
+            Debug.Log($"[Show] rememberedPath = {rememberedPath}");
+
             if (rememberedPath != -1)
             {
                 currentPageIndex = rememberedPath;
@@ -49,6 +57,15 @@ namespace AI_DDA.Assets.Scripts
             if (currentDialog.pages.Count == 0) return;
 
             var currentPage = currentDialog.pages[currentPageIndex];
+
+            string playerSpecialCondition = Game.instance.currentCharacter.GetSpecialConditionAsString();
+            if (currentPage.isSpecial && currentPage.specialCondition != playerSpecialCondition)
+            {
+                Debug.Log($"[AI-DDA] Strona {currentPageIndex} nie jest dostępna dla gracza z warunkiem {playerSpecialCondition}");
+                ContinueDialog();
+                return;
+            }
+
             dialogText.text = currentPage.dialogText;
 
             string playerType = Game.instance.currentCharacter.currentDynamicPlayerType;
@@ -93,6 +110,11 @@ namespace AI_DDA.Assets.Scripts
                 case Dialog.DialogAction.Exclusive:
                     OpenExclusiveWindow();
                     break;
+                case Dialog.DialogAction.SetSpecialCondition:
+                    Game.instance.currentCharacter.SetSpecialCondition(option.specialConditionToSet);
+                    Debug.Log($"[AI-DDA] Gracz wybrał ścieżkę: {option.specialConditionToSet}");
+                    ContinueDialog(option.nextPageIndex);
+                    break;
                 default:
                     Close();
                     break;
@@ -101,12 +123,11 @@ namespace AI_DDA.Assets.Scripts
 
         private void ContinueDialog(int targetPageIndex = -1)
         {
-            
             if (currentDialog == null) return;
 
-            currentDialog.MarkPageAsViewed(currentPageIndex);
+            // currentDialog.MarkPageAsViewed(currentPageIndex);
+            Game.instance.currentCharacter.MarkDialogPageAsViewed(currentPageIndex);
 
-            
             int rememberedPath = currentDialog.GetNextPageFromPath(currentPageIndex);
             if (rememberedPath != -1)
             {
@@ -123,11 +144,21 @@ namespace AI_DDA.Assets.Scripts
                 targetPageIndex = currentPageIndex + 1;
             }
 
+            currentDialog.SetPathChoice(currentPageIndex, targetPageIndex);
             currentPageIndex = targetPageIndex;
-            
+
             while (!currentDialog.ShouldShowPage(currentPageIndex))
             {
-                currentPageIndex++;
+                int nextPath = currentDialog.GetNextPageFromPath(currentPageIndex);
+                if (nextPath != -1)
+                {
+                    currentPageIndex = nextPath;
+                }
+                else
+                {
+                    currentPageIndex++;
+                }
+
                 if (currentPageIndex >= currentDialog.pages.Count)
                 {
                     Close();

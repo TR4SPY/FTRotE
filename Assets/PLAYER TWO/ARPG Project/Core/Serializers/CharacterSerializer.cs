@@ -1,5 +1,5 @@
 //  ZMODYFIKOWANO 31 GRUDNIA 2024
-
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,7 +14,7 @@ namespace PLAYERTWO.ARPGProject
         public string scene;
         public string playerType;
         public string currentDynamicPlayerType;
-        
+        public string specialCondition;
         public Dictionary<int, int> selectedDialogPaths = new Dictionary<int, int>();
 
         public List<string> unlockedAchievements;
@@ -85,6 +85,7 @@ namespace PLAYERTWO.ARPGProject
             totalPlayTime = character.totalPlayTime;
 
             questionnaireCompleted = character.questionnaireCompleted;
+            specialCondition = character.specialCondition.ToString();
 
             unlockedAchievements = character.unlockedAchievements != null ? new List<string>(character.unlockedAchievements) : new List<string>();
             achievementsUnlocked = unlockedAchievements.Count;
@@ -92,10 +93,17 @@ namespace PLAYERTWO.ARPGProject
             visitedZones = character.visitedZones != null ? new List<string>(character.visitedZones) : new List<string>();
             activatedWaypoints = character.activatedWaypoints != null ? new List<int>(character.activatedWaypoints) : new List<int>();
 
-            viewedDialogPages = new List<int>(character.viewedDialogPages);
-            selectedDialogPaths = new Dictionary<int, int>(character.selectedDialogPaths);
-            
+            viewedDialogPages = character.viewedDialogPages.Count == 0 ? new List<int>() : new List<int>(character.viewedDialogPages);
+            selectedDialogPaths = character.viewedDialogPages.Count == 0 ? new Dictionary<int, int>() : new Dictionary<int, int>(character.selectedDialogPaths);
+
             Debug.Log($"Character '{name}' serialized with visited zones: {string.Join(", ", visitedZones)}, activated waypoints: {string.Join(", ", activatedWaypoints)}, and logs: PlayerDeaths={playerDeaths}, EnemiesDefeated={enemiesDefeated}, AchievementsUnlocked={achievementsUnlocked}");
+        
+            if (!Enum.TryParse(character.specialCondition.ToString(), out SpecialCondition validCondition))
+            {
+                Debug.LogError($"[AI-DDA] Niepoprawny specialCondition: {character.specialCondition}. Ustawiono 'None'.");
+                validCondition = SpecialCondition.None;
+            }
+            specialCondition = validCondition.ToString();
         }
 
         public virtual string ToJson() => JsonUtility.ToJson(this);

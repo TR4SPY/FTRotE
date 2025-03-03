@@ -1,15 +1,22 @@
+using System;
 using UnityEngine;
 using System.Collections.Generic;
 
 namespace PLAYERTWO.ARPGProject
 {
+    public enum SpecialCondition
+        {
+            None,
+            Light,
+            Dark
+        }
+
     public class CharacterInstance
     {
         public Character data;
-
         public string name;
         public string currentScene;
-
+        
         public Vector3 initialPosition;
         public Quaternion initialRotation;
 
@@ -57,7 +64,7 @@ namespace PLAYERTWO.ARPGProject
         public Vector3 currentPosition => m_entity ? m_entity.position : initialPosition;
         public Quaternion currentRotation => m_entity ? m_entity.transform.rotation : initialRotation;
         public bool HasViewedDialogPage(int pageIndex) => viewedDialogPages.Contains(pageIndex);
-
+        
         public CharacterInstance() { }
 
         public CharacterInstance(Character data, string name)
@@ -71,6 +78,7 @@ namespace PLAYERTWO.ARPGProject
             skills = new CharacterSkills(data);
             quests = new CharacterQuests();
             scenes = new CharacterScenes();
+            
         }
 
         public Dictionary<string, GameObject> GetEquippedPrefabs()
@@ -140,6 +148,18 @@ namespace PLAYERTWO.ARPGProject
         {
             return selectedDialogPaths.ContainsKey(currentPage) ? selectedDialogPaths[currentPage] : -1;
         }
+
+        public string GetSpecialConditionAsString()
+        {
+            return specialCondition.ToString();
+        }
+
+        public SpecialCondition specialCondition = SpecialCondition.None; // ✅ Domyślnie ustawiamy `None`
+
+            public void SetSpecialCondition(SpecialCondition condition)
+            {
+                specialCondition = condition;
+            }
 
         /// <summary>
         /// Pobierz wartość mnożnika dla danej statystyki.
@@ -246,9 +266,9 @@ namespace PLAYERTWO.ARPGProject
                 currentDynamicPlayerType = serializer.currentDynamicPlayerType,
                 totalPlayTime = serializer.totalPlayTime,
 
-                viewedDialogPages = new HashSet<int>(serializer.viewedDialogPages),
-                selectedDialogPaths = new Dictionary<int, int>(serializer.selectedDialogPaths),
-                
+                viewedDialogPages = serializer.viewedDialogPages.Count == 0 ? new HashSet<int>() : new HashSet<int>(serializer.viewedDialogPages),
+                selectedDialogPaths = new Dictionary<int, int>(),
+
                 visitedZones = serializer.visitedZones != null
                     ? new HashSet<string>(serializer.visitedZones)
                     : new HashSet<string>(),
@@ -266,6 +286,13 @@ namespace PLAYERTWO.ARPGProject
                     : 0
             };
 
+            if (!Enum.TryParse(serializer.specialCondition, out SpecialCondition parsedCondition))
+            {
+                Debug.LogError($"[AI-DDA] Błąd wczytywania specialCondition: {serializer.specialCondition}. Ustawiono 'None'.");
+                parsedCondition = SpecialCondition.None;
+            }
+            characterInstance.specialCondition = parsedCondition;
+            
             // Wczytaj mnożniki trudności
             characterInstance.SetMultiplier("Dexterity", serializer.dexterityMultiplier);
             characterInstance.SetMultiplier("Strength", serializer.strengthMultiplier);
