@@ -26,9 +26,12 @@ namespace PLAYERTWO.ARPGProject
 
         protected Game m_game => Game.instance;
         protected CharacterInstance m_currentCharacter => m_game.currentCharacter;
+        public int lastSavedNPCID = 0;
 
         public virtual void Save()
         {
+            lastSavedNPCID = Game.instance.lastNPCID;
+
             if (Level.instance == null)
             {
                 Debug.LogWarning("Level instance is null. Skipping scene data update.");
@@ -64,6 +67,8 @@ namespace PLAYERTWO.ARPGProject
 
         public virtual GameSerializer Load()
         {
+            Game.instance.lastNPCID = lastSavedNPCID;
+
             switch (mode)
             {
                 default:

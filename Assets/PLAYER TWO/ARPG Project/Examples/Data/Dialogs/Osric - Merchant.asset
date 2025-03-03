@@ -19,6 +19,7 @@ MonoBehaviour:
       who does.\nWhatever you need\u2014supplies, weapons, potions, or\u2026 shall
       we say, more delicate acquisitions\u2014I can procure it for the right price.\n\nSo,
       tell me\u2026 what are you looking for?"
+    specialCondition: 
     options:
     - optionText: I'd like to hear more.
       isForSocializer: 0
@@ -26,24 +27,33 @@ MonoBehaviour:
       isForKiller: 0
       isForExplorer: 0
       action: 4
+      nextPageIndex: -1
+      specialConditionToSet: 0
     - optionText: Do you have a quest for me?
       isForSocializer: 0
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 1
       action: 5
+      nextPageIndex: -1
+      specialConditionToSet: 0
     - optionText: Let me see your goods.
       isForSocializer: 0
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 0
       action: 2
+      nextPageIndex: -1
+      specialConditionToSet: 0
+    showOnce: 1
+    isSpecial: 0
   - dialogText: "Now, don\u2019t let my humble stall fool you. I wasn\u2019t always
       a merchant, you see. Once, I was a traveler like yourself, peddling wares from
       city to city, from the grand markets of Eldoria to the hidden bazaars of the
       Shadow Coast. But, let\u2019s just say\u2026 circumstances led me to settle
       down here. A few too many enemies, a few too many debts, and well\u2026 Ashenvale
       is a good place to disappear for a while."
+    specialCondition: 
     options:
     - optionText: Tell me more.
       isForSocializer: 0
@@ -51,12 +61,18 @@ MonoBehaviour:
       isForKiller: 0
       isForExplorer: 0
       action: 4
+      nextPageIndex: -1
+      specialConditionToSet: 0
     - optionText: What do you sell?
       isForSocializer: 0
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 0
       action: 2
+      nextPageIndex: -1
+      specialConditionToSet: 0
+    showOnce: 1
+    isSpecial: 0
   - dialogText: "Ah, I can see it in your eyes\u2014curiosity, a thirst for something
       more than what the common folk peddle in the daylight. You\u2019re not just
       another farmer looking for a new plow, nor some weary traveler in need of dried
@@ -64,6 +80,7 @@ MonoBehaviour:
       You see, friend, there are two kinds of merchants in this world. The first
       kind sells what they\u2019re told to sell\u2014grain, cloth, honest steel.
       Useful? Yes. But utterly predictable. "
+    specialCondition: 
     options:
     - optionText: Continue...
       isForSocializer: 0
@@ -71,17 +88,24 @@ MonoBehaviour:
       isForKiller: 0
       isForExplorer: 0
       action: 4
+      nextPageIndex: -1
+      specialConditionToSet: 0
     - optionText: Let's do some business.
       isForSocializer: 0
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 0
       action: 2
+      nextPageIndex: -1
+      specialConditionToSet: 0
+    showOnce: 1
+    isSpecial: 0
   - dialogText: "Then, there\u2019s the second kind. Those who understand that value
       isn\u2019t just in gold, but in secrecy\u2026 in knowing what to trade and
       when to trade it. The kind that deals in whispers as much as in coin. Now,
       I won\u2019t say which kind I am, but let\u2019s just say\u2026 I never ask
       too many questions, and neither should you. "
+    specialCondition: 
     options:
     - optionText: I won't.
       isForSocializer: 0
@@ -89,12 +113,18 @@ MonoBehaviour:
       isForKiller: 0
       isForExplorer: 0
       action: 4
+      nextPageIndex: -1
+      specialConditionToSet: 0
     - optionText: What can you offer?
       isForSocializer: 0
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 0
       action: 2
+      nextPageIndex: -1
+      specialConditionToSet: 0
+    showOnce: 1
+    isSpecial: 0
   - dialogText: "Ah, but enough of my rambling. Let\u2019s talk business, shall we?
       Perhaps a fine blade, forged far beyond these lands? Or maybe a tincture for
       those\u2026 delicate situations? I even have a few curiosities, artifacts from
@@ -102,6 +132,7 @@ MonoBehaviour:
       you find something in your travels\u2014a relic, an heirloom, a little something
       that fell off a noble\u2019s caravan\u2014I\u2019m always open to negotiations.
       Gold is one thing, but information? That\u2019s true power."
+    specialCondition: 
     options:
     - optionText: Anything exclusive for me?
       isForSocializer: 0
@@ -109,10 +140,16 @@ MonoBehaviour:
       isForKiller: 0
       isForExplorer: 1
       action: 5
+      nextPageIndex: -1
+      specialConditionToSet: 0
     - optionText: Let's trade!
       isForSocializer: 0
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 0
       action: 2
+      nextPageIndex: -1
+      specialConditionToSet: 0
+    showOnce: 0
+    isSpecial: 0
   dialogTitle: Osric - Merchant

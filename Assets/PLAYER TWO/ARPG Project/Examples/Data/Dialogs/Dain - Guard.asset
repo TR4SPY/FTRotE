@@ -17,6 +17,7 @@ MonoBehaviour:
       Another traveler. You lot come and go like the wind, thinking this village
       is just another stop along the road. But Ashenvale is not some wayward inn
       on your map\u2014it is our home. And my duty is to keep it safe."
+    specialCondition: 
     options:
     - optionText: I'd like to hear more.
       isForSocializer: 0
@@ -25,6 +26,7 @@ MonoBehaviour:
       isForExplorer: 0
       action: 4
       nextPageIndex: -1
+      specialConditionToSet: 0
     - optionText: Do you have a quest for me?
       isForSocializer: 0
       isForAchiever: 0
@@ -32,11 +34,14 @@ MonoBehaviour:
       isForExplorer: 0
       action: 1
       nextPageIndex: -1
-    showOnce: 0
+      specialConditionToSet: 0
+    showOnce: 1
+    isSpecial: 0
   - dialogText: "I am Dain Havenguard, Captain of the Ashenvale Watch. Bandits lurk
       in the forests, beasts prowl beyond the river, and lately\u2026 well, let\u2019s
       just say the shadows seem darker than usual. I don\u2019t trust coincidence,
       nor do I trust strangers. You\u2019d do well to remember that."
+    specialCondition: 
     options:
     - optionText: Tell me more...
       isForSocializer: 0
@@ -45,6 +50,7 @@ MonoBehaviour:
       isForExplorer: 0
       action: 4
       nextPageIndex: -1
+      specialConditionToSet: 0
     - optionText: What about that mission?
       isForSocializer: 0
       isForAchiever: 0
@@ -52,11 +58,14 @@ MonoBehaviour:
       isForExplorer: 0
       action: 1
       nextPageIndex: -1
-    showOnce: 0
+      specialConditionToSet: 0
+    showOnce: 1
+    isSpecial: 0
   - dialogText: "But I am not unreasonable. If you mean no harm and pull your weight,
       you\u2019ll find no trouble from me. Stay within the law, respect the people,
       and we won\u2019t have a problem. Cross the line, and you\u2019ll find out
       exactly how fast a man in armor can move."
+    specialCondition: 
     options:
     - optionText: Understood.
       isForSocializer: 0
@@ -65,6 +74,7 @@ MonoBehaviour:
       isForExplorer: 0
       action: 4
       nextPageIndex: -1
+      specialConditionToSet: 0
     - optionText: Let's cut to business, shall we?
       isForSocializer: 0
       isForAchiever: 0
@@ -72,12 +82,15 @@ MonoBehaviour:
       isForExplorer: 0
       action: 1
       nextPageIndex: -1
-    showOnce: 0
+      specialConditionToSet: 0
+    showOnce: 1
+    isSpecial: 0
   - dialogText: "Now, if you're here looking for work, the village always has needs.
       A missing farmer, a stolen shipment, creatures sighted too close to the walls\u2026
       there\u2019s never a shortage of problems. But don\u2019t expect a hero\u2019s
       welcome. Do the job, get paid, move on. That\u2019s how things work here. Just
       don\u2019t give me a reason to keep my eyes on you. I hate wasting time."
+    specialCondition: 
     options:
     - optionText: Any particular tasks?
       isForSocializer: 0
@@ -86,6 +99,7 @@ MonoBehaviour:
       isForExplorer: 0
       action: 1
       nextPageIndex: -1
+      specialConditionToSet: 0
     - optionText: Anything exclusive for me?
       isForSocializer: 0
       isForAchiever: 0
@@ -93,5 +107,7 @@ MonoBehaviour:
       isForExplorer: 0
       action: 5
       nextPageIndex: -1
+      specialConditionToSet: 0
     showOnce: 0
+    isSpecial: 0
   dialogTitle: Dain - Guard

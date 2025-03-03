@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -27,10 +28,27 @@ namespace PLAYERTWO.ARPGProject
 
         protected Collider m_collider;
 
+        [Header("NPC Unique ID")]
+        [Tooltip("Unique identifier for each NPC")]
+        [SerializeField] private string uniqueNPCID;
+
         /// <summary>
         /// Returns true if it's possible to interact with this Interactive.
         /// </summary>
         public bool interactive { get; set; } = true;
+
+        protected virtual void Awake()
+        {
+            if (string.IsNullOrEmpty(uniqueNPCID))
+            {
+                uniqueNPCID = Game.instance.GetNPCIDForName(gameObject.name);
+            }
+        }
+
+        public string GetNPCID()
+        {
+            return uniqueNPCID;
+        }
 
         protected virtual void InitializeCollider()
         {
@@ -87,6 +105,8 @@ namespace PLAYERTWO.ARPGProject
                 PlayAudioClip();
                 OnInteract(other);
                 onInteract.Invoke();
+
+                // Debug.Log($"NPC Interacted: {name}, ID: {uniqueNPCID}");
             }
         }
 

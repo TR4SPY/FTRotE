@@ -23,15 +23,23 @@ namespace AI_DDA.Assets.Scripts
             this.player = player;
             currentNPC = npc;
             currentDialog = dialog;
+            string npcID = npc.GetNPCID();
 
             if (Game.instance.currentCharacter.viewedDialogPages.Count == 0) 
             {
-                Debug.Log("[GUIDialogWindow] Nowa postać - resetujemy lastPathChoice!");
-                currentDialog.ResetPathChoices(); // Trzeba dodać metodę resetującą w `Dialog`
+                currentDialog.ResetPathChoices();
             }
 
-            // Pobranie zapamiętanej ścieżki dialogu
+            if (int.TryParse(npcID, out int npcIntID))
+            {
+                if (!Game.instance.currentCharacter.selectedDialogPaths.ContainsKey(npcIntID))
+                {
+                    currentDialog.ResetPathChoices();
+                }
+            }
+
             int rememberedPath = currentDialog.GetLastPathChoice();
+
             Debug.Log($"[Show] rememberedPath = {rememberedPath}");
 
             if (rememberedPath != -1)
@@ -41,7 +49,8 @@ namespace AI_DDA.Assets.Scripts
             else
             {
                 currentPageIndex = 0;
-                while (currentPageIndex < currentDialog.pages.Count && !currentDialog.ShouldShowPage(currentPageIndex))
+                while (currentPageIndex < currentDialog.pages.Count &&
+                    !currentDialog.ShouldShowPage(npcID, currentPageIndex))
                 {
                     currentPageIndex++;
                 }
@@ -125,8 +134,8 @@ namespace AI_DDA.Assets.Scripts
         {
             if (currentDialog == null) return;
 
-            // currentDialog.MarkPageAsViewed(currentPageIndex);
-            Game.instance.currentCharacter.MarkDialogPageAsViewed(currentPageIndex);
+            string npcID = currentNPC.GetNPCID();
+            Game.instance.currentCharacter.MarkDialogPageAsViewed(npcID, currentPageIndex);
 
             int rememberedPath = currentDialog.GetNextPageFromPath(currentPageIndex);
             if (rememberedPath != -1)
@@ -147,7 +156,7 @@ namespace AI_DDA.Assets.Scripts
             currentDialog.SetPathChoice(currentPageIndex, targetPageIndex);
             currentPageIndex = targetPageIndex;
 
-            while (!currentDialog.ShouldShowPage(currentPageIndex))
+            while (!currentDialog.ShouldShowPage(npcID, currentPageIndex))
             {
                 int nextPath = currentDialog.GetNextPageFromPath(currentPageIndex);
                 if (nextPath != -1)

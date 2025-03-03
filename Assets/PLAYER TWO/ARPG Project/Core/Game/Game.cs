@@ -75,6 +75,10 @@ namespace PLAYERTWO.ARPGProject
         protected bool m_gameLoaded;
         protected int m_currentCharacterId = -1;
 
+        public int lastNPCID = 0;
+        private Dictionary<GameObject, int> npcIDs = new Dictionary<GameObject, int>();
+        private Dictionary<string, string> npcIDMap = new Dictionary<string, string>();
+
         public List<CharacterInstance> characters { get; protected set; } =
             new List<CharacterInstance>();
 
@@ -171,6 +175,22 @@ namespace PLAYERTWO.ARPGProject
 
             characters.RemoveAt(characterId);
             onCharacterDeleted?.Invoke();
+        }
+
+        public string GetNPCIDForName(string npcName)
+        {
+            if (!npcIDMap.ContainsKey(npcName))
+            {
+                npcIDMap[npcName] = npcIDMap.Count.ToString(); // Numerowanie od 0, można zacząć od 1
+            }
+
+            return npcIDMap[npcName];
+        }
+
+        public int GetNextNPCID()
+        {
+            lastNPCID++;
+            return lastNPCID;
         }
 
         /// <summary>

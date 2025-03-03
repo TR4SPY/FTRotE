@@ -128,6 +128,12 @@ namespace PLAYERTWO.ARPGProject
             {
                 OnDropSKill?.Invoke(skillIcons.GetSkill());
             }
+
+            GUISkillsManager manager = Object.FindFirstObjectByType<GUISkillsManager>();
+            if (manager != null)
+            {
+                manager.UpdateButtons();
+            }
         }
     }
 }

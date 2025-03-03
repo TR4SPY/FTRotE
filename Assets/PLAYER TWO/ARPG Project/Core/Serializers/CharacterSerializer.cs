@@ -16,11 +16,11 @@ namespace PLAYERTWO.ARPGProject
         public string currentDynamicPlayerType;
         public string specialCondition;
         public Dictionary<int, int> selectedDialogPaths = new Dictionary<int, int>();
+        public Dictionary<string, List<int>> viewedDialogPages = new Dictionary<string, List<int>>();
 
         public List<string> unlockedAchievements;
         public List<string> visitedZones = new List<string>();
         public List<int> activatedWaypoints = new List<int>();
-        public List<int> viewedDialogPages = new List<int>();
 
         public UnitySerializer.Vector3 position;
         public UnitySerializer.Vector3 rotation;
@@ -93,7 +93,12 @@ namespace PLAYERTWO.ARPGProject
             visitedZones = character.visitedZones != null ? new List<string>(character.visitedZones) : new List<string>();
             activatedWaypoints = character.activatedWaypoints != null ? new List<int>(character.activatedWaypoints) : new List<int>();
 
-            viewedDialogPages = character.viewedDialogPages.Count == 0 ? new List<int>() : new List<int>(character.viewedDialogPages);
+            viewedDialogPages = new Dictionary<string, List<int>>();
+            foreach (var entry in character.viewedDialogPages)
+            {
+                viewedDialogPages[entry.Key] = new List<int>(entry.Value);
+            }
+
             selectedDialogPaths = character.viewedDialogPages.Count == 0 ? new Dictionary<int, int>() : new Dictionary<int, int>(character.selectedDialogPaths);
 
             Debug.Log($"Character '{name}' serialized with visited zones: {string.Join(", ", visitedZones)}, activated waypoints: {string.Join(", ", activatedWaypoints)}, and logs: PlayerDeaths={playerDeaths}, EnemiesDefeated={enemiesDefeated}, AchievementsUnlocked={achievementsUnlocked}");

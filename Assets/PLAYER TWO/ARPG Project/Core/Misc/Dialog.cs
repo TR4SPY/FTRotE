@@ -49,16 +49,15 @@ namespace AI_DDA.Assets.Scripts
         private Dictionary<int, int> selectedPaths = new Dictionary<int, int>();
         private int lastPathChoice = -1;
         
-        public bool ShouldShowPage(int pageIndex)
+        public bool ShouldShowPage(string npcID, int pageIndex)
         {
             var character = Game.instance.currentCharacter;
             if (character == null) return false;
 
             var currentPage = pages[pageIndex];
 
-            Debug.Log($"[ShouldShowPage] pageIndex={pageIndex}, showOnce={currentPage.showOnce}, " +
-              $"special={currentPage.isSpecial}, cond={currentPage.specialCondition}, " +
-              $"charCondition={character.specialCondition}, alreadyViewed={character.HasViewedDialogPage(pageIndex)}");
+            Debug.Log($"[ShouldShowPage] NPC_ID={npcID}, pageIndex={pageIndex}, showOnce={currentPage.showOnce}, " +
+                    $"alreadyViewed={character.HasViewedDialogPage(npcID, pageIndex)}");
 
             if (currentPage.isSpecial)
             {
@@ -70,7 +69,7 @@ namespace AI_DDA.Assets.Scripts
                 }
             }
 
-            return !currentPage.showOnce || !character.HasViewedDialogPage(pageIndex);
+            return !currentPage.showOnce || !character.HasViewedDialogPage(npcID, pageIndex);
         }
 
         public void SetPathChoice(int fromPage, int toPage)

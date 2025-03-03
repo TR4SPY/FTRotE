@@ -32,7 +32,7 @@ namespace PLAYERTWO.ARPGProject
 
         public HashSet<string> visitedZones = new HashSet<string>();
         public HashSet<int> activatedWaypoints = new HashSet<int>();
-        public HashSet<int> viewedDialogPages = new HashSet<int>();
+        public Dictionary<string, HashSet<int>> viewedDialogPages = new Dictionary<string, HashSet<int>>();
 
         public Dictionary<int, int> selectedDialogPaths = new Dictionary<int, int>();
 
@@ -63,7 +63,10 @@ namespace PLAYERTWO.ARPGProject
 
         public Vector3 currentPosition => m_entity ? m_entity.position : initialPosition;
         public Quaternion currentRotation => m_entity ? m_entity.transform.rotation : initialRotation;
-        public bool HasViewedDialogPage(int pageIndex) => viewedDialogPages.Contains(pageIndex);
+        public bool HasViewedDialogPage(string npcID, int pageIndex)
+        {
+            return viewedDialogPages.ContainsKey(npcID) && viewedDialogPages[npcID].Contains(pageIndex);
+        }
         
         public CharacterInstance() { }
 
@@ -131,11 +134,17 @@ namespace PLAYERTWO.ARPGProject
             return equippedPrefabs;
         }
 
-        public void MarkDialogPageAsViewed(int pageIndex)
+        public void MarkDialogPageAsViewed(string npcID, int pageIndex)
         {
-            if (!viewedDialogPages.Contains(pageIndex))
+            if (!viewedDialogPages.ContainsKey(npcID))
             {
-                viewedDialogPages.Add(pageIndex);
+                viewedDialogPages[npcID] = new HashSet<int>();
+            }
+            
+            if (!viewedDialogPages[npcID].Contains(pageIndex))
+            {
+                viewedDialogPages[npcID].Add(pageIndex);
+                Debug.Log($"Dialog Page {pageIndex} viewed for NPC {npcID}");
             }
         }
 
@@ -255,9 +264,6 @@ namespace PLAYERTWO.ARPGProject
                 playerDeaths = serializer.playerDeaths,
                 enemiesDefeated = serializer.enemiesDefeated,
                 totalCombatTime = serializer.totalCombatTime,
-                potionsUsed = serializer.potionsUsed,
-                difficultyMultiplier = serializer.difficultyMultiplier,
-                zonesDiscovered = serializer.zonesDiscovered,
                 npcInteractions = serializer.npcInteractions,
                 questsCompleted = serializer.questsCompleted,
                 waypointsDiscovered = serializer.waypointsDiscovered,
@@ -266,13 +272,10 @@ namespace PLAYERTWO.ARPGProject
                 currentDynamicPlayerType = serializer.currentDynamicPlayerType,
                 totalPlayTime = serializer.totalPlayTime,
 
-                viewedDialogPages = serializer.viewedDialogPages.Count == 0 ? new HashSet<int>() : new HashSet<int>(serializer.viewedDialogPages),
-                selectedDialogPaths = new Dictionary<int, int>(),
-
+                viewedDialogPages = new Dictionary<string, HashSet<int>>(),
                 visitedZones = serializer.visitedZones != null
                     ? new HashSet<string>(serializer.visitedZones)
                     : new HashSet<string>(),
-
                 activatedWaypoints = serializer.activatedWaypoints != null
                     ? new HashSet<int>(serializer.activatedWaypoints)
                     : new HashSet<int>(),
@@ -286,14 +289,22 @@ namespace PLAYERTWO.ARPGProject
                     : 0
             };
 
+            if (serializer.viewedDialogPages != null)
+            {
+                characterInstance.viewedDialogPages = new Dictionary<string, HashSet<int>>();
+                foreach (var entry in serializer.viewedDialogPages)
+                {
+                    characterInstance.viewedDialogPages[entry.Key] = new HashSet<int>(entry.Value);
+                }
+            }
+
             if (!Enum.TryParse(serializer.specialCondition, out SpecialCondition parsedCondition))
             {
                 Debug.LogError($"[AI-DDA] Błąd wczytywania specialCondition: {serializer.specialCondition}. Ustawiono 'None'.");
                 parsedCondition = SpecialCondition.None;
             }
             characterInstance.specialCondition = parsedCondition;
-            
-            // Wczytaj mnożniki trudności
+
             characterInstance.SetMultiplier("Dexterity", serializer.dexterityMultiplier);
             characterInstance.SetMultiplier("Strength", serializer.strengthMultiplier);
             characterInstance.SetMultiplier("Vitality", serializer.vitalityMultiplier);
