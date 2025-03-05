@@ -25,3 +25,20 @@ MonoBehaviour:
   items: []
   destinationScene: 
   progressKey: 
+  requiredItem:
+    data: {fileID: 0}
+    attributes: 0
+  returnToNPC: 
+  requiresManualCompletion: 0
+  killerMultiplier: 1.5
+  killerGoldMultiplier: 1.1
+  killerExpMultiplier: 0.8
+  socializerMultiplier: 0.5
+  socializerGoldMultiplier: 1.25
+  socializerExpMultiplier: 1.1
+  explorerMultiplier: 1.2
+  explorerExpMultiplier: 1.25
+  explorerGoldMultiplier: 0.8
+  achieverMultiplier: 1
+  achieverExpMultiplier: 1.5
+  achieverGoldMultiplier: 1.5

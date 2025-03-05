@@ -136,11 +136,11 @@ namespace PLAYERTWO.ARPGProject
                     onProgressChanged?.Invoke(quest);
 
                     // Standardowe questy kończą się po osiągnięciu progu
-                    if (quest.progress == quest.data.targetProgress)
+                    if (quest.progress >= quest.data.GetTargetProgress()) // Sprawdzamy dynamiczny cel
                     {
                         if (quest.data.IsFetchAfterKill())
                         {
-                            Debug.Log($"Quest '{quest.data.title}' requires item return to {quest.data.returnToNPC}.");
+                            Debug.Log($"Quest '{quest.data.title}' wymaga zwrócenia przedmiotu do {quest.data.returnToNPC}.");
                         }
                         else
                         {

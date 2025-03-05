@@ -17,8 +17,20 @@ namespace PLAYERTWO.ARPGProject
             m_entity.onDie.AddListener(AddQuestProgression);
         }
 
-        public virtual void AddQuestProgression() =>
-            Game.instance.quests.AddProgress(enemyKey);
+        public virtual void AddQuestProgression()
+        {
+            var questManager = Game.instance.quests;
+
+            foreach (var quest in questManager.list)
+            {
+                if (quest.data.IsProgressKey(enemyKey))
+                {
+                    questManager.AddProgress(enemyKey);
+
+                    int remainingKills = quest.data.GetTargetProgress() - quest.progress;
+                }
+            }
+        }
 
         protected virtual void Start() => InitializeEntity();
     }

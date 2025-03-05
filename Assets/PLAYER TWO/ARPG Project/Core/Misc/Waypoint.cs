@@ -18,6 +18,31 @@ namespace PLAYERTWO.ARPGProject
         public float activationRadius = 10f;
         public string title = "New Waypoint";
 
+        [Header("Waypoint Discovery Rewards")]
+        [Header("Achiever Rewards")]
+        [Tooltip("EXP reward for Achiever")]
+        public int achieverExpReward = 100;
+        [Tooltip("Gold reward for Achiever")]
+        public int achieverGoldReward = 100;
+
+        [Header("Killer Rewards")]
+        [Tooltip("EXP reward for Killer")]
+        public int killerExpReward = 100;
+        [Tooltip("Gold reward for Killer")]
+        public int killerGoldReward = 100;
+
+        [Header("Socializer Rewards")]
+        [Tooltip("EXP reward for Socializer")]
+        public int socializerExpReward = 100;
+        [Tooltip("Gold reward for Socializer")]
+        public int socializerGoldReward = 100;
+
+        [Header("Explorer Rewards")]
+        [Tooltip("EXP reward for Explorer")]
+        public int explorerExpReward = 500;
+        [Tooltip("Gold reward for Explorer")]
+        public int explorerGoldReward = 500;
+
         protected float m_startTime;
         protected bool m_active = false;
         protected Collider m_collider;
@@ -91,12 +116,45 @@ namespace PLAYERTWO.ARPGProject
             GUIWindowsManager.instance.waypointsWindow.Show();
         }
 
+        private void GiveDiscoveryReward(Entity player)
+        {
+            if (player == null || player.stats == null || player.inventory == null)
+                return;
+
+            string playerType = Game.instance.currentCharacter.currentDynamicPlayerType;
+            int finalExp = 0;
+            int finalGold = 0;
+
+            switch (playerType)
+            {
+                case "Achiever":
+                    finalExp = achieverExpReward;
+                    finalGold = achieverGoldReward;
+                    break;
+                case "Killer":
+                    finalExp = killerExpReward;
+                    finalGold = killerGoldReward;
+                    break;
+                case "Socializer":
+                    finalExp = socializerExpReward;
+                    finalGold = socializerGoldReward;
+                    break;
+                case "Explorer":
+                    finalExp = explorerExpReward;
+                    finalGold = explorerGoldReward;
+                    break;
+            }
+
+            player.stats.AddExperience(finalExp);
+            player.inventory.instance.money += finalGold;
+
+            Debug.Log($"[Waypoint] {player.name} discovered waypoint '{title}' (ID: {waypointID}) and received {finalExp} EXP, {finalGold} Gold.");
+        }
+
         protected void LogWaypointDiscovery(Collider other = null)
         {
-            // Domyślnie ustaw interaktor na gracza
             Entity interactor = m_player;
 
-            // Jeśli przekazano Collider, sprawdź, czy to gracz lub AI Agent
             if (other != null)
             {
                 bool isPlayer = other.CompareTag(GameTags.Player);
@@ -108,7 +166,6 @@ namespace PLAYERTWO.ARPGProject
                     return;
                 }
 
-                // Pobierz Entity na podstawie Collidera
                 interactor = other.GetComponent<Entity>();
                 if (interactor == null)
                 {
@@ -120,22 +177,30 @@ namespace PLAYERTWO.ARPGProject
             if (AgentBehaviorLogger.Instance != null)
             {
                 AgentBehaviorLogger.Instance.LogWaypointDiscovery(waypointID); 
-                Debug.Log($"Waypoint '{title}' (ID: {waypointID}) discovered and logged by {interactor.name}.");
+                Debug.Log($"[Waypoint] AI discovered '{title}' (ID: {waypointID})");
             }
 
-            // Logowanie odkrycia waypointu
             if (PlayerBehaviorLogger.Instance != null && interactor != null)
             {
+                if (Game.instance.currentCharacter.HasActivatedWaypoint(waypointID))
+                {
+                    Debug.Log($"[Waypoint] '{title}' (ID: {waypointID}) already discovered. No reward given.");
+                    return;
+                }
+
+                Game.instance.currentCharacter.MarkWaypointAsActivated(waypointID);
                 PlayerBehaviorLogger.Instance.LogWaypointDiscovery(interactor, waypointID);
-                Debug.Log($"Waypoint '{title}' (ID: {waypointID}) discovered and logged by {interactor.name}.");
+                GiveDiscoveryReward(interactor);
+                
+                Debug.Log($"[Waypoint] '{title}' (ID: {waypointID}) discovered and logged by {interactor.name}.");
             }
             else if (interactor == null)
             {
-                Debug.LogWarning("Interactor entity is null. Cannot log waypoint discovery.");
+                Debug.LogWarning("[Waypoint] Interactor entity is null. Cannot log waypoint discovery.");
             }
             else
             {
-                Debug.LogWarning("PlayerBehaviorLogger.Instance is null. Cannot log waypoint discovery.");
+                Debug.LogWarning("[Waypoint] PlayerBehaviorLogger.Instance is null. Cannot log waypoint discovery.");
             }
         }
     }

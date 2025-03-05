@@ -4,6 +4,15 @@ namespace PLAYERTWO.ARPGProject
 {
     public class Item : ScriptableObject
     {
+        public enum Rarity
+        {
+            Common,
+            Uncommon,
+            Rare,
+            Epic,
+            Legendary
+        }
+
         [Header("Item Settings")]
         [Tooltip("The unique identifier for this Item.")]
         public int id; // Dodane pole ID
@@ -13,6 +22,9 @@ namespace PLAYERTWO.ARPGProject
 
         [Tooltip("The base price of this Item.")]
         public int price;
+
+        [Tooltip("The rarity of the item.")]
+        public Rarity rarity;
 
         [Header("Drop Settings")]
         [Tooltip("The position relative to the drop point to place the Item when dropping it.")]

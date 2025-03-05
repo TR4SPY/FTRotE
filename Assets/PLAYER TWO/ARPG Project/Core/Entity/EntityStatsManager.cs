@@ -614,6 +614,11 @@ namespace PLAYERTWO.ARPGProject
             m_defeatedEntities.Add(other);
             AddExperience(Game.instance.baseEnemyDefeatExperience * other.stats.level);
         }
+        
+        public bool IsMaxLevel()
+        {
+            return m_reachedMaxLevel;
+        }
 
         protected virtual void Start() => Initialize();
     }

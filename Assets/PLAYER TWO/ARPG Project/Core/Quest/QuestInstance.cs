@@ -5,7 +5,7 @@ namespace PLAYERTWO.ARPGProject
     public class QuestInstance
     {
         public Quest data;
-
+        protected int finalTargetProgress;
         protected int m_progress;
 
         /// <summary>
@@ -19,7 +19,8 @@ namespace PLAYERTWO.ARPGProject
             {
                 if (!data.IsProgress()) return;
 
-                m_progress = Mathf.Clamp(value, 0, data.targetProgress);
+                int requiredProgress = data.GetTargetProgress(); // Pobranie dynamicznego celu dla "Killer"
+                m_progress = Mathf.Clamp(value, 0, requiredProgress);
             }
         }
 
@@ -31,6 +32,7 @@ namespace PLAYERTWO.ARPGProject
         public QuestInstance(Quest data)
         {
             this.data = data;
+            this.finalTargetProgress = data.GetTargetProgress();
         }
 
         public QuestInstance(Quest data, int progress, bool completed)
@@ -38,6 +40,7 @@ namespace PLAYERTWO.ARPGProject
             this.data = data;
             this.completed = completed;
             this.progress = progress;
+            this.finalTargetProgress = data.GetTargetProgress();
         }
 
         /// <summary>
@@ -48,6 +51,12 @@ namespace PLAYERTWO.ARPGProject
             if (completed) return;
 
             completed = true;
+            finalTargetProgress = data.GetTargetProgress();
+        }
+
+        public int GetFinalTargetProgress()
+        {
+            return completed ? finalTargetProgress : data.GetTargetProgress();
         }
 
         /// <summary>
@@ -87,14 +96,8 @@ namespace PLAYERTWO.ARPGProject
         {
             if (!entity) return;
 
-            int finalExperience = data.experience;
-            int finalCoins = data.coins;
-
-            if (data.extraRewards && Game.instance.currentCharacter.currentDynamicPlayerType == "Achiever")
-            {
-                finalExperience += data.additionalExperience;
-                finalCoins += data.additionalCoins;
-            }
+            int finalExperience = data.GetTotalExperience();
+            int finalCoins = data.GetTotalCoins();
 
             if (entity.stats)
                 entity.stats.AddExperience(finalExperience);
@@ -108,8 +111,6 @@ namespace PLAYERTWO.ARPGProject
                     entity.inventory.instance.TryAddItem(item.CreateItemInstance());
                 }
             }
-
-            Debug.Log($"[AI-DDA] Reward granted: {finalExperience} EXP, {finalCoins} coins to {entity.name}");
         }
 
         /// <summary>

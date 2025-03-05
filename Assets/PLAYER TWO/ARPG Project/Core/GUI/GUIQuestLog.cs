@@ -41,6 +41,12 @@ namespace PLAYERTWO.ARPGProject
                     m_buttons.Add(Instantiate(questButton, container));
 
                 m_buttons[i].SetQuest(quests[i]);
+
+                int progress = quests[i].progress;
+                int target = quests[i].GetFinalTargetProgress();
+
+                m_buttons[i].progress.text = $"{progress} / {target}";
+
                 m_buttons[i].gameObject.SetActive(true);
             }
         }

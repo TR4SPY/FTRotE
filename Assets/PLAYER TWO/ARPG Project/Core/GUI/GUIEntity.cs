@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -22,6 +23,9 @@ namespace PLAYERTWO.ARPGProject
         public Text manaText;
 
         [Header("Experience Settings")]
+        [Tooltip("References the experience bar Image component.")]
+        public GameObject experienceBar;
+
         [Tooltip("References the experience bar Image component.")]
         public Image experienceImage;
 
@@ -163,6 +167,8 @@ namespace PLAYERTWO.ARPGProject
 
             if (experienceText)
                 experienceText.text = $"{m_entity.stats.experience} / {m_entity.stats.nextLevelExp}";
+
+            AttachTooltipToExperience();
         }
 
         /// <summary>
@@ -219,6 +225,33 @@ namespace PLAYERTWO.ARPGProject
 
             return false;
         }
+
+        private void AttachTooltipToExperience()
+{
+    if (experienceBar == null || m_entity == null) return;
+
+    bool isMaxLevel = m_entity.stats.IsMaxLevel();
+    string expTooltipMessage = TooltipFormatter.FormatExperienceTooltip(
+        m_entity.stats.experience,
+        m_entity.stats.nextLevelExp,
+        isMaxLevel
+    );
+
+    EventTrigger trigger = experienceBar.gameObject.GetComponent<EventTrigger>() ?? experienceBar.gameObject.AddComponent<EventTrigger>();
+    trigger.triggers.Clear();
+
+    EventTrigger.Entry entryEnter = new EventTrigger.Entry { eventID = EventTriggerType.PointerEnter };
+    entryEnter.callback.AddListener((eventData) =>
+    {
+        GUITooltip.instance.ShowTooltip("", expTooltipMessage, experienceBar.gameObject); // ✅ Pusty tytuł ukryje Tooltip Name
+    });
+    trigger.triggers.Add(entryEnter);
+
+    EventTrigger.Entry entryExit = new EventTrigger.Entry { eventID = EventTriggerType.PointerExit };
+    entryExit.callback.AddListener((eventData) => GUITooltip.instance.HideTooltip());
+    trigger.triggers.Add(entryExit);
+}
+
 
         protected virtual void Start()
         {

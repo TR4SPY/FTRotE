@@ -17,12 +17,28 @@ MonoBehaviour:
     to my horror, their lifeless bodies have been resurrected as an undead army.
     I am in desperate need of your assistance in putting an end to this abomination,
     so that my fallen soldiers can finally rest in peace.
-  objective: Defeat 10 zombies
+  objective: Defeat Zombies
   targetProgress: 10
   completingMode: 1
-  hasReward: 1
   experience: 1500
   coins: 2500
   items: []
   destinationScene: 
   progressKey: zombie
+  requiredItem:
+    data: {fileID: 0}
+    attributes: 0
+  returnToNPC: 
+  requiresManualCompletion: 0
+  killerMultiplier: 1.5
+  killerGoldMultiplier: 1.1
+  killerExpMultiplier: 0.8
+  socializerMultiplier: 0.5
+  socializerGoldMultiplier: 1.25
+  socializerExpMultiplier: 1
+  explorerMultiplier: 1.2
+  explorerExpMultiplier: 1.25
+  explorerGoldMultiplier: 0.9
+  achieverMultiplier: 1
+  achieverExpMultiplier: 1.5
+  achieverGoldMultiplier: 1.5

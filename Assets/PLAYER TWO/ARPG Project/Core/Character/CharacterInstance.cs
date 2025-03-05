@@ -197,24 +197,20 @@ namespace PLAYERTWO.ARPGProject
             }
         }
 
-        // Metoda do sprawdzania, czy waypoint został odwiedzony
         public bool HasActivatedWaypoint(int waypointID) => activatedWaypoints.Contains(waypointID);
 
-        // Metoda do oznaczania waypointu jako odwiedzonego
         public void MarkWaypointAsActivated(int waypointID)
         {
             if (!activatedWaypoints.Contains(waypointID))
             {
                 activatedWaypoints.Add(waypointID);
-                waypointsDiscovered++; // Aktualizuj licznik waypointów
+                waypointsDiscovered++;
                 Debug.Log($"Waypoint '{waypointID}' marked as visited for character '{name}'.");
             }
         }
 
-        // Metoda do sprawdzania, czy strefa została odwiedzona
         public bool HasVisitedZone(string zoneId) => visitedZones.Contains(zoneId);
 
-        // Metoda do oznaczania strefy jako odwiedzonej
         public void MarkZoneAsVisited(string zoneId)
         {
             if (!visitedZones.Contains(zoneId))
