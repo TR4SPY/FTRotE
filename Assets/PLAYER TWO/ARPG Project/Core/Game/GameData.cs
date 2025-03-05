@@ -19,6 +19,9 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The list of all available< Quests.")]
         public List<Quest> quests;
 
+        [Tooltip("The list of all available Quest Item Prefabs.")]
+        public List<GameObject> questItems;
+
         /// <summary>
         /// Przypisz unikalne identyfikatory do każdego przedmiotu w liście.
         /// </summary>

@@ -86,7 +86,9 @@ namespace PLAYERTWO.ARPGProject
         /// <summary>
         /// Returns the formatted progress text.
         /// </summary>
-        public virtual string GetProgressText() => $"{progress} / {data.targetProgress}";
+        // public virtual string GetProgressText() => $"{progress} / {data.targetProgress}";
+        public virtual string GetProgressText() => $"{progress} / {GetFinalTargetProgress()}";
+
 
         /// <summary>
         /// Rewards a given Entity with all the Quest's rewards.

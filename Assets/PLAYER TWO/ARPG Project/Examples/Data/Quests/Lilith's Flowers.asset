@@ -17,15 +17,12 @@ MonoBehaviour:
     been impacted by the ongoing war. The village's soldiers are wounded and in dire
     need of healing, and the villagers have heard of a rare and powerful plant known
     as Lilith's Flowers that can heal any wound, no matter how severe.
-  objective: Collect 5 Lilith's Flowers
+  objective: Collect Lilith's Flowers
   targetProgress: 5
   completingMode: 1
   experience: 2500
   coins: 2000
   items: []
-  extraRewards: 0
-  additionalExperience: 0
-  additionalCoins: 0
   destinationScene: 
   progressKey: lilith flower
   requiredItem:
@@ -33,3 +30,15 @@ MonoBehaviour:
     attributes: 0
   returnToNPC: 
   requiresManualCompletion: 0
+  killerMultiplier: 1.5
+  killerGoldMultiplier: 1.1
+  killerExpMultiplier: 0.8
+  socializerMultiplier: 0.5
+  socializerGoldMultiplier: 1.25
+  socializerExpMultiplier: 1
+  explorerMultiplier: 1.2
+  explorerExpMultiplier: 1.25
+  explorerGoldMultiplier: 0.9
+  achieverMultiplier: 1
+  achieverExpMultiplier: 1.5
+  achieverGoldMultiplier: 1.5

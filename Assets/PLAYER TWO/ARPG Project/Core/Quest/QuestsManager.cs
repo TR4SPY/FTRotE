@@ -1,6 +1,8 @@
 //  ZMODYFIKOWANO 31 GRUDNIA 2024
 
 using UnityEngine;
+using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using AI_DDA.Assets.Scripts;
 
@@ -55,6 +57,8 @@ namespace PLAYERTWO.ARPGProject
 
             m_quests.Add(new QuestInstance(quest));
             onQuestAdded?.Invoke(m_quests[^1]);
+
+            AdjustQuestItems(m_quests[^1]);
         }
 
         /// <summary>
@@ -193,5 +197,185 @@ namespace PLAYERTWO.ARPGProject
             if (instance.CanCompleteByTrigger())
                 CompleteQuest(instance);
         }
+
+        public void AdjustQuestItems(QuestInstance questInstance)
+        {
+            if (questInstance == null || !questInstance.data.IsProgress()) return;
+
+            string itemKey = questInstance.data.progressKey;
+            int requiredAmount = questInstance.GetFinalTargetProgress(); 
+
+            QuestItem[] existingItems = Object.FindObjectsByType<QuestItem>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+                .Where(item => item.itemKey == itemKey)
+                .ToArray();
+
+            int currentAmount = existingItems.Length;
+
+            Debug.Log($"[QUEST] Checking quest items for key: {itemKey} - Found {currentAmount}, Required: {requiredAmount}");
+
+            if (currentAmount < requiredAmount)
+            {
+                int toSpawn = requiredAmount - currentAmount;
+                Debug.Log($"[QUEST] Spawning {toSpawn} missing Quest Items for key: {itemKey}");
+                SpawnQuestItems(itemKey, toSpawn);
+            }
+            else if (currentAmount > requiredAmount)
+            {
+                int toDisable = currentAmount - requiredAmount;
+                Debug.Log($"[QUEST] Disabling {toDisable} extra Quest Items for key: {itemKey}");
+                DisableExtraQuestItems(existingItems, toDisable);
+            }
+        }
+
+    /// <summary>
+    /// Tworzy brakujące przedmioty na mapie.
+    /// </summary>
+    public void SpawnQuestItems(string itemKey, int amount)
+    {
+        GameObject prefab = GetQuestItems(itemKey);
+
+        if (prefab == null)
+        {
+            Debug.LogError($"[QUEST] ERROR: No prefab found for itemKey {itemKey}");
+            return;
+        }
+
+        GameObject parent = GameObject.Find("Quest Items");
+
+        for (int i = 0; i < amount; i++)
+        {
+            Vector3 spawnPosition = GetValidSpawnPosition(itemKey);
+
+            if (spawnPosition == Vector3.zero)
+            {
+                // 🚀 Fallback - zamiast od razu tworzyć, czekamy 2s, aż istniejące znikną
+                Game.instance.StartCoroutine(SpawnWithDelay(itemKey, prefab, parent, 2f));
+                continue;
+            }
+
+            GameObject newItem = UnityEngine.Object.Instantiate(prefab, spawnPosition, Quaternion.identity);
+
+            if (parent != null)
+            {
+                newItem.transform.SetParent(parent.transform); // ✅ Ustawienie w hierarchii "Quest Items"
+            }
+
+            newItem.SetActive(true);
+        }
+    }
+
+    private IEnumerator SpawnWithDelay(string itemKey, GameObject prefab, GameObject parent, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        // 📌 Pobranie losowego istniejącego przedmiotu jako bazowego punktu odnowienia
+        List<Transform> existingItems = parent.GetComponentsInChildren<QuestItem>(true)
+                                            .Where(item => item.itemKey == itemKey)
+                                            .Select(item => item.transform)
+                                            .ToList();
+
+        if (existingItems.Count == 0)
+        {
+            Debug.LogError($"[QUEST] ERROR: No existing items found for itemKey {itemKey} after delay!");
+            yield break;
+        }
+
+        Vector3 spawnPosition = existingItems[Random.Range(0, existingItems.Count)].position;
+
+        GameObject newItem = UnityEngine.Object.Instantiate(prefab, spawnPosition, Quaternion.identity);
+        if (parent != null)
+        {
+            newItem.transform.SetParent(parent.transform);
+        }
+
+        newItem.SetActive(true);
+    }
+
+    /// <summary>
+    /// Ukrywa nadmiarowe przedmioty na mapie.
+    /// </summary>
+    private void DisableExtraQuestItems(QuestItem[] items, int amount)
+    {
+        int count = 0;
+        foreach (var item in items)
+        {
+            if (count >= amount) break;
+            item.gameObject.SetActive(false);
+            count++;
+        }
+    }
+
+    /// <summary>
+    /// Pobiera prefabrykat QuestItem na podstawie itemKey.
+    /// </summary>
+    public GameObject GetQuestItems(string itemKey)
+    {
+        return GameDatabase.instance.gameData.questItems.FirstOrDefault(prefab =>
+        {
+            QuestItem questItem = prefab.GetComponent<QuestItem>();
+            return questItem != null && questItem.itemKey == itemKey;
+        });
+    }
+
+    /// <summary>
+    /// Znajduje losową pozycję do wygenerowania przedmiotu.
+    /// </summary>
+    private Vector3 GetValidSpawnPosition(string itemKey)
+{
+    Vector3 spawnPosition;
+    float maxDistance = 5f;  // Zwiększony promień od istniejących obiektów
+    int maxAttempts = 20;    // Maksymalna liczba prób znalezienia poprawnego miejsca
+
+    // 📌 Znalezienie parenta "Quest Items"
+    GameObject questItemsParent = GameObject.Find("Quest Items");
+
+    if (questItemsParent == null)
+    {
+        Debug.LogError("[QUEST] ERROR: 'Quest Items' parent object not found in the scene!");
+        return Vector3.zero;
+    }
+
+    // 📌 Pobranie wszystkich obiektów pasujących do `itemKey`
+    List<Transform> existingItems = questItemsParent.GetComponentsInChildren<QuestItem>(true)
+                                                     .Where(item => item.itemKey == itemKey)
+                                                     .Select(item => item.transform)
+                                                     .ToList();
+
+    if (existingItems.Count == 0)
+    {
+        Debug.LogError($"[QUEST] ERROR: No existing items found for itemKey '{itemKey}' inside 'Quest Items'!");
+        return Vector3.zero;
+    }
+
+    // 📌 Próbujemy znaleźć wolne miejsce
+    for (int i = 0; i < maxAttempts; i++)
+    {
+        // 📌 Wybór losowego już istniejącego obiektu jako punkt odniesienia
+        Vector3 basePosition = existingItems[Random.Range(0, existingItems.Count)].position;
+
+        // 📌 Generowanie losowej pozycji w pobliżu bazowej
+        float offsetX = Random.Range(-maxDistance, maxDistance);
+        float offsetZ = Random.Range(-maxDistance, maxDistance);
+        spawnPosition = new Vector3(basePosition.x + offsetX, basePosition.y, basePosition.z + offsetZ);
+
+        // 📌 Korekta wysokości względem terenu
+        if (Terrain.activeTerrain != null)
+        {
+            float terrainHeight = Terrain.activeTerrain.SampleHeight(spawnPosition);
+            spawnPosition.y = terrainHeight + 0.2f; // Unikamy zagłębiania w ziemię
+        }
+
+        // 📌 Sprawdzenie, czy w danym miejscu NIE MA innego obiektu
+        if (!Physics.CheckSphere(spawnPosition, 0.7f)) // Większy promień, aby uniknąć kolizji
+        {
+            return spawnPosition;
+        }
+    }
+
+    // 📌 Jeśli nie znaleziono miejsca, zwracamy `Vector3.zero`, co aktywuje fallback w `SpawnQuestItems`
+    Debug.LogWarning($"[QUEST] WARNING: Could not find a fully free position for {itemKey}, using delayed fallback.");
+    return Vector3.zero;
+}
+
     }
 }

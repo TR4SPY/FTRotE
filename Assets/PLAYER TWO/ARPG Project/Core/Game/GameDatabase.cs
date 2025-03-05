@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -13,6 +14,7 @@ namespace PLAYERTWO.ARPGProject
         public List<Item> items => gameData.items;
         public List<Skill> skills => gameData.skills;
         public List<Quest> quests => gameData.quests;
+        public List<GameObject> questItems => gameData.questItems;
 
         /// <summary>
         /// Returns the index of a given element on a list of a given type.

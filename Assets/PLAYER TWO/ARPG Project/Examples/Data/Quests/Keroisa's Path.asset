@@ -17,7 +17,7 @@ MonoBehaviour:
     My mans were able to dispose most of the creatures. Some of us died. but there's
     still some of these things to go. Please, eliminate the rest of the creatures
     and liberate the path.
-  objective: Eliminate 20 Skeleton Wizards
+  objective: Eliminate Skeleton Wizards
   targetProgress: 20
   completingMode: 1
   experience: 5000
@@ -30,4 +30,17 @@ MonoBehaviour:
   requiredItem:
     data: {fileID: 0}
     attributes: 0
-  returnToNPC: {fileID: 0}
+  returnToNPC: 
+  requiresManualCompletion: 0
+  killerMultiplier: 1.5
+  killerGoldMultiplier: 1.1
+  killerExpMultiplier: 0.8
+  socializerMultiplier: 0.5
+  socializerGoldMultiplier: 1.25
+  socializerExpMultiplier: 1
+  explorerMultiplier: 1.2
+  explorerExpMultiplier: 1.25
+  explorerGoldMultiplier: 0.9
+  achieverMultiplier: 1
+  achieverExpMultiplier: 1.5
+  achieverGoldMultiplier: 1.5

@@ -68,10 +68,14 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void OnEnable() => m_targets.Clear();
 
-        protected virtual bool ValidCollision(GameObject other) =>
-            (GameTags.InTagList(other, m_entity.targetTags) ||
-            other.CompareTag(GameTags.Destructible)) &&
-            (!collideOnce || !m_targets.Contains(other));
+        protected virtual bool ValidCollision(GameObject other)
+{
+    bool isValid = (GameTags.InTagList(other, m_entity.targetTags) || other.CompareTag(GameTags.Destructible)) &&
+        (!collideOnce || !m_targets.Contains(other));
+
+    Debug.Log($"ValidCollision with {other.name}: {isValid}");
+    return isValid;
+}
 
         protected virtual void HandleEntityAttack(GameObject other, int damage, bool critical)
         {
@@ -98,17 +102,19 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void OnTriggerStay(Collider other)
         {
+            Debug.Log("Trigger stay with: " + other.gameObject.name);
             if (!ValidCollision(other.gameObject)) return;
 
             m_targets.Add(other.gameObject);
 
             var damage = m_entity.stats.GetSkillDamage(m_skill, out var critical);
-
             HandleAttack(other.gameObject, damage, critical);
         }
 
         protected virtual void OnParticleCollision(GameObject other)
         {
+            Debug.Log("Particle collided with: " + other.gameObject.name);
+
             if (!ValidCollision(other)) return;
 
             var collisions = m_particle.GetCollisionEvents(other, m_events);
@@ -116,6 +122,7 @@ namespace PLAYERTWO.ARPGProject
 
             for (int i = 0; i < collisions; i++)
             {
+                Debug.Log($"Dealing {damage} damage to {other.name}");
                 m_targets.Add(other);
                 HandleAttack(other, damage, critical);
             }
