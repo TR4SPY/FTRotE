@@ -152,7 +152,7 @@ namespace PLAYERTWO.ARPGProject
                 var collider = entity.GetComponent<Collider>();
                 if (collider != null)
                 {
-                    interactionLogger.LogInteraction(collider); // Przekazujemy Collider do logowania
+                    interactionLogger.LogInteraction(collider);
                 }
                 else
                 {

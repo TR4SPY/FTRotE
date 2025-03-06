@@ -224,9 +224,9 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         private string GetMultiplierColor(float multiplier)
         {
-            if (multiplier > 1f) return ColorUtility.ToHtmlStringRGB(GameColors.Green); // Bonus
-            if (multiplier < 1f) return ColorUtility.ToHtmlStringRGB(GameColors.LightRed); // Kara
-            return ColorUtility.ToHtmlStringRGB(GameColors.LightBlue); // Bez zmian
+            if (multiplier > 1f) return ColorUtility.ToHtmlStringRGB(GameColors.Green);
+            if (multiplier < 1f) return ColorUtility.ToHtmlStringRGB(GameColors.LightRed);
+            return ColorUtility.ToHtmlStringRGB(GameColors.LightBlue);
         }
 
         /// <summary>
@@ -239,7 +239,7 @@ namespace PLAYERTWO.ARPGProject
             if (multiplier < 1f)
                 return $"(<color=#{color}>-{Mathf.RoundToInt((1 - multiplier) * 100)}%</color>)";
             
-            return $"(<color=#{color}>-/-</color>)"; // Bez zmian
+            return $"(<color=#{color}>-/-</color>)";
         }
 
         public int GetTargetProgress()

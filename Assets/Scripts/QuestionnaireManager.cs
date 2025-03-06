@@ -124,6 +124,21 @@ namespace AI_DDA.Assets.Scripts
             }
         }
 
+        public void UpdateDisplayedPlayerType()
+        {
+            if (playerTypeAttributeText == null)
+            {
+                Debug.LogError("playerTypeAttributeText is not assigned!");
+                return;
+            }
+
+            string dynamicType = PlayerBehaviorLogger.Instance?.currentDynamicPlayerType ?? "Undefined";
+
+            string displayedType = (dynamicType == "Unknown" || dynamicType == "Undefined") ? playerType : dynamicType;
+
+            playerTypeAttributeText.text = displayedType;
+        }
+
         private string GetDominantPlayerType()
         {
             string dominantType = "Undefined";

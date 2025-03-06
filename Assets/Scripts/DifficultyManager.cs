@@ -40,8 +40,11 @@ namespace AI_DDA.Assets.Scripts
             }
         }
 
+        public bool useAIDDA = true;
+
         public void SetDifficultyFromAI(float difficultyLevel)
         {
+            if (!useAIDDA) return;
             Debug.Log($"[AI-DDA] Setting difficulty based on AI Prediction: {difficultyLevel}");
 
             float oldDiff = oldGlobalDifficulty;   // Poprzednia wartość trudności

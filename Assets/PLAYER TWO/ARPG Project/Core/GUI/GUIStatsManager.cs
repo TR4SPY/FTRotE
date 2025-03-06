@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using AI_DDA.Assets.Scripts;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -39,6 +40,9 @@ namespace PLAYERTWO.ARPGProject
 
         [Tooltip("A reference to the Text component that represents the Stats magic damage points.")]
         public Text magicDamageText;
+
+        [Tooltip("A reference to the Text component that represents the player's Bartle Type.")]
+        public Text playerTypeText;
 
         [Header("GUI Attributes")]
         [Tooltip("A reference to the GUI Stats Attributes representing strength points.")]
@@ -217,7 +221,17 @@ namespace PLAYERTWO.ARPGProject
             dexterity.Reset(m_entity.stats.dexterity);
             vitality.Reset(m_entity.stats.vitality);
             energy.Reset(m_entity.stats.energy);
+
+            string staticType = characterInstance.playerType;  
+            string dynamicType = PlayerBehaviorLogger.Instance?.currentDynamicPlayerType ?? "Unknown";
+            string displayedType = (dynamicType == "Unknown" || dynamicType == "Undefined") ? staticType : dynamicType;
+
+            if (playerTypeText != null)
+            {
+                playerTypeText.text = $"{displayedType}";
+            }
         }
+
 
         protected virtual void Start()
         {

@@ -51,6 +51,13 @@ namespace AI_DDA.Assets.Scripts
             {
                 Destroy(gameObject);
             }
+
+            statsManager = Game.instance?.GetComponentInChildren<GUIStatsManager>();
+
+            if (statsManager == null)
+            {
+                Debug.LogError("GUIStatsManager not found in Game.instance!");
+            }
         }
 
     private bool difficultyAdjusted = false;
@@ -58,6 +65,8 @@ namespace AI_DDA.Assets.Scripts
     private HashSet<int> discoveredWaypoints = new HashSet<int>();
     public AchievementManager achievementManager { get; private set; }
 
+    private GUIStatsManager statsManager;
+    
     // == PLAYER DATA ==
     [Header("Player Stats")]
     [Tooltip("Amount of Player deaths.")]
@@ -338,6 +347,11 @@ namespace AI_DDA.Assets.Scripts
             {
                 Debug.Log($"Player type updated: {currentDynamicPlayerType} -> {newPlayerType}");
                 currentDynamicPlayerType = newPlayerType;
+            }
+
+            if (statsManager != null)
+            {
+                statsManager.Refresh();
             }
         }
 
