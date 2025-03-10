@@ -7,25 +7,11 @@ namespace PLAYERTWO.ARPGProject
     public class QuestMarker : MonoBehaviour
     {
         [Header("World Markers")]
-        [Tooltip(
-            "The Game Object that represents the marker when a Quest Giver has a Quest available."
-        )]
         public GameObject availableQuestMarker;
-
-        [Tooltip(
-            "The Game Object that represents the marker when a Quest Giver has a Quest in progress."
-        )]
         public GameObject inProgressQuestMarker;
 
         [Header("Minimap Markers")]
-        [Tooltip(
-            "The Minimap Icon that represents the marker on the Minimap when a Quest Giver has a Quest available."
-        )]
         public MinimapIcon availableQuestIcon;
-
-        [Tooltip(
-            "The Minimap Icon that represents the marker on the Minimap when a Quest Giver has a Quest in progress."
-        )]
         public MinimapIcon inProgressQuestIcon;
 
         protected GameObject m_availableQuestMarker;
@@ -38,6 +24,7 @@ namespace PLAYERTWO.ARPGProject
         protected virtual void Awake()
         {
             Initialize();
+            InstantiateMarkers();
             InstantiateIcons();
         }
 
@@ -49,22 +36,31 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void InstantiateMarkers()
         {
-            InstantiateObject(ref m_availableQuestMarker, availableQuestMarker);
-            InstantiateObject(ref m_inProgressQuestMarker, inProgressQuestMarker);
+            InstantiateWorldMarker(ref m_availableQuestMarker, availableQuestMarker, Vector3.up * 3f);
+            InstantiateWorldMarker(ref m_inProgressQuestMarker, inProgressQuestMarker, Vector3.up * 3f);
         }
 
         protected virtual void InstantiateIcons()
         {
-            InstantiateObject(ref m_availableQuestIcon, availableQuestIcon);
-            InstantiateObject(ref m_inProgressQuestIcon, inProgressQuestIcon);
+            InstantiateMinimapIcon(ref m_availableQuestIcon, availableQuestIcon);
+            InstantiateMinimapIcon(ref m_inProgressQuestIcon, inProgressQuestIcon);
         }
 
-        protected virtual void InstantiateObject(ref GameObject instance, Object go)
+        protected virtual void InstantiateWorldMarker(ref GameObject instance, GameObject prefab, Vector3 offset)
         {
-            if (instance || !go)
+            if (instance || !prefab)
                 return;
 
-            instance = (GameObject)Instantiate(go, Vector3.zero, Quaternion.identity);
+            instance = Instantiate(prefab, transform.position + offset, Quaternion.identity, transform);
+            instance.SetActive(false);
+        }
+
+        protected virtual void InstantiateMinimapIcon(ref GameObject instance, MinimapIcon prefab)
+        {
+            if (instance || !prefab)
+                return;
+
+            instance = Instantiate(prefab.gameObject, transform.position, Quaternion.identity, transform);
             instance.SetActive(false);
         }
 
@@ -82,29 +78,30 @@ namespace PLAYERTWO.ARPGProject
         protected virtual void SetActive(bool active, params GameObject[] gameObjects)
         {
             foreach (var obj in gameObjects)
-                SetActive(obj, active);
-        }
-
-        protected virtual void SetActive(GameObject obj, bool active)
-        {
-            if (obj)
-                obj.SetActive(active);
+                if (obj) obj.SetActive(active);
         }
 
         protected virtual void OnStateChange(QuestGiver.State state)
         {
             DisableAll();
 
+            var originalMinimapIcon = GetComponent<MinimapIcon>();
+
             switch (state)
             {
                 default:
                 case QuestGiver.State.None:
+                    if (originalMinimapIcon) originalMinimapIcon.SetVisibility(true);
                     break;
+
                 case QuestGiver.State.QuestAvailable:
                     SetActive(true, m_availableQuestMarker, m_availableQuestIcon);
+                    if (originalMinimapIcon) originalMinimapIcon.SetVisibility(false);
                     break;
+
                 case QuestGiver.State.QuestInProgress:
                     SetActive(true, m_inProgressQuestMarker, m_inProgressQuestIcon);
+                    if (originalMinimapIcon) originalMinimapIcon.SetVisibility(false);
                     break;
             }
         }

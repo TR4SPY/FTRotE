@@ -113,7 +113,7 @@ namespace PLAYERTWO.ARPGProject
                 Destroy(gameObject);
             }
 
-            transform.position += Vector3.up * (Time.deltaTime * 0.5f);
+            transform.position += Vector3.up * (Time.deltaTime * 0.3f);
         }
     }
 }

@@ -15,6 +15,12 @@ namespace AI_DDA.Assets.Scripts
         public float CurrentStrengthMultiplier = 1.0f;
         public float CurrentVitalityMultiplier = 1.0f;
         public float CurrentEnergyMultiplier = 1.0f;
+
+        [Header("Multipliers for Difficulty Scaling")]
+        [SerializeField] private float strengthMultiplier = 0.30f;
+        [SerializeField] private float dexterityMultiplier = 0.2f;
+        [SerializeField] private float vitalityMultiplier = 0.2f;
+        [SerializeField] private float energyMultiplier = 0.10f;
         private float lastUpdateTime = 0f;
         private float minInterval = 2f;
         private float oldGlobalDifficulty = 5f;
@@ -52,10 +58,10 @@ namespace AI_DDA.Assets.Scripts
 
             oldGlobalDifficulty = newDiff;
 
-            CurrentDexterityMultiplier = 1.0f + (newDiff * 0.1f);
-            CurrentStrengthMultiplier  = 1.0f + (newDiff * 0.15f);
-            CurrentVitalityMultiplier  = 1.0f + (newDiff * 0.1f);
-            CurrentEnergyMultiplier    = 1.0f + (newDiff * 0.05f);
+            CurrentDexterityMultiplier = 1.0f + (newDiff * dexterityMultiplier);
+            CurrentStrengthMultiplier  = 1.0f + (newDiff * strengthMultiplier);
+            CurrentVitalityMultiplier  = 1.0f + (newDiff * vitalityMultiplier);
+            CurrentEnergyMultiplier    = 1.0f + (newDiff * energyMultiplier);
 
             UpdateAllEnemyStats(oldDiff, newDiff);
 

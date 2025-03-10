@@ -919,6 +919,14 @@ PrefabInstance:
       propertyPath: source
       value: 
       objectReference: {fileID: 2957117560480157751}
+    - target: {fileID: 6603633941916159977, guid: 3c64ec84109f23240a2ba4540a27845f, type: 3}
+      propertyPath: groundOffset
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 6603633941916159977, guid: 3c64ec84109f23240a2ba4540a27845f, type: 3}
+      propertyPath: maxGroundDistance
+      value: 10
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

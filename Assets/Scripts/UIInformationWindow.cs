@@ -55,7 +55,6 @@ namespace AI_DDA.Assets.Scripts
             englishButton.onClick.AddListener(() => SetLanguage("en"));
             polishButton.onClick.AddListener(() => SetLanguage("pl"));
         }
-
         public virtual void StartGame()
         {
             if (startGameAudio != null)
@@ -73,7 +72,6 @@ namespace AI_DDA.Assets.Scripts
                 Debug.LogError("GameScenes instance not found!");
             }
         }
-
         public virtual void ExitGame()
         {
             Debug.Log("Exiting the game...");
@@ -82,19 +80,16 @@ namespace AI_DDA.Assets.Scripts
             UnityEditor.EditorApplication.isPlaying = false;
 #endif
         }
-
         public virtual void ShowLanguageList()
         {
             informationList.SetActive(false);
             languageList.SetActive(true);
         }
-
         public virtual void ShowInformationList()
         {
             languageList.SetActive(false);
             informationList.SetActive(true);
         }
-
         public virtual void SetLanguage(string languageCode)
         {
             Debug.Log($"Setting language to: {languageCode}");

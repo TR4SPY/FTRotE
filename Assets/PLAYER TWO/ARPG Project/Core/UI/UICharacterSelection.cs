@@ -43,6 +43,9 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("A reference to the Button component that deletes the current selected character.")]
         public Button deleteCharacterButton;
 
+        [Tooltip("A reference to the Button component that exits the game.")]
+        public Button exitButton;
+
         [Header("Audio References")]
         [Tooltip("The Audio Clip that plays when selecting a character.")]
         public AudioClip selectCharacterAudio;
@@ -52,7 +55,6 @@ namespace PLAYERTWO.ARPGProject
 
         [Space(15)]
         public UnityEvent<CharacterInstance> onCharacterSelected;
-
         public Transform characterCenterPoint; // Punkt centralny półokręgu
         public GameObject characterInfoUIPrefab; // Prefab UI dla informacji o postaci
         float characterRadius = 5f; // Promień półokręgu
@@ -63,11 +65,8 @@ namespace PLAYERTWO.ARPGProject
         protected CanvasGroup m_characterActionsGroup;
         protected int m_currentCharacterId = -1;
         protected bool m_creatingCharacter;
-
         protected List<UICharacterButton> m_characters = new();
-
         protected GameAudio m_audio => GameAudio.instance;
-
         protected virtual void InitializeGroups()
         {
             if (!charactersWindow.TryGetComponent(out m_charactersWindowGroup))
@@ -76,13 +75,13 @@ namespace PLAYERTWO.ARPGProject
             if (!characterActions.TryGetComponent(out m_characterActionsGroup))
                 m_characterActionsGroup = characterActions.AddComponent<CanvasGroup>();
         }
-
         protected virtual void InitializeCallbacks()
         {
             newCharacterButton.onClick.AddListener(ToggleCharacterCreation);
             characterForm.onSubmit.AddListener(ToggleCharacterCreation);
             characterForm.onCancel.AddListener(ToggleCharacterCreation);
             startGameButton.onClick.AddListener(StartGame);
+            exitButton.onClick.AddListener(ExitGame);
 
             deleteCharacterButton.onClick.AddListener(() =>
             {
@@ -102,7 +101,6 @@ namespace PLAYERTWO.ARPGProject
                     SelectCharacter(nextToSelect);
             });
         }
-
         public virtual void ToggleCharacterCreation()
         {
             m_creatingCharacter = !m_creatingCharacter;
@@ -110,7 +108,6 @@ namespace PLAYERTWO.ARPGProject
             m_charactersWindowGroup.blocksRaycasts = m_characterActionsGroup.blocksRaycasts = !m_creatingCharacter;
             characterForm.gameObject.SetActive(m_creatingCharacter);
         }
-
         public virtual void StartGame()
         {
             if (m_currentCharacterId >= 0 && m_currentCharacterId < m_characters.Count)
@@ -141,6 +138,14 @@ namespace PLAYERTWO.ARPGProject
                 }
             }
         }
+        public virtual void ExitGame()
+        {
+            Debug.Log("Exiting the game...");
+            Application.Quit();
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#endif
+        }
         private Transform FindAttachmentPoint(GameObject characterObject, string pointName)
         {
             Transform[] allChildren = characterObject.GetComponentsInChildren<Transform>(true);
@@ -156,13 +161,10 @@ namespace PLAYERTWO.ARPGProject
             Debug.LogWarning($"Attachment point '{pointName}' not found on prefab '{characterObject.name}'");
             return null;
         }
-
         private void AttachEquipment(CharacterInstance characterInstance, GameObject characterObject)
         {
-            // Pobierz wyposażenie postaci jako słownik {slot: ItemInstance}
             var equippedItems = characterInstance.equipments.GetEquippedItems();
 
-            // Pobierz Entity Item Manager
             var itemManager = characterObject.GetComponent<EntityItemManager>();
             if (itemManager == null)
             {
@@ -170,12 +172,10 @@ namespace PLAYERTWO.ARPGProject
                 return;
             }
 
-            // Iteruj przez każde wyposażenie
             foreach (var itemSlot in equippedItems.Keys)
             {
                 var itemInstance = equippedItems[itemSlot];
 
-                // Obsługa tarczy
                 if (itemInstance?.data is ItemShield shield)
                 {
                     if (itemManager.leftHandShieldSlot != null)
@@ -188,12 +188,10 @@ namespace PLAYERTWO.ARPGProject
                         Debug.LogWarning($"Left hand shield slot not found for shield: {shield.name}");
                     }
                 }
-                // Obsługa miecza jednoręcznego
                 else if (itemInstance?.data is ItemBlade blade)
                 {
                     Transform attachmentPoint = null;
 
-                    // Wybierz odpowiedni slot w zależności od miejsca przeznaczenia
                     if (itemSlot == "RightHand" && itemManager.rightHandSlot != null)
                     {
                         attachmentPoint = itemManager.rightHandSlot;
@@ -213,7 +211,6 @@ namespace PLAYERTWO.ARPGProject
                         Debug.LogWarning($"No attachment point found for blade: {blade.name} in slot: {itemSlot}");
                     }
                 }
-                // Obsługa łuku
                 else if (itemInstance?.data is ItemBow bow)
                 {
                     if (itemManager.rightHandSlot != null && itemManager.leftHandSlot != null)
@@ -226,12 +223,10 @@ namespace PLAYERTWO.ARPGProject
                         Debug.LogWarning($"Bow slots not found for bow: {bow.name}");
                     }
                 }
-                // Obsługa zbroi
                 else if (itemInstance?.data is ItemArmor armor)
                 {
                     SkinnedMeshRenderer targetRenderer = null;
 
-                    // Dopasowanie rendererów na podstawie slotu
                     switch (itemSlot)
                     {
                         case "Chest":
@@ -253,7 +248,6 @@ namespace PLAYERTWO.ARPGProject
 
                     if (targetRenderer != null)
                     {
-                        // Przypisz mesh i materiały
                         targetRenderer.sharedMesh = armor.mesh;
                         targetRenderer.materials = armor.materials;
                         // Debug.Log($"Assigned armor: {armor.name} to renderer: {targetRenderer.name}");
@@ -263,36 +257,30 @@ namespace PLAYERTWO.ARPGProject
                         Debug.LogWarning($"No SkinnedMeshRenderer found for slot '{itemSlot}'");
                     }
                 }
-                // Ogólny przypadek
                 else if (itemInstance?.data != null)
                 {
                     Debug.LogWarning($"Unhandled item type for slot '{itemSlot}': {itemInstance.data.name}");
                 }
             }
         }
-
         public void ArrangeCharactersInSemiCircle(List<CharacterInstance> characters, Transform centerPoint, float radius, Transform cameraTransform, float angleStep = 15f)
         {
             int count = characters.Count;
 
-            // Oblicz początkowy kąt, aby symetrycznie rozmieścić postacie
             float totalAngle = angleStep * (count - 1); // Łączny zakres kątów
             float startAngle = -totalAngle / 2f; // Początek łuku
 
             for (int i = 0; i < count; i++)
             {
-                // Obliczenie pozycji i kąta dla każdej postaci
                 float angle = startAngle + angleStep * i; // Kąt w stopniach
                 float radians = angle * Mathf.Deg2Rad; // Zamiana kąta na radiany
 
-                // Ustawienie pozycji postaci
                 Vector3 position = new Vector3(
                     centerPoint.position.x + radius * Mathf.Cos(radians),
                     centerPoint.position.y,
                     centerPoint.position.z - radius * Mathf.Sin(radians) // Znak "-" odwraca kierunek
                 );
 
-                // Pobierz prefab postaci i ustaw pozycję oraz rotację
                 var characterInstance = characters[i];
                 if (characterInstance.data.classPrefab == null)
                 {
@@ -305,10 +293,8 @@ namespace PLAYERTWO.ARPGProject
                     GameObject characterObject = Instantiate(characterInstance.data.classPrefab, position, Quaternion.identity);
                     characterObject.transform.SetParent(centerPoint); // Przypisz jako dziecko do punktu centralnego
 
-                    // Wyłącz rotację lokalną (jeśli prefab ma niechciane komponenty)
                     characterObject.transform.localRotation = Quaternion.identity;
 
-                    // Ustaw rotację postaci w stronę kamery
                     Vector3 directionToCamera = cameraTransform.position - characterObject.transform.position;
                     directionToCamera.y = 0; // Ignoruj różnice w wysokości
                     characterObject.transform.rotation = Quaternion.LookRotation(directionToCamera);
@@ -316,15 +302,12 @@ namespace PLAYERTWO.ARPGProject
                     // Obrót o 180 stopni (jeśli prefab jest zwrócony tyłem)
                     //characterObject.transform.rotation = Quaternion.Euler(0, characterObject.transform.rotation.eulerAngles.y + 180, 0);
 
-                    // Dodaj wyposażenie do postaci
                     AttachEquipment(characterInstance, characterObject);
 
-                    // Wywołaj DisplayCharacterInfo
                     DisplayCharacterInfo(characterObject, characterInstance);
                 }
             }
         }
-
         private void DisplayCharacterInfo(GameObject characterObject, CharacterInstance characterInstance)
         {
             if (characterObject == null || characterInstance == null)
@@ -339,7 +322,6 @@ namespace PLAYERTWO.ARPGProject
                 return;
             }
 
-            // Sprawdź, czy GUI już istnieje dla tej postaci
             var existingGUI = activeCharacterGUIs.FirstOrDefault(gui => 
                 gui != null && gui.GetComponent<GUICharacterInfo>()?.m_target == characterObject.transform);
 
@@ -371,7 +353,6 @@ namespace PLAYERTWO.ARPGProject
                 return;
             }
 
-            // Ustaw informacje o postaci
             var playerName = characterInstance.name;
             var classFullName = characterInstance.data.classPrefab.name;
             var characterClass = classFullName.Replace(" Class", "");
@@ -384,10 +365,8 @@ namespace PLAYERTWO.ARPGProject
                 level
             );
 
-            // Dodaj instancję do listy aktywnych GUI
             activeCharacterGUIs.Add(uiInstance);
         }
-
         private void RemoveCharacterGUI(GameObject characterObject)
         {
             var guiToRemove = activeCharacterGUIs.FirstOrDefault(gui => 
@@ -399,35 +378,29 @@ namespace PLAYERTWO.ARPGProject
                 Destroy(guiToRemove);
             }
         }
-
         public void RefreshCharacterDisplay()
         {
             // Debug.Log("RefreshCharacterDisplay called.");
 
             var characters = Game.instance.characters;
 
-            // Najpierw usuń powiązane GUI
             foreach (Transform child in characterCenterPoint)
             {
                 RemoveCharacterGUI(child.gameObject);
             }
-            // Teraz usuń obiekty postaci
             foreach (Transform child in characterCenterPoint)
             {
                 Destroy(child.gameObject);
             }
 
-            // Dopiero potem generuj od nowa
             ArrangeCharactersInSemiCircle(characters, characterCenterPoint, characterRadius, cameraTransform, characterAngleStep);
         }
-
         public virtual void AddCharacter(int characterId)
         {
             m_currentCharacterId = -1;
             RefreshList();
             SelectCharacter(characterId);
         }
-
         public virtual void DeleteSelectedCharacter()
         {
             if (m_currentCharacterId < 0 || m_currentCharacterId >= m_characters.Count)
@@ -437,14 +410,11 @@ namespace PLAYERTWO.ARPGProject
             characterActions.gameObject.SetActive(false);
             Game.instance.DeleteCharacter(m_currentCharacterId);
 
-            // Sprawdź liczbę postaci po usunięciu
             var characters = Game.instance.characters;
             newCharacterButton.interactable = characters.Count < 5;
 
-            // Odśwież listę postaci
             RefreshList();
         }
-
         public virtual void SelectCharacter(int characterId)
         {
             if (characterId < 0 || characterId >= m_characters.Count)
@@ -456,12 +426,10 @@ namespace PLAYERTWO.ARPGProject
             characterActions.gameObject.SetActive(true);
             characterWindow.UpdateTexts(m_characters[characterId].character);
 
-            // Wywołaj zdarzenie zmiany postaci
             onCharacterSelected.Invoke(m_characters[characterId].character);
 
             var selectedCharacter = Game.instance.characters[characterId];
 
-            // Wczytaj dane trudności z GameSave
             GameSave.instance.LoadDifficultyForCharacter(selectedCharacter);
             Debug.Log($"Difficulty loaded for selected character: {selectedCharacter.name}");
 
@@ -476,24 +444,20 @@ namespace PLAYERTWO.ARPGProject
            //         Debug.LogError("PlayerBehaviorLogger.Instance is null. Make sure the player prefab is instantiated.");
            //     }
         }
-
         public virtual void SelectFirstCharacter()
         {
             if (m_characters.Count > 0)
                 SelectCharacter(0);
         }
-
         public virtual void RefreshList()
         {
             var characters = Game.instance.characters;
 
-            // Najpierw wyłączamy wszystkie (istniejące) sloty w UI
             foreach (var character in m_characters)
             {
                 character.gameObject.SetActive(false);
             }
 
-            // Tworzymy lub uaktualniamy sloty dla każdej postaci
             for (int i = 0; i < characters.Count; i++)
             {
                 if (m_characters.Count < i + 1)
@@ -519,14 +483,10 @@ namespace PLAYERTWO.ARPGProject
                 m_characters[i].SetInteractable(true);
             }
 
-            // Wyłącz przycisk "New Character", jeśli gracz ma 5 postaci
             newCharacterButton.interactable = characters.Count < 5;
 
-            // Na samym końcu - odświeżenie 3D / ustawienie w półokręgu
             RefreshCharacterDisplay();
         }
-
-
         protected virtual void Start()
         {
             if (Camera.main != null)

@@ -151,9 +151,9 @@ namespace PLAYERTWO.ARPGProject
 
             string progressText = finalProgress > 0 ? $" x{StringUtils.StringWithColor(finalProgress.ToString(), progressColor)}" : "";
 
-            objective.text = $"{quest.objective}{progressText}".Trim(); // ✅ Teraz poprawnie wyświetla sam Objective jeśli `progress == 0`
+            objective.text = $"{quest.objective}{progressText}".Trim();
 
-            AttachTooltipsToObjective(); // ✅ Dodajemy tooltip do Objective
+            AttachTooltipsToObjective();
 
             int finalExp = quest.GetTotalExperience();
             int finalGold = quest.GetTotalCoins();
@@ -164,7 +164,7 @@ namespace PLAYERTWO.ARPGProject
             string expDisplay = finalExp > 0 ? $"{StringUtils.StringWithColor(finalExp.ToString(), expColor)} Experience\n" : "";
             string goldDisplay = finalGold > 0 ? $"{StringUtils.StringWithColor(finalGold.ToString(), goldColor)} Coins\n" : "";
 
-            rewards.text = $"{expDisplay}{goldDisplay}".Trim(); // ✅ Teraz wyświetla się pod sobą
+            rewards.text = $"{expDisplay}{goldDisplay}".Trim();
 
             AttachTooltipsToRewards();
         }
@@ -212,22 +212,22 @@ namespace PLAYERTWO.ARPGProject
             if (objective == null || quest == null)
                 return;
 
-            QuestInstance instance;
-            if (!Game.instance.quests.TryGetQuest(quest, out instance))
-                return;
-
-            int currentProgress = instance.progress;
-            int baseTargetProgress = quest.targetProgress;
-            int targetProgress = instance.data.GetTargetProgress();
-
-            string objectiveTooltipMessage = TooltipFormatter.FormatObjectiveTooltip(quest.objective, currentProgress, targetProgress, baseTargetProgress);
-
             EventTrigger trigger = objective.gameObject.GetComponent<EventTrigger>() ?? objective.gameObject.AddComponent<EventTrigger>();
             trigger.triggers.Clear();
 
             EventTrigger.Entry entryEnter = new EventTrigger.Entry { eventID = EventTriggerType.PointerEnter };
             entryEnter.callback.AddListener((eventData) =>
             {
+                QuestInstance instance;
+                if (!Game.instance.quests.TryGetQuest(quest, out instance))
+                    return;
+
+                int currentProgress = instance.progress;
+                int baseTargetProgress = quest.targetProgress;
+                int targetProgress = instance.data.GetTargetProgress();
+
+                string objectiveTooltipMessage = TooltipFormatter.FormatObjectiveTooltip(quest.objective, currentProgress, targetProgress, baseTargetProgress);
+
                 GUITooltip.instance.ShowTooltip("Quest Objective\n", objectiveTooltipMessage, objective.gameObject);
             });
             trigger.triggers.Add(entryEnter);
@@ -236,7 +236,6 @@ namespace PLAYERTWO.ARPGProject
             entryExit.callback.AddListener((eventData) => GUITooltip.instance.HideTooltip());
             trigger.triggers.Add(entryExit);
         }
-
         protected virtual void UpdateButtons()
         {
             if (!quest)

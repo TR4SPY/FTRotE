@@ -63,6 +63,8 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         public int columns => data.columns;
 
+        public GameObject ModelPrefab => data.prefab;
+        
         public ItemInstance(Item data, bool generateAttributes = true,
             int minAttributes = 0, int maxAttributes = 0)
         {

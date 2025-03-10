@@ -394,93 +394,91 @@ namespace PLAYERTWO.ARPGProject
         }
 
         private void TryMovePotionToHotbar()
-{
-    var hud = GUIEntity.instance;
-    if (hud == null)
-    {
-        // Debug.LogWarning("GUIEntity.instance is null. Cannot move potion to hotbar.");
-        return;
-    }
-
-    List<GUIConsumableSlot> availableSlots = new List<GUIConsumableSlot>();
-    GUIConsumableSlot freeSlot = null;
-
-    foreach (var slot in hud.ConsumableSlots)
-    {
-        if (slot.item != null && slot.item.item.data == item.data)
         {
-            availableSlots.Add(slot);
+            var hud = GUIEntity.instance;
+            if (hud == null)
+            {
+                // Debug.LogWarning("GUIEntity.instance is null. Cannot move potion to hotbar.");
+                return;
+            }
+
+            List<GUIConsumableSlot> availableSlots = new List<GUIConsumableSlot>();
+            GUIConsumableSlot freeSlot = null;
+
+            foreach (var slot in hud.ConsumableSlots)
+            {
+                if (slot.item != null && slot.item.item.data == item.data)
+                {
+                    availableSlots.Add(slot);
+                }
+                if (slot.item == null && freeSlot == null)
+                {
+                    freeSlot = slot;
+                }
+            }
+
+            foreach (var slot in availableSlots)
+            {
+                if (item.stack <= 0)
+                    break;
+
+                int maxStack = item.data.stackCapacity;
+                int spaceLeft = maxStack - slot.item.item.stack;
+
+                if (spaceLeft > 0)
+                {
+                    int amountToAdd = Mathf.Min(spaceLeft, item.stack);
+                    slot.item.item.stack += amountToAdd;
+                    item.stack -= amountToAdd;
+
+                    slot.item.UpdateStackText();
+                    // Debug.Log($"[HOTBAR] Added {amountToAdd} potions to existing stack. Remaining in inventory: {item.stack}");
+                }
+            }
+
+            if (item.stack > 0 && freeSlot != null)
+            {
+                // Debug.Log($"[HOTBAR] Moving {item.stack} potions to new free slot.");
+
+                freeSlot.Equip(this); // Przeniesienie przedmiotu do hotbara
+
+                var inventory = Level.instance.player.inventory.instance;
+                inventory.TryRemoveItem(item);
+
+                var guiInventory = GUI.instance.GetComponentInChildren<GUIInventory>();
+                if (guiInventory != null)
+                {
+                    // Debug.Log("[HOTBAR] Updating inventory slots to remove 'ghost' slot.");
+                    guiInventory.UpdateSlots();
+                }
+
+                GUI.instance.Deselect();
+            }
+
+            if (item.stack == 0)
+            {
+                // Debug.Log("[HOTBAR] Potion stack is 0, removing from inventory and GUI.");
+
+                var inventory = Level.instance.player.inventory.instance;
+                bool removed = inventory.TryRemoveItem(item);
+                if (!removed)
+                {
+                    Debug.LogError($"[HOTBAR] Failed to remove {item.GetName()} from inventory!");
+                }
+                else
+                {
+                    // Debug.Log($"[HOTBAR] {item.GetName()} successfully removed from inventory.");
+                }
+
+                var guiInventory = GUI.instance.GetComponentInChildren<GUIInventory>();
+                if (guiInventory != null)
+                {
+                    guiInventory.UpdateSlots();
+                }
+
+                // Debug.Log($"[HOTBAR] Destroying game object {gameObject.name}");
+                Destroy(gameObject);
+            }
         }
-        if (slot.item == null && freeSlot == null)
-        {
-            freeSlot = slot;
-        }
-    }
-
-    foreach (var slot in availableSlots)
-    {
-        if (item.stack <= 0)
-            break;
-
-        int maxStack = item.data.stackCapacity;
-        int spaceLeft = maxStack - slot.item.item.stack;
-
-        if (spaceLeft > 0)
-        {
-            int amountToAdd = Mathf.Min(spaceLeft, item.stack);
-            slot.item.item.stack += amountToAdd;
-            item.stack -= amountToAdd;
-
-            slot.item.UpdateStackText();
-            // Debug.Log($"[HOTBAR] Added {amountToAdd} potions to existing stack. Remaining in inventory: {item.stack}");
-        }
-    }
-
-    if (item.stack > 0 && freeSlot != null)
-    {
-        // Debug.Log($"[HOTBAR] Moving {item.stack} potions to new free slot.");
-
-        freeSlot.Equip(this); // Przeniesienie przedmiotu do hotbara
-
-        var inventory = Level.instance.player.inventory.instance;
-        inventory.TryRemoveItem(item);
-
-        var guiInventory = GUI.instance.GetComponentInChildren<GUIInventory>();
-        if (guiInventory != null)
-        {
-            // Debug.Log("[HOTBAR] Updating inventory slots to remove 'ghost' slot.");
-            guiInventory.UpdateSlots();
-        }
-
-        GUI.instance.Deselect();
-    }
-
-    if (item.stack == 0)
-    {
-        // Debug.Log("[HOTBAR] Potion stack is 0, removing from inventory and GUI.");
-
-        var inventory = Level.instance.player.inventory.instance;
-        bool removed = inventory.TryRemoveItem(item);
-        if (!removed)
-        {
-            Debug.LogError($"[HOTBAR] Failed to remove {item.GetName()} from inventory!");
-        }
-        else
-        {
-            // Debug.Log($"[HOTBAR] {item.GetName()} successfully removed from inventory.");
-        }
-
-        var guiInventory = GUI.instance.GetComponentInChildren<GUIInventory>();
-        if (guiInventory != null)
-        {
-            guiInventory.UpdateSlots();
-        }
-
-        // Debug.Log($"[HOTBAR] Destroying game object {gameObject.name}");
-        Destroy(gameObject);
-    }
-}
-
-
     }
 }

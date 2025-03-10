@@ -52,6 +52,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d75982b6a6f0a98bca271060a29f33c7, type: 2}
   - {fileID: 11400000, guid: eb72974e791eb9fe28c369524ad5e92b, type: 2}
   - {fileID: 11400000, guid: 59f75416e2290d845b7b99219f0cf26d, type: 2}
+  - {fileID: 11400000, guid: 287c86e08b8b87b21b495785dc069b35, type: 2}
   skills:
   - {fileID: 11400000, guid: 19d43b816a0912f449f2b9441140e15e, type: 2}
   - {fileID: 11400000, guid: 7d6a3fca69013b5449bdee3714e114c0, type: 2}

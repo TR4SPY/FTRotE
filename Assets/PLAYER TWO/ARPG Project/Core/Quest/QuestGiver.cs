@@ -47,6 +47,7 @@ namespace PLAYERTWO.ARPGProject
         {
             m_manager.onQuestAdded += OnQuestAdded;
             m_manager.onQuestCompleted += OnQuestCompleted;
+            m_manager.onQuestRemoved += OnQuestRemoved;
         }
 
         protected virtual void InitializeStates()

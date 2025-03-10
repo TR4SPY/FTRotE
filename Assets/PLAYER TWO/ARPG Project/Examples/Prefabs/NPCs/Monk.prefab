@@ -10,9 +10,11 @@ GameObject:
   m_Component:
   - component: {fileID: 3552628372634861349}
   - component: {fileID: 3552628372634861351}
+  - component: {fileID: 4461225244492144547}
   - component: {fileID: 9169803999883475977}
   - component: {fileID: 6718249405904199756}
   - component: {fileID: 3552628372634861350}
+  - component: {fileID: 3244250906818003430}
   m_Layer: 0
   m_Name: Monk
   m_TagString: Untagged
@@ -27,6 +29,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3552628372634861344}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -36,7 +39,6 @@ Transform:
   - {fileID: 3300169575723169215}
   - {fileID: 2228078398736452779}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3552628372634861351
 MonoBehaviour:
@@ -55,11 +57,34 @@ MonoBehaviour:
       m_Calls: []
   interactOnce: 0
   disableOnInteract: 0
+  CanAgentInteract: 0
   animator: {fileID: 0}
   interactClip: {fileID: 0}
+  uniqueNPCID: 
   quests:
   - {fileID: 11400000, guid: 66d5ae9094d9e0d48b44e9aa82c185a3, type: 2}
   - {fileID: 11400000, guid: cc727055113dae444b4fa17a7262e47d, type: 2}
+  additionalQuests: []
+  onStateChange:
+    m_PersistentCalls:
+      m_Calls: []
+  assignedDialog: {fileID: 0}
+--- !u!114 &4461225244492144547
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3552628372634861344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93ef52f446431154690bf6c1dd590cf2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  availableQuestMarker: {fileID: 1748150045923042452, guid: e25356be672b83e1b8cbeff96a7cfee3, type: 3}
+  inProgressQuestMarker: {fileID: 4765419713527941767, guid: 0786d80dc8fe0c6b584e2a7756811d64, type: 3}
+  availableQuestIcon: {fileID: 4764278226768911195, guid: 99c20e0d98c29d3268bcd4a656ba0fa9, type: 3}
+  inProgressQuestIcon: {fileID: 5532209033359987423, guid: d4a3e2a5c8581467490328f9491b0c27, type: 3}
 --- !u!114 &9169803999883475977
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -114,16 +139,38 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3552628372634861344}
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
   m_IsTrigger: 0
+  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
+  serializedVersion: 3
   m_Size: {x: 2, y: 2, z: 2}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3244250906818003430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3552628372634861344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 702b06df4808fd6bba52fb827801bff3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  npcName: Monk
 --- !u!1001 &80027077090686531
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 3552628372634861349}
     m_Modifications:
     - target: {fileID: 3229325632576676323, guid: fdf7362be5317794fa99f5f54c4cb76d, type: 3}
@@ -183,6 +230,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fdf7362be5317794fa99f5f54c4cb76d, type: 3}
 --- !u!1 &3300169575723169214 stripped
 GameObject:
@@ -199,6 +249,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 3552628372634861349}
     m_Modifications:
     - target: {fileID: 1776620116237150747, guid: 3c64ec84109f23240a2ba4540a27845f, type: 3}
@@ -266,6 +317,9 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3c64ec84109f23240a2ba4540a27845f, type: 3}
 --- !u!4 &2228078398736452779 stripped
 Transform:
@@ -277,6 +331,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 3552628372634861349}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 45a2f98991259944ba3f35baa842c9bf, type: 3}
@@ -328,6 +383,12 @@ PrefabInstance:
       value: Monk
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 45a2f98991259944ba3f35baa842c9bf, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3552628373331247727}
   m_SourcePrefab: {fileID: 100100000, guid: 45a2f98991259944ba3f35baa842c9bf, type: 3}
 --- !u!4 &3947336713312888193 stripped
 Transform:
@@ -341,7 +402,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
 --- !u!95 &3552628373331247727
 Animator:
-  serializedVersion: 5
+  serializedVersion: 7
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -355,6 +416,7 @@ Animator:
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
