@@ -1,16 +1,16 @@
 fileFormatVersion: 2
 guid: 6e59c59b81ab47f9b6ec5781fa725d2c
 timeCreated: 1484171296
-licenseType: Pro
+licenseType: Store
 TextScriptImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
 AssetOrigin:
   serializedVersion: 1
-  productId: 251134
-  packageName: ARPG Project
-  packageVersion: 1.4.0
+  productId: 309498
+  packageName: Free Slash VFX
+  packageVersion: 1.0
   assetPath: Assets/PLAYER TWO/ARPG Project/Examples/TextMesh Pro/Fonts/LiberationSans
     - OFL.txt
-  uploadId: 704322
+  uploadId: 739111

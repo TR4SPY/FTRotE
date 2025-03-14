@@ -1,16 +1,16 @@
 fileFormatVersion: 2
 guid: 79459efec17a4d00a321bdcc27bbc385
 timeCreated: 1484172856
-licenseType: Pro
+licenseType: Store
 NativeFormatImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
 AssetOrigin:
   serializedVersion: 1
-  productId: 251134
-  packageName: ARPG Project
-  packageVersion: 1.4.0
+  productId: 309498
+  packageName: Free Slash VFX
+  packageVersion: 1.0
   assetPath: Assets/PLAYER TWO/ARPG Project/Examples/TextMesh Pro/Resources/Fonts
     & Materials/LiberationSans SDF - Outline.mat
-  uploadId: 704322
+  uploadId: 739111

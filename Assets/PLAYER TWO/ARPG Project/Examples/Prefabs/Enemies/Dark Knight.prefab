@@ -48,7 +48,6 @@ Transform:
   - {fileID: 8062647717787224075}
   - {fileID: 1007975993618655997}
   - {fileID: 3847107522908771639}
-  - {fileID: 2867242141546037717}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3503716369199651015
@@ -249,7 +248,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damageText: {fileID: 5846541594109319412, guid: e2a62999933ef654599e18ab7137b116, type: 3}
-  damageTextOffset: {x: 0, y: 1, z: 0}
+  damageTextOffset: {x: 0, y: 3, z: 0}
   damageParticle: {fileID: 580179407932601352}
   criticalDamageParticle: {fileID: 5049068905578994239}
   damageAudios:
@@ -261,7 +260,7 @@ MonoBehaviour:
   flashOnDamage: 1
   damageColor: {r: 1, g: 0, b: 0, a: 1}
   difficultyText: {fileID: 5846541594109319412, guid: cdc6cb0473ed7c388a93bfc432bbf07a, type: 3}
-  difficultyTextOffset: {x: 0, y: 2, z: 0}
+  difficultyTextOffset: {x: 0, y: 4, z: 0}
   meshRenderers:
   - {fileID: 3135367493746022994}
   levelUpAudio: {fileID: 0}
@@ -565,37 +564,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 8062647717787224075}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &5080369606470871974
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2867242141546037717}
-  m_Layer: 8
-  m_Name: Weapon Slot
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2867242141546037717
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5080369606470871974}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0.004968319, y: -0.41704425, z: 0.11407645, w: -0.9016851}
-  m_LocalPosition: {x: 0.6972, y: 2.944, z: 0.0743}
-  m_LocalScale: {x: 0.4162343, y: 0.41623437, z: 0.41623437}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 273316549900717070}
-  m_LocalEulerAnglesHint: {x: 5.976, y: 49.03, z: -11.694}
 --- !u!1 &5210031559190836403
 GameObject:
   m_ObjectHideFlags: 0
