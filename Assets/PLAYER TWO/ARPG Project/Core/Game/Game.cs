@@ -12,19 +12,22 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The base amount of experience necessary to level up")]
         public int baseExperience = 1973;
 
-        [Tooltip(
-            "The amount of additional experience the Player will need to reach the next level"
-        )]
+/*
+        [Tooltip("The amount of additional experience the Player will need to reach the next level")]
         public int experiencePerLevel = 179;
-
+*/
+        
         [Tooltip("The base amount of experience earned from defeating an enemy")]
         public int baseEnemyDefeatExperience = 679;
+
+        [Tooltip("Multiplier applied to experience required per level")]
+        public float expMultiplier = 1.5f;
 
         [Tooltip("The amount of point(s) added to the distribution points after raising a level")]
         public int levelUpPoints = 5;
 
         [Tooltip("The maximum level the Player can reach")]
-        public int maxLevel = 100;
+        public int maxLevel = 500;
 
         [Tooltip(
             "The rate at which the amount of money looted from "

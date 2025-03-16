@@ -11,6 +11,12 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The base maximum damage of this Item.")]
         public int maxDamage;
 
+        [Tooltip("The base minimum magic damage of this Item.")]
+        public int minMagicDamage;
+
+        [Tooltip("The base maximum magic damage of this Item.")]
+        public int maxMagicDamage;
+
         [Tooltip("The base attack speed of this Item.")]
         public int attackSpeed;
 
@@ -31,5 +37,19 @@ namespace PLAYERTWO.ARPGProject
         /// Get a random damage based on the maximum and minimum base damage settings.
         /// </summary>
         public virtual int GetDamage() => Random.Range(minDamage, maxDamage);
+
+        /// <summary>
+        /// Returns a random magic damage value if the weapon has magic damage.
+        /// </summary>
+        public virtual MinMax GetMagicDamage()
+        {
+            return new MinMax(minMagicDamage, maxMagicDamage);
+        }
+
+        /// <summary>
+        /// Returns true if the weapon has magic damage.
+        /// </summary>
+        public bool HasMagicDamage() => minMagicDamage > 0 || maxMagicDamage > 0;
+
     }
 }

@@ -797,11 +797,11 @@ MonoBehaviour:
   onExperienceChanged:
     m_PersistentCalls:
       m_Calls: []
-  level: 10
-  strength: 20
-  dexterity: 25
-  vitality: 25
-  energy: 20
+  level: 20
+  strength: 40
+  dexterity: 38
+  vitality: 36
+  energy: 51
   alwaysUseBaseComboStats: 0
   baseMaxCombos: 1
   baseTimeToStopCombo: 1

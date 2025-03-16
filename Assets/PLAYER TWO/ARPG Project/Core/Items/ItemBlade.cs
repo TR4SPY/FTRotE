@@ -24,6 +24,9 @@ namespace PLAYERTWO.ARPGProject
 
         [Tooltip("The offset rotation in local space applied to the prefab on the Entity's left hand.")]
         public Vector3 leftHandRotation;
+        
+        [Tooltip("The amount of magic resistance this armor provides.")]
+        public int magicResistance;
 
         [Header("Quest Settings")]
         [Tooltip("Is this blade a quest item?")]

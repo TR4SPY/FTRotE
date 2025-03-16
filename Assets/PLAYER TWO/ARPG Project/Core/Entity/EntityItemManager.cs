@@ -511,6 +511,47 @@ namespace PLAYERTWO.ARPGProject
             return total;
         }
 
+        public virtual MinMax GetItemsMagicDamage()
+        {
+            var total = MinMax.Zero;
+
+            foreach (var item in m_items)
+            {
+                if (item.Value == null) continue;
+
+                if (item.Value.HasMagicDamage())
+                {
+                    var magicDamage = item.Value.GetMagicDamage();
+                    total.min += magicDamage.min;
+                    total.max += magicDamage.max;
+                }
+            }
+
+            return total;
+        }
+
+        public virtual int GetItemsMagicResistance()
+        {
+            int total = 0;
+
+            foreach (var item in m_items)
+            {
+                if (item.Value == null) continue;
+
+                if (item.Value.data is ItemArmor armor)
+                {
+                    total += armor.magicResistance;
+                }
+                else if (item.Value.data is ItemBow bow)
+                {
+                    total += bow.magicResistance;
+                }
+            }
+
+            return total;
+        }
+        
+
         /// <summary>
         /// Returns the attack speed of the equipped weapons. If the Entity is equipping
         /// two weapons, the attack speed will increase by half of the left weapon's attack speed.

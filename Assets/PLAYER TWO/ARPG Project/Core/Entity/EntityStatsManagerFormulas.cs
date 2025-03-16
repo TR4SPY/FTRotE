@@ -13,8 +13,8 @@ namespace PLAYERTWO.ARPGProject
 
             return new MinMax
             {
-                min = (strength / 8) + weaponDamage.min + m_additionalAttributes.damage,
-                max = (strength / 4) + weaponDamage.max + m_additionalAttributes.damage
+                min = Mathf.RoundToInt((strength / 4) + weaponDamage.min + m_additionalAttributes.damage),
+                max = Mathf.RoundToInt((strength / 4) + weaponDamage.max + m_additionalAttributes.damage)
             };
         }
 
@@ -23,11 +23,18 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         protected virtual MinMax CalculateMagicDamage()
         {
+            var weaponMagicDamage = GetItemsMagicDamage();
+
             return new MinMax
             {
-                min = energy / 4,
-                max = energy / 2
+                min = Mathf.RoundToInt((energy / 9) + weaponMagicDamage.min + m_additionalAttributes.magicDamage),
+                max = Mathf.RoundToInt((energy / 9) + weaponMagicDamage.max + m_additionalAttributes.magicDamage)
             };
+        }
+
+        protected virtual int CalculateMagicResistance()
+        {
+            return (int)((level * 2) + GetItemsMagicResistance() + m_additionalAttributes.magicResistance);
         }
 
         /// <summary>
@@ -35,7 +42,19 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         protected virtual int CalculateNextLevelExperience()
         {
-            return Game.instance.baseExperience + (Game.instance.experiencePerLevel * (level - 1));
+            if (level == 1)
+                return Game.instance.baseExperience;
+
+            if (level == 2)
+                return Game.instance.baseExperience + Mathf.RoundToInt(Game.instance.expMultiplier);
+
+            return Mathf.RoundToInt(Game.instance.baseExperience + (level - 1) * Game.instance.expMultiplier + 
+                                    (100 * level + level * 10 * (level - 1)) * level * Game.instance.expMultiplier);
+        }
+        
+        public int CalculateEnemyExperience(Entity enemy)
+        {
+            return Mathf.RoundToInt(enemy.stats.level * Game.instance.baseEnemyDefeatExperience * Game.instance.expMultiplier);
         }
 
         /// <summary>
@@ -43,7 +62,7 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         protected virtual int CalculateMaxHealth()
         {
-            return (int)((level * 10 + vitality * 2 + m_additionalAttributes.health) * m_additionalAttributes.healthMultiplier);
+            return Mathf.RoundToInt(((vitality * 5) + (level * 10) + m_additionalAttributes.health) * m_additionalAttributes.healthMultiplier);
         }
 
         /// <summary>
@@ -51,7 +70,7 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         protected virtual int CalculateMaxMana()
         {
-            return (int)((level * 5 + energy * 2 + m_additionalAttributes.mana) * m_additionalAttributes.manaMultiplier);
+            return Mathf.RoundToInt(((energy * 4) + (level * 5) + m_additionalAttributes.mana) * m_additionalAttributes.manaMultiplier);
         }
 
         /// <summary>
@@ -75,7 +94,7 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         protected virtual int CalculateDefense()
         {
-            return (int)(((dexterity / 4) + GetItemsDefense() + m_additionalAttributes.defense) * m_additionalAttributes.defenseMultiplier);
+            return Mathf.RoundToInt(((dexterity / 3) + GetItemsDefense() + m_additionalAttributes.defense) * m_additionalAttributes.defenseMultiplier);
         }
 
         /// <summary>

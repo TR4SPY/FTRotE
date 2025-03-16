@@ -2,6 +2,8 @@ using UnityEngine;
 
 namespace PLAYERTWO.ARPGProject
 {
+    public enum PlayerType { None, Achiever, Killer, Socializer, Explorer }
+
     [CreateAssetMenu(fileName = "New Quest", menuName = "PLAYER TWO/ARPG Project/Quest/Quest")]
     public class Quest : ScriptableObject
     {
@@ -50,6 +52,14 @@ namespace PLAYERTWO.ARPGProject
         
         [Tooltip("If true, the player must manually complete the quest at the NPC.")]
         public bool requiresManualCompletion;
+
+        [Header("Exclusive Settings")]
+        public bool isExclusive;
+        public bool forKiller;
+        public bool forAchiever;
+        public bool forExplorer;
+        public bool forSocializer;
+
 
         [Header("Killer Bonus")]
         [Tooltip("Multiplier for the number of enemies required if the player is a Killer.")]

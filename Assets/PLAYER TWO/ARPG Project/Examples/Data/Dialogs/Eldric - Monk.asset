@@ -214,10 +214,10 @@ MonoBehaviour:
       nextPageIndex: -1
       specialConditionToSet: 0
     - optionText: Is there anything...
-      isForSocializer: 1
+      isForSocializer: 0
       isForAchiever: 0
       isForKiller: 0
-      isForExplorer: 0
+      isForExplorer: 1
       action: 5
       nextPageIndex: -1
       specialConditionToSet: 0

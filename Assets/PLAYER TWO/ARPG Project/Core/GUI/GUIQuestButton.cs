@@ -16,6 +16,10 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("A reference to the Game Object that represents the completion sign.")]
         public GameObject completed;
 
+        [Tooltip("Icon for specific player type for exclusive quests.")]
+        public Image exclusiveIcon;
+        public Sprite[] playerTypeSprites; 
+        
         [Header("Audio Settings")]
         [Tooltip("The Audio Clip that plays when clicking on this button.")]
         public AudioClip clickClip;
@@ -66,6 +70,25 @@ namespace PLAYERTWO.ARPGProject
             completed.gameObject.SetActive(quest.completed);
 
             UpdateProgress();
+
+            if (quest.data.isExclusive)
+            {
+                exclusiveIcon.gameObject.SetActive(true);
+
+                // Sprawdź typ i przypisz sprite
+                if (quest.data.forAchiever) 
+                    exclusiveIcon.sprite = playerTypeSprites[0];
+                else if (quest.data.forKiller) 
+                    exclusiveIcon.sprite = playerTypeSprites[1];
+                else if (quest.data.forExplorer) 
+                    exclusiveIcon.sprite = playerTypeSprites[2];
+                else if (quest.data.forSocializer) 
+                    exclusiveIcon.sprite = playerTypeSprites[3];
+            }
+            else
+            {
+                exclusiveIcon.gameObject.SetActive(false);
+            }
         }
 
         protected virtual void OnProgressChanged(QuestInstance quest)

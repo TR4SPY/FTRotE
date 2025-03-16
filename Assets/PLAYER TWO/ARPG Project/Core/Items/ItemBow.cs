@@ -17,6 +17,9 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The minimum distance to shot the bow towards a target.")]
         public float shotDistance;
 
+        [Tooltip("The amount of magic resistance this armor provides.")]
+        public int magicResistance;
+
         [Header("Hand Settings")]
         [Tooltip("The offset position in local space applied to the prefab on the Entity's hands.")]
         public Vector3 handPosition;

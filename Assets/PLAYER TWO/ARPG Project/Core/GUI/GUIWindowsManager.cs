@@ -22,6 +22,9 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("A reference to the GUI Quest Window.")]
         public GUIQuestWindow quest;
 
+        [Tooltip("A reference to the GUI Exclusive Quest Window.")]
+        public GUIExclusiveWindow exclusiveWindow;
+
         [Tooltip("A reference to the GUI Quest Log.")]
         public GUIQuestLog questLog;
 

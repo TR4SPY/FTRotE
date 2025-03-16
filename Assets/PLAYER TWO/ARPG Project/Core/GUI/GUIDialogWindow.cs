@@ -16,6 +16,7 @@ namespace AI_DDA.Assets.Scripts
         private int currentPageIndex = 0;
         private Entity player;
         private Interactive currentNPC;
+        public Sprite[] playerTypeSprites; 
 
         public void Show(Entity player, Interactive npc, Dialog dialog)
         {
@@ -70,7 +71,6 @@ namespace AI_DDA.Assets.Scripts
             string playerSpecialCondition = Game.instance.currentCharacter.GetSpecialConditionAsString();
             if (currentPage.isSpecial && currentPage.specialCondition != playerSpecialCondition)
             {
-                Debug.Log($"[AI-DDA] Strona {currentPageIndex} nie jest dostępna dla gracza z warunkiem {playerSpecialCondition}");
                 ContinueDialog();
                 return;
             }
@@ -93,6 +93,13 @@ namespace AI_DDA.Assets.Scripts
                 optionButtons[i].gameObject.SetActive(true);
                 optionButtons[i].GetComponentInChildren<Text>().text = option.optionText;
                 optionButtons[i].onClick.AddListener(() => ExecuteOption(option));
+
+                Image playerTypeIcon = optionButtons[i].transform.Find("PlayerTypeIcon")?.GetComponent<Image>();
+
+                if (playerTypeIcon != null)
+                {
+                    SetPlayerTypeIcon(option, playerTypeIcon);
+                }
             }
         }
 
@@ -213,7 +220,45 @@ namespace AI_DDA.Assets.Scripts
 
         private void OpenExclusiveWindow()
         {
-            // GUIWindowsManager.instance.exclusive.Show();
+            var questGiver = currentNPC as QuestGiver;
+            if (questGiver == null) return;
+
+            var pType = Game.instance.currentCharacter.currentDynamicPlayerType;
+
+            var exQuest = questGiver.CurrentExclusiveQuest(pType);
+            if (exQuest == null)
+            {
+                Debug.Log("No exclusive quest for this player type or all completed.");
+                return;
+            }
+
+            GUIWindowsManager.instance.exclusiveWindow.SetQuest(exQuest);
+        }
+
+        private void SetPlayerTypeIcon(Dialog.DialogOption option, Image iconImage)
+        {
+            iconImage.gameObject.SetActive(false);
+
+            if (option.isForAchiever && playerTypeSprites.Length > 0)
+            {
+                iconImage.sprite = playerTypeSprites[0]; 
+                iconImage.gameObject.SetActive(true);
+            }
+            else if (option.isForKiller && playerTypeSprites.Length > 1)
+            {
+                iconImage.sprite = playerTypeSprites[1];
+                iconImage.gameObject.SetActive(true);
+            }
+            else if (option.isForExplorer && playerTypeSprites.Length > 2)
+            {
+                iconImage.sprite = playerTypeSprites[2];
+                iconImage.gameObject.SetActive(true);
+            }
+            else if (option.isForSocializer && playerTypeSprites.Length > 3)
+            {
+                iconImage.sprite = playerTypeSprites[3];
+                iconImage.gameObject.SetActive(true);
+            }
         }
 
         public void Close()

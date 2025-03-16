@@ -9,6 +9,9 @@ namespace PLAYERTWO.ARPGProject
     {
         public int damage;
         public int damagePercent;
+        public int magicDamage;
+        public int magicDamagePercent;
+        public int magicResistance;
         public int attackSpeed;
         public int critical;
         public int defense;
@@ -73,6 +76,7 @@ namespace PLAYERTWO.ARPGProject
         }
 
         public virtual float GetDamageMultiplier() => damagePercent / 100f;
+        public virtual float GetMagicDamageMultiplier() => magicDamagePercent / 100f;
         public virtual float GetCriticalMultiplier() => critical / 100f;
         public virtual float GetDefenseMultiplier() => defensePercent / 100f;
         public virtual float GetManaMultiplier() => manaPercent / 100f;

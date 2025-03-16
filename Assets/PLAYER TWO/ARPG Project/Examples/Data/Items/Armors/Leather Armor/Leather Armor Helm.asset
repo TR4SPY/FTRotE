@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb802ff9f4ee12e4fa0f698f11c51eed, type: 3}
   m_Name: Leather Armor Helm
   m_EditorClassIdentifier: 
+  id: 0
   prefab: {fileID: 919132149155446097, guid: 90f3351bdf9d7ec42a6584487697a2a6, type: 3}
   price: 500
+  rarity: 0
   dropPosition: {x: 0, y: 0.1, z: 0}
   dropRotation: {x: -90, y: 0, z: 45}
   image: {fileID: -374496645847497998, guid: 292b095561537c54b973127342ffb8bf, type: 3}
@@ -27,7 +29,10 @@ MonoBehaviour:
   requiredDexterity: 10
   slot: 2
   defense: 5
+  magicResistance: 3
   mesh: {fileID: -4168359869622275391, guid: 0b20b461df077644cac0d1767d5e250d, type: 3}
   materials:
   - {fileID: 2100000, guid: ada2fc6797d426a4693a8223c584051d, type: 2}
   - {fileID: 2100000, guid: e9f652621c128bb4db70a9005fcc7246, type: 2}
+  pieces: []
+  isQuestSpecific: 0

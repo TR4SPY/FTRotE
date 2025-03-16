@@ -19,6 +19,9 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The base defense points of this Armor.")]
         public int defense;
 
+        [Tooltip("The amount of magic resistance this armor provides.")]
+        public int magicResistance;
+
         [Header("Rendering Settings")]
         [Tooltip("The mesh to replace on the Entity's Skinned Mesh Renderer correspondent to the Armor slot.")]
         public Mesh mesh;

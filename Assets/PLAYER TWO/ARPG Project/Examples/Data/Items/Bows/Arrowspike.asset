@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 695a82ec34e5ed749b95ae9715fb3682, type: 3}
   m_Name: Arrowspike
   m_EditorClassIdentifier: 
+  id: 0
   prefab: {fileID: 919132149155446097, guid: 62ab24dded3a2c748afdf40a398748e2, type: 3}
   price: 200
+  rarity: 0
   dropPosition: {x: 0, y: 0, z: 0}
   dropRotation: {x: -90, y: 0, z: 45}
   image: {fileID: 1349433356472623166, guid: b54e5618bea88e046ab5466a204ddd45, type: 3}
@@ -27,6 +29,8 @@ MonoBehaviour:
   requiredDexterity: 10
   minDamage: 2
   maxDamage: 12
+  minMagicDamage: 0
+  maxMagicDamage: 0
   attackSpeed: 10
   attackClips:
   - {fileID: 8300000, guid: 4e95ab1236a41f24ab4b33a5e513672c, type: 3}
@@ -36,5 +40,7 @@ MonoBehaviour:
   type: 0
   projectile: {fileID: 2570460964239332381, guid: c2e8bee1261d8b14ba92790835224b0b, type: 3}
   shotDistance: 10
+  magicResistance: 2
   handPosition: {x: 0, y: 0, z: 0}
   handRotation: {x: 90, y: 90, z: 90}
+  isQuestSpecific: 0

@@ -543,6 +543,21 @@ namespace PLAYERTWO.ARPGProject
             onPerformAttack.Invoke(attackType);
         }
 
+        public virtual void TakeMagicDamage(int damage)
+        {
+            int resistance = stats.MagicResistance;
+            int finalDamage = Mathf.Max(damage - resistance, 1); // Obrażenia nie mogą spaść poniżej 1
+
+            stats.health -= finalDamage;
+
+            onDamage?.Invoke(finalDamage, position, false); // Wywołanie eventu obrażeń
+
+            if (stats.health <= 0)
+            {
+                Die();
+            }
+        }
+
         /// <summary>
         /// Increments the current combo index of the Entity.
         /// </summary>

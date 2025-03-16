@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb802ff9f4ee12e4fa0f698f11c51eed, type: 3}
   m_Name: Plate Armor Chest
   m_EditorClassIdentifier: 
+  id: 0
   prefab: {fileID: 919132149155446097, guid: 8339ecb2d31c29f48acb41280e3d15f9, type: 3}
   price: 1000
+  rarity: 0
   dropPosition: {x: 0, y: 0.1, z: 0}
   dropRotation: {x: -90, y: 0, z: 45}
   image: {fileID: -5112207235234738334, guid: 7bc9e4c79bdff1442ba1264780d696e9, type: 3}
@@ -27,6 +29,9 @@ MonoBehaviour:
   requiredDexterity: 10
   slot: 3
   defense: 12
+  magicResistance: 6
   mesh: {fileID: -1031513868441759891, guid: 8b2f862bbe2e62240b7ec247b060b074, type: 3}
   materials:
   - {fileID: 2100000, guid: 6fa760af0e09f8440a081a41f17867fe, type: 2}
+  pieces: []
+  isQuestSpecific: 0

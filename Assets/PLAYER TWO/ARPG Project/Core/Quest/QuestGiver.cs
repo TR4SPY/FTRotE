@@ -77,15 +77,61 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         public virtual Quest CurrentQuest()
         {
-            var isAchiever = (Game.instance.currentCharacter.currentDynamicPlayerType == "Achiever");
-
-            foreach (var quest in isAchiever ? additionalQuests.Concat(quests) : quests)
+            foreach (var quest in quests)
             {
                 if (!m_manager.TryGetQuest(quest, out var instance) || !instance.completed)
                     return quest;
             }
 
             return null;
+        }
+
+        public Quest CurrentExclusiveQuest(string pType)
+        {
+            foreach (var quest in additionalQuests)
+            {
+                if (!MatchesPlayerType(quest, pType)) continue;
+                if (!IsQuestOwnedByThisNPC(quest)) continue;
+                if (InQuestsManager(quest) && !IsQuestCompleted(quest))
+                    return quest;
+            }
+
+            foreach (var quest in additionalQuests)
+            {
+                if (!MatchesPlayerType(quest, pType)) continue;
+                if (!IsQuestOwnedByThisNPC(quest)) continue;
+                if (!InQuestsManager(quest))
+                    return quest;
+            }
+
+            return null; 
+        }
+
+        private bool MatchesPlayerType(Quest q, string pType)
+        {
+            if (!q.isExclusive) return false;
+            if (q.forKiller && pType == "Killer") return true;
+            if (q.forAchiever && pType == "Achiever") return true;
+            if (q.forExplorer && pType == "Explorer") return true;
+            if (q.forSocializer && pType == "Socializer") return true;
+            return false;
+        }
+
+        private bool IsQuestOwnedByThisNPC(Quest q)
+        {
+            return true;
+        }
+
+        private bool InQuestsManager(Quest q)
+        {
+            return Game.instance.quests.ContainsQuest(q);
+        }
+
+        private bool IsQuestCompleted(Quest q)
+        {
+            if (Game.instance.quests.TryGetQuest(q, out var instance))
+                return instance.completed;
+            return false;
         }
 
         public static QuestGiver FindReturnNPC(string npcId)

@@ -307,7 +307,7 @@ MonoBehaviour:
   onExperienceChanged:
     m_PersistentCalls:
       m_Calls: []
-  level: 1
+  level: 2
   strength: 10
   dexterity: 15
   vitality: 15

@@ -378,6 +378,17 @@ namespace PLAYERTWO.ARPGProject
                 * m_additionalAttributes.damageMultiplier
             );
 
+
+        public int MagicResistance => CalculateMagicResistance();
+
+        protected virtual int GetItemsMagicResistance()
+        {
+            if (m_items == null)
+                return 0;
+
+            return m_items.GetItemsMagicResistance();
+        }
+
         /// <summary>
         /// Returns the magic damage points given a skill.
         /// </summary>
@@ -445,6 +456,14 @@ namespace PLAYERTWO.ARPGProject
                 return MinMax.Zero;
 
             return m_items.GetDamage();
+        }
+
+        protected virtual MinMax GetItemsMagicDamage()
+        {
+            if (!m_items)
+                return MinMax.Zero;
+
+            return m_items.GetItemsMagicDamage();
         }
 
         /// <summary>
@@ -612,9 +631,13 @@ namespace PLAYERTWO.ARPGProject
                 return;
 
             m_defeatedEntities.Add(other);
-            AddExperience(Game.instance.baseEnemyDefeatExperience * other.stats.level);
+
+            int gainedExp = CalculateEnemyExperience(other);
+            
+            AddExperience(gainedExp);
+            Debug.Log($"[EXP] Pokonano {other.name}, zdobyto {gainedExp} EXP");
         }
-        
+
         public bool IsMaxLevel()
         {
             return m_reachedMaxLevel;

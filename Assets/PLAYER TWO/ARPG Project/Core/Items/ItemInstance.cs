@@ -136,7 +136,6 @@ namespace PLAYERTWO.ARPGProject
 
     // Debug.Log($"[STACK] Stacking successful! {GetName()} stack is now {stack}/{maxStack}. Other stack: {other.stack}");
 
-    // 🔥 Jeśli cały stack z ekwipunku został przeniesiony, usuń go
     if (other.stack == 0)
     {
         // Debug.Log($"[STACK] {other.GetName()} stack in inventory is now 0. Removing from inventory.");
@@ -261,6 +260,45 @@ namespace PLAYERTWO.ARPGProject
         }
 
         /// <summary>
+        /// Returns the magic damage of this item instance.
+        /// </summary>
+        public virtual MinMax GetMagicDamage()
+        {
+            if (!IsWeapon() || IsBroken()) return MinMax.Zero;
+
+            var minMagic = GetWeapon().minMagicDamage;
+            var maxMagic = GetWeapon().maxMagicDamage;
+
+            if (IsAboutToBreak())
+                return new MinMax((int)(minMagic / 2f), (int)(maxMagic / 2f));
+
+            return new MinMax(minMagic, maxMagic);
+        }
+
+        public int GetAdditionalMagicDamage()
+        {
+            if (data is ItemWeapon weapon)
+                return weapon.minMagicDamage; // Pobiera magiczne obrażenia z broni
+
+            return 0;
+        }
+
+        public float GetMagicDamageMultiplier()
+        {
+            return attributes != null ? attributes.magicDamagePercent / 100f : 1f;
+        }
+
+        public int GetAdditionalMagicResistance()
+        {
+            return attributes != null ? attributes.magicResistance : 0;
+        }
+
+        /// <summary>
+        /// Returns true if this weapon has magic damage.
+        /// </summary>
+        public bool HasMagicDamage() => IsWeapon() && (GetWeapon().minMagicDamage > 0 || GetWeapon().maxMagicDamage > 0);
+
+        /// <summary>
         /// Returns the defense points of this Item Instance. If it's broken, the defense is zero.
         /// If the Item Instance is about to break, the defense is reduced by half.
         /// </summary>
@@ -376,11 +414,19 @@ namespace PLAYERTWO.ARPGProject
             var text = "";
 
             if (IsArmor())
+            {
                 text += $"Defense: {GetArmor().defense}";
+
+                if (GetArmor().magicResistance > 0)
+                    text += $"\nMagic Resistance: {GetArmor().magicResistance}";
+            }
             else if (IsShield())
             {
                 text += $"Defense: {GetShield().defense}";
                 text += $"\nChance To Block: {GetShield().chanceToBlock}%";
+
+                if (GetShield().magicResistance > 0)
+                    text += $"\nMagic Resistance: {GetShield().magicResistance}";
             }
             else if (IsWeapon())
             {
@@ -397,6 +443,9 @@ namespace PLAYERTWO.ARPGProject
 
                 text += $"Damage: {GetWeapon().minDamage} ~ {GetWeapon().maxDamage}";
                 text += $"\nAttack Speed: {GetWeapon().attackSpeed}";
+
+                if (GetWeapon().minMagicDamage > 0 || GetWeapon().maxMagicDamage > 0)
+                    text += $"\nMagic Damage: {GetWeapon().minMagicDamage} ~ {GetWeapon().maxMagicDamage}";
             }  
 
             if (IsEquippable())
