@@ -67,7 +67,11 @@ namespace PLAYERTWO.ARPGProject
         protected const string k_stunClipName = "Stunned";
 
         protected virtual void InitializeEntity() => m_entity = GetComponent<Entity>();
-        protected virtual void InitializeAnimator() => m_animator = GetComponentInChildren<Animator>();
+        // protected virtual void InitializeAnimator() => m_animator = GetComponentInChildren<Animator>();
+        protected virtual void InitializeAnimator()
+        {
+            m_animator = transform.Find("Skin").GetComponent<Animator>();
+        }
 
         protected virtual void InitializeHashes()
         {

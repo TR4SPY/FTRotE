@@ -53,6 +53,15 @@ MonoBehaviour:
   - {fileID: 11400000, guid: eb72974e791eb9fe28c369524ad5e92b, type: 2}
   - {fileID: 11400000, guid: 59f75416e2290d845b7b99219f0cf26d, type: 2}
   - {fileID: 11400000, guid: 287c86e08b8b87b21b495785dc069b35, type: 2}
+  - {fileID: 11400000, guid: 6a672b0d9cca85c79bab719f132b0730, type: 2}
+  - {fileID: 11400000, guid: 935cbd1641354a649a367b82e1bfc85d, type: 2}
+  - {fileID: 11400000, guid: 1203700d0cda36b5a9e8aa23524f1f5c, type: 2}
+  - {fileID: 11400000, guid: a5fa6a8f662ee0fa7a548361339295e8, type: 2}
+  - {fileID: 11400000, guid: 49d666492b126661c84cbceb5750332b, type: 2}
+  - {fileID: 11400000, guid: 6b7ea5cc06d0656e18eebdbf95cdea64, type: 2}
+  - {fileID: 11400000, guid: 0506b01829e1d9579b5c89febe2c0f3e, type: 2}
+  - {fileID: 11400000, guid: 38bc0d15d5551794c9f1031d00ec0a60, type: 2}
+  - {fileID: 11400000, guid: e524c70f7ad110a3fbeb0ad44a2b5da1, type: 2}
   skills:
   - {fileID: 11400000, guid: 19d43b816a0912f449f2b9441140e15e, type: 2}
   - {fileID: 11400000, guid: 7d6a3fca69013b5449bdee3714e114c0, type: 2}
@@ -65,10 +74,17 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c13455d6c7f4414c9a1a24afb1086820, type: 2}
   - {fileID: 11400000, guid: cba21de977c19b16bb210594f1fb8e96, type: 2}
   - {fileID: 11400000, guid: 21f48639c9631939e9f274f156ac53b8, type: 2}
+  - {fileID: 11400000, guid: 4009ebc4a3ac6a192913ce3c062cb2af, type: 2}
+  - {fileID: 11400000, guid: 8d9c60c67dddcde4192cd503b184ba8e, type: 2}
   quests:
   - {fileID: 11400000, guid: 6d71c4c0e355cc84a9b7ffa082860dd7, type: 2}
   - {fileID: 11400000, guid: 7a25f4387e11fbc4698fd47d7830d567, type: 2}
   - {fileID: 11400000, guid: 66d5ae9094d9e0d48b44e9aa82c185a3, type: 2}
   - {fileID: 11400000, guid: cc727055113dae444b4fa17a7262e47d, type: 2}
+  - {fileID: 11400000, guid: 493facf4a206a8e37b9ef376f5c9ea8f, type: 2}
+  - {fileID: 11400000, guid: 01d7d8df666cc6003b9e25851d57431d, type: 2}
+  - {fileID: 11400000, guid: 2cc5d9d56d2a63316b56ce98e1e43475, type: 2}
+  - {fileID: 11400000, guid: a2ba5503d60d8911cb45d760d887c709, type: 2}
+  - {fileID: 11400000, guid: a4629b420704bceaeac87ebe0f0226f8, type: 2}
   questItems:
   - {fileID: 6325688752531504721, guid: 74ab1ea2f5b247d4ebde0dc6b3823943, type: 3}

@@ -9,7 +9,7 @@
                     "name": "Set Destination",
                     "type": "Value",
                     "id": "277b648d-a0a4-4705-bfdb-3b57ee2687c0",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -72,7 +72,7 @@
                     "name": "Select Skill 0",
                     "type": "Button",
                     "id": "da4da96c-b9e7-4e70-ac67-46adb55572f5",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -90,7 +90,7 @@
                     "name": "Select Skill 2",
                     "type": "Button",
                     "id": "19cbb8a6-2308-4bee-a21d-ec5ed3b4b4ee",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -99,7 +99,43 @@
                     "name": "Select Skill 3",
                     "type": "Button",
                     "id": "b35a25e7-235b-4cb0-a281-b527f9ef13bf",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Select Skill 4",
+                    "type": "Button",
+                    "id": "ecb2ee36-2e2c-4ce3-926d-c13e66a73ddd",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Select Skill 5",
+                    "type": "Button",
+                    "id": "a2a57ee3-8779-4c3f-8836-43cf28f13707",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Select Skill 6",
+                    "type": "Button",
+                    "id": "4c76f3c3-3e63-4edf-90af-8f796aad61c4",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Select Skill 7",
+                    "type": "Button",
+                    "id": "b40fd131-5563-428f-82bb-eb2e84ae1bb9",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -218,6 +254,50 @@
                     "processors": "",
                     "groups": "",
                     "action": "Select Skill 3",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "11fc45bf-44ca-4453-b6e5-7f7378f226c6",
+                    "path": "<Keyboard>/5",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Select Skill 4",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b9850345-8fd6-480d-ab10-c332069fd200",
+                    "path": "<Keyboard>/6",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Select Skill 5",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "18599e42-3165-4da0-bba0-a39e373a0493",
+                    "path": "<Keyboard>/7",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Select Skill 6",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "181046b9-0d07-445a-aa05-8aab7c1d1754",
+                    "path": "<Keyboard>/8",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Select Skill 7",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

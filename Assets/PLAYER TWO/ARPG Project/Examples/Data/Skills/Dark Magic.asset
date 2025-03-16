@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 714677181b4f39440a248d8ae62fba51, type: 3}
+  m_Name: Dark Magic
+  m_EditorClassIdentifier: 
+  icon: {fileID: 21300000, guid: 1f5de622ff473dc43b8a4d774b5a2a2d, type: 3}
+  sound: {fileID: 0}
+  coolDown: 1.2
+  castObject: {fileID: 4638712882946042690, guid: 4fb0e2fc0d0c5a75696a9e66b69cfaaa, type: 3}
+  castingOrigin: 2
+  requireTarget: 0
+  faceInterestDirection: 0
+  useRegularAttackClip: 0
+  overrideClip: {fileID: -7847466796326333299, guid: eb58ae4aa6d03bd47a21f1e320c5ae86, type: 3}
+  useMana: 1
+  manaCost: 50
+  useBlood: 0
+  bloodCost: 0
+  useHealing: 1
+  healingAmount: 20
+  useMeleeHitbox: 0
+  minAttackDistance: 8
+  requiredWeapon: 0
+  damageMode: 1
+  minDamage: 12
+  maxDamage: 15

@@ -55,6 +55,9 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("A reference to the GUI Dialog Window.")]
         public GUIDialogWindow dialogWindow;
 
+        [Tooltip("A reference to the GUI Help Window.")]
+        public GUIHelpWindow helpWindow;
+
 
         [Header("Audio Settings")]
         [Tooltip("The Audio Clip that plays when opening windows.")]

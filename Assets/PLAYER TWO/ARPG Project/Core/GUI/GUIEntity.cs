@@ -40,7 +40,7 @@ namespace PLAYERTWO.ARPGProject
         public UnityEvent<GUIItem> onEquipConsumable;
         public UnityEvent<GUIItem> onUnequipConsumable;
 
-        protected Entity m_entity;
+        public Entity m_entity;
         protected GUISkillSlot m_currentSkill;
 
         protected GUIConsumableSlot[] m_consumableSlots;
@@ -63,8 +63,10 @@ namespace PLAYERTWO.ARPGProject
             }
         }
 
-        protected virtual void InitializeSkillsSlots() =>
-            m_skillSlots = GetComponentsInChildren<GUISkillSlot>();
+        protected virtual void InitializeSkillsSlots()
+        {
+            m_skillSlots = GetComponentsInChildren<GUISkillSlot>(true);
+        }
 
         protected virtual void InitializeSkillsSlotsCallbacks()
         {

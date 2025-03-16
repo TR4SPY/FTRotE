@@ -105,19 +105,19 @@ namespace PLAYERTWO.ARPGProject
 
             if (!ignoreCoolDown && !currentInstance.CanPerform())
             {
-                Debug.LogWarning($"Skill {current.name} is on cooldown.");
+            //  Debug.LogWarning($"Skill {current.name} is on cooldown.");
                 return false;
             }
 
             if (current.useMana && m_entity.stats.mana < current.manaCost)
             {
-                Debug.LogWarning($"Not enough mana for skill {current.name}. Required: {current.manaCost}, Available: {m_entity.stats.mana}");
+            //  Debug.LogWarning($"Not enough mana for skill {current.name}. Required: {current.manaCost}, Available: {m_entity.stats.mana}");
                 return false;
             }
 
             if (current.useBlood && m_entity.stats.health < current.bloodCost)
             {
-                Debug.LogWarning($"Not enough health for skill {current.name}. Required: {current.bloodCost}, Available: {m_entity.stats.health}");
+            //  Debug.LogWarning($"Not enough health for skill {current.name}. Required: {current.bloodCost}, Available: {m_entity.stats.health}");
                 return false;
             }
 

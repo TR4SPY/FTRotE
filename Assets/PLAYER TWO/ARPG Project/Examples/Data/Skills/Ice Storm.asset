@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 714677181b4f39440a248d8ae62fba51, type: 3}
+  m_Name: Ice Storm
+  m_EditorClassIdentifier: 
+  icon: {fileID: 21300000, guid: ec9a21ce586964d4cb814cbcceae79a1, type: 3}
+  sound: {fileID: 0}
+  coolDown: 0.8
+  castObject: {fileID: 6262241374213919440, guid: 85c6e664add5d9d12bb6fe63c4289e03, type: 3}
+  castingOrigin: 4
+  requireTarget: 1
+  faceInterestDirection: 1
+  useRegularAttackClip: 0
+  overrideClip: {fileID: -7847466796326333299, guid: eb58ae4aa6d03bd47a21f1e320c5ae86, type: 3}
+  useMana: 1
+  manaCost: 60
+  useBlood: 0
+  bloodCost: 0
+  useHealing: 0
+  healingAmount: 0
+  useMeleeHitbox: 0
+  minAttackDistance: 10
+  requiredWeapon: 0
+  damageMode: 1
+  minDamage: 6
+  maxDamage: 13

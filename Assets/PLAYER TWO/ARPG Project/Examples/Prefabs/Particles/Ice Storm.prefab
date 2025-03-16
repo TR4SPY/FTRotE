@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5065748452182834369}
   - component: {fileID: 8480551483896714808}
   - component: {fileID: 2795071108212299761}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Ice Meteor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4924,7 +4924,7 @@ GameObject:
   - component: {fileID: 5626223953373337358}
   - component: {fileID: 5289943460385142769}
   - component: {fileID: 3078070192623867447}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Sparks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9882,7 +9882,7 @@ GameObject:
   - component: {fileID: 1848962066493884411}
   - component: {fileID: 4038362475998097411}
   - component: {fileID: 5151088034608014797}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: SnowGround
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14782,7 +14782,7 @@ GameObject:
   - component: {fileID: 4392288068464202493}
   - component: {fileID: 3789403521901114475}
   - component: {fileID: 666055264355884891}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Shockwave
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19691,7 +19691,9 @@ GameObject:
   - component: {fileID: 2238382647022746525}
   - component: {fileID: 1883687280524767967}
   - component: {fileID: 7655275015052550744}
-  m_Layer: 0
+  - component: {fileID: 6463675585210145033}
+  - component: {fileID: 7059386844396682209}
+  m_Layer: 2
   m_Name: Ice Storm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -24514,7 +24516,7 @@ ParticleSystemRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6262241374213919440}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -24583,6 +24585,44 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &6463675585210145033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6262241374213919440}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be669423f69b1024c84d7250fafda12c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  destroyWhenParticleStop: 1
+  useParticleCollisionEvents: 0
+  collideOnce: 0
+--- !u!136 &7059386844396682209
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6262241374213919440}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 3
+  m_Height: 25
+  m_Direction: 1
+  m_Center: {x: 0, y: 8, z: 0}
 --- !u!1 &6698048172851527779
 GameObject:
   m_ObjectHideFlags: 0
@@ -24594,7 +24634,7 @@ GameObject:
   - component: {fileID: 4128550887720606703}
   - component: {fileID: 8522608664939803614}
   - component: {fileID: 8372416099215412191}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: 'Ice Hit '
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -29489,7 +29529,7 @@ GameObject:
   - component: {fileID: 4490668043051373212}
   - component: {fileID: 2261447631136466188}
   - component: {fileID: 2451029230868462263}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Flash
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34400,7 +34440,7 @@ GameObject:
   - component: {fileID: 622621159611272115}
   - component: {fileID: 5264774318693809750}
   - component: {fileID: 6356276939553325945}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -39379,7 +39419,7 @@ GameObject:
   - component: {fileID: 33483017092325595}
   - component: {fileID: 6759467383589877378}
   - component: {fileID: 1932752738721690329}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Smoke
   m_TagString: Untagged
   m_Icon: {fileID: 0}

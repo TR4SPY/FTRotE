@@ -318,6 +318,8 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void OnDie()
         {
+            Debug.Log($"[Entity] {name}: Die() [health=0], forcibly StopAllCoroutines() ???");
+            
             StopAllCoroutines();
             LoseTarget();
 
@@ -362,9 +364,11 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual IEnumerator StopAttackRoutine()
         {
+            Debug.Log($"[{name}] StopAttackRoutine() start");
             LoseTarget();
             m_entity.StandStill();
             yield return m_resetMoveDelay;
+            Debug.Log($"[{name}] StopAttackRoutine() -> now StartRandomMovement()");
             m_entity.StartRandomMovement();
         }
 
@@ -391,6 +395,9 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual bool CanUpdateAI()
         {
+            if (m_entity.isDead)
+                return false;
+        
             if (m_entity.isAgent)
             {
                 return true; // AI Agent jest zawsze aktywny

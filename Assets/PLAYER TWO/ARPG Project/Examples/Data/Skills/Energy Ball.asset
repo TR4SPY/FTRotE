@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 714677181b4f39440a248d8ae62fba51, type: 3}
   m_Name: Energy Ball
   m_EditorClassIdentifier: 
-  icon: {fileID: 21300000, guid: b697125c1811b636194fd66a150d6f90, type: 3}
+  icon: {fileID: 21300000, guid: 498f84560c1f9f84aa58687338bc7229, type: 3}
   sound: {fileID: 0}
   coolDown: 4
   castObject: {fileID: 100000, guid: 31b5fb8de6277762797830a1f73f5204, type: 3}

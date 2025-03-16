@@ -595,7 +595,7 @@ namespace PLAYERTWO.ARPGProject
         {
             if (isAgent)
             {
-                Debug.Log("Skipping stats initialization for AI Agent.");
+                // Debug.Log("Skipping stats initialization for AI Agent.");
                 return;
             }
 
@@ -613,13 +613,18 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         public virtual void Die()
         {
+            // Debug.Log($"[Entity] {name} → Die() start. Health= {stats.health}. Marking as dead…");
+
             stats.health = 0;
             NotifyDefeat();
             SetCollidersEnabled(false);
-            states.ChangeTo<IdleEntityState>();
+
+            states.ChangeTo<DeadEntityState>();
+
+            // Debug.Log($"[Entity] {name} → Die() done. state= {states.current.GetType().Name}");
+
             onDie?.Invoke();
 
-        // Logowanie śmierci gracza tylko jeśli Entity to gracz
         if (CompareTag("Entity/Player"))
         {
             var playerLogger = GetComponent<PlayerBehaviorLogger>();
@@ -630,7 +635,7 @@ namespace PLAYERTWO.ARPGProject
                 {
                     playerLogger.LogPlayerDeath(entity);
                 }
-                Debug.Log("Player death logged for Entity/Player.");
+                // Debug.Log("Player death logged for Entity/Player.");
             }
             else
             {
@@ -639,12 +644,11 @@ namespace PLAYERTWO.ARPGProject
         }
         else if (CompareTag("Entity/AI_Agent"))
         {
-            Debug.Log("Agent death detected, logging handled by AgentController.");
+            // Debug.Log("Agent death detected, logging handled by AgentController.");
         }
         else if (CompareTag("Entity/Enemy"))
         {
-            Debug.Log($"Enemy {name} defeated.");
-            // Możesz dodać inne zachowania specyficzne dla przeciwników tutaj.
+            // Debug.Log($"Enemy {name} defeated.");
         }
     }
 
@@ -808,6 +812,8 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void Update()
         {
+            // Debug.Log($"[Entity.Update] {name}, isDead={isDead}, currentState={states.current?.GetType()?.Name}");
+            
             if (controller.enabled)
             {
                 states.HandleStep();

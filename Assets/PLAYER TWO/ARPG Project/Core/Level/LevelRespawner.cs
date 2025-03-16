@@ -82,6 +82,35 @@ namespace PLAYERTWO.ARPGProject
             });
         }
 
+        public void TeleportToWaypoint()
+        {
+            if (isRespawning) return;
+
+            if (m_respawnRoutine != null)
+                StopCoroutine(m_respawnRoutine);
+
+            SpacePoint spacePoint;
+
+            if (m_waypoints.currentWaypoint)
+            {
+                spacePoint = m_waypoints.currentWaypoint.GetSpacePoint();
+                // Debug.Log($"[LevelRespawner] Teleportacja do waypointu: {m_waypoints.currentWaypoint?.title}");
+            }
+            else
+            {
+                spacePoint = new SpacePoint(m_origin.position, m_origin.rotation);
+                Debug.LogWarning("[LevelRespawner] Brak odkrytych waypointów! Teleportacja na start poziomu.");
+            }
+
+            Fader.instance.FadeOut(() =>
+            {
+                m_player.StandStill();
+                m_player.Teleport(spacePoint.position, spacePoint.rotation);
+
+                Fader.instance.FadeIn();
+            });
+        }
+
         protected virtual void Start()
         {
             InitializeWaits();

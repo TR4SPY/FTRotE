@@ -7,241 +7,38 @@ namespace PLAYERTWO.ARPGProject
     [AddComponentMenu("PLAYER TWO/ARPG Project/GUI/GUI Skill Manager")]
     public class GUISkillsManager : MonoBehaviour
     {
-        [Tooltip("A reference to the Game Object that contains all available Skill slots.")]
-        public GameObject availableSkillsContainer;
+        [Header("Available Skills")]
+        public GameObject availableSkillsContainer;  
+        public GUISkillSlot slotPrefab;
 
-        [Tooltip("A reference to the Game Object that contains all equipped Skill slots.")]
-        public GameObject equippedSkillsContainer;
+        [Header("Equipped Skill Sets")]
+        [Tooltip("Parent (CanvasGroup) z 4 slotami – zestaw 1.")]
+        public GameObject equippedSkillsSet1;
+        [Tooltip("Parent (CanvasGroup) z 4 slotami – zestaw 2.")]
+        public GameObject equippedSkillsSet2;
 
-        [Header("Main Buttons")]
-        [Tooltip("A reference to the Apply button.")]
-        public Button applyButton;
+        [Header("UI Buttons (Apply/Cancel + L/R)")]
+        public Button buttonApply;
+        public Button buttonCancel;
+        public Button buttonLeft;   // przycisk do przełączania na Set1
+        public Button buttonRight;  // przycisk do przełączania na Set2
 
-        [Tooltip("A reference to the Cancel button.")]
-        public Button cancelButton;
+        [Tooltip("Tekst typu '1/2' lub '2/2' itp.")]
+        public Text skillSetText;
 
-        protected GUISkillSlot[] m_availableSkillsSlots;
-        protected GUISkillSlot[] m_equippedSkillsSlots;
+        // -- Dostępne skille (dynamicznie):
+        private List<GUISkillSlot> m_dynamicAvailableSlots = new List<GUISkillSlot>();
 
-        protected List<Skill> m_availableSkills;
-        protected List<Skill> m_equippedSkills;
+        // -- Sloty w 2 zestawach (po 4 sloty) na wyposażone skille:
+        private GUISkillSlot[] m_equippedSet1Slots;
+        private GUISkillSlot[] m_equippedSet2Slots;
+
+        // -- Łącznie 8 wyposażonych skilli
+        private List<Skill> m_equippedSkills;
         private List<Skill> equippedSkillsBefore;
 
-        protected Entity m_entity;
-
-        protected virtual void InitializeEntity() => m_entity = Level.instance.player;
-
-        protected virtual void InitializeSlots()
-        {
-            m_availableSkillsSlots = availableSkillsContainer.GetComponentsInChildren<GUISkillSlot>();
-            m_equippedSkillsSlots = equippedSkillsContainer.GetComponentsInChildren<GUISkillSlot>();
-        }
-
-        protected virtual void InitializeLists()
-        {
-            m_availableSkills = new List<Skill>(new Skill[m_availableSkillsSlots.Length]);
-            m_equippedSkills = new List<Skill>(new Skill[m_equippedSkillsSlots.Length]);
-
-            for (int i = 0; i < m_equippedSkillsSlots.Length; i++)
-            {
-                var index = i;
-                m_equippedSkillsSlots[i].OnDropSKill += (skill) => EquipSkill(index, skill);
-            }
-        }
-
-        protected virtual void InitializeCallbacks()
-        {
-            m_entity.skills.onUpdatedSkills.AddListener(_ => Refresh());
-            m_entity.skills.onUpdatedEquippedSkills.AddListener(_ => Refresh());
-
-            for (int i = 0; i < m_availableSkillsSlots.Length; i++)
-            {
-                var index = i;
-
-                if (i < m_equippedSkillsSlots.Length)
-                {
-                    m_equippedSkillsSlots[i].onIconDoubleClick.AddListener(() =>
-                        RemoveSkill(index));
-                }
-
-                m_availableSkillsSlots[i].onIconDoubleClick.AddListener(() =>
-                    EquipSkill(m_availableSkillsSlots[index].skill));
-            }
-        }
-
-        /// <summary>
-        /// Sets all available Skill Slots from a given array.
-        /// </summary>
-        /// <param name="skills">The array of Skills to be set as available skills.</param>
-        public virtual void SetAvailableSkills(Skill[] skills)
-        {
-            for (int i = 0; i < m_availableSkillsSlots.Length; i++)
-            {
-                if (i >= skills.Length)
-                {
-                    m_availableSkills[i] = null;
-                    m_availableSkillsSlots[i].SetSkill(null);
-                    continue;
-                }
-
-                m_availableSkills[i] = skills[i];
-                m_availableSkillsSlots[i].SetSkill(m_availableSkills[i], true);
-            }
-        }
-
-        /// <summary>
-        /// Sets all equipped Skill Slots from a given array.
-        /// </summary>
-        /// <param name="skills">The array of Skills to be set as equipped skills.</param>
-        public virtual void SetEquippedSkills(Skill[] skills)
-        {
-            for (int i = 0; i < m_equippedSkillsSlots.Length; i++)
-            {
-                if (i >= skills.Length)
-                {
-                    m_equippedSkills[i] = null;
-                    m_equippedSkillsSlots[i].SetSkill(null);
-                    continue;
-                }
-
-                m_equippedSkills[i] = skills[i];
-                m_equippedSkillsSlots[i].SetSkill(m_equippedSkills[i], true);
-            }
-        }
-
-        /// <summary>
-        /// Equips a given Skill on the first free slot.
-        /// </summary>
-        /// <param name="skill">The Skill you want to equip.</param>
-        public virtual void EquipSkill(Skill skill)
-        {
-            if (m_equippedSkills.Contains(skill)) return;
-
-            for (int i = 0; i < m_equippedSkillsSlots.Length; i++)
-            {
-                if (!m_equippedSkills[i])
-                {
-                    EquipSkill(i, skill);
-                    break;
-                }
-            }
-
-            UpdateButtons();
-        }
-
-        /// <summary>
-        /// Removes a equipped Skill based on its index.
-        /// </summary>
-        /// <param name="index">The index of the equipped Skill you want to remove.</param>
-        public virtual void RemoveSkill(int index)
-        {
-            if (index < 0 || index >= m_equippedSkills.Count) return;
-
-            m_equippedSkills[index] = null;
-            RefreshEquippedSkills();
-            UpdateButtons();
-        }
-
-        /// <summary>
-        /// Equips a Skill in a given slot by its index.
-        /// </summary>
-        /// <param name="index">The index of the slot you want to equip.</param>
-        /// <param name="skill">The Skill you want to equip.</param>
-        public virtual void EquipSkill(int index, Skill skill)
-        {
-            if (m_equippedSkills.Contains(skill))
-            {
-                var i = m_equippedSkills.IndexOf(skill);
-
-                if (m_equippedSkills[index])
-                {
-                    m_equippedSkills[i] = m_equippedSkills[index];
-                }
-                else
-                {
-                    m_equippedSkills[i] = null;
-                }
-            }
-
-            m_equippedSkills[index] = skill;
-            RefreshEquippedSkills();
-        }
-
-        /// <summary>
-        /// Refreshes the list of equipped skills updating its data.
-        /// </summary>
-        public virtual void RefreshEquippedSkills()
-        {
-            for (int i = 0; i < m_equippedSkillsSlots.Length; i++)
-            {
-                if (i >= m_equippedSkills.Count)
-                {
-                    m_equippedSkillsSlots[i].SetSkill(null);
-                    continue;
-                }
-
-                m_equippedSkillsSlots[i].SetSkill(m_equippedSkills[i], true);
-            }
-        }
-
-        /// <summary>
-        /// Aktualizuje widoczność przycisków Apply i Cancel.
-        /// </summary>
-        public void UpdateButtons()
-        {
-            bool shouldShow = !CompareSkills();
-
-            applyButton.gameObject.SetActive(shouldShow);
-            cancelButton.gameObject.SetActive(shouldShow);
-        }
-
-        /// <summary>
-        /// Sprawdza, czy obecne skille są identyczne z zapisanymi.
-        /// </summary>
-        private bool CompareSkills()
-        {
-            if (equippedSkillsBefore == null || equippedSkillsBefore.Count != m_equippedSkills.Count)
-                return false;
-
-            for (int i = 0; i < equippedSkillsBefore.Count; i++)
-            {
-                if (equippedSkillsBefore[i] != m_equippedSkills[i])
-                    return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Refreshes the available and equipped skills slots.
-        /// </summary>
-        public virtual void Refresh()
-        {
-            SetAvailableSkills(m_entity.skills.ToArray());
-            SetEquippedSkills(m_entity.skills.GetEquippedSkills());
-        }
-
-        /// <summary>
-        /// Applies the equipped Skills to Entity.
-        /// </summary>
-        public virtual void Apply()
-        {
-            m_entity.skills.SetEquippedSkills(m_equippedSkills.ToArray());
-            
-            equippedSkillsBefore = new List<Skill>(m_equippedSkills);
-            UpdateButtons();
-        }
-
-        /// <summary>
-        /// Cancel all the changes and revert back to the initial state.
-        /// </summary>
-        public void Cancel()
-        {
-            m_equippedSkills = new List<Skill>(equippedSkillsBefore);
-            RefreshEquippedSkills();
-
-            UpdateButtons();
-        }
+        private Entity m_entity;
+        private bool showingFirstSet = true; // flaga: czy aktualnie pokazuję zestaw 1
 
         protected virtual void Start()
         {
@@ -253,6 +50,319 @@ namespace PLAYERTWO.ARPGProject
 
             equippedSkillsBefore = new List<Skill>(m_equippedSkills);
             UpdateButtons();
+
+            // Domyślnie pokaż Set 1
+            ShowSet1();
         }
+
+        /// <summary>
+        /// Pobranie referencji do gracza (Entity).
+        /// </summary>
+        protected virtual void InitializeEntity()
+        {
+            m_entity = Level.instance.player; 
+        }
+
+        /// <summary>
+        /// Zbiera sloty z obiektów "equippedSkillsSet1" i "equippedSkillsSet2".
+        /// </summary>
+        protected virtual void InitializeSlots()
+        {
+            // W set 1 i set 2 masz po 4 sloty.
+            m_equippedSet1Slots = equippedSkillsSet1.GetComponentsInChildren<GUISkillSlot>();
+            m_equippedSet2Slots = equippedSkillsSet2.GetComponentsInChildren<GUISkillSlot>();
+        }
+
+        /// <summary>
+        /// Tworzymy listę 8 Skill (4 w set1 + 4 w set2).
+        /// </summary>
+        protected virtual void InitializeLists()
+        {
+            // Dajemy 8 elementów (null)
+            m_equippedSkills = new List<Skill>(new Skill[8]);
+
+            // Podpinamy OnDropSkill w set1 (indeksy 0..3)
+            for (int i = 0; i < m_equippedSet1Slots.Length; i++)
+            {
+                int index = i; // 0..3
+                m_equippedSet1Slots[i].OnDropSKill += (skill) => EquipSkill(index, skill);
+            }
+            // Podpinamy OnDropSkill w set2 (indeksy 4..7)
+            for (int i = 0; i < m_equippedSet2Slots.Length; i++)
+            {
+                int index = i + 4;
+                m_equippedSet2Slots[i].OnDropSKill += (skill) => EquipSkill(index, skill);
+            }
+        }
+
+        /// <summary>
+        /// Podpinamy eventy: 
+        /// - onUpdatedSkills, onUpdatedEquippedSkills
+        /// - doubleclick do usuwania skilli
+        /// - przyciski left/right
+        /// - apply/cancel
+        /// </summary>
+        protected virtual void InitializeCallbacks()
+        {
+            // Gdy EntitySkillManager zmieni dostępne lub wyposażone, odśwież
+            m_entity.skills.onUpdatedSkills.AddListener(_ => Refresh());
+            m_entity.skills.onUpdatedEquippedSkills.AddListener(_ => Refresh());
+
+            // Doubleclick usuń skill – set1
+            for (int i = 0; i < m_equippedSet1Slots.Length; i++)
+            {
+                int index = i; 
+                m_equippedSet1Slots[i].onIconDoubleClick.AddListener(() => RemoveSkill(index));
+            }
+            // Doubleclick usuń skill – set2
+            for (int i = 0; i < m_equippedSet2Slots.Length; i++)
+            {
+                int index = i + 4;
+                m_equippedSet2Slots[i].onIconDoubleClick.AddListener(() => RemoveSkill(index));
+            }
+
+            // Obsługa przycisków do przełączania set1 / set2
+            if (buttonLeft)  buttonLeft.onClick.AddListener(ShowSet1);
+            if (buttonRight) buttonRight.onClick.AddListener(ShowSet2);
+
+            // Obsługa apply/cancel
+            if (buttonApply)   buttonApply.onClick.AddListener(Apply);
+            if (buttonCancel)  buttonCancel.onClick.AddListener(Cancel);
+        }
+
+        #region --- Dostępne skille (Dynamicznie) ---
+
+        /// <summary>
+        /// Ustaw listę dostępnych skilli w widoku (scroll).
+        /// </summary>
+        public virtual void SetAvailableSkills(Skill[] skills)
+        {
+            // 1) Dodaj sloty, jeśli jest za mało
+            while (m_dynamicAvailableSlots.Count < skills.Length)
+            {
+                GUISkillSlot newSlot = Instantiate(slotPrefab, availableSkillsContainer.transform);
+                m_dynamicAvailableSlots.Add(newSlot);
+
+                // double-click => equipSkill
+                newSlot.onIconDoubleClick.AddListener(() =>
+                {
+                    EquipSkill(newSlot.skill);
+                });
+            }
+            // 2) Usuń nadmiar
+            while (m_dynamicAvailableSlots.Count > skills.Length)
+            {
+                int lastIndex = m_dynamicAvailableSlots.Count - 1;
+                var slotToRemove = m_dynamicAvailableSlots[lastIndex];
+                m_dynamicAvailableSlots.RemoveAt(lastIndex);
+                Destroy(slotToRemove.gameObject);
+            }
+            // 3) Ustaw skille
+            for (int i = 0; i < m_dynamicAvailableSlots.Count; i++)
+            {
+                var slot = m_dynamicAvailableSlots[i];
+                slot.SetSkill(skills[i], true);
+            }
+        }
+
+        #endregion
+
+        #region --- Wyekwipowane skille (8) ---
+
+        /// <summary>
+        /// Ustaw 8 skillów w m_equippedSkills, potem odśwież sloty.
+        /// </summary>
+        public virtual void SetEquippedSkills(Skill[] skills)
+        {
+            // Upewniamy się, że mamy listę 8
+            if (m_equippedSkills.Count < 8)
+            {
+                m_equippedSkills = new List<Skill>(new Skill[8]);
+            }
+
+            // Skopiuj param. "skills" do m_equippedSkills (max 8)
+            for (int i = 0; i < 8; i++)
+            {
+                if (i < skills.Length)
+                    m_equippedSkills[i] = skills[i];
+                else
+                    m_equippedSkills[i] = null;
+            }
+
+            RefreshEquippedSkills();
+        }
+
+        /// <summary>
+        /// Odświeża UI w set1 (index 0..3) i set2 (4..7).
+        /// </summary>
+        public virtual void RefreshEquippedSkills()
+        {
+            // set1
+            for (int i = 0; i < m_equippedSet1Slots.Length; i++)
+            {
+                var skill = m_equippedSkills[i]; 
+                m_equippedSet1Slots[i].SetSkill(skill, true);
+            }
+            // set2
+            for (int i = 0; i < m_equippedSet2Slots.Length; i++)
+            {
+                var skill = m_equippedSkills[i + 4];
+                m_equippedSet2Slots[i].SetSkill(skill, true);
+            }
+        }
+
+        /// <summary>
+        /// Dodanie skilla w pierwsze wolne miejsce (0..7).
+        /// </summary>
+        public virtual void EquipSkill(Skill skill)
+        {
+            if (m_equippedSkills.Contains(skill)) return;
+
+            for (int i = 0; i < m_equippedSkills.Count; i++)
+            {
+                if (m_equippedSkills[i] == null)
+                {
+                    EquipSkill(i, skill);
+                    break;
+                }
+            }
+            UpdateButtons();
+        }
+
+        /// <summary>
+        /// Wstaw skill do slotu index.
+        /// </summary>
+        public virtual void EquipSkill(int index, Skill skill)
+        {
+            if (index < 0 || index >= m_equippedSkills.Count) return;
+
+            // Jeśli skill jest już w innym slocie, przenieś go
+            if (m_equippedSkills.Contains(skill))
+            {
+                var oldIndex = m_equippedSkills.IndexOf(skill);
+                if (m_equippedSkills[index] != null)
+                {
+                    // zamiana
+                    m_equippedSkills[oldIndex] = m_equippedSkills[index];
+                }
+                else
+                {
+                    m_equippedSkills[oldIndex] = null;
+                }
+            }
+
+            m_equippedSkills[index] = skill;
+            RefreshEquippedSkills();
+        }
+
+        /// <summary>
+        /// Usuwamy skill z danego slotu (np. double-click).
+        /// </summary>
+        public virtual void RemoveSkill(int index)
+        {
+            if (index < 0 || index >= m_equippedSkills.Count) return;
+
+            m_equippedSkills[index] = null;
+            RefreshEquippedSkills();
+            UpdateButtons();
+        }
+
+        #endregion
+
+        #region --- Apply/Cancel/Refresh ---
+
+        /// <summary>
+        /// Odświeża: available i equipped.
+        /// </summary>
+        public virtual void Refresh()
+        {
+            // Dostępne skille = toArray
+            var allSkills = m_entity.skills.ToArray();
+            SetAvailableSkills(allSkills);
+
+            // Wyekwipowane = getEquipped
+            var eq = m_entity.skills.GetEquippedSkills();
+            SetEquippedSkills(eq);
+        }
+
+        public virtual void Apply()
+        {
+            // Zapisz skille do entity
+            m_entity.skills.SetEquippedSkills(m_equippedSkills.ToArray());
+            equippedSkillsBefore = new List<Skill>(m_equippedSkills);
+            UpdateButtons();
+        }
+
+        public void Cancel()
+        {
+            // cofnij do poprzedniego stanu
+            m_equippedSkills = new List<Skill>(equippedSkillsBefore);
+            RefreshEquippedSkills();
+            UpdateButtons();
+        }
+
+        public void UpdateButtons()
+        {
+            bool changed = !CompareSkills();
+            buttonApply.gameObject.SetActive(changed);
+            buttonCancel.gameObject.SetActive(changed);
+        }
+
+        private bool CompareSkills()
+        {
+            if (equippedSkillsBefore == null || equippedSkillsBefore.Count != m_equippedSkills.Count)
+                return false;
+
+            for (int i = 0; i < equippedSkillsBefore.Count; i++)
+            {
+                if (equippedSkillsBefore[i] != m_equippedSkills[i])
+                    return false;
+            }
+            return true;
+        }
+
+        #endregion
+
+        #region --- Pokaż/Ukryj set1 / set2 ---
+
+        private void ShowSet1()
+        {
+            SetCanvasGroup(equippedSkillsSet1, true);
+            SetCanvasGroup(equippedSkillsSet2, false);
+
+            showingFirstSet = true;
+            if (skillSetText) skillSetText.text = "1 / 2 Equipped skill set";
+
+            // Przykład: chowanie/przywracanie przycisków
+            //           (opcjonalnie)
+            if (buttonLeft)  SetCanvasGroup(buttonLeft.gameObject, false);
+            if (buttonRight) SetCanvasGroup(buttonRight.gameObject, true);
+        }
+
+        private void ShowSet2()
+        {
+            SetCanvasGroup(equippedSkillsSet1, false);
+            SetCanvasGroup(equippedSkillsSet2, true);
+
+            showingFirstSet = false;
+            if (skillSetText) skillSetText.text = "2 / 2 Equipped skill set";
+
+            // Przykład:
+            if (buttonLeft)  SetCanvasGroup(buttonLeft.gameObject, true);
+            if (buttonRight) SetCanvasGroup(buttonRight.gameObject, false);
+        }
+
+        private void SetCanvasGroup(GameObject obj, bool active)
+        {
+            if (!obj) return;
+            var cg = obj.GetComponent<CanvasGroup>();
+            if (!cg) return;
+
+            cg.alpha = active ? 1f : 0f;
+            cg.interactable = active;
+            cg.blocksRaycasts = active;
+        }
+
+        #endregion
     }
 }
