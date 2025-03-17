@@ -11,17 +11,17 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("A reference to the Text component that represents the player's name.")]
         public Text characterNameText;
 
+        [Tooltip("A reference to the Text component that represents the player's class.")]
+        public Text classText;
+
         [Tooltip("A reference to the Text component that represents the Stats level.")]
         public Text levelText;
 
         [Tooltip("A reference to the Text component that represents the Stats available points.")]
         public Text availablePointsText;
 
-        [Tooltip("A reference to the Text component that represents the Stats current experience points.")]
-        public Text currentExpText;
-
-        [Tooltip("A reference to the Text component that represents the Stats next level experience points.")]
-        public Text nextLevelExp;
+        [Tooltip("A reference to the Text component that represents the Stats experience points.")]
+        public Text experienceText;
 
         [Tooltip("A reference to the Text component that represents the Stats damage points.")]
         public Text damageText;
@@ -69,12 +69,18 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("A reference to the GUI Stats Attributes representing energy points.")]
         public GUIStatsAttribute energy;
 
+
         [Header("Main Buttons")]
         [Tooltip("A reference to the Apply button.")]
         public Button applyButton;
 
         [Tooltip("A reference to the Cancel button.")]
         public Button cancelButton;
+
+
+        [Header("Sprites")]
+        public Sprite[] playerTypeSprites; 
+        [SerializeField] private Image playerTypeIcon;
 
         public CharacterInstance characterInstance;
 
@@ -157,7 +163,7 @@ namespace PLAYERTWO.ARPGProject
             m_entity.stats.onLevelUp.AddListener(Refresh);
             m_entity.stats.onRecalculate.AddListener(Refresh);
             m_entity.stats.onExperienceChanged.AddListener(() =>
-                currentExpText.text = m_entity.stats.experience.ToString());
+                experienceText.text = $"{m_entity.stats.experience} / {m_entity.stats.nextLevelExp}");
         }
 
         protected virtual void InitializeTexts()
@@ -218,9 +224,17 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         public virtual void Refresh()
         {
+            string rawClassName = Game.instance.currentCharacter?.Entity != null
+                ? Game.instance.currentCharacter.Entity.name.Replace("(Clone)", "").Trim()
+                : "Unknown";
+
+            if (classText != null)
+            {
+                classText.text = rawClassName;
+            }
+
             levelText.text = m_entity.stats.level.ToString();
-            currentExpText.text = m_entity.stats.experience.ToString();
-            nextLevelExp.text = m_entity.stats.nextLevelExp.ToString();
+            experienceText.text = $"{m_entity.stats.experience} / {m_entity.stats.nextLevelExp}";
             characterNameText.text = characterInstance.name;
             damageText.text = $"{m_entity.stats.minDamage} - {m_entity.stats.maxDamage}";
             defenseText.text = m_entity.stats.defense.ToString();
@@ -246,6 +260,54 @@ namespace PLAYERTWO.ARPGProject
             if (playerTypeText != null)
             {
                 playerTypeText.text = $"{displayedType}";
+            }
+
+            if (playerTypeIcon != null)
+            {
+                if (!string.IsNullOrEmpty(displayedType) && displayedType != "Unknown" && displayedType != "Undefined")
+                {
+                    SetPlayerTypeIcon(displayedType, playerTypeIcon);
+                    playerTypeIcon.gameObject.SetActive(true);
+                }
+                else
+                {
+                    Debug.LogWarning($"Player type is undefined: {displayedType}");
+                    playerTypeIcon.gameObject.SetActive(false);
+                }
+            }
+        }
+        
+        private void SetPlayerTypeIcon(string playerType, Image iconImage)
+        {
+            iconImage.gameObject.SetActive(false);
+
+            if (playerTypeSprites == null || playerTypeSprites.Length < 4)
+            {
+                Debug.LogWarning("PlayerTypeSprites array is not properly configured!");
+                return;
+            }
+
+            switch (playerType)
+            {
+                case "Achiever":
+                    iconImage.sprite = playerTypeSprites[0];
+                    iconImage.gameObject.SetActive(true);
+                    break;
+                case "Killer":
+                    iconImage.sprite = playerTypeSprites[1];
+                    iconImage.gameObject.SetActive(true);
+                    break;
+                case "Explorer":
+                    iconImage.sprite = playerTypeSprites[2];
+                    iconImage.gameObject.SetActive(true);
+                    break;
+                case "Socializer":
+                    iconImage.sprite = playerTypeSprites[3];
+                    iconImage.gameObject.SetActive(true);
+                    break;
+                default:
+                    Debug.LogWarning($"Unknown player type: {playerType}");
+                    break;
             }
         }
 

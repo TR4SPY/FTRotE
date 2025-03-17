@@ -102,7 +102,7 @@ MonoBehaviour:
       specialConditionToSet: 0
     - optionText: Anything exclusive for me?
       isForSocializer: 0
-      isForAchiever: 0
+      isForAchiever: 1
       isForKiller: 1
       isForExplorer: 0
       action: 5

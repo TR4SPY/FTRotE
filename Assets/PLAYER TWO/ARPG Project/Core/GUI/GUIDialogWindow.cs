@@ -185,11 +185,13 @@ namespace AI_DDA.Assets.Scripts
             SetupDialog();
         }
 
-        private void OpenQuestWindow()
+        public void OpenQuestWindow()
         {
-            if (!(currentNPC is QuestGiver questGiver))
+            var questGiver = currentNPC.GetComponent<QuestGiver>();
+
+            if (questGiver == null)
             {
-                Debug.LogError("[AI-DDA] Błąd: currentNPC nie jest QuestGiverem!");
+                Debug.LogError("[AI-DDA] Błąd: currentNPC nie ma komponentu QuestGiver!");
                 return;
             }
 
@@ -218,14 +220,19 @@ namespace AI_DDA.Assets.Scripts
             blacksmith.OpenBlackSmithService(player);
         }
 
-        private void OpenExclusiveWindow()
+        public void OpenExclusiveWindow()
         {
-            var questGiver = currentNPC as QuestGiver;
-            if (questGiver == null) return;
+            var questGiver = currentNPC.GetComponent<QuestGiver>();
+
+            if (questGiver == null)
+            {
+                Debug.LogError("[AI-DDA] Błąd: currentNPC nie ma komponentu QuestGiver!");
+                return;
+            }
 
             var pType = Game.instance.currentCharacter.currentDynamicPlayerType;
-
             var exQuest = questGiver.CurrentExclusiveQuest(pType);
+
             if (exQuest == null)
             {
                 Debug.Log("No exclusive quest for this player type or all completed.");

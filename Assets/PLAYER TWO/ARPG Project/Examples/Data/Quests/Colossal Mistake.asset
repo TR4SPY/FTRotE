@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Colossal Mistake
   m_EditorClassIdentifier: 
   title: Colossal Mistake
-  description: South of Ashenvale, the ground trembles under the weight of the Giant
-    Golems. These ancient sentinels, once dormant, now crush everything in their
-    path. My men tried to break through, but we lost too many. The road remains blocked,
-    and the city is at risk. Please, warrior, destroy these towering abominations
-    and reclaim the land before more lives are lost.
+  description: "South of the village, the land trembles under the march of the Giant
+    Golems. They were once guardians of the ancient ruins, but something has twisted
+    their purpose. Now, they crush anything in their path. We\u2019ve lost too many
+    men trying to stop them. If you\u2019re as strong as they say, eliminate these
+    towering brutes and prove that we still control this land."
   objective: Eliminate giant golems
   targetProgress: 100
   completingMode: 1
@@ -35,7 +35,7 @@ MonoBehaviour:
   requiresManualCompletion: 0
   isExclusive: 1
   forKiller: 1
-  forAchiever: 0
+  forAchiever: 1
   forExplorer: 0
   forSocializer: 0
   killerMultiplier: 1.5

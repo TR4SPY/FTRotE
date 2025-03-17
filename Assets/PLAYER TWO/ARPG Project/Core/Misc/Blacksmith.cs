@@ -104,15 +104,13 @@ namespace PLAYERTWO.ARPGProject
                 return;
             }
 
-            // Logowanie interakcji przy użyciu Collidera
             var interactionLogger = GetComponent<NpcInteractionLogger>();
             if (interactionLogger != null)
             {
-                // Jeśli `other` jest obiektem gracza lub Agenta AI, pobierz jego Collider
                 var collider = entity.GetComponent<Collider>();
                 if (collider != null)
                 {
-                    interactionLogger.LogInteraction(collider); // Przekazujemy Collider
+                    interactionLogger.LogInteraction(collider);
                 }
                 else
                 {
@@ -122,6 +120,30 @@ namespace PLAYERTWO.ARPGProject
             else
             {
                 Debug.LogWarning("NpcInteractionLogger not found on Blacksmith. Cannot log interaction.");
+            }
+        }
+
+        public void OpenQuestDialog()
+        {
+            var questGiver = GetComponent<QuestGiver>();
+            if (questGiver != null)
+            {
+                questGiver.OpenQuestDialog();
+            }
+            else
+            {
+                return;
+            }
+        }
+
+        public void OpenExclusiveQuestDialog()
+        {
+            var questGiver = GetComponent<QuestGiver>();
+            if (questGiver == null) return;
+
+            if (GUIWindowsManager.instance.dialogWindow != null)
+            {
+                GUIWindowsManager.instance.dialogWindow.OpenExclusiveWindow();
             }
         }
 

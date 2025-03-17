@@ -6,7 +6,7 @@ namespace PLAYERTWO.ARPGProject
     public class Character : ScriptableObject
     {
         [Header("General Settings")]
-        [Tooltip("The prefab of the Entity that represents this Character in hte game world.")]
+        [Tooltip("The prefab of the Entity that represents this Character in the game world.")]
         public Entity entity;
 
         [Header("Class Representation")]

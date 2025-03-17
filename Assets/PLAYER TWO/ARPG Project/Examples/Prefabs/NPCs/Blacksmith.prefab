@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 5945309062967439441}
   - component: {fileID: -4627498811867753376}
   - component: {fileID: 8983056890620628714}
+  - component: {fileID: 5010456042050893966}
+  - component: {fileID: 5169060451939856508}
   m_Layer: 0
   m_Name: Blacksmith
   m_TagString: Untagged
@@ -27,6 +29,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8983056890620628715}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -36,7 +39,6 @@ Transform:
   - {fileID: 3693780067800287742}
   - {fileID: 4282784700544237291}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8983056890620628709
 MonoBehaviour:
@@ -55,10 +57,13 @@ MonoBehaviour:
       m_Calls: []
   interactOnce: 0
   disableOnInteract: 0
+  CanAgentInteract: 0
   animator: {fileID: 0}
   interactClip: {fileID: 0}
+  uniqueNPCID: 
   minPrice: 150
   maxPrice: 1500
+  assignedDialog: {fileID: 0}
 --- !u!114 &5945309062967439441
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -113,16 +118,66 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8983056890620628715}
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
   m_IsTrigger: 0
+  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
+  serializedVersion: 3
   m_Size: {x: 2, y: 2, z: 2}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &5010456042050893966
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8983056890620628715}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 702b06df4808fd6bba52fb827801bff3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  npcName: Blacksmith
+--- !u!114 &5169060451939856508
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8983056890620628715}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 094408049e4e8ba4ab1e46b36bd5c137, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onInteract:
+    m_PersistentCalls:
+      m_Calls: []
+  interactOnce: 0
+  disableOnInteract: 0
+  CanAgentInteract: 0
+  animator: {fileID: 0}
+  interactClip: {fileID: 0}
+  uniqueNPCID: 
+  quests: []
+  additionalQuests:
+  - {fileID: 11400000, guid: fde9b50e5ba88ee5a8a7689838bb0ade, type: 2}
+  onStateChange:
+    m_PersistentCalls:
+      m_Calls: []
+  assignedDialog: {fileID: 0}
 --- !u!1001 &2274933448513112578
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 8983056890620628708}
     m_Modifications:
     - target: {fileID: 3229325632576676323, guid: fdf7362be5317794fa99f5f54c4cb76d, type: 3}
@@ -182,6 +237,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fdf7362be5317794fa99f5f54c4cb76d, type: 3}
 --- !u!4 &3693780067800287742 stripped
 Transform:
@@ -198,6 +256,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 8983056890620628708}
     m_Modifications:
     - target: {fileID: 1776620116237150747, guid: 3c64ec84109f23240a2ba4540a27845f, type: 3}
@@ -265,6 +324,9 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3c64ec84109f23240a2ba4540a27845f, type: 3}
 --- !u!4 &4282784700544237291 stripped
 Transform:
@@ -276,6 +338,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 8983056890620628708}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 4935c49737a987f4b85839f04813d6db, type: 3}
@@ -327,6 +390,12 @@ PrefabInstance:
       value: Blacksmith
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4935c49737a987f4b85839f04813d6db, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8983056890126032753}
   m_SourcePrefab: {fileID: 100100000, guid: 4935c49737a987f4b85839f04813d6db, type: 3}
 --- !u!1 &8100660113216810107 stripped
 GameObject:
@@ -335,7 +404,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
 --- !u!95 &8983056890126032753
 Animator:
-  serializedVersion: 5
+  serializedVersion: 7
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -349,6 +418,7 @@ Animator:
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1

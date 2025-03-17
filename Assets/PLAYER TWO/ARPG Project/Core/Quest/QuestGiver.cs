@@ -220,6 +220,19 @@ namespace PLAYERTWO.ARPGProject
                 Debug.Log("QuestGiver interacted with by player. Quest UI opened.");
         }
 
+        public Dialog GetDialog()
+        {
+            var merchant = GetComponent<Merchant>();
+            if (merchant != null && merchant.assignedDialog != null)
+                return merchant.assignedDialog;
+
+            var blacksmith = GetComponent<Blacksmith>();
+            if (blacksmith != null && blacksmith.assignedDialog != null)
+                return blacksmith.assignedDialog;
+
+            return null;
+        }
+
         /// <summary>
         /// Returns true if the QuestInstance matches any quest in the quests array.
         /// </summary>

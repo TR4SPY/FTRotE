@@ -109,6 +109,30 @@ namespace PLAYERTWO.ARPGProject
                 Debug.LogWarning("NpcInteractionLogger not found on Merchant. Cannot log interaction.");
             }
         }
+        
+        public void OpenQuestDialog()
+        {
+            var questGiver = GetComponent<QuestGiver>();
+            if (questGiver != null)
+            {
+                questGiver.OpenQuestDialog();
+            }
+            else
+            {
+                return;
+            }
+        }
+
+       public void OpenExclusiveQuestDialog()
+        {
+            var questGiver = GetComponent<QuestGiver>();
+            if (questGiver == null) return;
+
+            if (GUIWindowsManager.instance.dialogWindow != null)
+            {
+                GUIWindowsManager.instance.dialogWindow.OpenExclusiveWindow();
+            }
+        }
 
         public void OpenMerchantShop()
         {

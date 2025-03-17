@@ -35,7 +35,7 @@ MonoBehaviour:
       nextPageIndex: -1
       specialConditionToSet: 0
     - optionText: Where is Varethyn?
-      isForSocializer: 0
+      isForSocializer: 1
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 1
@@ -214,7 +214,7 @@ MonoBehaviour:
       nextPageIndex: -1
       specialConditionToSet: 0
     - optionText: Is there anything...
-      isForSocializer: 0
+      isForSocializer: 1
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 1
