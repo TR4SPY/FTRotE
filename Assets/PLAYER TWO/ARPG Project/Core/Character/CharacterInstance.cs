@@ -60,6 +60,7 @@ namespace PLAYERTWO.ARPGProject
         public string currentDynamicPlayerType = "Unknown";
         public float totalPlayTime = 0f;
         protected Entity m_entity;
+        public Entity Entity => m_entity;
 
         public Vector3 currentPosition => m_entity ? m_entity.position : initialPosition;
         public Quaternion currentRotation => m_entity ? m_entity.transform.rotation : initialRotation;

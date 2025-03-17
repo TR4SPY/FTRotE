@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fadb75505e90364e88de4f2b82a4d09, type: 3}
+  m_Name: Colossal Mistake
+  m_EditorClassIdentifier: 
+  title: Colossal Mistake
+  description: South of Ashenvale, the ground trembles under the weight of the Giant
+    Golems. These ancient sentinels, once dormant, now crush everything in their
+    path. My men tried to break through, but we lost too many. The road remains blocked,
+    and the city is at risk. Please, warrior, destroy these towering abominations
+    and reclaim the land before more lives are lost.
+  objective: Eliminate giant golems
+  targetProgress: 100
+  completingMode: 1
+  experience: 50000
+  coins: 20000
+  items:
+  - data: {fileID: 11400000, guid: 38bc0d15d5551794c9f1031d00ec0a60, type: 2}
+    attributes: 0
+  destinationScene: 
+  progressKey: giant_golem
+  requiredItem:
+    data: {fileID: 0}
+    attributes: 0
+  returnToNPC: 
+  requiresManualCompletion: 0
+  isExclusive: 1
+  forKiller: 1
+  forAchiever: 0
+  forExplorer: 0
+  forSocializer: 0
+  killerMultiplier: 1.5
+  killerGoldMultiplier: 1.1
+  killerExpMultiplier: 0.8
+  socializerMultiplier: 0.5
+  socializerGoldMultiplier: 1.25
+  socializerExpMultiplier: 1
+  explorerMultiplier: 1.2
+  explorerExpMultiplier: 1.25
+  explorerGoldMultiplier: 0.9
+  achieverMultiplier: 1
+  achieverExpMultiplier: 1.5
+  achieverGoldMultiplier: 1.5

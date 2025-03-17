@@ -112,6 +112,8 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         public int maxMagicDamage { get; protected set; }
 
+        public int magicResistance { get; protected set; }
+
         /// <summary>
         /// Returns the maximum number of combos.
         /// </summary>
@@ -342,8 +344,21 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         /// <param name="skill">The skill you want to calculate damage for.</param>
         /// <param name="critical">If true, the damage is critical.</param>
+/*
         public virtual int GetSkillDamage(Skill skill, out bool critical) =>
-            (int)(GetCriticalMultiplier(out critical) * GetSkillDamage(skill));
+           (int)(GetCriticalMultiplier(out critical) * GetSkillDamage(skill));
+*/
+        public virtual int GetSkillDamage(Skill skill, out bool critical)
+        {
+            int minDamage = GetSkillDamage(skill, out bool minCritical, true);
+            int maxDamage = GetSkillDamage(skill, out bool maxCritical, false);
+
+            int finalDamage = Random.Range(minDamage, maxDamage + 1);
+
+            critical = minCritical || maxCritical;
+            
+            return finalDamage;
+        }
 
         /// <summary>
         /// Return the attack animation speed multiplier based on the attack speed stat.
@@ -378,8 +393,10 @@ namespace PLAYERTWO.ARPGProject
                 * m_additionalAttributes.damageMultiplier
             );
 
-
-        public int MagicResistance => CalculateMagicResistance();
+        public void RecalculateMagicResistance()
+        {
+            magicResistance = CalculateMagicResistance();
+        }
 
         protected virtual int GetItemsMagicResistance()
         {
@@ -393,22 +410,40 @@ namespace PLAYERTWO.ARPGProject
         /// Returns the magic damage points given a skill.
         /// </summary>
         /// <param name="skill">The skill you want to calculate magic damage from.</param>
-        protected virtual int GetSkillDamage(Skill skill)
+        public virtual int GetSkillDamage(Skill skill, out bool isCritical, bool calculateMin)
         {
             if (!skill || !skill.IsAttack())
+            {
+                isCritical = false;
                 return 0;
+            }
 
-            var damage = skill.AsAttack().GetDamage();
+            var attack = skill.AsAttack();
+            var entity = GetComponent<Entity>();
 
-            switch (skill.AsAttack().damageMode)
+            if (entity == null)
+            {
+                isCritical = false;
+                return calculateMin ? attack.minDamage : attack.maxDamage;
+            }
+
+            int damage = calculateMin ? attack.minDamage : attack.maxDamage;
+
+            switch (attack.damageMode)
             {
                 default:
                 case SkillAttack.DamageMode.Regular:
-                    damage += GetFinalDamage();
+                    damage += minDamage;
                     break;
                 case SkillAttack.DamageMode.Magic:
-                    damage += GetFinalMagicDamage();
+                    damage += minMagicDamage;
                     break;
+            }
+
+            isCritical = Random.value < entity.stats.criticalChance;
+            if (isCritical)
+            {
+                damage = Mathf.RoundToInt(damage * Game.instance.criticalMultiplier);
             }
 
             return damage;
@@ -517,6 +552,27 @@ namespace PLAYERTWO.ARPGProject
             return success ? Game.instance.criticalMultiplier : 1;
         }
 
+        public virtual int CalculateSkillDamage(Skill skill, bool isMax)
+        {
+            if (!skill || !skill.IsAttack())
+                return 0;
+
+            var attack = skill.AsAttack();
+            int baseDamage = isMax ? attack.maxDamage : attack.minDamage;
+
+            switch (attack.damageMode)
+            {
+                case SkillAttack.DamageMode.Regular:
+                    baseDamage += maxDamage;
+                    break;
+                case SkillAttack.DamageMode.Magic:
+                    baseDamage += maxMagicDamage;
+                    break;
+            }
+
+            return Mathf.RoundToInt(baseDamage);
+        }
+
         /// <summary>
         /// Metody do pobierania bazowych wartości
         /// </summary>
@@ -546,6 +602,7 @@ namespace PLAYERTWO.ARPGProject
             attackSpeed = CalculateAttackSpeed();
             minMagicDamage = magicDamage.min;
             maxMagicDamage = magicDamage.max;
+            magicResistance = CalculateMagicResistance();
             criticalChance = CalculateCriticalChance();
             chanceToBlock = CalculateChanceToBlock();
             blockSpeed = CalculateBlockSpeed();

@@ -545,7 +545,7 @@ namespace PLAYERTWO.ARPGProject
 
         public virtual void TakeMagicDamage(int damage)
         {
-            int resistance = stats.MagicResistance;
+            int resistance = stats.magicResistance;
             int finalDamage = Mathf.Max(damage - resistance, 1); // Obrażenia nie mogą spaść poniżej 1
 
             stats.health -= finalDamage;

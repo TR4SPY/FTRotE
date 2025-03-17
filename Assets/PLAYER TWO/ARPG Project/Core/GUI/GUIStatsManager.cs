@@ -41,6 +41,18 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("A reference to the Text component that represents the Stats magic damage points.")]
         public Text magicDamageText;
 
+        [Tooltip("A reference to the Text component that represents the Stats magic resistance points.")]
+        public Text magicResistanceText;
+
+        [Tooltip("A reference to the Text component that represents the Stats stun chance points.")]
+        public Text stunChanceText;
+
+        [Tooltip("A reference to the Text component that represents the Stats stun speed points.")]
+        public Text stunSpeedText;
+        
+        [Tooltip("A reference to the Text component that represents the Stats critical chance.")]
+        public Text criticalChanceText;
+
         [Tooltip("A reference to the Text component that represents the player's Bartle Type.")]
         public Text playerTypeText;
 
@@ -212,17 +224,22 @@ namespace PLAYERTWO.ARPGProject
             characterNameText.text = characterInstance.name;
             damageText.text = $"{m_entity.stats.minDamage} - {m_entity.stats.maxDamage}";
             defenseText.text = m_entity.stats.defense.ToString();
-            attackSpeedText.text = $"{m_entity.stats.attackSpeed.ToString()} / {Game.instance.maxAttackSpeed}";
+            attackSpeedText.text = $"{m_entity.stats.attackSpeed} / {Game.instance.maxAttackSpeed}";
             maxHealthText.text = m_entity.stats.maxHealth.ToString();
             maxManaText.text = m_entity.stats.maxMana.ToString();
             magicDamageText.text = $"{m_entity.stats.minMagicDamage} - {m_entity.stats.maxMagicDamage}";
+            magicResistanceText.text = m_entity.stats.magicResistance.ToString();
+            stunChanceText.text = $"{(m_entity.stats.stunChance * 100):F2}%";
+            stunSpeedText.text = m_entity.stats.stunSpeed.ToString();
+            criticalChanceText.text = $"{(m_entity.stats.criticalChance * 100):F2}%";
+
             availablePoints = m_entity.stats.availablePoints;
             strength.Reset(m_entity.stats.strength);
             dexterity.Reset(m_entity.stats.dexterity);
             vitality.Reset(m_entity.stats.vitality);
             energy.Reset(m_entity.stats.energy);
 
-            string staticType = characterInstance.playerType;  
+            string staticType = characterInstance.playerType;
             string dynamicType = PlayerBehaviorLogger.Instance?.currentDynamicPlayerType ?? "Unknown";
             string displayedType = (dynamicType == "Unknown" || dynamicType == "Undefined") ? staticType : dynamicType;
 
@@ -231,7 +248,6 @@ namespace PLAYERTWO.ARPGProject
                 playerTypeText.text = $"{displayedType}";
             }
         }
-
 
         protected virtual void Start()
         {

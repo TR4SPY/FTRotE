@@ -32,6 +32,23 @@ namespace PLAYERTWO.ARPGProject
         /// <summary>
         /// Returns a random value between the minimum and maximum damage of this Skill.
         /// </summary>
-        public virtual int GetDamage() => Random.Range(minDamage, maxDamage);
+        public virtual int GetDamage(Entity caster)
+        {
+            int baseDamage = Random.Range(minDamage, maxDamage);
+            
+            float skillScaling = 1.1f;
+            float energyScaling = 0f;
+            float magicWeaponBonus = 0f;
+
+            if (damageMode == SkillAttack.DamageMode.Magic)
+            {
+                energyScaling = caster.stats.energy * 0.4f;
+                magicWeaponBonus = (caster.stats.minMagicDamage + caster.stats.maxMagicDamage) * 0.2f;
+            }
+
+            float totalDamage = (baseDamage + energyScaling + magicWeaponBonus) * skillScaling;
+
+            return Mathf.RoundToInt(totalDamage);
+        }
     }
 }

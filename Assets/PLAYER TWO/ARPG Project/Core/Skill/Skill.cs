@@ -86,7 +86,7 @@ namespace PLAYERTWO.ARPGProject
             if (instance.TryGetComponent(out Projectile projectile))
             {
                 var damage = caster.stats.GetSkillDamage(caster.skills.current, out var critical);
-                projectile.SetDamage(caster, damage, critical, caster.targetTags);
+                projectile.SetDamage(caster, caster.skills.current.AsAttack().GetDamage(caster), critical, caster.targetTags);
             }
             else if (instance.TryGetComponent(out SkillParticle hitbox))
                 hitbox.SetSkills(caster, caster.skills.current);

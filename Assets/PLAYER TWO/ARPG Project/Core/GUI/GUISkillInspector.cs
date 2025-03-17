@@ -15,8 +15,11 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("A reference to the Text component used as the Skill health cost.")]
         public Text bloodCost;
 
-        [Tooltip("A reference to the Text component used as the Skill damage.")]
-        public Text damage;
+        [Tooltip("A reference to the Text component used as the Skill base damage.")]
+        public Text baseDamage;
+
+        [Tooltip("A reference to the Text component used as the Skill current damage.")]
+        public Text currentDamage;
 
         [Tooltip("A reference to the Text component used as the Skill damage mode.")]
         public Text damageMode;
@@ -90,14 +93,38 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void UpdateDamage()
         {
-            damage.gameObject.SetActive(m_skill.IsAttack());
-            damageMode.gameObject.SetActive(m_skill.IsAttack());
+            bool isAttackSkill = m_skill.IsAttack();
+            
+            baseDamage.gameObject.SetActive(isAttackSkill);
+            currentDamage.gameObject.SetActive(isAttackSkill);
+            damageMode.gameObject.SetActive(isAttackSkill);
 
-            if (damage.gameObject.activeSelf)
-                damage.text = $"Damage: {m_skill.AsAttack().minDamage} ~ {m_skill.AsAttack().maxDamage}";
+            if (isAttackSkill)
+            {
+                var attackSkill = m_skill.AsAttack();
+                baseDamage.text = $"Base Damage: {attackSkill.minDamage} ~ {attackSkill.maxDamage}";
 
-            if (damageMode.gameObject.activeSelf)
-                damageMode.text = $"Damage Mode: {m_skill.AsAttack().damageMode.ToString()}";
+                var entityStats = Game.instance.currentCharacter.Entity?.stats;
+                if (entityStats != null)
+                {
+                    int minCurrentDamage = entityStats.CalculateSkillDamage(m_skill, false);
+                    int maxCurrentDamage = entityStats.CalculateSkillDamage(m_skill, true);
+
+                    currentDamage.text = $"Current Damage: {minCurrentDamage} ~ {maxCurrentDamage}";
+                }
+                else
+                {
+                    currentDamage.text = "Current Damage: N/A";
+                }
+
+                damageMode.text = $"Damage Mode: {attackSkill.damageMode}";
+            }
+            else
+            {
+                baseDamage.text = "Base Damage: N/A";
+                currentDamage.text = "Current Damage: N/A";
+                damageMode.text = "Type: N/A";
+            }
         }
 
         protected virtual void UpdateEffect()
