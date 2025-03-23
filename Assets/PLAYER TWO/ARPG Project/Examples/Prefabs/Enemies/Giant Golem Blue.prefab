@@ -835,7 +835,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   skills:
-  - {fileID: 11400000, guid: c13455d6c7f4414c9a1a24afb1086820, type: 2}
+  - {fileID: 11400000, guid: 4009ebc4a3ac6a192913ce3c062cb2af, type: 2}
   autoEquipFirstSkill: 1
   ignoreCoolDown: 0
   hands: {fileID: 7068606245179553211}

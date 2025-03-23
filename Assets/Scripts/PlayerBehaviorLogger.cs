@@ -333,16 +333,13 @@ namespace AI_DDA.Assets.Scripts
 
         public void UpdatePlayerType()
         {
-            //  Logic of score system
             int achieverScore = (questsCompleted * 2) + (unlockedAchievements.Count * 2);
             int explorerScore = (zonesDiscovered * 2) + waypointsDiscovered;
             int socializerScore = (npcInteractions * 3) + questsCompleted;
             int killerScore = (int)(enemiesDefeated * 0.5) + (int)(totalCombatTime / 120); 
 
-            //  Determining of Bartle's Player Type
             string newPlayerType = DetermineDominantType(achieverScore, explorerScore, socializerScore, killerScore);
 
-            //  Updating Bartle's Player Type if changed (Dynamically)
             if (newPlayerType != currentDynamicPlayerType)
             {
                 Debug.Log($"Player type updated: {currentDynamicPlayerType} -> {newPlayerType}");
@@ -353,6 +350,9 @@ namespace AI_DDA.Assets.Scripts
             {
                 statsManager.Refresh();
             }
+
+            if (LevelNPCs.Instance != null)
+            LevelNPCs.Instance.RefreshQuestGivers();
         }
 
         private string DetermineDominantType(int achiever, int explorer, int socializer, int killer)

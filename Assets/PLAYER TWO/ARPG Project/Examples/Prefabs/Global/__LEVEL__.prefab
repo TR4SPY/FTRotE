@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 664077300431741931}
   - component: {fileID: 4745687086142828830}
   - component: {fileID: 7423587651095501951}
+  - component: {fileID: 6818988902394239575}
   m_Layer: 0
   m_Name: __LEVEL__
   m_TagString: Untagged
@@ -29,13 +30,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 664077300431741928}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &664077300431741930
 MonoBehaviour:
@@ -65,6 +66,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0576e299c6668142b35a1ce4e79eaee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cullingFrameRate: 30
+  behaviorFrameRate: 15
+  cullCompletelyAfterDeath: 1
+  boundsSize: {x: 50, y: 10, z: 50}
 --- !u!114 &3323074260722121019
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -101,6 +106,9 @@ MonoBehaviour:
   onQuestCompleted:
     m_PersistentCalls:
       m_Calls: []
+  onQuestRemoved:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &4745687086142828830
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -128,3 +136,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   theme: {fileID: 0}
+--- !u!114 &6818988902394239575
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 664077300431741928}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 515305404119b4ef0888b1b83c2925fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  questGivers:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}

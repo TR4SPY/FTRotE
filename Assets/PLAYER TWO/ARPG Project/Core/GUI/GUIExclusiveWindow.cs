@@ -174,31 +174,63 @@ namespace PLAYERTWO.ARPGProject
             if (rewards == null || quest == null)
                 return;
 
-            int baseExp = quest.experience;
-            int finalExp = quest.GetTotalExperience();
-            int baseGold = quest.coins;
-            int finalGold = quest.GetTotalCoins();
+            if (Game.instance.quests.TryGetQuest(quest, out var instance))
+            {
+                int finalExp = instance.FinalExperience;
+                int finalCoins = instance.FinalCoins;
 
-            float expMultiplier = baseExp != 0 ? (float)finalExp / baseExp : 1f;
-            float goldMultiplier = baseGold != 0 ? (float)finalGold / baseGold : 1f;
+                int baseExp = quest.experience;
+                int baseCoins = quest.coins;
 
-            string expTooltipMessage = TooltipFormatter.FormatRewardText("Experience", baseExp, finalExp, expMultiplier);
-            string goldTooltipMessage = TooltipFormatter.FormatRewardText("Coins", baseGold, finalGold, goldMultiplier);
-            string itemRewards = TooltipFormatter.GenerateItemRewardsTooltip(quest.items);
+                float expMultiplier = baseExp != 0 ? (float)finalExp / baseExp : 1f;
+                float goldMultiplier = baseCoins != 0 ? (float)finalCoins / baseCoins : 1f;
 
-            string fullTooltip = "";
-            if (!string.IsNullOrEmpty(expTooltipMessage)) fullTooltip += expTooltipMessage + "\n";
-            if (!string.IsNullOrEmpty(goldTooltipMessage)) fullTooltip += goldTooltipMessage + "\n";
-            if (!string.IsNullOrEmpty(itemRewards)) fullTooltip += itemRewards;
-            fullTooltip += "\n" + TooltipFormatter.GetRewardMessage();
+                string expTooltipMessage = TooltipFormatter.FormatRewardText("Experience", baseExp, finalExp, expMultiplier);
+                string goldTooltipMessage = TooltipFormatter.FormatRewardText("Coins", baseCoins, finalCoins, goldMultiplier);
 
-            EventTrigger trigger = rewards.gameObject.GetComponent<EventTrigger>() ?? rewards.gameObject.AddComponent<EventTrigger>();
+                string itemRewards = TooltipFormatter.GenerateItemRewardsTooltip(quest.items);
+
+                string fullTooltip = "";
+                if (!string.IsNullOrEmpty(expTooltipMessage)) fullTooltip += expTooltipMessage + "\n";
+                if (!string.IsNullOrEmpty(goldTooltipMessage)) fullTooltip += goldTooltipMessage + "\n";
+                if (!string.IsNullOrEmpty(itemRewards)) fullTooltip += itemRewards;
+                fullTooltip += "\n" + TooltipFormatter.GetRewardMessage();
+
+                CreateTooltipTrigger(rewards.gameObject, "Quest Rewards\n", fullTooltip);
+            }
+            else
+            {
+                int baseExp = quest.experience;
+                int finalExp = quest.GetTotalExperience();
+                int baseCoins = quest.coins;
+                int finalCoins = quest.GetTotalCoins();
+
+                float expMultiplier = baseExp != 0 ? (float)finalExp / baseExp : 1f;
+                float goldMultiplier = baseCoins != 0 ? (float)finalCoins / baseCoins : 1f;
+
+                string expTooltipMessage = TooltipFormatter.FormatRewardText("Experience", baseExp, finalExp, expMultiplier);
+                string goldTooltipMessage = TooltipFormatter.FormatRewardText("Coins", baseCoins, finalCoins, goldMultiplier);
+                string itemRewards = TooltipFormatter.GenerateItemRewardsTooltip(quest.items);
+
+                string fullTooltip = "";
+                if (!string.IsNullOrEmpty(expTooltipMessage)) fullTooltip += expTooltipMessage + "\n";
+                if (!string.IsNullOrEmpty(goldTooltipMessage)) fullTooltip += goldTooltipMessage + "\n";
+                if (!string.IsNullOrEmpty(itemRewards)) fullTooltip += itemRewards;
+                fullTooltip += "\n" + TooltipFormatter.GetRewardMessage();
+
+                CreateTooltipTrigger(rewards.gameObject, "Quest Rewards\n", fullTooltip);
+            }
+        }
+
+        private void CreateTooltipTrigger(GameObject target, string title, string content)
+        {
+            EventTrigger trigger = target.GetComponent<EventTrigger>() ?? target.AddComponent<EventTrigger>();
             trigger.triggers.Clear();
 
             EventTrigger.Entry entryEnter = new EventTrigger.Entry { eventID = EventTriggerType.PointerEnter };
             entryEnter.callback.AddListener((eventData) =>
             {
-                GUITooltip.instance.ShowTooltip("Quest Rewards\n", fullTooltip, rewards.gameObject);
+                GUITooltip.instance.ShowTooltip(title, content, target);
             });
             trigger.triggers.Add(entryEnter);
 
@@ -218,17 +250,27 @@ namespace PLAYERTWO.ARPGProject
             EventTrigger.Entry entryEnter = new EventTrigger.Entry { eventID = EventTriggerType.PointerEnter };
             entryEnter.callback.AddListener((eventData) =>
             {
-                QuestInstance instance;
-                if (!Game.instance.quests.TryGetQuest(quest, out instance))
-                    return;
+                if (Game.instance.quests.TryGetQuest(quest, out var instance))
+                {
+                    int currentProgress = instance.progress;
+                    int finalProgress = instance.GetFinalTargetProgress();
+                    int baseTargetProgress = quest.targetProgress;
 
-                int currentProgress = instance.progress;
-                int baseTargetProgress = quest.targetProgress;
-                int targetProgress = instance.data.GetTargetProgress();
+                    string objectiveTooltipMessage = TooltipFormatter.FormatObjectiveTooltip(
+                        quest.objective,
+                        currentProgress,
+                        finalProgress,
+                        baseTargetProgress
+                    );
 
-                string objectiveTooltipMessage = TooltipFormatter.FormatObjectiveTooltip(quest.objective, currentProgress, targetProgress, baseTargetProgress);
-
-                GUITooltip.instance.ShowTooltip("Quest Objective\n", objectiveTooltipMessage, objective.gameObject);
+                    GUITooltip.instance.ShowTooltip("Quest Objective\n", objectiveTooltipMessage, objective.gameObject);
+                }
+                else
+                {
+                    int previewProgress = quest.GetTargetProgress();
+                    string objectiveTooltipMessage = $"(Preview) {quest.objective} x{previewProgress}";
+                    GUITooltip.instance.ShowTooltip("Quest Objective\n", objectiveTooltipMessage, objective.gameObject);
+                }
             });
             trigger.triggers.Add(entryEnter);
 

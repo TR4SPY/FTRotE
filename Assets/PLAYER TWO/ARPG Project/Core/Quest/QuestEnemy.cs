@@ -19,15 +19,15 @@ namespace PLAYERTWO.ARPGProject
 
         public virtual void AddQuestProgression()
         {
-            var questManager = Game.instance.quests;
+            Game.instance.quests.AddProgress(enemyKey);
 
+            var questManager = Game.instance.quests;
             foreach (var quest in questManager.list)
             {
                 if (quest.data.IsProgressKey(enemyKey))
                 {
-                    questManager.AddProgress(enemyKey);
-
-                    int remainingKills = quest.data.GetTargetProgress() - quest.progress;
+                    int remaining = quest.data.GetTargetProgress() - quest.progress;
+                    // Debug.Log($"{quest.data.title} → zostało do zabicia: {remaining}");
                 }
             }
         }

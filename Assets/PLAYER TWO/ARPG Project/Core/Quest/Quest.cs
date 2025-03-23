@@ -261,5 +261,52 @@ namespace PLAYERTWO.ARPGProject
 
             return targetProgress;
         }
+
+        public int GetTargetProgressForPlayerType(string type)
+        {
+            switch (type)
+            {
+                case "Killer":
+                    return Mathf.CeilToInt(targetProgress * killerMultiplier);
+                case "Socializer":
+                    return Mathf.CeilToInt(targetProgress * socializerMultiplier);
+                case "Explorer":
+                    return Mathf.CeilToInt(targetProgress * explorerMultiplier);
+                case "Achiever":
+                    return Mathf.CeilToInt(targetProgress * achieverMultiplier);
+                default:
+                
+                return targetProgress;
+            }
+        }
+
+        public int GetCoinsForPlayerType(string type)
+        {
+            switch (type)
+            {
+                case "Killer": return Mathf.CeilToInt(coins * killerGoldMultiplier);
+                case "Socializer": return Mathf.CeilToInt(coins * socializerGoldMultiplier);
+                case "Explorer": return Mathf.CeilToInt(coins * explorerGoldMultiplier);
+                case "Achiever": return Mathf.CeilToInt(coins * achieverGoldMultiplier);
+                default:
+                
+                return coins;
+            }
+        }
+
+        public int GetExpForPlayerType(string type)
+        {
+            switch (type)
+            {
+                case "Killer": return Mathf.CeilToInt(experience * killerExpMultiplier);
+                case "Socializer": return Mathf.CeilToInt(experience * socializerExpMultiplier);
+                case "Explorer": return Mathf.CeilToInt(experience * explorerExpMultiplier);
+                case "Achiever": return Mathf.CeilToInt(experience * achieverExpMultiplier);
+                default:
+                
+                return experience;
+            }
+        }
+
     }
 }

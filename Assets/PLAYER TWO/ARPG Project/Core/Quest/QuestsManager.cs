@@ -139,7 +139,7 @@ namespace PLAYERTWO.ARPGProject
                     quest.progress++;
                     onProgressChanged?.Invoke(quest);
 
-                    if (quest.progress >= quest.data.GetTargetProgress())
+                    if (quest.progress >= quest.GetFinalTargetProgress())
                     {
                         if (quest.data.IsFetchAfterKill())
                         {

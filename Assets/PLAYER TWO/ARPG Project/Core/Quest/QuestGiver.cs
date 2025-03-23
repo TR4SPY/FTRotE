@@ -50,7 +50,7 @@ namespace PLAYERTWO.ARPGProject
             m_manager.onQuestRemoved += OnQuestRemoved;
         }
 
-        protected virtual void InitializeStates()
+        public virtual void InitializeStates()
         {
             QuestInstance instance;
             var completedQuests = quests.Count(quest =>
