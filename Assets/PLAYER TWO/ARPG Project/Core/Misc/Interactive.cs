@@ -18,7 +18,7 @@ namespace PLAYERTWO.ARPGProject
         public bool disableOnInteract;
 
         [Tooltip("If true, this Interactive Game Object can be interacted with by AI Agent.")]
-        public bool CanAgentInteract = false; // Domyślnie false
+        public bool CanAgentInteract = false;
 
         [Tooltip("A reference to the Animator component of the Interactive object.")]
         public Animator animator;

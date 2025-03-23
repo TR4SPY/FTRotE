@@ -310,9 +310,9 @@ MonoBehaviour:
   leader: {fileID: 0}
   followLeader: 0
   dieWithLeader: 1
-  spotRadiusYOffset: -0.98
-  fleeRadiusYOffset: -0.98
-  viewAngleYOffset: -0.98
+  spotRadiusYOffset: 0
+  fleeRadiusYOffset: 0
+  viewAngleYOffset: 0
   spotRadiusColor: {r: 0, g: 0, b: 1, a: 1}
   fleeRadiusColor: {r: 1, g: 0, b: 0, a: 1}
   fieldOfViewColor: {r: 0, g: 1, b: 0, a: 1}

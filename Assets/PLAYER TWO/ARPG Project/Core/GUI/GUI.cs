@@ -2,14 +2,15 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using UnityEngine.AI;
 
 namespace PLAYERTWO.ARPGProject
 {
     [AddComponentMenu("PLAYER TWO/ARPG Project/GUI/GUI")]
     public class GUI : Singleton<GUI>
     {
-        [SerializeField] private GUIWindowsManager windowsManager; // referencja do GUI Windows Manager
-        [SerializeField] private GameObject gameMenu; // Referencja do menu gry
+        [SerializeField] private GUIWindowsManager windowsManager;
+        [SerializeField] private GameObject gameMenu;
         
         public UnityEvent<GUIItem> onSelectItem;
         public UnityEvent<GUIItem> onDeselectItem;
@@ -38,7 +39,8 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The prefab instantiated when dropping an Item on the ground.")]
         public CollectibleItem droppedItemPrefab;
 
-        public float dropRange = 2f; // Editable range around the player to drop items
+        [Tooltip("Maximum range around the player to drop items.")]
+        public float dropRange = 2f;
 
         [Header("Input Callbacks")]
         public UnityEvent onToggleSkills;
@@ -58,10 +60,16 @@ namespace PLAYERTWO.ARPGProject
         protected InputAction m_toggleCollectiblesNames;
 
         protected Entity m_entity;
-
         protected float m_dropTime;
 
         public GUIItem selected { get; protected set; }
+
+        protected virtual void Start()
+        {
+            InitializeEntity();
+            InitializeActions();
+            InitializeCallbacks();
+        }
 
         protected virtual void InitializeEntity() => m_entity = Level.instance.player;
 
@@ -86,8 +94,6 @@ namespace PLAYERTWO.ARPGProject
 #if UNITY_WEBGL
             m_toggleMenuWebGL.performed += _ => onToggleMenu.Invoke();
 #else
-            //m_toggleMenu.performed += _ => onToggleMenu.Invoke();
-            //m_toggleMenu.performed += _ => HandleEscape(); // Zmiana tutaj!
             m_toggleMenu.performed -= _ => HandleEscape();
             m_toggleMenu.performed += _ => HandleEscape();
 #endif
@@ -134,42 +140,72 @@ namespace PLAYERTWO.ARPGProject
         {
             if (!selected || !canDropItems) return;
 
-            Vector3 dropPosition;
-
             if (m_entity.inputs.MouseRaycast(out var hit, dropGroundLayer))
             {
-                // If the raycast hits the ground, calculate the drop position based on the hit point
                 Vector3 direction = (hit.point - m_entity.transform.position).normalized;
                 float distance = Mathf.Min(Vector3.Distance(m_entity.transform.position, hit.point), dropRange);
-                dropPosition = m_entity.transform.position + direction * distance;
+                Vector3 dropPosition = m_entity.transform.position + direction * distance;
 
-                // Create the item at the player's feet
+                dropPosition = FindNearestNavMeshPosition(dropPosition, 2f);
+
                 var collectible = Instantiate(droppedItemPrefab, m_entity.transform.position, Quaternion.identity);
                 collectible.SetItem(selected.item);
+
                 Destroy(selected.gameObject);
                 selected = null;
                 m_dropTime = Time.time;
 
-                // Start the drop animation in an arc path
                 StartCoroutine(AnimateDropItem(collectible.transform, dropPosition));
             }
             else
             {
-                // If the raycast does not hit the ground, move the item back to the inventory
 #if UNITY_ANDROID || UNITY_IOS
-        selected.TryMoveToLastPosition();
-        Deselect();
+                selected.TryMoveToLastPosition();
+                Deselect();
 #endif
             }
         }
 
+        private Vector3 FindNearestNavMeshPosition(Vector3 center, float searchRadius)
+        {
+            NavMeshHit navHit;
+            if (NavMesh.SamplePosition(center, out navHit, searchRadius, NavMesh.AllAreas))
+            {
+                return navHit.position;
+            }
+            return center;
+        }
+
+        private IEnumerator AnimateDropItem(Transform itemTransform, Vector3 targetPosition)
+        {
+            float animationDuration = 1f; // Duration of the animation
+            float elapsedTime = 0f;
+
+            Vector3 startPosition = itemTransform.position;
+            Vector3 controlPoint = startPosition + (targetPosition - startPosition) / 2 + Vector3.up * 2f;
+
+            while (elapsedTime < animationDuration)
+            {
+                elapsedTime += Time.deltaTime;
+                float t = elapsedTime / animationDuration;
+
+                // Quadratic bezier
+                Vector3 currentPos = Mathf.Pow(1 - t, 2) * startPosition
+                                   + 2 * (1 - t) * t * controlPoint
+                                   + Mathf.Pow(t, 2) * targetPosition;
+
+                itemTransform.position = currentPos;
+                yield return null;
+            }
+
+            // final
+            itemTransform.position = targetPosition;
+        }
+
         private void HandleEscape()
         {
-            // Debug.Log($"HandleEscape() called at {Time.time}");
-
             if (windowsManager == null)
             {
-                // Debug.LogError("GUIWindowsManager is not assigned in GUI.cs!");
                 return;
             }
 
@@ -192,65 +228,26 @@ namespace PLAYERTWO.ARPGProject
         {
             if (gameMenu == null)
             {
-                // Debug.LogError("Game Menu is not assigned in GUI.cs!");
                 return;
             }
 
             bool isActive = gameMenu.activeSelf;
             gameMenu.SetActive(!isActive);
 
-            // Odtwarzanie dźwięku otwierania/zamykania menu
+            // Play sound for opening / closing
             GameAudio.instance.PlayUiEffect(isActive ? windowsManager.closeClip : windowsManager.openClip);
 
-            // Pauza gry bez użycia GamePause.Instance
-            Time.timeScale = isActive ? 1 : 0; // 1 = normalna gra, 0 = pauza
-
-            // Debug.Log($"Game Menu {(isActive ? "closed" : "opened")}, Game Paused: {!isActive}");
+            // Pause game
+            Time.timeScale = isActive ? 1 : 0;
         }
 
-        private Vector3 GetRandomDropPosition()
-        {
-            float angle = Random.Range(0f, 360f);
-            float radius = Random.Range(0f, dropRange);
-            Vector3 randomOffset = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * radius;
-            return randomOffset;
-        }
-
-        private IEnumerator AnimateDropItem(Transform itemTransform, Vector3 targetPosition)
-        {
-            float animationDuration = 1f; // Duration of the animation
-            float elapsedTime = 0f;
-
-            Vector3 startPosition = itemTransform.position;
-            Vector3 controlPoint = startPosition + (targetPosition - startPosition) / 2 + Vector3.up * 2f; // Control point to create the arc
-
-            while (elapsedTime < animationDuration)
-            {
-                elapsedTime += Time.deltaTime;
-                float t = elapsedTime / animationDuration;
-
-                // Calculate the position on the quadratic Bezier curve
-                Vector3 currentPos = Mathf.Pow(1 - t, 2) * startPosition +
-                                     2 * (1 - t) * t * controlPoint +
-                                     Mathf.Pow(t, 2) * targetPosition;
-
-                itemTransform.position = currentPos;
-
-                yield return null;
-            }
-
-            // Ensure the item lands exactly at the target position
-            itemTransform.position = targetPosition;
-        }
-
-        protected virtual void HandleItemPosition()
+        private void HandleItemPosition()
         {
             if (!selected) return;
-
             selected.transform.position = EntityInputs.GetPointerPosition();
         }
 
-        protected virtual void HandleDropEntityRestoration()
+        private void HandleDropEntityRestoration()
         {
             if (!selected && !m_entity.canUpdateDestination &&
                 Time.time - m_dropTime > movementRestorationDelay)
@@ -265,13 +262,6 @@ namespace PLAYERTWO.ARPGProject
             var instance = Instantiate(itemPrefab, parent);
             instance.Initialize(item);
             return instance;
-        }
-
-        protected virtual void Start()
-        {
-            InitializeEntity();
-            InitializeActions();
-            InitializeCallbacks();
         }
 
         protected virtual void LateUpdate()
