@@ -27,15 +27,6 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The offset rotation in local space applied to the prefab on the Entity's hands.")]
         public Vector3 handRotation;
 
-        [Header("Quest Settings")]
-        [Tooltip("Is this blade a quest item?")]
-        public bool isQuestSpecific = false;
-
-        /// <summary>
-        /// Returns true if this item is quest related.
-        /// </summary>
-        public bool IsQuestSpecific => isQuestSpecific;
-
         /// <summary>
         /// Returns true if it's a regular Bow.
         /// </summary>

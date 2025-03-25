@@ -3,7 +3,7 @@ using UnityEngine;
 namespace PLAYERTWO.ARPGProject
 {
     [CreateAssetMenu(fileName = "New Weapon", menuName = "PLAYER TWO/ARPG Project/Item/Blade")]
-    public class ItemBlade : ItemWeapon, ItemQuest
+    public class ItemBlade : ItemWeapon
     {
         public enum Type { OneHand, TwoHand }
 
@@ -28,10 +28,6 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The amount of magic resistance this armor provides.")]
         public int magicResistance;
 
-        [Header("Quest Settings")]
-        [Tooltip("Is this blade a quest item?")]
-        public bool isQuestSpecific = false;
-
         /// <summary>
         /// Returns true if this Blade is handled by one hand.
         /// </summary>
@@ -41,12 +37,6 @@ namespace PLAYERTWO.ARPGProject
         /// Returns true if this Blade is handled by two hands.
         /// </summary>
         public virtual bool IsTwoHanded() => type == Type.TwoHand;
-
-
-        /// <summary>
-        /// Returns true if this item is quest related.
-        /// </summary>
-        public bool IsQuestSpecific => isQuestSpecific;
 
         /// <summary>
         /// Instantiates the Item's prefab, applying the Weapons's right hand offsets, as a child of a given Transform.

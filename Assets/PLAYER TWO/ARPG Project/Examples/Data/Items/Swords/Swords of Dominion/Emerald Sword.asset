@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcbc84c22772fe449a1319589dfd46cd, type: 3}
   m_Name: Emerald Sword
   m_EditorClassIdentifier: 
+  id: 36
   prefab: {fileID: 9074562592178130187, guid: d48a11a32fbd038f0bac83c4d6acb0cf, type: 3}
   price: 4000
+  rarity: 0
   dropPosition: {x: 0, y: 0, z: 0}
   dropRotation: {x: -90, y: 0, z: 45}
   image: {fileID: 21300000, guid: 90f6c8928c378f28f917e5a7b7a9cf23, type: 3}
@@ -25,8 +27,11 @@ MonoBehaviour:
   requiredLevel: 15
   requiredStrength: 56
   requiredDexterity: 32
+  allowedClasses: 2
   minDamage: 19
   maxDamage: 29
+  minMagicDamage: 0
+  maxMagicDamage: 0
   attackSpeed: 15
   attackClips:
   - {fileID: 8300000, guid: aa3151bff5ceab4449196fc78f916dc1, type: 3}
@@ -40,3 +45,5 @@ MonoBehaviour:
   rightHandRotation: {x: -90, y: 90, z: 90}
   leftHandPosition: {x: 0, y: 0, z: 0}
   leftHandRotation: {x: 90, y: 90, z: 90}
+  magicResistance: 0
+  isQuestSpecific: 0

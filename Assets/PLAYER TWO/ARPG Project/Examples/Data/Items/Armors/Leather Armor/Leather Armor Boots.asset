@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb802ff9f4ee12e4fa0f698f11c51eed, type: 3}
   m_Name: Leather Armor Boots
   m_EditorClassIdentifier: 
-  id: 0
+  id: 1
   prefab: {fileID: 919132149155446097, guid: ff1fecc1590f70845aea5bc70e72d9ce, type: 3}
   price: 500
   rarity: 0
@@ -27,6 +27,7 @@ MonoBehaviour:
   requiredLevel: 1
   requiredStrength: 15
   requiredDexterity: 10
+  allowedClasses: -1
   slot: 6
   defense: 2
   magicResistance: 2

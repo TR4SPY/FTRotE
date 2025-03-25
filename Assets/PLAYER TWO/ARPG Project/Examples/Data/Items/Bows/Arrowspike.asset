@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 695a82ec34e5ed749b95ae9715fb3682, type: 3}
   m_Name: Arrowspike
   m_EditorClassIdentifier: 
-  id: 0
+  id: 14
   prefab: {fileID: 919132149155446097, guid: 62ab24dded3a2c748afdf40a398748e2, type: 3}
   price: 200
   rarity: 0
@@ -27,6 +27,7 @@ MonoBehaviour:
   requiredLevel: 1
   requiredStrength: 15
   requiredDexterity: 10
+  allowedClasses: -1
   minDamage: 2
   maxDamage: 12
   minMagicDamage: 0

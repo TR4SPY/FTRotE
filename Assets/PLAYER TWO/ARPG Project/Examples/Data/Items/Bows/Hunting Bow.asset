@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 695a82ec34e5ed749b95ae9715fb3682, type: 3}
   m_Name: Hunting Bow
   m_EditorClassIdentifier: 
-  id: 0
+  id: 15
   prefab: {fileID: 919132149155446097, guid: 868834b9a3491d444a70f1354d1aed9d, type: 3}
   price: 500
   rarity: 0
@@ -27,6 +27,7 @@ MonoBehaviour:
   requiredLevel: 1
   requiredStrength: 15
   requiredDexterity: 10
+  allowedClasses: -1
   minDamage: 5
   maxDamage: 10
   minMagicDamage: 0

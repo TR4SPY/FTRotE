@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcbc84c22772fe449a1319589dfd46cd, type: 3}
   m_Name: Obsidian Sword
   m_EditorClassIdentifier: 
+  id: 34
   prefab: {fileID: 674254753936567142, guid: 8a482289538476a81bb62210758dd22a, type: 3}
   price: 3500
+  rarity: 0
   dropPosition: {x: 0, y: 0, z: 0}
   dropRotation: {x: -90, y: 0, z: 45}
   image: {fileID: 21300000, guid: 079159c06cf0e4d1fbf3c7f453ea3700, type: 3}
@@ -25,8 +27,11 @@ MonoBehaviour:
   requiredLevel: 12
   requiredStrength: 40
   requiredDexterity: 25
+  allowedClasses: 1
   minDamage: 15
   maxDamage: 25
+  minMagicDamage: 0
+  maxMagicDamage: 0
   attackSpeed: 13
   attackClips:
   - {fileID: 8300000, guid: aa3151bff5ceab4449196fc78f916dc1, type: 3}
@@ -40,3 +45,5 @@ MonoBehaviour:
   rightHandRotation: {x: -90, y: 90, z: 90}
   leftHandPosition: {x: 0, y: 0, z: 0}
   leftHandRotation: {x: 90, y: 90, z: 90}
+  magicResistance: 0
+  isQuestSpecific: 0

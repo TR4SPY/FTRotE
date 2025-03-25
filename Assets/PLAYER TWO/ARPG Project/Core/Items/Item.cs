@@ -15,7 +15,7 @@ namespace PLAYERTWO.ARPGProject
 
         [Header("Item Settings")]
         [Tooltip("The unique identifier for this Item.")]
-        public int id; // Dodane pole ID
+        public int id;
         
         [Tooltip("The prefab that represents this Item in the game scene.")]
         public GameObject prefab;
@@ -49,6 +49,19 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The maximum stack size of this Item on the Inventory.")]
         public int stackCapacity;
 
+        [Tooltip("Is this blade a quest item?")]
+        public bool isQuestSpecific = false;
+
+        [Tooltip("This item cannot be dropped from inventory.")]
+        public bool cannotBeDropped = false;
+
+        [Tooltip("This item cannot be sold to vendors.")]
+        public bool cannotBeSold = false;
+
+        [Header("Class Restriction (Bitmask)")]
+        [Tooltip("Define, which classes can equip the item.")]
+        public CharacterClassRestrictions allowedClasses = CharacterClassRestrictions.None;
+
         /// <summary>
         /// Instantiates the Item's prefab as child of a given Transform.
         /// </summary>
@@ -63,5 +76,10 @@ namespace PLAYERTWO.ARPGProject
         {
             return name;
         }
+
+        /// <summary>
+        /// Returns true if this item is quest related.
+        /// </summary>
+        public bool IsQuestSpecific => isQuestSpecific;
     }
 }

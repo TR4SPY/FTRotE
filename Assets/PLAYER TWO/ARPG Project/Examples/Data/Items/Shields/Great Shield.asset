@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fabc1ab5d3c2bfc459268b20840f8e1e, type: 3}
   m_Name: Great Shield
   m_EditorClassIdentifier: 
-  id: 0
+  id: 19
   prefab: {fileID: 919132149155446097, guid: 17bb8d147b231e84e94c67efbf26a851, type: 3}
   price: 2500
   rarity: 0
@@ -27,6 +27,7 @@ MonoBehaviour:
   requiredLevel: 10
   requiredStrength: 25
   requiredDexterity: 20
+  allowedClasses: -1
   defense: 18
   chanceToBlock: 95
   armPosition: {x: 0, y: 0, z: 0}

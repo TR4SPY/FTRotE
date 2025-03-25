@@ -1,5 +1,8 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -24,9 +27,7 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("A reference to the Text component that represents the Item's name.")]
         public Text itemName;
 
-        [Tooltip(
-            "A reference to the Text component that represents the Item's potion description."
-        )]
+        [Tooltip("A reference to the Text component that represents the Item's potion description.")]
         public Text potionDescription;
 
         [Tooltip("References the Text component displaying the Item's general attributes.")]
@@ -37,6 +38,9 @@ namespace PLAYERTWO.ARPGProject
 
         [Tooltip("References the Text component displaying the skill instruction.")]
         public Text skillInstructionText;
+
+        [Tooltip("Reference to the Text component displaying class Restrictions.")]
+        public Text classRestrictionsText;
 
         [Header("Color Settings")]
         [Tooltip("Regular text colors.")]
@@ -126,6 +130,20 @@ namespace PLAYERTWO.ARPGProject
             UpdateAttributes();
             UpdateAdditionalAttributes();
             UpdateSkillInstruction();
+
+            if (m_item.IsEquippable())
+            {
+                ShowClassRestrictions(m_item.GetEquippable().allowedClasses, "equipped");
+            }
+            else if (m_item.data.allowedClasses != CharacterClassRestrictions.None)
+            {
+                ShowClassRestrictions(m_item.data.allowedClasses, "used");
+            }
+            else
+            {
+                if (classRestrictionsText != null)
+                    classRestrictionsText.gameObject.SetActive(false);
+            }
         }
 
         protected virtual void UpdatePriceText()
@@ -151,13 +169,11 @@ namespace PLAYERTWO.ARPGProject
             
             if (m_item.data is ItemQuest questItem && questItem.IsQuestSpecific)
             {
-                // Kolor w formacie hex
                 string colorHex = ColorUtility.ToHtmlStringRGB(questItemColor);
 
-                // Tworzenie tekstu z kolorem i opcjonalnym bold
                 string formattedText = isBold 
-                    ? $"<b><color=#{colorHex}>{m_item.data.name}</color></b>" // Bold + kolor
-                    : $"<color=#{colorHex}>{m_item.data.name}</color>";      // Tylko kolor
+                    ? $"<b><color=#{colorHex}>{m_item.data.name}</color></b>" 
+                    : $"<color=#{colorHex}>{m_item.data.name}</color>";
 
                 itemName.text = formattedText;
             }
@@ -191,6 +207,78 @@ namespace PLAYERTWO.ARPGProject
                     potionDescription.text +=
                         $"Increases Mana Points by {m_item.GetPotion().manaAmount}.";
                 }
+            }
+        }
+
+        private void ShowClassRestrictions(CharacterClassRestrictions allowed, string verb)
+        {
+            if (classRestrictionsText == null)
+                return;
+
+            var allPossible = Enum.GetValues(typeof(CharacterClassRestrictions))
+                .Cast<CharacterClassRestrictions>()
+                .Where(c => c != CharacterClassRestrictions.None)
+                .Aggregate((a, b) => a | b);
+
+            if ((allowed & allPossible) == allPossible)
+            {
+                classRestrictionsText.gameObject.SetActive(false);
+                return;
+            }
+
+            var player = Game.instance?.currentCharacter;
+            CharacterClassRestrictions playerClass = CharacterClassRestrictions.None;
+
+            if (player?.Entity != null)
+            {
+                string className = player.Entity.name.Replace("(Clone)", "").Trim();
+                ClassHierarchy.NameToBits.TryGetValue(className, out playerClass);
+            }
+
+            classRestrictionsText.gameObject.SetActive(true);
+            string result = "";
+            bool anyoneCanUse = false;
+
+            foreach (var family in ClassHierarchy.Families)
+            {
+                var allowedTiers = new List<CharacterClassRestrictions>();
+                foreach (var tier in family.Tiers)
+                {
+                    if ((allowed & tier) != 0)
+                        allowedTiers.Add(tier);
+                }
+
+                if (allowedTiers.Count == 0)
+                    continue;
+
+                anyoneCanUse = true;
+                bool playerMatches = allowedTiers.Contains(playerClass);
+                string displayName = allowedTiers[0].ToString();
+
+                if (playerMatches)
+                {
+                    if (allowedTiers.Count == 1)
+                        result += StringUtils.StringWithColor($"Can only be {verb} by {displayName}", regularColor) + "\n";
+                    else
+                        result += StringUtils.StringWithColor($"Can be {verb} by {displayName}", regularColor) + "\n";
+                }
+                else
+                {
+                    if (allowedTiers.Count == 1)
+                        result += StringUtils.StringWithColor($"Can only be {verb} by {displayName}", invalidColor) + "\n";
+                    else
+                        result += StringUtils.StringWithColor($"Can be {verb} by {displayName}", invalidColor) + "\n";
+                }
+            }
+
+            if (!anyoneCanUse)
+            {
+                string line = StringUtils.StringWithColor($"Cannot be {verb}", invalidColor);
+                classRestrictionsText.text = line;
+            }
+            else
+            {
+                classRestrictionsText.text = result;
             }
         }
 

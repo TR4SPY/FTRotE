@@ -22,7 +22,6 @@ namespace PLAYERTWO.ARPGProject
 
         public CharacterStats stats;
 
-        // Słownik do przechowywania mnożników trudności
         private Dictionary<string, float> multipliers = new Dictionary<string, float>
         {
             { "Dexterity", 1.0f },
@@ -164,12 +163,26 @@ namespace PLAYERTWO.ARPGProject
             return specialCondition.ToString();
         }
 
-        public SpecialCondition specialCondition = SpecialCondition.None; // ✅ Domyślnie ustawiamy `None`
+        public SpecialCondition specialCondition = SpecialCondition.None;
 
             public void SetSpecialCondition(SpecialCondition condition)
             {
                 specialCondition = condition;
             }
+
+        public static CharacterClassRestrictions GetClassBitFromName(string rawName)
+        {
+            string className = rawName.Replace("(Clone)", "").Trim();
+
+            if (ClassHierarchy.NameToBits.TryGetValue(className, out var bit))
+            {
+                return bit;
+            }
+            else
+            {
+                return CharacterClassRestrictions.None;
+            }
+        }
 
         /// <summary>
         /// Pobierz wartość mnożnika dla danej statystyki.

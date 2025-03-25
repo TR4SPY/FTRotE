@@ -268,7 +268,7 @@ namespace PLAYERTWO.ARPGProject
                 else
                 {
                     int previewProgress = quest.GetTargetProgress();
-                    string objectiveTooltipMessage = $"(Preview) {quest.objective} x{previewProgress}";
+                    string objectiveTooltipMessage = $"{quest.objective} x{previewProgress}";
                     GUITooltip.instance.ShowTooltip("Quest Objective\n", objectiveTooltipMessage, objective.gameObject);
                 }
             });

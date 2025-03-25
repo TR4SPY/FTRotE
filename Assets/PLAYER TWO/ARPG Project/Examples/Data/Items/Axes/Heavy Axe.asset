@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcbc84c22772fe449a1319589dfd46cd, type: 3}
   m_Name: Heavy Axe
   m_EditorClassIdentifier: 
+  id: 12
   prefab: {fileID: 919132149155446097, guid: 98599f5093f24bc4090760859cc4b3d9, type: 3}
   price: 1500
+  rarity: 0
   dropPosition: {x: 0, y: 0, z: 0}
   dropRotation: {x: -90, y: 0, z: 45}
   image: {fileID: -3664150083937274575, guid: b54e5618bea88e046ab5466a204ddd45, type: 3}
@@ -25,8 +27,11 @@ MonoBehaviour:
   requiredLevel: 5
   requiredStrength: 20
   requiredDexterity: 15
+  allowedClasses: 1
   minDamage: 12
   maxDamage: 24
+  minMagicDamage: 0
+  maxMagicDamage: 0
   attackSpeed: 2
   attackClips:
   - {fileID: 8300000, guid: 36ecab5f5149b374a87e11f76210452b, type: 3}
@@ -40,3 +45,5 @@ MonoBehaviour:
   rightHandRotation: {x: -90, y: 90, z: 90}
   leftHandPosition: {x: 0, y: 0, z: 0}
   leftHandRotation: {x: 90, y: 90, z: 90}
+  magicResistance: 0
+  isQuestSpecific: 0

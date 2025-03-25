@@ -110,41 +110,41 @@ namespace PLAYERTWO.ARPGProject
         /// <param name="other">The Item Instance you want to try stack.</param>
         /// <returns>Returns true if it was able to stack the item.</returns>
         public bool TryStack(ItemInstance other)
-{
-    if (other == null)
-    {
-        // Debug.LogWarning("[STACK] TryStack failed: Other item is null.");
-        return false;
-    }
+        {
+            if (other == null)
+            {
+                // Debug.LogWarning("[STACK] TryStack failed: Other item is null.");
+                return false;
+            }
 
-    if (!CanStack(other))
-    {
-        // Debug.LogWarning($"[STACK] TryStack failed: Cannot stack {other.GetName()} with {GetName()}.");
-        return false;
-    }
+            if (!CanStack(other))
+            {
+                // Debug.LogWarning($"[STACK] TryStack failed: Cannot stack {other.GetName()} with {GetName()}.");
+                return false;
+            }
 
-    int maxStack = data.stackCapacity;
-    if (stack >= maxStack)
-    {
-        // Debug.LogWarning($"[STACK] TryStack failed: Stack is already full ({stack}/{maxStack}).");
-        return false;
-    }
+            int maxStack = data.stackCapacity;
+            if (stack >= maxStack)
+            {
+                // Debug.LogWarning($"[STACK] TryStack failed: Stack is already full ({stack}/{maxStack}).");
+                return false;
+            }
 
-    int amountToAdd = Mathf.Min(maxStack - stack, other.stack);
-    stack += amountToAdd;
-    other.stack -= amountToAdd;
+            int amountToAdd = Mathf.Min(maxStack - stack, other.stack);
+            stack += amountToAdd;
+            other.stack -= amountToAdd;
 
-    // Debug.Log($"[STACK] Stacking successful! {GetName()} stack is now {stack}/{maxStack}. Other stack: {other.stack}");
+            // Debug.Log($"[STACK] Stacking successful! {GetName()} stack is now {stack}/{maxStack}. Other stack: {other.stack}");
 
-    if (other.stack == 0)
-    {
-        // Debug.Log($"[STACK] {other.GetName()} stack in inventory is now 0. Removing from inventory.");
-        Level.instance.player.inventory.instance.TryRemoveItem(other);
-        GUI.instance.GetComponentInChildren<GUIInventory>()?.UpdateSlots();
-    }
+            if (other.stack == 0)
+            {
+                // Debug.Log($"[STACK] {other.GetName()} stack in inventory is now 0. Removing from inventory.");
+                Level.instance.player.inventory.instance.TryRemoveItem(other);
+                GUI.instance.GetComponentInChildren<GUIInventory>()?.UpdateSlots();
+            }
 
-    return true;
-}
+            return true;
+        }
 
         public string GetName()
         {
@@ -160,6 +160,18 @@ namespace PLAYERTWO.ARPGProject
             if (IsSkill()) return GetSkill().requiredLevel;
 
             return 0;
+        }
+
+        public bool IsClassAllowed(CharacterClassRestrictions playerClass)
+        {
+            if (data == null) return true;
+
+            var allowed = data.allowedClasses;
+
+            if (allowed == CharacterClassRestrictions.None)
+                return true;
+
+            return (allowed & playerClass) != 0;
         }
 
         /// <summary>
@@ -473,10 +485,22 @@ namespace PLAYERTWO.ARPGProject
             if (GetRequiredEnergy() > 0)
                 text += InspectRequired("Energy", GetRequiredEnergy(), stats.energy, error, text.Length > 0);
 
-            if (data is ItemQuest questItem && questItem.IsQuestSpecific)
+            if (data != null)
             {
-                text += $"\n{StringUtils.StringWithColorAndStyle("\nThis is a Quest Item", quest, bold: true)}";
-                text += $"\n{StringUtils.StringWithColorAndStyle("Cannot be sold or dropped", error)}";
+                if (data.isQuestSpecific)
+                {
+                    text += $"\n{StringUtils.StringWithColorAndStyle("\nThis is a Quest Item", quest, bold: true)}";
+                }
+
+                if (data.cannotBeDropped)
+                {
+                    text += $"\n{StringUtils.StringWithColor("Cannot be dropped", error)}";
+                }
+
+                if (data.cannotBeSold)
+                {
+                    text += $"\n{StringUtils.StringWithColor("Cannot be sold", error)}";
+                }
             }
 
             return text;

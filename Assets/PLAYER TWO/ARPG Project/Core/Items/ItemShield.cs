@@ -22,15 +22,6 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The amount of magic resistance this armor provides.")]
         public int magicResistance;
 
-        [Header("Quest Settings")]
-        [Tooltip("Is this blade a quest item?")]
-        public bool isQuestSpecific = false;
-        
-        /// <summary>
-        /// Returns true if this item is quest related.
-        /// </summary>
-        public bool IsQuestSpecific => isQuestSpecific;
-
         /// <summary>
         /// Instantiates the Item's prefab, applying the Shield's arm offsets, as a child of a given Transform.
         /// </summary>

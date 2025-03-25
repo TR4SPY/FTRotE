@@ -32,15 +32,6 @@ namespace PLAYERTWO.ARPGProject
         [Header("Character Pieces Settings")]
         [Tooltip("The pieces of the character that will be shown or hidden when this armor is equipped.")]
         public PieceSettings[] pieces;
-
-        [Header("Quest Settings")]
-        [Tooltip("Is this blade a quest item?")]
-        public bool isQuestSpecific = false;
-
-        /// <summary>
-        /// Returns true if this item is quest related.
-        /// </summary>
-        public bool IsQuestSpecific => isQuestSpecific;
         
         /// <summary>
         /// Returns true if this Item has custom materials.

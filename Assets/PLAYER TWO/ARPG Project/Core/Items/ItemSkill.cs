@@ -18,13 +18,5 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The minimum energy of the Entity to learn this Skill.")]
         public int requiredEnergy;
 
-        [Header("Quest Settings")]
-        [Tooltip("Is this blade a quest item?")]
-        public bool isQuestSpecific = false;
-
-        /// <summary>
-        /// Returns true if this item is quest related.
-        /// </summary>
-        public bool IsQuestSpecific => isQuestSpecific;
     }
 }

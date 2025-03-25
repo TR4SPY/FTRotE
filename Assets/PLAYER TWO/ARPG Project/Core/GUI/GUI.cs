@@ -58,6 +58,7 @@ namespace PLAYERTWO.ARPGProject
         protected InputAction m_toggleMenuWebGL;
         protected InputAction m_dropItem;
         protected InputAction m_toggleCollectiblesNames;
+        protected GameAudio m_audio => GameAudio.instance;
 
         protected Entity m_entity;
         protected float m_dropTime;
@@ -140,6 +141,19 @@ namespace PLAYERTWO.ARPGProject
         {
             if (!selected || !canDropItems) return;
 
+            var item = selected.item;
+
+            if (item == null || item.data == null)
+                return;
+
+            if (item.data.cannotBeDropped)
+            {
+                m_audio.PlayDeniedSound();
+                selected.TryMoveToLastPosition();
+                Deselect();
+                return;
+            }
+
             if (m_entity.inputs.MouseRaycast(out var hit, dropGroundLayer))
             {
                 Vector3 direction = (hit.point - m_entity.transform.position).normalized;
@@ -149,7 +163,7 @@ namespace PLAYERTWO.ARPGProject
                 dropPosition = FindNearestNavMeshPosition(dropPosition, 2f);
 
                 var collectible = Instantiate(droppedItemPrefab, m_entity.transform.position, Quaternion.identity);
-                collectible.SetItem(selected.item);
+                collectible.SetItem(item);
 
                 Destroy(selected.gameObject);
                 selected = null;
@@ -159,10 +173,10 @@ namespace PLAYERTWO.ARPGProject
             }
             else
             {
-#if UNITY_ANDROID || UNITY_IOS
+        #if UNITY_ANDROID || UNITY_IOS
                 selected.TryMoveToLastPosition();
                 Deselect();
-#endif
+        #endif
             }
         }
 

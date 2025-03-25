@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcbc84c22772fe449a1319589dfd46cd, type: 3}
   m_Name: Keroisa's Sword
   m_EditorClassIdentifier: 
-  id: 0
+  id: 33
   prefab: {fileID: 1514839444299120, guid: 320b4ecb5175ad181b2cbd25cd9ce0de, type: 3}
   price: 1500
   rarity: 0
@@ -27,6 +27,7 @@ MonoBehaviour:
   requiredLevel: 9
   requiredStrength: 30
   requiredDexterity: 17
+  allowedClasses: -1
   minDamage: 12
   maxDamage: 24
   minMagicDamage: 5

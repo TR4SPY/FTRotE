@@ -190,18 +190,34 @@ namespace PLAYERTWO.ARPGProject
         /// <param name="slot">The slot in which you want to equip the item to.</param>
         public virtual bool CanEquip(ItemInstance item, ItemSlots slot)
         {
-            if (item == null || !item.IsEquippable()) return false;
+            if (item == null || !item.IsEquippable())
+                return false;
 
-            if (entity.stats.level < item.GetEquippable().requiredLevel) return false;
-            if (entity.stats.strength < item.GetEquippable().requiredStrength) return false;
-            if (entity.stats.dexterity < item.GetEquippable().requiredDexterity) return false;
+            var equippable = item.GetEquippable();
 
-            if (item.IsArmor() && item.GetArmor().slot != slot) return false;
-            if (item.IsWeapon() && slot != ItemSlots.RightHand && slot != ItemSlots.LeftHand) return false;
+            if (entity.stats.level < equippable.requiredLevel) return false;
+            if (entity.stats.strength < equippable.requiredStrength) return false;
+            if (entity.stats.dexterity < equippable.requiredDexterity) return false;
+
+            string className = entity.name.Replace("(Clone)", "").Trim();
+            if (ClassHierarchy.NameToBits.TryGetValue(className, out var playerClass))
+            {
+                var allowed = equippable.allowedClasses;
+
+                if ((allowed & playerClass) == 0 && allowed != CharacterClassRestrictions.None)
+                    return false;
+            }
+
+            if (item.IsArmor() && item.GetArmor().slot != slot)
+                return false;
+
+            if (item.IsWeapon() && slot != ItemSlots.RightHand && slot != ItemSlots.LeftHand)
+                return false;
 
             if (item.IsShield())
             {
-                if (slot != ItemSlots.LeftHand) return false;
+                if (slot != ItemSlots.LeftHand)
+                    return false;
 
                 if (IsUsingWeaponRight())
                 {
@@ -214,8 +230,11 @@ namespace PLAYERTWO.ARPGProject
             {
                 if (item.GetBlade().IsTwoHanded())
                 {
-                    if (slot != ItemSlots.RightHand) return false;
-                    if (IsUsingWeaponLeft() || IsUsingShield()) return false;
+                    if (slot != ItemSlots.RightHand)
+                        return false;
+
+                    if (IsUsingWeaponLeft() || IsUsingShield())
+                        return false;
                 }
                 else if (slot == ItemSlots.LeftHand)
                 {
@@ -226,8 +245,11 @@ namespace PLAYERTWO.ARPGProject
 
             if (item.IsBow())
             {
-                if (slot != ItemSlots.RightHand) return false;
-                if (IsUsingWeaponLeft() || IsUsingShield()) return false;
+                if (slot != ItemSlots.RightHand)
+                    return false;
+
+                if (IsUsingWeaponLeft() || IsUsingShield())
+                    return false;
             }
 
             return true;
@@ -424,10 +446,19 @@ namespace PLAYERTWO.ARPGProject
             if (index < 0 || index >= m_consumables.Count || m_consumables[index] == null)
                 return;
 
-            if (m_consumables[index].stack > 0)
+            var item = m_consumables[index];
+            string className = entity.name.Replace("(Clone)", "").Trim();
+
+            if (ClassHierarchy.NameToBits.TryGetValue(className, out var playerClass))
             {
-                m_consumables[index].stack--;
-                m_consumables[index].GetConsumable().Consume(entity);
+                if (!item.IsClassAllowed(playerClass))
+                    return;
+            }
+
+            if (item.stack > 0)
+            {
+                item.stack--;
+                item.GetConsumable().Consume(entity);
 
                 if (m_consumables[index].stack == 0)
                     m_consumables[index] = null;

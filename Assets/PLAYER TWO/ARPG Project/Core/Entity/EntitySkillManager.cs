@@ -238,10 +238,22 @@ namespace PLAYERTWO.ARPGProject
         /// <returns>Returns true if the Entity was able to learn the Skill.</returns>
         public virtual bool TryLearnSkill(ItemSkill itemSkill)
         {
-            if (!itemSkill?.skill || m_entity.stats.level < itemSkill.requiredLevel ||
+            if (!itemSkill?.skill)
+                return false;
+
+            if (m_entity.stats.level < itemSkill.requiredLevel ||
                 m_entity.stats.strength < itemSkill.requiredStrength ||
                 m_entity.stats.energy < itemSkill.requiredEnergy)
                 return false;
+
+            string className = m_entity.name.Replace("(Clone)", "").Trim();
+
+            if (ClassHierarchy.NameToBits.TryGetValue(className, out var playerClass))
+            {
+                if ((itemSkill.allowedClasses & playerClass) == 0 &&
+                    itemSkill.allowedClasses != CharacterClassRestrictions.None)
+                    return false;
+            }
 
             return TryLearnSkill(itemSkill.skill);
         }

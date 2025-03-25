@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fabc1ab5d3c2bfc459268b20840f8e1e, type: 3}
   m_Name: Iron Shield
   m_EditorClassIdentifier: 
-  id: 0
+  id: 20
   prefab: {fileID: 919132149155446097, guid: 036a6717bfbf6b248868c553f5eff5e6, type: 3}
   price: 1500
   rarity: 0
@@ -27,6 +27,7 @@ MonoBehaviour:
   requiredLevel: 5
   requiredStrength: 18
   requiredDexterity: 15
+  allowedClasses: -1
   defense: 10
   chanceToBlock: 70
   armPosition: {x: 0, y: 0, z: 0}

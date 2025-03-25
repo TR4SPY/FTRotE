@@ -131,6 +131,15 @@ namespace PLAYERTWO.ARPGProject
         /// <returns>Returns true if the Merchant was able to buy the item.</returns>
         public virtual bool TryBuy(GUIItem item)
         {
+            if (item == null || item.item == null || item.item.data == null)
+                return false;
+
+            if (item.item.data.cannotBeSold)
+            {
+                m_audio.PlayDeniedSound();
+                return false;
+            }
+
             var price = item.item.GetSellPrice();
             var buyBackSection = GetBuyBackSection();
 
@@ -157,6 +166,15 @@ namespace PLAYERTWO.ARPGProject
         /// <returns>Returns true if the item was sold to the Player.</returns>
         public virtual bool TrySell(GUIItem item)
         {
+           if (item == null || item.item == null || item.item.data == null)
+                return false;
+
+            if (item.transform.IsChildOf(m_playerGUIInventory.transform) && item.item.data.cannotBeSold)
+            {
+                m_audio.PlayDeniedSound();
+                return false;
+            }
+
             var section = GetActiveSection();
             var price = item.item.GetPrice();
 

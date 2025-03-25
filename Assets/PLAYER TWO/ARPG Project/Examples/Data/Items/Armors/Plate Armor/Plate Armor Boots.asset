@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb802ff9f4ee12e4fa0f698f11c51eed, type: 3}
   m_Name: Plate Armor Boots
   m_EditorClassIdentifier: 
-  id: 0
+  id: 6
   prefab: {fileID: 919132149155446097, guid: 3d4b959ca9c139c4cb2f7712e6b46632, type: 3}
   price: 1000
   rarity: 0
@@ -27,6 +27,7 @@ MonoBehaviour:
   requiredLevel: 1
   requiredStrength: 15
   requiredDexterity: 10
+  allowedClasses: -1
   slot: 6
   defense: 8
   magicResistance: 4
