@@ -44,6 +44,15 @@ namespace PLAYERTWO.ARPGProject
 
             Instantiate(this.item.data.prefab, position, rotation, transform);
             PlayClip(dropRegularClip, dropArmorClip, dropWeaponClip);
+
+            if (item.data.IsQuestSpecific)
+            {
+                nameColor = GameColors.Gold;
+            }
+            else
+            {
+                nameColor = GameColors.GetItemRarityColor(item.data.rarity);
+            }
         }
 
         public override string GetName() => item.data.name;

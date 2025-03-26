@@ -10,15 +10,16 @@ public class GameDataEditor : Editor
 
     public override void OnInspectorGUI()
     {
-        DrawDefaultInspector(); // dla innych pól GameData
+        DrawDefaultInspector();
 
         GameData data = (GameData)target;
 
         GUILayout.Space(10);
         EditorGUILayout.LabelField("📦 Przedmioty w grze", EditorStyles.boldLabel);
 
-        if (GUILayout.Button("📋 Posortuj według grupy i ID"))
+        if (GUILayout.Button("🔄 Synchronizuj ID z grupami"))
         {
+            data.AssignItemIDs();
             data.items = data.items
                 .Where(i => i != null)
                 .OrderBy(i => (int)i.group)
@@ -26,6 +27,29 @@ public class GameDataEditor : Editor
                 .ToList();
 
             EditorUtility.SetDirty(data);
+        }
+
+        if (GUILayout.Button("📤 Zrób backup (eksport do JSON)"))
+        {
+            string path = EditorUtility.SaveFilePanel("Zapisz backup GameData", "Assets", "GameDataBackup", "json");
+            if (!string.IsNullOrEmpty(path))
+            {
+                var backupData = JsonUtility.ToJson(data, true);
+                System.IO.File.WriteAllText(path, backupData);
+                Debug.Log($"✅ GameData zapisany do: {path}");
+            }
+        }
+
+        if (GUILayout.Button("📥 Wczytaj backup (import z JSON)"))
+        {
+            string path = EditorUtility.OpenFilePanel("Wczytaj backup GameData", "Assets", "json");
+            if (!string.IsNullOrEmpty(path))
+            {
+                string json = System.IO.File.ReadAllText(path);
+                JsonUtility.FromJsonOverwrite(json, data);
+                EditorUtility.SetDirty(data);
+                Debug.Log($"✅ GameData wczytany z: {path}");
+            }
         }
 
         showItems = EditorGUILayout.Foldout(showItems, "🧾 Rozwiń listę przedmiotów");
@@ -83,6 +107,7 @@ public class GameDataEditor : Editor
             if (UnityEngine.GUI.changed)
             {
                 EditorUtility.SetDirty(data);
+                AssetDatabase.SaveAssets(); 
             }
         }
     }

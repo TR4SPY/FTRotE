@@ -161,32 +161,32 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void UpdateItemName()
         {
-            itemName.text = m_item.data.name;
-            itemName.color = regularColor;
+            var itemData = m_item.data;
+            var name = itemData.name;
 
-            if (m_item.IsSkill() || m_item.GetAttributesCount() > 0)
-                itemName.color = specialColor;
-            
-            if (m_item.data is ItemQuest questItem && questItem.IsQuestSpecific)
+            string formattedName;
+
+            if (itemData.IsQuestSpecific)
             {
-                string colorHex = ColorUtility.ToHtmlStringRGB(questItemColor);
-
-                string formattedText = isBold 
-                    ? $"<b><color=#{colorHex}>{m_item.data.name}</color></b>" 
-                    : $"<color=#{colorHex}>{m_item.data.name}</color>";
-
-                itemName.text = formattedText;
+                formattedName = StringUtils.StringWithColorAndStyle(name, GameColors.Gold, bold: true);
             }
-        }
+            else
+            {
+                var rarityColor = GameColors.GetItemRarityColor(itemData.rarity);
+                formattedName = StringUtils.StringWithColorAndStyle(name, rarityColor, bold: isBold);
+            }
 
+            itemName.text = formattedName;
+        }
         protected virtual void UpdateAttributes()
         {
             attributesContainer.SetActive(m_item.IsEquippable() || m_item.IsSkill());
 
             if (attributesContainer.activeSelf)
+            {
                 attributesText.text = m_item.Inspect(m_entity.stats, attentionColor, invalidColor, specialColor, questItemColor);
+            }
         }
-
         protected virtual void UpdatePotionDescription()
         {
             potionDescriptionContainer.SetActive(m_item.IsPotion());

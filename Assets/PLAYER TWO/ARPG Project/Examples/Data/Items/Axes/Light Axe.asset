@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcbc84c22772fe449a1319589dfd46cd, type: 3}
   m_Name: Light Axe
   m_EditorClassIdentifier: 
-  id: 13
+  id: 10
   prefab: {fileID: 919132149155446097, guid: 948f107fcfacecd49a3f4c86374c20b6, type: 3}
   price: 500
   rarity: 0
@@ -23,11 +23,15 @@ MonoBehaviour:
   columns: 1
   canStack: 0
   stackCapacity: 0
+  isQuestSpecific: 0
+  cannotBeDropped: 0
+  cannotBeSold: 0
+  allowedClasses: -1
+  group: 1
   maxDurability: 20
   requiredLevel: 1
   requiredStrength: 15
   requiredDexterity: 10
-  allowedClasses: -1
   minDamage: 5
   maxDamage: 10
   minMagicDamage: 0
@@ -46,4 +50,3 @@ MonoBehaviour:
   leftHandPosition: {x: 0, y: 0, z: 0}
   leftHandRotation: {x: 90, y: 90, z: 90}
   magicResistance: 0
-  isQuestSpecific: 0

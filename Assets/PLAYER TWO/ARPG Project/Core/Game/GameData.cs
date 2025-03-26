@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -27,12 +28,10 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         public void AssignItemIDs()
         {
-            Dictionary<Item.ItemGroup, int> groupCounters = new Dictionary<Item.ItemGroup, int>();
+            Dictionary<Item.ItemGroup, int> groupCounters = new();
 
-            foreach (var item in items)
+            foreach (var item in items.Where(i => i != null))
             {
-                if (item == null) continue;
-
                 var group = item.group;
                 int groupValue = (int)group;
 
@@ -40,19 +39,31 @@ namespace PLAYERTWO.ARPGProject
                     groupCounters[group] = 0;
 
                 int index = groupCounters[group];
-
                 string rawID = groupValue.ToString() + index.ToString();
-                item.id = int.Parse(rawID);
+                int expectedID = int.Parse(rawID);
+
+                bool isInCorrectGroup = item.id / 100 == groupValue;
+
+                if (item.id == 0)
+                {
+                    item.id = expectedID;
+                }
+                else
+                {
+                    int idGroup = int.Parse(item.id.ToString()[0].ToString());
+                    if (idGroup != groupValue)
+                    {
+                        item.id = expectedID;
+                    }
+                }
 
                 groupCounters[group]++;
             }
-
-            Debug.Log("[GameData] ID nadane jako: G + index (np. 312 = Staffs, #12).");
         }
 
         private void OnValidate()
         {
-            AssignItemIDs(); // Przypisz ID automatycznie podczas każdej zmiany
+            // AssignItemIDs();
         }
     }
 }

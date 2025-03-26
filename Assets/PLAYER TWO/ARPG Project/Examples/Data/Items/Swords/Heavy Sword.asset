@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcbc84c22772fe449a1319589dfd46cd, type: 3}
   m_Name: Heavy Sword
   m_EditorClassIdentifier: 
-  id: 31
+  id: 2
   prefab: {fileID: 919132149155446097, guid: b23cb53d59e3dd446b2246da53fa01df, type: 3}
-  price: 1000
+  price: 750
   rarity: 0
   dropPosition: {x: 0, y: 0, z: 0}
   dropRotation: {x: -90, y: 0, z: 45}
@@ -23,11 +23,15 @@ MonoBehaviour:
   columns: 1
   canStack: 0
   stackCapacity: 0
+  isQuestSpecific: 0
+  cannotBeDropped: 0
+  cannotBeSold: 0
+  allowedClasses: 1
+  group: 0
   maxDurability: 30
   requiredLevel: 5
   requiredStrength: 20
   requiredDexterity: 15
-  allowedClasses: 1
   minDamage: 10
   maxDamage: 20
   minMagicDamage: 0
@@ -46,4 +50,3 @@ MonoBehaviour:
   leftHandPosition: {x: 0, y: 0, z: 0}
   leftHandRotation: {x: 90, y: 90, z: 90}
   magicResistance: 0
-  isQuestSpecific: 0

@@ -40,28 +40,24 @@ namespace PLAYERTWO.ARPGProject
 
         protected override void OnInteract(object other)
         {
-            // Sprawdzenie, czy obiekt 'other' nie jest null
             if (other == null)
             {
                 Debug.LogError("Collectible.OnInteract: 'other' is null!");
                 return;
             }
 
-            // Sprawdzenie, czy obiekt 'other' jest typu Entity
             if (other is not Entity entity)
             {
                 Debug.LogError("Collectible.OnInteract: 'other' is not an Entity!");
                 return;
             }
 
-            // Sprawdzenie, czy inventory i inventory.instance nie są null
             if (entity.inventory == null || entity.inventory.instance == null)
             {
                 Debug.LogError("Collectible.OnInteract: Inventory or Inventory.Instance is null!");
                 return;
             }
 
-            // Jeśli wszystkie warunki są spełnione, wykonaj interakcję
             if (TryCollect(entity.inventory.instance))
             {
                 Collect(other);

@@ -473,17 +473,20 @@ namespace PLAYERTWO.ARPGProject
                     text += lineBreak + attr;
             }
 
-            if (GetRequiredLevel() > 1)
-                text += InspectRequired("Level", GetRequiredLevel(), stats.level, error, text.Length > 0);
+            if (data.allowedClasses != CharacterClassRestrictions.None)
+            {
+                if (GetRequiredLevel() > 1)
+                    text += InspectRequired("Level", GetRequiredLevel(), stats.level, error, text.Length > 0);
 
-            if (GetRequiredStrength() > 0)
-                text += InspectRequired("Strength", GetRequiredStrength(), stats.strength, error, text.Length > 0);
+                if (GetRequiredStrength() > 0)
+                    text += InspectRequired("Strength", GetRequiredStrength(), stats.strength, error, text.Length > 0);
 
-            if (GetRequiredDexterity() > 0)
-                text += InspectRequired("Dexterity", GetRequiredDexterity(), stats.dexterity, error, text.Length > 0);
+                if (GetRequiredDexterity() > 0)
+                    text += InspectRequired("Dexterity", GetRequiredDexterity(), stats.dexterity, error, text.Length > 0);
 
-            if (GetRequiredEnergy() > 0)
-                text += InspectRequired("Energy", GetRequiredEnergy(), stats.energy, error, text.Length > 0);
+                if (GetRequiredEnergy() > 0)
+                    text += InspectRequired("Energy", GetRequiredEnergy(), stats.energy, error, text.Length > 0);
+            }
 
             if (data != null)
             {

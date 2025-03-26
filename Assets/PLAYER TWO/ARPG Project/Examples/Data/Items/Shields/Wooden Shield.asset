@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fabc1ab5d3c2bfc459268b20840f8e1e, type: 3}
   m_Name: Wooden Shield
   m_EditorClassIdentifier: 
-  id: 21
+  id: 40
   prefab: {fileID: 919132149155446097, guid: ad51be71d77f5424eae835ce699d5239, type: 3}
   price: 300
   rarity: 0
@@ -23,14 +23,17 @@ MonoBehaviour:
   columns: 2
   canStack: 0
   stackCapacity: 0
+  isQuestSpecific: 0
+  cannotBeDropped: 0
+  cannotBeSold: 0
+  allowedClasses: -1
+  group: 4
   maxDurability: 10
   requiredLevel: 1
   requiredStrength: 15
   requiredDexterity: 10
-  allowedClasses: -1
   defense: 3
   chanceToBlock: 45
   armPosition: {x: 0, y: 0, z: 0}
   armRotation: {x: -90, y: 0, z: 180}
   magicResistance: 2
-  isQuestSpecific: 0
