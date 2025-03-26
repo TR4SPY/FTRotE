@@ -23,12 +23,18 @@ MonoBehaviour:
   columns: 1
   canStack: 0
   stackCapacity: 0
+  isQuestSpecific: 1
+  cannotBeDropped: 1
+  cannotBeSold: 1
+  allowedClasses: 0
   maxDurability: 60
   requiredLevel: 20
   requiredStrength: 50
   requiredDexterity: 25
   minDamage: 24
   maxDamage: 28
+  minMagicDamage: 0
+  maxMagicDamage: 0
   attackSpeed: 15
   attackClips:
   - {fileID: 8300000, guid: aa3151bff5ceab4449196fc78f916dc1, type: 3}
@@ -42,4 +48,4 @@ MonoBehaviour:
   rightHandRotation: {x: 51.318, y: -86.912, z: 81.237}
   leftHandPosition: {x: 0, y: 0, z: 0}
   leftHandRotation: {x: 90, y: 90, z: 90}
-  isQuestSpecific: 1
+  magicResistance: 0

@@ -113,6 +113,9 @@ namespace AI_DDA.Assets.Scripts
                 case Dialog.DialogAction.OpenShop:
                     OpenMerchantWindow();
                     break;
+                case Dialog.DialogAction.OpenCrafting:
+                    OpenCraftmanWindow();
+                    break;
                 case Dialog.DialogAction.OpenBlacksmith:
                     OpenBlacksmithWindow();
                     break;
@@ -207,6 +210,17 @@ namespace AI_DDA.Assets.Scripts
             }
 
             merchant.OpenMerchantShop();
+        }
+
+        private void OpenCraftmanWindow()
+        {
+            if (!(currentNPC is Craftman craftman))
+            {
+                Debug.LogError("[AI-DDA] Błąd: currentNPC nie jest Craftmanem!");
+                return;
+            }
+
+            craftman.OpenCraftingService();
         }
 
         private void OpenBlacksmithWindow()

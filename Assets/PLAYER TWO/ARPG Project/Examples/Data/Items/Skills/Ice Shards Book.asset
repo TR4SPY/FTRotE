@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c03f6f012f430fd47972013eeb810656, type: 3}
   m_Name: Ice Shards Book
   m_EditorClassIdentifier: 
-  id: 0
+  id: 45
   prefab: {fileID: 919132149155446097, guid: 8e05b85b3ef84724284bff019d53f2bb, type: 3}
   price: 7500
   rarity: 0
@@ -23,8 +23,11 @@ MonoBehaviour:
   columns: 1
   canStack: 0
   stackCapacity: 0
+  isQuestSpecific: 0
+  cannotBeDropped: 0
+  cannotBeSold: 0
+  allowedClasses: 56
   skill: {fileID: 11400000, guid: c13455d6c7f4414c9a1a24afb1086820, type: 2}
   requiredLevel: 10
   requiredStrength: 20
   requiredEnergy: 50
-  isQuestSpecific: 0

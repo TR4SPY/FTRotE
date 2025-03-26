@@ -23,7 +23,7 @@ MonoBehaviour:
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 0
-      action: 4
+      action: 5
       nextPageIndex: -1
       specialConditionToSet: 0
     - optionText: Do you have a quest for me?
@@ -39,7 +39,7 @@ MonoBehaviour:
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 1
-      action: 5
+      action: 6
       nextPageIndex: -1
       specialConditionToSet: 0
     showOnce: 1
@@ -55,7 +55,7 @@ MonoBehaviour:
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 0
-      action: 4
+      action: 5
       nextPageIndex: -1
       specialConditionToSet: 0
     - optionText: How can I help you?
@@ -80,7 +80,7 @@ MonoBehaviour:
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 0
-      action: 6
+      action: 7
       nextPageIndex: 3
       specialConditionToSet: 1
     - optionText: The DARK side!
@@ -88,7 +88,7 @@ MonoBehaviour:
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 0
-      action: 6
+      action: 7
       nextPageIndex: 6
       specialConditionToSet: 2
     showOnce: 1
@@ -105,7 +105,7 @@ MonoBehaviour:
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 0
-      action: 4
+      action: 5
       nextPageIndex: -1
       specialConditionToSet: 0
     showOnce: 1
@@ -121,7 +121,7 @@ MonoBehaviour:
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 0
-      action: 4
+      action: 5
       nextPageIndex: -1
       specialConditionToSet: 0
     showOnce: 1
@@ -135,7 +135,7 @@ MonoBehaviour:
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 0
-      action: 4
+      action: 5
       nextPageIndex: 10
       specialConditionToSet: 0
     showOnce: 1
@@ -148,7 +148,7 @@ MonoBehaviour:
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 0
-      action: 4
+      action: 5
       nextPageIndex: -1
       specialConditionToSet: 0
     showOnce: 1
@@ -164,7 +164,7 @@ MonoBehaviour:
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 0
-      action: 4
+      action: 5
       nextPageIndex: -1
       specialConditionToSet: 0
     showOnce: 1
@@ -180,7 +180,7 @@ MonoBehaviour:
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 0
-      action: 4
+      action: 5
       nextPageIndex: -1
       specialConditionToSet: 0
     showOnce: 1
@@ -194,7 +194,7 @@ MonoBehaviour:
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 0
-      action: 4
+      action: 5
       nextPageIndex: -1
       specialConditionToSet: 0
     showOnce: 1
@@ -218,7 +218,7 @@ MonoBehaviour:
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 1
-      action: 5
+      action: 6
       nextPageIndex: -1
       specialConditionToSet: 0
     showOnce: 0

@@ -26,7 +26,7 @@ MonoBehaviour:
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 0
-      action: 4
+      action: 5
       nextPageIndex: -1
       specialConditionToSet: 0
     - optionText: Do you have a quest for me?
@@ -34,7 +34,7 @@ MonoBehaviour:
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 1
-      action: 5
+      action: 6
       nextPageIndex: -1
       specialConditionToSet: 0
     - optionText: Let me see your goods.
@@ -60,7 +60,7 @@ MonoBehaviour:
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 0
-      action: 4
+      action: 5
       nextPageIndex: -1
       specialConditionToSet: 0
     - optionText: What do you sell?
@@ -87,7 +87,7 @@ MonoBehaviour:
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 0
-      action: 4
+      action: 5
       nextPageIndex: -1
       specialConditionToSet: 0
     - optionText: Let's do some business.
@@ -112,7 +112,7 @@ MonoBehaviour:
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 0
-      action: 4
+      action: 5
       nextPageIndex: -1
       specialConditionToSet: 0
     - optionText: What can you offer?
@@ -139,7 +139,7 @@ MonoBehaviour:
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 1
-      action: 5
+      action: 6
       nextPageIndex: -1
       specialConditionToSet: 0
     - optionText: Let's trade!

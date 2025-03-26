@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c53e92114f378d54da673e6993787cf0, type: 3}
   m_Name: Mana Potion (L)
   m_EditorClassIdentifier: 
-  id: 0
+  id: 40
   prefab: {fileID: 919132149155446097, guid: 680083979a244d446832706a43ab8825, type: 3}
   price: 750
   rarity: 0
@@ -23,9 +23,12 @@ MonoBehaviour:
   columns: 1
   canStack: 1
   stackCapacity: 5
+  isQuestSpecific: 0
+  cannotBeDropped: 0
+  cannotBeSold: 0
+  allowedClasses: -1
   consumeSound: {fileID: 8300000, guid: e31b555ee14e3e64da2528e3d14aa693, type: 3}
   consumeParticles: {fileID: 8622928865024085140, guid: 7a595a98ef7832b4b9b00ca20cfa2874, type: 3}
   particleOffset: {x: 0, y: 0, z: 0}
   healthAmount: 0
   manaAmount: 500
-  isQuestSpecific: 0

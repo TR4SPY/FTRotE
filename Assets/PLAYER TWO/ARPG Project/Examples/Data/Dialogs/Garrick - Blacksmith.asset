@@ -15,62 +15,75 @@ MonoBehaviour:
   pages:
   - dialogText: "If you\u2019re here to waste my time, turn around and walk back
       out that door. I\u2019ve got no patience for dreamers and no steel for fools."
+    specialCondition: 
     options:
     - optionText: Not here to cause trouble.
       isForSocializer: 0
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 0
-      action: 4
+      action: 5
       nextPageIndex: -1
+      specialConditionToSet: 0
     showOnce: 1
+    isSpecial: 0
   - dialogText: "...Hmph. Still standing? Alright then. I'm Garrick Ironbane, and
       this forge is the only thing keeping Ashenvale from falling apart at the seams.
       When a sword shatters, when a shield cracks, when a farmer\u2019s plow breaks
       in the dead of winter\u2014who do they come running to? Me. Always me."
+    specialCondition: 
     options:
     - optionText: That's the price of being the best.
       isForSocializer: 0
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 0
-      action: 4
+      action: 5
       nextPageIndex: -1
+      specialConditionToSet: 0
     showOnce: 1
+    isSpecial: 0
   - dialogText: "I\u2019ve been hammering steel longer than you\u2019ve been walking
       this land, and I can tell just by looking at you\u2014you\u2019ve seen your
       fair share of fights. That\u2019s good. Means you understand that a blade isn\u2019t
       just a piece of metal. It\u2019s trust. It\u2019s survival. A dull sword is
       a death sentence, and a brittle one? That\u2019s worse\u2014it makes you think
       it\u2019ll hold right up until the moment it doesn\u2019t."
+    specialCondition: 
     options:
     - optionText: Exactly!
       isForSocializer: 0
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 0
-      action: 4
+      action: 5
       nextPageIndex: -1
+      specialConditionToSet: 0
     showOnce: 1
+    isSpecial: 0
   - dialogText: "I don\u2019t deal in fancy engravings or delicate ornamentation.
       I make weapons meant for war, armor meant to take a beating. You want something
       that looks pretty? Go find a merchant who polishes rust and sells it as gold.
       But if you want something that\u2019ll keep you alive, you\u2019ve come to
       the right place.\n\nSo\u2026 what\u2019ll it be?"
+    specialCondition: 
     options:
     - optionText: Can you repair something for me?
       isForSocializer: 0
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 0
-      action: 3
+      action: 4
       nextPageIndex: -1
+      specialConditionToSet: 0
     - optionText: Can I be of an assistance?
       isForSocializer: 0
       isForAchiever: 0
       isForKiller: 1
       isForExplorer: 0
-      action: 5
+      action: 6
       nextPageIndex: -1
+      specialConditionToSet: 0
     showOnce: 0
+    isSpecial: 0
   dialogTitle: Garrick - Blacksmith

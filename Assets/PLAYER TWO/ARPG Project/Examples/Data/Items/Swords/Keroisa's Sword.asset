@@ -23,11 +23,14 @@ MonoBehaviour:
   columns: 1
   canStack: 0
   stackCapacity: 0
+  isQuestSpecific: 1
+  cannotBeDropped: 1
+  cannotBeSold: 1
+  allowedClasses: -1
   maxDurability: 45
   requiredLevel: 9
   requiredStrength: 30
   requiredDexterity: 17
-  allowedClasses: -1
   minDamage: 12
   maxDamage: 24
   minMagicDamage: 5
@@ -46,4 +49,3 @@ MonoBehaviour:
   leftHandPosition: {x: 0, y: 0, z: 0}
   leftHandRotation: {x: 90, y: 90, z: 90}
   magicResistance: 0
-  isQuestSpecific: 1

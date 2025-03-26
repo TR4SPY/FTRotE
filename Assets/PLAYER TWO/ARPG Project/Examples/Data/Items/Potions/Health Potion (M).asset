@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c53e92114f378d54da673e6993787cf0, type: 3}
   m_Name: Health Potion (M)
   m_EditorClassIdentifier: 
-  id: 0
+  id: 41
   prefab: {fileID: 919132149155446097, guid: 6d6e5287fcff4dc4e9e27573d29f04d6, type: 3}
   price: 500
   rarity: 0
@@ -23,9 +23,12 @@ MonoBehaviour:
   columns: 1
   canStack: 1
   stackCapacity: 10
+  isQuestSpecific: 0
+  cannotBeDropped: 0
+  cannotBeSold: 0
+  allowedClasses: -1
   consumeSound: {fileID: 8300000, guid: e31b555ee14e3e64da2528e3d14aa693, type: 3}
   consumeParticles: {fileID: 2834581591590912278, guid: 22145fbb2a131fc419f5907a9daff310, type: 3}
   particleOffset: {x: 0, y: 0, z: 0}
   healthAmount: 200
   manaAmount: 0
-  isQuestSpecific: 0

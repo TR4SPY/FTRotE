@@ -38,6 +38,7 @@ namespace AI_DDA.Assets.Scripts
             None, 
             OpenQuests,
             OpenShop,
+            OpenCrafting,
             OpenBlacksmith,
             ContinueDialog,
             Exclusive,

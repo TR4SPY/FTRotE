@@ -31,8 +31,11 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("A reference to the GUI Blacksmith.")]
         public GUIBlacksmith blacksmith;
 
+        [Tooltip("A reference to the GUI Craftman.")]
+        public GUIWindow craftmanWindow;
+
         [Tooltip("A reference to all GUI Windows in the game.")]
-        private List<GUIWindow> windows;
+        private List<GUIWindow> windows; 
 
         [Tooltip("Reference to the Game Menu.")]
         public GameObject gameMenu;
@@ -101,6 +104,16 @@ namespace PLAYERTWO.ARPGProject
             if (!merchantWindow) return null;
 
             return merchantWindow.GetComponent<GUIMerchant>();
+        }
+
+        /// <summary>
+        /// Returns the reference to the GUI Craftman.
+        /// </summary>
+        public GUICraftman GetCraftman()
+        {
+            if (!craftmanWindow) return null;
+
+            return craftmanWindow.GetComponent<GUICraftman>();
         }
 
         /// <summary>
