@@ -13,6 +13,25 @@ namespace PLAYERTWO.ARPGProject
             Legendary
         }
 
+        public enum ItemGroup
+        {
+            Swords = 0,
+            Axes = 1,
+            Bows = 2,
+            Staffs = 3,
+            Shields = 4,
+            Books = 5,
+            Helmets = 6,
+            Chests = 7,
+            Pants = 8,
+            Gloves = 9,
+            Boots = 10,
+            Wings = 11,
+            Jewels = 12,
+            Consumables = 13,
+            Misc = 14,
+        }
+
         [Header("Item Settings")]
         [Tooltip("The unique identifier for this Item.")]
         public int id;
@@ -61,6 +80,10 @@ namespace PLAYERTWO.ARPGProject
         [Header("Class Restriction (Bitmask)")]
         [Tooltip("Define, which classes can equip the item.")]
         public CharacterClassRestrictions allowedClasses = CharacterClassRestrictions.None;
+
+        [Tooltip("The group/category this item belongs to.")]
+        public ItemGroup group = ItemGroup.Misc;
+
 
         /// <summary>
         /// Instantiates the Item's prefab as child of a given Transform.

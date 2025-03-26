@@ -27,21 +27,27 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         public void AssignItemIDs()
         {
-            int currentID = 1;
+            Dictionary<Item.ItemGroup, int> groupCounters = new Dictionary<Item.ItemGroup, int>();
 
-            // Iteruj przez listę przedmiotów i przypisuj ID
             foreach (var item in items)
             {
-                if (item != null && item.id == 0) // Jeśli przedmiot nie ma jeszcze ID
-                {
-                    item.id = currentID++;
-                }
-                else if (item != null) // Jeśli przedmiot już ma ID, upewnij się, że jest ono unikalne
-                {
-                    currentID = Mathf.Max(currentID, item.id + 1);
-                }
+                if (item == null) continue;
+
+                var group = item.group;
+                int groupValue = (int)group;
+
+                if (!groupCounters.ContainsKey(group))
+                    groupCounters[group] = 0;
+
+                int index = groupCounters[group];
+
+                string rawID = groupValue.ToString() + index.ToString();
+                item.id = int.Parse(rawID);
+
+                groupCounters[group]++;
             }
-            //Debug.Log("Item IDs have been automatically assigned.");
+
+            Debug.Log("[GameData] ID nadane jako: G + index (np. 312 = Staffs, #12).");
         }
 
         private void OnValidate()
