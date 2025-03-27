@@ -16,6 +16,10 @@ namespace PLAYERTWO.ARPGProject
 
             [Tooltip("The amount of additional attributes on this Item.")]
             public int attributes;
+
+            [Tooltip("Upgrade level of the item (only for equippable items).")]
+            [Range(0, 25)]
+            public int itemLevel;
         }
 
         [System.Serializable]
@@ -64,11 +68,18 @@ namespace PLAYERTWO.ARPGProject
                 {
                     if (item.data == null) continue;
 
-                    if (item.attributes > 0)
-                        inventory.TryAddItem(new ItemInstance(item.data,
-                            true, item.attributes, item.attributes));
-                    else
-                        inventory.TryAddItem(new ItemInstance(item.data, false));
+                    var instance = (item.attributes > 0)
+                        ? new ItemInstance(item.data, true, item.attributes, item.attributes)
+                        : new ItemInstance(item.data, false);
+
+                    if (instance.IsEquippable())
+                    {
+                        int level = Mathf.Clamp(item.itemLevel, 0, instance.GetEquippable().maxUpgradeLevel);
+                        for (int i = 0; i < level; i++)
+                            instance.UpgradeLevel();
+                    }
+
+                    inventory.TryAddItem(instance);
                 }
             }
 

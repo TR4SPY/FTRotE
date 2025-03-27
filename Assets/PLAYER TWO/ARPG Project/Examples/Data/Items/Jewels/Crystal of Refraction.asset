@@ -28,4 +28,5 @@ MonoBehaviour:
   cannotBeSold: 0
   allowedClasses: -1
   group: 12
-  successRate: 0
+  successRate: 50
+  description: Enhances items from +10 to +25. More crystals needed at higher levels.

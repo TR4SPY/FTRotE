@@ -28,4 +28,5 @@ MonoBehaviour:
   cannotBeSold: 0
   allowedClasses: -1
   group: 12
-  successRate: 0
+  successRate: 100
+  description: 'Applies a random effect: upgrade, attribute, or skill. Unpredictable.'

@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace PLAYERTWO.ARPGProject
 {
     public partial class ItemInstance
@@ -10,12 +12,12 @@ namespace PLAYERTWO.ARPGProject
         /// <summary>
         /// Returns the additional damage points.
         /// </summary>
-        public virtual int GetAdditionalDamage() => UseAttributes() ? attributes.damage : 0;
+        public virtual int GetAdditionalDamage() => UseAttributes() ? (int)(attributes.damage * (1 + itemLevel * 0.05f)) : 0;
 
         /// <summary>
         /// Returns the additional attack speed points.
         /// </summary>
-        public virtual int GetAttackSpeed() => UseAttributes() ? attributes.attackSpeed : 0;
+        public virtual int GetAttackSpeed() => UseAttributes() ? Mathf.RoundToInt(attributes.attackSpeed * GetItemLevelMultiplier()) : 0;
 
         /// <summary>
         /// Returns the additional defense points.

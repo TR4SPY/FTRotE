@@ -70,6 +70,12 @@ namespace PLAYERTWO.ARPGProject
 
         [Tooltip("The instructions to show when inspecting a skill on mobile.")]
         public string skillMobileInstruction = "Double Tap to learn";
+        
+        [Tooltip("A reference to the Text component that represents the item's description.")]
+        public Text itemDescriptionText;
+
+        [Tooltip("The container for the item description text.")]
+        public GameObject itemDescriptionContainer;
 
         protected CanvasGroup m_group;
         protected ItemInstance m_item;
@@ -130,6 +136,7 @@ namespace PLAYERTWO.ARPGProject
             UpdateAttributes();
             UpdateAdditionalAttributes();
             UpdateSkillInstruction();
+            UpdateItemDescription(); 
 
             if (m_item.IsEquippable())
             {
@@ -161,27 +168,30 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void UpdateItemName()
         {
-            var itemData = m_item.data;
-            var name = itemData.name;
+            if (m_item == null || m_item.data == null)
+                return;
+
+            var name = m_item.GetName();
 
             string formattedName;
-            
-            if (itemData is ItemJewel)
+
+            if (m_item.data is ItemJewel)
             {
                 formattedName = StringUtils.StringWithColorAndStyle(name, GameColors.Gold, bold: true);
             }
-            else if (itemData.IsQuestSpecific)
+            else if (m_item.data.IsQuestSpecific)
             {
                 formattedName = StringUtils.StringWithColorAndStyle(name, GameColors.Gold, bold: true);
             }
             else
             {
-                var rarityColor = GameColors.GetItemRarityColor(itemData.rarity);
+                var rarityColor = GameColors.GetItemRarityColor(m_item.data.rarity);
                 formattedName = StringUtils.StringWithColorAndStyle(name, rarityColor, bold: isBold);
             }
 
             itemName.text = formattedName;
         }
+
         protected virtual void UpdateAttributes()
         {
             attributesContainer.SetActive(m_item.IsEquippable() || m_item.IsSkill());
@@ -191,6 +201,46 @@ namespace PLAYERTWO.ARPGProject
                 attributesText.text = m_item.Inspect(m_entity.stats, attentionColor, invalidColor, specialColor, questItemColor);
             }
         }
+
+        protected virtual void UpdateItemDescription()
+        {
+            string desc = null;
+
+            if (m_item.data is ItemJewel jewel)
+            {
+                bool hasDescription = !string.IsNullOrWhiteSpace(jewel.description);
+                bool hasSuccessRate = jewel.successRate > 0;
+
+                if (hasDescription)
+                {
+                    desc = jewel.description;
+
+                    if (hasSuccessRate)
+                    {
+                        Color color = GetSuccessRateColor(jewel.successRate);
+                        string coloredRate = StringUtils.StringWithColor($"{jewel.successRate}%", color);
+                        desc += $"\n\nSuccess rate: {coloredRate}";
+                    }
+                }
+            }
+
+            bool shouldShow = !string.IsNullOrWhiteSpace(desc);
+
+            if (itemDescriptionContainer != null)
+                itemDescriptionContainer.SetActive(shouldShow);
+
+            if (itemDescriptionText != null && shouldShow)
+                itemDescriptionText.text = desc;
+        }
+
+        private Color GetSuccessRateColor(int rate)
+        {
+            if (rate < 40) return GameColors.LightRed;
+            if (rate < 60) return GameColors.Orange;
+            if (rate < 80) return GameColors.Gold;
+            return GameColors.Green;
+        }
+
         protected virtual void UpdatePotionDescription()
         {
             potionDescriptionContainer.SetActive(m_item.IsPotion());

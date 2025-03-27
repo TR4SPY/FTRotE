@@ -30,6 +30,8 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         public ItemAttributes attributes;
 
+        public int itemLevel { get; private set; } = 0;
+
         protected int m_stack;
 
         /// <summary>
@@ -148,8 +150,27 @@ namespace PLAYERTWO.ARPGProject
 
         public string GetName()
         {
-            return data != null ? data.GetName() : "Unknown Item";
+            if (data == null) return "Unknown Item";
+            return (itemLevel > 0) ? $"{data.GetName()} +{itemLevel}" : data.GetName();
         }
+
+        public float GetItemLevelMultiplier()
+        {
+            return 1f + itemLevel * 0.05f;
+        }
+ 
+        public void UpgradeLevel()
+        {
+            if (!IsEquippable()) return;
+
+            var max = GetEquippable().maxUpgradeLevel;
+            if (itemLevel >= max) return;
+
+            itemLevel++;
+            onChanged?.Invoke();
+        }
+
+        public bool CanUpgrade() => IsEquippable() && itemLevel < GetEquippable().maxUpgradeLevel;
 
         /// <summary>
         /// Returns the required minimum level to equip this Item.
@@ -179,8 +200,11 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         public virtual int GetRequiredStrength()
         {
-            if (IsEquippable()) return GetEquippable().requiredStrength;
-            if (IsSkill()) return GetSkill().requiredStrength;
+            if (IsEquippable())
+                return Mathf.RoundToInt(GetEquippable().requiredStrength * GetItemLevelMultiplier());
+
+            if (IsSkill())
+                return GetSkill().requiredStrength;
 
             return 0;
         }
@@ -190,7 +214,11 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         public virtual int GetRequiredDexterity()
         {
-            if (IsEquippable()) return GetEquippable().requiredDexterity;
+            if (IsEquippable())
+            {
+                float multiplier = GetItemLevelMultiplier();
+                return Mathf.RoundToInt(GetEquippable().requiredDexterity * multiplier);
+            }
 
             return 0;
         }
@@ -262,13 +290,18 @@ namespace PLAYERTWO.ARPGProject
         {
             if (!IsWeapon() || IsBroken()) return MinMax.Zero;
 
-            var minDamage = GetWeapon().minDamage;
-            var maxDamage = GetWeapon().maxDamage;
+            float multiplier = GetItemLevelMultiplier();
+
+            var minDamage = Mathf.RoundToInt(GetWeapon().minDamage * multiplier);
+            var maxDamage = Mathf.RoundToInt(GetWeapon().maxDamage * multiplier);
 
             if (IsAboutToBreak())
-                return new((int)(minDamage / 2f), (int)(maxDamage / 2f));
+            {
+                minDamage = (int)(minDamage / 2f);
+                maxDamage = (int)(maxDamage / 2f);
+            }
 
-            return new(minDamage, maxDamage);
+            return new MinMax(minDamage, maxDamage);
         }
 
         /// <summary>
@@ -278,11 +311,16 @@ namespace PLAYERTWO.ARPGProject
         {
             if (!IsWeapon() || IsBroken()) return MinMax.Zero;
 
-            var minMagic = GetWeapon().minMagicDamage;
-            var maxMagic = GetWeapon().maxMagicDamage;
+            float multiplier = GetItemLevelMultiplier();
+
+            var minMagic = Mathf.RoundToInt(GetWeapon().minMagicDamage * multiplier);
+            var maxMagic = Mathf.RoundToInt(GetWeapon().maxMagicDamage * multiplier);
 
             if (IsAboutToBreak())
-                return new MinMax((int)(minMagic / 2f), (int)(maxMagic / 2f));
+            {
+                minMagic = (int)(minMagic / 2f);
+                maxMagic = (int)(maxMagic / 2f);
+            }
 
             return new MinMax(minMagic, maxMagic);
         }
@@ -290,7 +328,7 @@ namespace PLAYERTWO.ARPGProject
         public int GetAdditionalMagicDamage()
         {
             if (data is ItemWeapon weapon)
-                return weapon.minMagicDamage; // Pobiera magiczne obrażenia z broni
+                return weapon.minMagicDamage;
 
             return 0;
         }
@@ -318,14 +356,17 @@ namespace PLAYERTWO.ARPGProject
         {
             if (IsBroken()) return 0;
 
-            var defense = 0;
+            float multiplier = GetItemLevelMultiplier();
+            int baseDefense = 0;
 
             if (IsArmor())
-                defense = GetArmor().defense;
+                baseDefense = GetArmor().defense;
             else if (IsShield())
-                defense = GetShield().defense;
+                baseDefense = GetShield().defense;
 
-            return IsAboutToBreak() ? (int)(defense / 2f) : defense;
+            int scaledDefense = Mathf.RoundToInt(baseDefense * multiplier);
+
+            return IsAboutToBreak() ? (int)(scaledDefense / 2f) : scaledDefense;
         }
 
         /// <summary>
@@ -427,38 +468,44 @@ namespace PLAYERTWO.ARPGProject
 
             if (IsArmor())
             {
-                text += $"Defense: {GetArmor().defense}";
+                int defense = GetDefense();
+                text += $"Defense: {defense}";
 
-                if (GetArmor().magicResistance > 0)
-                    text += $"\nMagic Resistance: {GetArmor().magicResistance}";
+                int magicRes = GetArmor().magicResistance;
+                if (magicRes > 0)
+                    text += $"\nMagic Resistance: {magicRes}";
             }
             else if (IsShield())
             {
-                text += $"Defense: {GetShield().defense}";
-                text += $"\nChance To Block: {GetShield().chanceToBlock}%";
+                int defense = GetDefense();
+                text += $"Defense: {defense}";
 
-                if (GetShield().magicResistance > 0)
-                    text += $"\nMagic Resistance: {GetShield().magicResistance}";
+                int block = GetShield().chanceToBlock;
+                text += $"\nChance To Block: {block}%";
+
+                int magicRes = GetShield().magicResistance;
+                if (magicRes > 0)
+                    text += $"\nMagic Resistance: {magicRes}";
             }
             else if (IsWeapon())
             {
                 var blade = GetBlade();
                 if (blade != null)
                 {
-                    var weaponType = blade.IsTwoHanded() ? "Two-Handed Weapon\n" : "One-Handed Weapon\n";
-                    text += $"{StringUtils.StringWithColor(weaponType, special)}";
-                }
-                else
-                {
-                    text += $"{StringUtils.StringWithColor("Two-Handed Weapon\n", special)}";
+                    string weaponType = blade.IsTwoHanded() ? "Two-Handed Weapon\n" : "One-Handed Weapon\n";
+                    text += StringUtils.StringWithColor(weaponType, special);
                 }
 
-                text += $"Damage: {GetWeapon().minDamage} ~ {GetWeapon().maxDamage}";
-                text += $"\nAttack Speed: {GetWeapon().attackSpeed}";
+                var dmg = GetDamage();
+                text += $"Damage: {dmg.min} ~ {dmg.max}";
 
-                if (GetWeapon().minMagicDamage > 0 || GetWeapon().maxMagicDamage > 0)
-                    text += $"\nMagic Damage: {GetWeapon().minMagicDamage} ~ {GetWeapon().maxMagicDamage}";
-            }  
+                int atkSpeed = GetWeapon().attackSpeed;
+                text += $"\nAttack Speed: {atkSpeed}";
+
+                var magicDmg = GetMagicDamage();
+                if (magicDmg.min > 0 || magicDmg.max > 0)
+                    text += $"\nMagic Damage: {magicDmg.min} ~ {magicDmg.max}";
+            }
 
             if (IsEquippable())
             {

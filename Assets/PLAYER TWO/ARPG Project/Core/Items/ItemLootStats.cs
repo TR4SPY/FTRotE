@@ -33,6 +33,15 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The maximum amount of attributes.")]
         public int maxAttributes;
 
+        [Header("Upgrade Level Settings")]
+        [Tooltip("Minimum upgrade level for dropped equippable items.")]
+        [Range(0, 25)]
+        public int minItemLevel = 0;
+
+        [Tooltip("Maximum upgrade level for dropped equippable items.")]
+        [Range(0, 25)]
+        public int maxItemLevel = 5;
+
         [Space(10)]
         [Tooltip("A list of items that can be looted.")]
         public Item[] items;

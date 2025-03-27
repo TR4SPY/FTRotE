@@ -66,6 +66,17 @@ namespace PLAYERTWO.ARPGProject
                 stats.minAttributes,
                 stats.maxAttributes
             );
+
+            if (item.IsEquippable())
+            {
+                int lvl = Random.Range(stats.minItemLevel, stats.maxItemLevel + 1);
+                int maxLvl = item.GetEquippable().maxUpgradeLevel;
+
+                lvl = Mathf.Clamp(lvl, 0, maxLvl);
+                for (int i = 0; i < lvl; i++)
+                    item.UpgradeLevel();
+            }
+
             var collectible = Instantiate(m_itemPrefab, position, Quaternion.identity);
             collectible.SetItem(item);
         }
