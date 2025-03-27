@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c03f6f012f430fd47972013eeb810656, type: 3}
   m_Name: Zoombie Army Book
   m_EditorClassIdentifier: 
-  id: 29
+  id: 58
   prefab: {fileID: 919132149155446097, guid: 8e05b85b3ef84724284bff019d53f2bb, type: 3}
   price: 6000
   rarity: 0
@@ -27,6 +27,7 @@ MonoBehaviour:
   cannotBeDropped: 0
   cannotBeSold: 0
   allowedClasses: 56
+  group: 5
   skill: {fileID: 11400000, guid: e9d58a59bb9acca4b8981cffd3fe1922, type: 2}
   requiredLevel: 0
   requiredStrength: 0

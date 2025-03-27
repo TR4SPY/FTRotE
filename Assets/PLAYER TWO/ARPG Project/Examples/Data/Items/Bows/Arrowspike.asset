@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 695a82ec34e5ed749b95ae9715fb3682, type: 3}
   m_Name: Arrowspike
   m_EditorClassIdentifier: 
-  id: 14
+  id: 20
   prefab: {fileID: 919132149155446097, guid: 62ab24dded3a2c748afdf40a398748e2, type: 3}
   price: 200
   rarity: 0
@@ -23,11 +23,15 @@ MonoBehaviour:
   columns: 1
   canStack: 0
   stackCapacity: 0
+  isQuestSpecific: 0
+  cannotBeDropped: 0
+  cannotBeSold: 0
+  allowedClasses: -1
+  group: 2
   maxDurability: 10
   requiredLevel: 1
   requiredStrength: 15
   requiredDexterity: 10
-  allowedClasses: -1
   minDamage: 2
   maxDamage: 12
   minMagicDamage: 0
@@ -44,4 +48,3 @@ MonoBehaviour:
   magicResistance: 2
   handPosition: {x: 0, y: 0, z: 0}
   handRotation: {x: 90, y: 90, z: 90}
-  isQuestSpecific: 0

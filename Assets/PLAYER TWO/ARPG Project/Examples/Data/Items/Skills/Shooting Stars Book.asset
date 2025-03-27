@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c03f6f012f430fd47972013eeb810656, type: 3}
   m_Name: Shooting Stars Book
   m_EditorClassIdentifier: 
-  id: 47
+  id: 512
   prefab: {fileID: 919132149155446097, guid: 8e05b85b3ef84724284bff019d53f2bb, type: 3}
   price: 4000
   rarity: 0
@@ -27,6 +27,7 @@ MonoBehaviour:
   cannotBeDropped: 0
   cannotBeSold: 0
   allowedClasses: 56
+  group: 5
   skill: {fileID: 11400000, guid: 21f48639c9631939e9f274f156ac53b8, type: 2}
   requiredLevel: 7
   requiredStrength: 12

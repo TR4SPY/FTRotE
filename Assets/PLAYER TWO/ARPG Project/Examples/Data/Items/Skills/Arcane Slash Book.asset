@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c03f6f012f430fd47972013eeb810656, type: 3}
   m_Name: Arcane Slash Book
   m_EditorClassIdentifier: 
-  id: 23
+  id: 56
   prefab: {fileID: 919132149155446097, guid: 8e05b85b3ef84724284bff019d53f2bb, type: 3}
   price: 500
   rarity: 0
@@ -27,6 +27,7 @@ MonoBehaviour:
   cannotBeDropped: 0
   cannotBeSold: 0
   allowedClasses: 7
+  group: 5
   skill: {fileID: 11400000, guid: 7d6a3fca69013b5449bdee3714e114c0, type: 2}
   requiredLevel: 0
   requiredStrength: 20

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcbc84c22772fe449a1319589dfd46cd, type: 3}
   m_Name: Azure Sword
   m_EditorClassIdentifier: 
-  id: 35
+  id: 5
   prefab: {fileID: 4406457387418226587, guid: 7a38b7ffac6aa6138bd0a6e4ea68bbfd, type: 3}
   price: 4500
   rarity: 0
@@ -23,11 +23,15 @@ MonoBehaviour:
   columns: 1
   canStack: 0
   stackCapacity: 0
+  isQuestSpecific: 0
+  cannotBeDropped: 0
+  cannotBeSold: 0
+  allowedClasses: 6
+  group: 0
   maxDurability: 47
   requiredLevel: 14
   requiredStrength: 55
   requiredDexterity: 30
-  allowedClasses: 6
   minDamage: 17
   maxDamage: 26
   minMagicDamage: 0
@@ -46,4 +50,3 @@ MonoBehaviour:
   leftHandPosition: {x: 0, y: 0, z: 0}
   leftHandRotation: {x: 90, y: 90, z: 90}
   magicResistance: 0
-  isQuestSpecific: 0

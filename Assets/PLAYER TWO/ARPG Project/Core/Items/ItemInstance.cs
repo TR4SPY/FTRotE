@@ -490,7 +490,7 @@ namespace PLAYERTWO.ARPGProject
 
             if (data != null)
             {
-                if (data.isQuestSpecific)
+                if (data.isQuestSpecific && data is not ItemJewel)
                 {
                     text += $"\n{StringUtils.StringWithColorAndStyle("\nThis is a Quest Item", quest, bold: true)}";
                 }

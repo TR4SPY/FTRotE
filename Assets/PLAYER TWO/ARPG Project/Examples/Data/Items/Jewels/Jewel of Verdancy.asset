@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8906c6c16a4c6fb65bbf049256ce3dd2, type: 3}
+  m_Name: Jewel of Verdancy
+  m_EditorClassIdentifier: 
+  id: 127
+  prefab: {fileID: 1553534218236778084, guid: de5e91113cbe53c7b9aa7aea6732b8a7, type: 3}
+  price: 10000000
+  rarity: 0
+  dropPosition: {x: 0, y: 0, z: 0}
+  dropRotation: {x: -90, y: 0, z: 45}
+  image: {fileID: -1420645047, guid: 710b421732f34109c9a3bf1149b786b1, type: 3}
+  rows: 1
+  columns: 1
+  canStack: 0
+  stackCapacity: 0
+  isQuestSpecific: 0
+  cannotBeDropped: 0
+  cannotBeSold: 0
+  allowedClasses: -1
+  group: 12
+  successRate: 0

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcbc84c22772fe449a1319589dfd46cd, type: 3}
   m_Name: Obsidian Sword
   m_EditorClassIdentifier: 
-  id: 34
+  id: 4
   prefab: {fileID: 674254753936567142, guid: 8a482289538476a81bb62210758dd22a, type: 3}
   price: 3500
   rarity: 0
@@ -27,6 +27,7 @@ MonoBehaviour:
   cannotBeDropped: 0
   cannotBeSold: 0
   allowedClasses: 7
+  group: 0
   maxDurability: 45
   requiredLevel: 12
   requiredStrength: 40

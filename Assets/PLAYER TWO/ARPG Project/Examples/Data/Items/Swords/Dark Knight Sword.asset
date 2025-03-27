@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcbc84c22772fe449a1319589dfd46cd, type: 3}
   m_Name: Dark Knight Sword
   m_EditorClassIdentifier: 
-  id: 38
+  id: 8
   prefab: {fileID: 1793545344784296552, guid: bae60c47b8c745d278b257dccbd2d58f, type: 3}
   price: 5000
   rarity: 2
@@ -27,6 +27,7 @@ MonoBehaviour:
   cannotBeDropped: 1
   cannotBeSold: 1
   allowedClasses: 0
+  group: 0
   maxDurability: 60
   requiredLevel: 20
   requiredStrength: 50

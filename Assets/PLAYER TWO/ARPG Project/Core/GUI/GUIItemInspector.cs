@@ -165,8 +165,12 @@ namespace PLAYERTWO.ARPGProject
             var name = itemData.name;
 
             string formattedName;
-
-            if (itemData.IsQuestSpecific)
+            
+            if (itemData is ItemJewel)
+            {
+                formattedName = StringUtils.StringWithColorAndStyle(name, GameColors.Gold, bold: true);
+            }
+            else if (itemData.IsQuestSpecific)
             {
                 formattedName = StringUtils.StringWithColorAndStyle(name, GameColors.Gold, bold: true);
             }

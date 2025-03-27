@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb802ff9f4ee12e4fa0f698f11c51eed, type: 3}
   m_Name: Plate Armor Helm
   m_EditorClassIdentifier: 
-  id: 9
+  id: 61
   prefab: {fileID: 919132149155446097, guid: ab89f25fbf8e6ea40a9811240bbf2d27, type: 3}
   price: 1000
   rarity: 0
@@ -23,11 +23,15 @@ MonoBehaviour:
   columns: 2
   canStack: 0
   stackCapacity: 0
+  isQuestSpecific: 0
+  cannotBeDropped: 0
+  cannotBeSold: 0
+  allowedClasses: -1
+  group: 6
   maxDurability: 14
   requiredLevel: 1
   requiredStrength: 15
   requiredDexterity: 10
-  allowedClasses: -1
   slot: 2
   defense: 10
   magicResistance: 5
@@ -36,4 +40,3 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 6fa760af0e09f8440a081a41f17867fe, type: 2}
   - {fileID: 2100000, guid: e9f652621c128bb4db70a9005fcc7246, type: 2}
   pieces: []
-  isQuestSpecific: 0

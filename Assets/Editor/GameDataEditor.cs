@@ -20,36 +20,16 @@ public class GameDataEditor : Editor
         if (GUILayout.Button("🔄 Synchronizuj ID z grupami"))
         {
             data.AssignItemIDs();
-            data.items = data.items
-                .Where(i => i != null)
-                .OrderBy(i => (int)i.group)
-                .ThenBy(i => i.id)
-                .ToList();
+
+            foreach (var item in data.items)
+            {
+                if (item != null)
+                    EditorUtility.SetDirty(item);
+            }
 
             EditorUtility.SetDirty(data);
-        }
-
-        if (GUILayout.Button("📤 Zrób backup (eksport do JSON)"))
-        {
-            string path = EditorUtility.SaveFilePanel("Zapisz backup GameData", "Assets", "GameDataBackup", "json");
-            if (!string.IsNullOrEmpty(path))
-            {
-                var backupData = JsonUtility.ToJson(data, true);
-                System.IO.File.WriteAllText(path, backupData);
-                Debug.Log($"✅ GameData zapisany do: {path}");
-            }
-        }
-
-        if (GUILayout.Button("📥 Wczytaj backup (import z JSON)"))
-        {
-            string path = EditorUtility.OpenFilePanel("Wczytaj backup GameData", "Assets", "json");
-            if (!string.IsNullOrEmpty(path))
-            {
-                string json = System.IO.File.ReadAllText(path);
-                JsonUtility.FromJsonOverwrite(json, data);
-                EditorUtility.SetDirty(data);
-                Debug.Log($"✅ GameData wczytany z: {path}");
-            }
+            AssetDatabase.SaveAssets();
+            Debug.Log("✅ Synchronizacja zakończona i zapisano zmiany.");
         }
 
         showItems = EditorGUILayout.Foldout(showItems, "🧾 Rozwiń listę przedmiotów");

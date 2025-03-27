@@ -27,39 +27,44 @@ namespace PLAYERTWO.ARPGProject
         /// Przypisz unikalne identyfikatory do każdego przedmiotu w liście.
         /// </summary>
         public void AssignItemIDs()
-        {
-            Dictionary<Item.ItemGroup, int> groupCounters = new();
+{
+    // Grupa => index do przypisania
+    Dictionary<Item.ItemGroup, int> groupCounters = new();
 
-            foreach (var item in items.Where(i => i != null))
-            {
-                var group = item.group;
-                int groupValue = (int)group;
+    // Wyciągamy tylko te przedmioty, które mają ID = 0
+    var itemsToFix = items
+        .Where(i => i != null && i.id == 0)
+        .OrderBy(i => (int)i.group) // tylko dla spójności
+        .ToList();
 
-                if (!groupCounters.ContainsKey(group))
-                    groupCounters[group] = 0;
+    foreach (var item in itemsToFix)
+    {
+        var group = item.group;
+        int groupValue = (int)group;
 
-                int index = groupCounters[group];
-                string rawID = groupValue.ToString() + index.ToString();
-                int expectedID = int.Parse(rawID);
+        if (!groupCounters.ContainsKey(group))
+            groupCounters[group] = GetMaxIndexInGroup(group) + 1;
 
-                bool isInCorrectGroup = item.id / 100 == groupValue;
+        int currentIndex = groupCounters[group];
+        string rawID = groupValue.ToString() + currentIndex.ToString();
+        int newID = int.Parse(rawID);
 
-                if (item.id == 0)
-                {
-                    item.id = expectedID;
-                }
-                else
-                {
-                    int idGroup = int.Parse(item.id.ToString()[0].ToString());
-                    if (idGroup != groupValue)
-                    {
-                        item.id = expectedID;
-                    }
-                }
+        item.id = newID;
+        Debug.Log($"🆕 Ustawiono ID {newID} dla: {item.name}");
 
-                groupCounters[group]++;
-            }
-        }
+        groupCounters[group]++;
+    }
+}
+private int GetMaxIndexInGroup(Item.ItemGroup group)
+{
+    return items
+        .Where(i => i != null && i.group == group && i.id != 0)
+        .Select(i => int.Parse(i.id.ToString().Substring(1))) // wyciągnij indeks
+        .DefaultIfEmpty(-1)
+        .Max();
+}
+
+
 
         private void OnValidate()
         {

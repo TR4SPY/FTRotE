@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb802ff9f4ee12e4fa0f698f11c51eed, type: 3}
   m_Name: Plate Armor Boots
   m_EditorClassIdentifier: 
-  id: 6
+  id: 101
   prefab: {fileID: 919132149155446097, guid: 3d4b959ca9c139c4cb2f7712e6b46632, type: 3}
   price: 1000
   rarity: 0
@@ -23,11 +23,15 @@ MonoBehaviour:
   columns: 2
   canStack: 0
   stackCapacity: 0
+  isQuestSpecific: 0
+  cannotBeDropped: 0
+  cannotBeSold: 0
+  allowedClasses: -1
+  group: 10
   maxDurability: 10
   requiredLevel: 1
   requiredStrength: 15
   requiredDexterity: 10
-  allowedClasses: -1
   slot: 6
   defense: 8
   magicResistance: 4
@@ -35,4 +39,3 @@ MonoBehaviour:
   materials:
   - {fileID: 2100000, guid: 6fa760af0e09f8440a081a41f17867fe, type: 2}
   pieces: []
-  isQuestSpecific: 0

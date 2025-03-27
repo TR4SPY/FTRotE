@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c03f6f012f430fd47972013eeb810656, type: 3}
   m_Name: Dark Magic Book
   m_EditorClassIdentifier: 
-  id: 43
+  id: 59
   prefab: {fileID: 919132149155446097, guid: 8e05b85b3ef84724284bff019d53f2bb, type: 3}
   price: 10000
   rarity: 0
@@ -27,6 +27,7 @@ MonoBehaviour:
   cannotBeDropped: 0
   cannotBeSold: 0
   allowedClasses: 48
+  group: 5
   skill: {fileID: 11400000, guid: 8d9c60c67dddcde4192cd503b184ba8e, type: 2}
   requiredLevel: 15
   requiredStrength: 35

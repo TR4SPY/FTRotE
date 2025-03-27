@@ -13,30 +13,17 @@ MonoBehaviour:
   m_Name: Kaelen - Craftman
   m_EditorClassIdentifier: 
   pages:
-  - dialogText: "Ah, a new face in Ashenvale! \nWelcome, welcome! The name\u2019s
-      Osric Thornveil, purveyor of the finest goods this side of the Vale. If it
-      can be bought, sold, or found\u2026 chances are, I have it\u2014or I know someone
-      who does.\nWhatever you need\u2014supplies, weapons, potions, or\u2026 shall
-      we say, more delicate acquisitions\u2014I can procure it for the right price.\n\nSo,
-      tell me\u2026 what are you looking for?"
+  - dialogText: Test
     specialCondition: 
     options:
-    - optionText: Do you have a quest for me?
-      isForSocializer: 0
-      isForAchiever: 0
-      isForKiller: 0
-      isForExplorer: 1
-      action: 6
-      nextPageIndex: -1
-      specialConditionToSet: 0
-    - optionText: Let me see your goods.
+    - optionText: PRALKA
       isForSocializer: 0
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 0
       action: 3
-      nextPageIndex: -1
+      nextPageIndex: 0
       specialConditionToSet: 0
-    showOnce: 1
+    showOnce: 0
     isSpecial: 0
   dialogTitle: Kaelen - Craftman

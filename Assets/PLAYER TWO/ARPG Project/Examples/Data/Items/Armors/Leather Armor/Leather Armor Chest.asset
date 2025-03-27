@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb802ff9f4ee12e4fa0f698f11c51eed, type: 3}
   m_Name: Leather Armor Chest
   m_EditorClassIdentifier: 
-  id: 2
+  id: 70
   prefab: {fileID: 919132149155446097, guid: 3c903adbbc8d3d44792645b00602107b, type: 3}
   price: 500
   rarity: 0
@@ -23,11 +23,15 @@ MonoBehaviour:
   columns: 2
   canStack: 0
   stackCapacity: 0
+  isQuestSpecific: 0
+  cannotBeDropped: 0
+  cannotBeSold: 0
+  allowedClasses: -1
+  group: 7
   maxDurability: 10
   requiredLevel: 1
   requiredStrength: 15
   requiredDexterity: 10
-  allowedClasses: -1
   slot: 3
   defense: 8
   magicResistance: 4
@@ -35,4 +39,3 @@ MonoBehaviour:
   materials:
   - {fileID: 2100000, guid: ada2fc6797d426a4693a8223c584051d, type: 2}
   pieces: []
-  isQuestSpecific: 0
