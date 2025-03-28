@@ -17,10 +17,11 @@ MonoBehaviour:
   randomPosition: 1
   randomPositionMaxRadius: 3
   randomPositionMinRadius: 1.5
-  groundOffset: 0.1
   generateAttributes: 1
   minAttributes: 2
   maxAttributes: 4
+  minItemLevel: 0
+  maxItemLevel: 9
   items:
   - {fileID: 11400000, guid: a9d3393a671f7c441a74af4a81c00896, type: 2}
   - {fileID: 11400000, guid: 7de6cdd817a59a0418b75bf32982c2a3, type: 2}
@@ -35,4 +36,3 @@ MonoBehaviour:
   moneyChance: 0.6
   minMoneyAmount: 600
   maxMoneyAmount: 1200
-  multiplyByEntityLevel: 0

@@ -20,6 +20,8 @@ MonoBehaviour:
   generateAttributes: 1
   minAttributes: 0
   maxAttributes: 2
+  minItemLevel: 0
+  maxItemLevel: 0
   items:
   - {fileID: 11400000, guid: 287c86e08b8b87b21b495785dc069b35, type: 2}
   moneyChance: 0.1

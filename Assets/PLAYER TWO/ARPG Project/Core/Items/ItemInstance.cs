@@ -556,6 +556,15 @@ namespace PLAYERTWO.ARPGProject
             return text;
         }
 
+        public void SetItemLevel(int level)
+        {
+            if (IsEquippable())
+            {
+                int max = GetEquippable().maxUpgradeLevel;
+                itemLevel = Mathf.Clamp(level, 0, max);
+            }
+        }
+
         /// <summary>
         /// Returns a new Item Instance from the Item Serializer.
         /// </summary>
@@ -567,7 +576,11 @@ namespace PLAYERTWO.ARPGProject
             var item = GameDatabase.instance.FindElementById<Item>(serializer.itemId);
             var attributes = ItemAttributes.CreateFromSerializer(serializer.attributes);
 
-            return new ItemInstance(item, attributes, serializer.durability, serializer.stack);
+            var instance = new ItemInstance(item, attributes, serializer.durability, serializer.stack);
+
+            instance.SetItemLevel(serializer.itemLevel);
+
+            return instance;
         }
     }
 }

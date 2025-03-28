@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -54,8 +55,12 @@ namespace PLAYERTWO.ARPGProject
                 var data = GameDatabase.instance.FindElementById<Item>(item.item.itemId);
                 var attributes = CharacterItemAttributes.CreateFromSerializer(item.item.attributes);
                 var cItem = new CharacterItem(data, attributes, item.item.durability, item.item.stack);
-                var inventoryItem = new CharacterInventoryItem(cItem, item.row, item.column);
+                cItem.itemLevel = item.item.itemLevel;
 
+                Debug.Log($"[INVENTORY LOAD] {data.name} → itemLevel: {cItem.itemLevel}");
+
+                var inventoryItem = new CharacterInventoryItem(cItem, item.row, item.column);
+                
                 items.Add(inventoryItem);
             }
 

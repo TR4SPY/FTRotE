@@ -11,6 +11,9 @@ namespace PLAYERTWO.ARPGProject
 
         [HideInInspector]
         public int durability;
+        [HideInInspector]
+        public int itemLevel = 0;
+
 
         public CharacterItem(Item data,
             CharacterItemAttributes attributes,
@@ -44,14 +47,20 @@ namespace PLAYERTWO.ARPGProject
                 return new ItemInstance(data, a, durability, stack);
             }
 
-            return new ItemInstance(data, a, durability, stack);
+            var instance = new ItemInstance(data, a, durability, stack);
+            instance.SetItemLevel(itemLevel);
+            
+            return instance;
         }
 
         public static CharacterItem CreateFromSerializer(ItemSerializer serializer)
         {
             var data = GameDatabase.instance.FindElementById<Item>(serializer.itemId);
             var attributes = CharacterItemAttributes.CreateFromSerializer(serializer.attributes);
-            return new CharacterItem(data, attributes, serializer.durability, serializer.stack);
+            var characterItem = new CharacterItem(data, attributes, serializer.durability, serializer.stack);
+            characterItem.itemLevel = serializer.itemLevel;
+
+            return characterItem;
         }
     }
 }

@@ -34,7 +34,15 @@ namespace PLAYERTWO.ARPGProject
 
             m_target = collectible;
             itemName.color = color;
-            itemName.text = collectible.GetName();
+
+            if (collectible is CollectibleItem collectibleItem && collectibleItem.item != null)
+            {
+                itemName.text = collectibleItem.item.GetName(); // np. "Sword of Destiny +25"
+            }
+            else
+            {
+                itemName.text = collectible.GetName(); // fallback (jeśli np. gold, klucz itd.)
+            }
         }
 
         protected virtual void Start()

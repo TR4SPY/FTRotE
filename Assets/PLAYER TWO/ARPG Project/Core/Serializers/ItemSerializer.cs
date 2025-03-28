@@ -23,6 +23,7 @@ namespace PLAYERTWO.ARPGProject
         public int itemId = -1;
         public int durability;
         public int stack;
+        public int itemLevel = 0;
         public Attributes attributes;
 
         public ItemSerializer() { }
@@ -32,6 +33,7 @@ namespace PLAYERTWO.ARPGProject
             this.itemId = GameDatabase.instance.GetElementId<Item>(item.data);
             this.durability = item.durability;
             this.stack = item.stack;
+            this.itemLevel = item.itemLevel;
             this.attributes = new Attributes();
 
             if (item.ContainAttributes())

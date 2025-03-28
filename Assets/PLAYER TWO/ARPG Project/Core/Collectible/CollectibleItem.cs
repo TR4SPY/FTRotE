@@ -55,7 +55,7 @@ namespace PLAYERTWO.ARPGProject
             }
         }
 
-        public override string GetName() => item.data.name;
+        public override string GetName() => item?.GetName() ?? "Unknown Item";
 
         protected override bool TryCollect(Inventory inventory)
         {

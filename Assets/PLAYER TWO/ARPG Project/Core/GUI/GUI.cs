@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.AI;
 
@@ -146,7 +147,7 @@ namespace PLAYERTWO.ARPGProject
             if (item == null || item.data == null)
                 return;
 
-            if (item.data.cannotBeDropped)
+            if (item.data.cannotBeDropped && !IsDroppingIntoInventory())
             {
                 m_audio.PlayDeniedSound();
                 selected.TryMoveToLastPosition();
@@ -179,6 +180,12 @@ namespace PLAYERTWO.ARPGProject
         #endif
             }
         }
+
+        private bool IsDroppingIntoInventory()
+        {
+            return EventSystem.current.IsPointerOverGameObject();
+        }
+
 
         private Vector3 FindNearestNavMeshPosition(Vector3 center, float searchRadius)
         {

@@ -20,6 +20,8 @@ MonoBehaviour:
   generateAttributes: 1
   minAttributes: 0
   maxAttributes: 3
+  minItemLevel: 0
+  maxItemLevel: 3
   items:
   - {fileID: 11400000, guid: a9d3393a671f7c441a74af4a81c00896, type: 2}
   - {fileID: 11400000, guid: c9657b84acffdd6449a57c1dc5833fab, type: 2}
