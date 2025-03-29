@@ -76,7 +76,7 @@ namespace AI_DDA.Assets.Scripts
 
             float rawPrediction = outputTensor[0];  
 
-            float adjustedPrediction = Mathf.Clamp(rawPrediction * 5 + 5, 1.0f, 10.0f);
+            float adjustedPrediction = Mathf.Clamp(rawPrediction * 5 + 5, 3.0f, 10.0f);
 
             // Debug.Log($"[AI-DDA] MLP raw prediction: {rawPrediction}, adjusted: {adjustedPrediction}"); //  DEBUG - MLP raw & adjusted prediction values
 

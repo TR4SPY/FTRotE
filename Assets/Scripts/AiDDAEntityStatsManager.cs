@@ -73,10 +73,10 @@ namespace AI_DDA.Assets.Scripts
             float vitalityMultiplier = GetMultiplier("Vitality");
             float energyMultiplier = GetMultiplier("Energy");
 
-            strength = Mathf.Max(1, (int)(strength * strengthMultiplier));
-            dexterity = Mathf.Max(1, (int)(dexterity * dexterityMultiplier));
-            vitality = Mathf.Max(1, (int)(vitality * vitalityMultiplier));
-            energy = Mathf.Max(1, (int)(energy * energyMultiplier));
+            strength = Mathf.Max(1, Mathf.RoundToInt(baseStrength * strengthMultiplier));
+            dexterity = Mathf.Max(1, Mathf.RoundToInt(baseDexterity * dexterityMultiplier));
+            vitality = Mathf.Max(1, Mathf.RoundToInt(baseVitality * vitalityMultiplier));
+            energy = Mathf.Max(1, Mathf.RoundToInt(baseEnergy * energyMultiplier));
 
             Recalculate();
         }

@@ -2,16 +2,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using AI_DDA.Assets.Scripts;
+using System;
 
 namespace PLAYERTWO.ARPGProject
 {
     [AddComponentMenu("PLAYER TWO/ARPG Project/Entity/Entity Stats Manager")]
     public partial class EntityStatsManager : MonoBehaviour
     {
-        private int initialStrength;
-        private int initialDexterity;
-        private int initialVitality;
-        private int initialEnergy;
+        [HideInInspector] public int baseStrength;
+        [HideInInspector] public int baseDexterity;
+        [HideInInspector] public int baseVitality;
+        [HideInInspector] public int baseEnergy;
+
+        public bool wasBoosted = false;
 
         public UnityEvent onLevelUp;
         public UnityEvent onRecalculate;
@@ -25,7 +28,7 @@ namespace PLAYERTWO.ARPGProject
 
         [Tooltip("The initial strength of this Entity.")]
         public int strength = 20;
-
+        
         [Tooltip("The initial dexterity of this Entity.")]
         public int dexterity = 15;
 
@@ -163,6 +166,12 @@ namespace PLAYERTWO.ARPGProject
         /// Returns the current stun recover speed.
         /// </summary>
         public int stunSpeed { get; protected set; }
+        
+        protected virtual void Awake()
+        {
+            Initialize();
+        }
+
 
         /// <summary>
         /// Get or set the experience points.
@@ -241,26 +250,22 @@ namespace PLAYERTWO.ARPGProject
 
             // Debug.Log($"Initializing stats for {gameObject.name}");
 
-            // Sprawdzenie, czy DifficultyManager.Instance jest dostępny
             if (DifficultyManager.Instance == null)
             {
                 Debug.LogError("DifficultyManager.Instance is null! Skipping stats adjustment.");
                 return;
             }
 
-            // Zapis pierwotnych wartości
-            initialStrength = strength;
-            initialDexterity = dexterity;
-            initialVitality = vitality;
-            initialEnergy = energy;
+            if (baseStrength <= 0)  baseStrength = strength;
+            if (baseDexterity <= 0) baseDexterity = dexterity;
+            if (baseVitality <= 0)  baseVitality  = vitality;
+            if (baseEnergy <= 0)    baseEnergy    = energy;
 
-            // Inicjalizacja przedmiotów i umiejętności
             InitializeItems();
             InitializeSkills();
             Recalculate();
             Revitalize();
 
-            // Zaznaczenie jako zainicjowane
             initialized = true;
 
             /*
@@ -269,6 +274,8 @@ namespace PLAYERTWO.ARPGProject
                 ApplyDifficultyModifiers();
             }
             */
+
+            // ValidateStatsDebug();    -   Validate function for enemy stats (bug already fixed)
         }
 
         protected virtual void InitializeItems()
@@ -302,6 +309,17 @@ namespace PLAYERTWO.ARPGProject
             this.availablePoints = availablePoints;
             this.experience = experience;
             Recalculate();
+        }
+
+        private int _lastKnownStrength;
+
+        private void Update()
+        {
+            if (strength != _lastKnownStrength)
+            {
+                Debug.LogWarning($"[EntityStatsManager - Update] {name} ID={GetInstanceID()} changed from {_lastKnownStrength} to {strength}");
+                _lastKnownStrength = strength;
+            }
         }
 
         /// <summary>
@@ -353,7 +371,7 @@ namespace PLAYERTWO.ARPGProject
             int minDamage = GetSkillDamage(skill, out bool minCritical, true);
             int maxDamage = GetSkillDamage(skill, out bool maxCritical, false);
 
-            int finalDamage = Random.Range(minDamage, maxDamage + 1);
+            int finalDamage = UnityEngine.Random.Range(minDamage, maxDamage + 1);
 
             critical = minCritical || maxCritical;
             
@@ -382,14 +400,14 @@ namespace PLAYERTWO.ARPGProject
         /// Returns the final normal damage points.
         /// </summary>
         protected virtual int GetFinalDamage() =>
-            (int)(Random.Range(minDamage, maxDamage) * m_additionalAttributes.damageMultiplier);
+            (int)(UnityEngine.Random.Range(minDamage, maxDamage) * m_additionalAttributes.damageMultiplier);
 
         /// <summary>
         /// Returns the final magical damage points.
         /// </summary>
         protected virtual int GetFinalMagicDamage() =>
             (int)(
-                Random.Range(minMagicDamage, maxMagicDamage)
+                UnityEngine.Random.Range(minMagicDamage, maxMagicDamage)
                 * m_additionalAttributes.damageMultiplier
             );
 
@@ -440,7 +458,7 @@ namespace PLAYERTWO.ARPGProject
                     break;
             }
 
-            isCritical = Random.value < entity.stats.criticalChance;
+            isCritical = UnityEngine.Random.value < entity.stats.criticalChance;
             if (isCritical)
             {
                 damage = Mathf.RoundToInt(damage * Game.instance.criticalMultiplier);
@@ -548,7 +566,7 @@ namespace PLAYERTWO.ARPGProject
         /// <param name="success">If true, the critical is successful.</param>
         protected virtual float GetCriticalMultiplier(out bool success)
         {
-            success = Random.value > 1 - criticalChance;
+            success = UnityEngine.Random.value > 1 - criticalChance;
             return success ? Game.instance.criticalMultiplier : 1;
         }
 
@@ -576,10 +594,76 @@ namespace PLAYERTWO.ARPGProject
         /// <summary>
         /// Metody do pobierania bazowych wartości
         /// </summary>
-        public int GetBaseStrength() => initialStrength;
-        public int GetBaseDexterity() => initialDexterity;
-        public int GetBaseVitality() => initialVitality;
-        public int GetBaseEnergy() => initialEnergy;
+        public int GetBaseStrength()
+        {
+            return baseStrength;
+        }
+
+        public int GetBaseDexterity()
+        {
+            return baseDexterity;
+        }
+
+        public int GetBaseVitality()
+        {
+            return baseVitality;
+        }
+
+        public int GetBaseEnergy()
+        {
+            return baseEnergy;
+        }
+ 
+ /*
+        public void ValidateStatsDebug()
+        {
+            if (DifficultyManager.Instance == null)
+            {
+                Debug.LogWarning($"[ValidateStatsDebug] Skipped for {gameObject.name}: DifficultyManager.Instance is null");
+                return;
+            }
+
+            float difficulty = DifficultyManager.Instance.GetRawDifficulty();
+            float delta = difficulty - 5.0f;
+
+            float strengthMultiplier  = DifficultyManager.Instance.StrengthMultiplier;
+            float dexterityMultiplier = DifficultyManager.Instance.DexterityMultiplier;
+            float vitalityMultiplier  = DifficultyManager.Instance.VitalityMultiplier;
+            float energyMultiplier    = DifficultyManager.Instance.EnergyMultiplier;
+
+            if (strengthMultiplier <= 0.01f || dexterityMultiplier <= 0.01f ||
+                vitalityMultiplier <= 0.01f || energyMultiplier <= 0.01f)
+            {
+                Debug.LogWarning($"[ValidateStatsDebug] Skipped for {gameObject.name}: multipliers not initialized");
+                return;
+            }
+
+            int baseSTR = GetBaseStrength();
+            int baseDEX = GetBaseDexterity();
+            int baseVIT = GetBaseVitality();
+            int baseENE = GetBaseEnergy();
+
+            int expectedSTR = Mathf.RoundToInt(baseSTR * (1.0f + delta * strengthMultiplier));
+            int expectedDEX = Mathf.RoundToInt(baseDEX * (1.0f + delta * dexterityMultiplier));
+            int expectedVIT = Mathf.RoundToInt(baseVIT * (1.0f + delta * vitalityMultiplier));
+            int expectedENE = Mathf.RoundToInt(baseENE * (1.0f + delta * energyMultiplier));
+
+            bool matchSTR = (strength == expectedSTR);
+            bool matchDEX = (dexterity == expectedDEX);
+            bool matchVIT = (vitality == expectedVIT);
+            bool matchENE = (energy == expectedENE);
+
+            string status = (matchSTR && matchDEX && matchVIT && matchENE) ? "✅ OK" : "❌ MISMATCH";
+
+            string report = $"[Validate] {gameObject.name} (ID {GetInstanceID()}) @ Difficulty {difficulty:F2} — {status}\n";
+            report += $"• STR: {strength} {(matchSTR ? "✅" : $"(Expected: {expectedSTR}, Base: {baseSTR})")}\n";
+            report += $"• DEX: {dexterity} {(matchDEX ? "✅" : $"(Expected: {expectedDEX}, Base: {baseDEX})")}\n";
+            report += $"• VIT: {vitality} {(matchVIT ? "✅" : $"(Expected: {expectedVIT}, Base: {baseVIT})")}\n";
+            report += $"• ENE: {energy} {(matchENE ? "✅" : $"(Expected: {expectedENE}, Base: {baseENE})")}\n";
+
+            Debug.Log(report);
+        }
+        */
 
         /// <summary>
         /// Recalculates the points for all the Entity's dynamic stats.
@@ -692,7 +776,7 @@ namespace PLAYERTWO.ARPGProject
             int gainedExp = CalculateEnemyExperience(other);
             
             AddExperience(gainedExp);
-            Debug.Log($"[EXP] Pokonano {other.name}, zdobyto {gainedExp} EXP");
+            // Debug.Log($"[EXP] Pokonano {other.name}, zdobyto {gainedExp} EXP");
         }
 
         public bool IsMaxLevel()

@@ -187,24 +187,30 @@ namespace PLAYERTWO.ARPGProject
                 return;
             }
 
+            float difficulty = DifficultyManager.Instance != null
+                ? DifficultyManager.Instance.GetRawDifficulty()
+                : 5.0f; // Fallback – domyślna wartość
+
             foreach (var entity in entities)
             {
-                if (entity != null && entity.CompareTag("Entity/Enemy"))
-                {
-                    if (entity.stats != null)
-                    {
-                        entity.stats.dexterity = (int)(entity.stats.dexterity * DifficultyManager.Instance.CurrentDexterityMultiplier);
-                        entity.stats.strength = (int)(entity.stats.strength * DifficultyManager.Instance.CurrentStrengthMultiplier);
-                        entity.stats.vitality = (int)(entity.stats.vitality * DifficultyManager.Instance.CurrentVitalityMultiplier);
-                        entity.stats.energy = (int)(entity.stats.energy * DifficultyManager.Instance.CurrentEnergyMultiplier);
+                if (entity == null || !entity.CompareTag("Entity/Enemy") || entity.stats == null)
+                    continue;
 
-                       // Debug.Log($"Adjusted stats for {entity.name}: Dexterity={entity.stats.dexterity}, Strength={entity.stats.strength}, Vitality={entity.stats.vitality}, Energy={entity.stats.energy}");
-                    }
-                    else
-                    {
-                        Debug.LogError($"Entity {entity.name} does not have stats initialized!");
-                    }
+                entity.stats.Initialize();
+
+                if (entity.stats.wasBoosted)
+                {
+                    Debug.LogWarning($"[Diff-Manager] {entity.name} był już boostowany – pomijam ApplyDifficultyToEntities");
+                    continue;
                 }
+
+                entity.stats.strength  = DifficultyManager.Instance.GetCurvedStat(entity.stats.GetBaseStrength(),  difficulty, 0.25f, 5.0f);
+                entity.stats.dexterity = DifficultyManager.Instance.GetCurvedStat(entity.stats.GetBaseDexterity(), difficulty, 0.25f, 6.0f);
+                entity.stats.vitality  = DifficultyManager.Instance.GetCurvedStat(entity.stats.GetBaseVitality(),  difficulty, 0.25f, 6.0f);
+                entity.stats.energy    = DifficultyManager.Instance.GetCurvedStat(entity.stats.GetBaseEnergy(),    difficulty, 0.25f, 5.0f);
+
+                entity.stats.wasBoosted = true;
+                entity.stats.Recalculate();
             }
         }
 

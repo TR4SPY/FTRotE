@@ -91,7 +91,7 @@ namespace PLAYERTWO.ARPGProject
             m_entities.Add(entity);
             entity.onDie.AddListener(() => OnEntityDie(entity));
 
-            Debug.Log($"[AI-DDA] Spawned enemy {entity.name} at {position}. Current difficulty: {RLModel.Instance.GetCurrentDifficulty()}");
+            // Debug.Log($"[AI-DDA] Spawned enemy {entity.name} at {position}. Current difficulty: {DifficultyManager.Instance.GetRawDifficulty()}");
         }
 
         protected virtual void OnEntityDie(Entity entity)
