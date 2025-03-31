@@ -101,32 +101,10 @@ namespace PLAYERTWO.ARPGProject
             if (craftingManager == null || craftingText == null)
                 return;
 
-           // Debug.Log("[DEBUG - Preview] Items in input:");
-            if (inputItems != null && inputItems.Count > 0)
-            {
-                foreach (var i in inputItems)
-                {
-                   // Debug.Log($"    => {i.GetName()} (stack={i.stack}, ID={i.GetHashCode()})");
-                }
-            }
-            else
-            {
-               // Debug.Log("    => (No items or null)");
-            }
-
             if (inputItems == null || inputItems.Count == 0)
             {
                 craftingText.text = "";
-                if (priceText) 
-                    priceText.text = "";
-                return;
-            }
-
-            if (craftingManager.availableRecipes == null || craftingManager.availableRecipes.Count == 0)
-            {
-                craftingText.text = "No recipes configured!";
-                if (priceText) 
-                    priceText.text = "";
+                if (priceText) priceText.text = "";
                 return;
             }
 
@@ -140,80 +118,66 @@ namespace PLAYERTWO.ARPGProject
                 }
             }
 
-            if (matchedRecipe == null)
+            if (matchedRecipe != null)
             {
-                craftingText.text = "No matching recipe";
+                float success = craftingManager.CalculateSuccessChance(matchedRecipe, inputItems);
+                bool guaranteed = (success >= 1f);
+
                 if (priceText)
-                    priceText.text = "";
+                    priceText.text = matchedRecipe.goldCost.ToString();
+
+                string result = "";
+                result += StringUtils.StringWithColorAndStyle(
+                    $"{matchedRecipe.resultQuantity} {matchedRecipe.resultItem.name}",
+                    GameColors.Lime,
+                    bold: true
+                );
+                result += "\n";
+
+                string chanceText = StringUtils.StringWithColor(
+                    $"Success Rate: {(int)(success * 100)}%",
+                    guaranteed ? GameColors.Green : GameColors.LightBlue
+                );
+
+                result += chanceText + "\n\n";
+
+                foreach (var ingredient in matchedRecipe.ingredients)
+                {
+                    int available = inputItems
+                        .Where(i => i.data == ingredient.item)
+                        .Sum(i => i.stack);
+
+                    Color color;
+                    if (available == 0)
+                        color = GameColors.Crimson;
+                    else if (available < ingredient.minQuantity)
+                        color = GameColors.Orange;
+                    else if (available >= ingredient.maxQuantity)
+                        color = GameColors.Gold;
+                    else
+                        color = GameColors.Green;
+
+                    string line = $"{ingredient.item.name} {available}/{ingredient.minQuantity}";
+                    result += StringUtils.StringWithColor(line, color) + "\n";
+                }
+
+                craftingText.text = result;
                 return;
             }
 
-            float success = craftingManager.CalculateSuccessChance(matchedRecipe, inputItems);
-            bool guaranteed = (success >= 1f);
-
-            if (priceText)
-                priceText.text = matchedRecipe.goldCost.ToString();
-
-            string result = "";
-            result += StringUtils.StringWithColorAndStyle(
-                $"{matchedRecipe.resultQuantity} {matchedRecipe.resultItem.name}",
-                GameColors.Lime,
-                bold: true
-            );
-            result += "\n";
-
-            string chanceText = StringUtils.StringWithColor(
-                $"Success Rate: {(int)(success * 100)}%",
-                guaranteed ? GameColors.Green : GameColors.LightBlue
-            );
-
-            result += chanceText + "\n\n";
-
-            foreach (var ingredient in matchedRecipe.ingredients)
+            foreach (var rule in craftingManager.customRules)
             {
-                int available = inputItems
-                    .Where(i => i.data == ingredient.item)
-                    .Sum(i => i.stack);
-
-                Color color;
-                if (available == 0)
-                    color = GameColors.Crimson; // none
-                else if (available < ingredient.minQuantity)
-                    color = GameColors.Orange; // partial
-                else if (available >= ingredient.maxQuantity)
-                    color = GameColors.Gold;  // full
-                else
-                    color = GameColors.Green; // minQuantity <= available < max
-
-                string line = $"{ingredient.item.name} {available}/{ingredient.minQuantity}";
-                result += StringUtils.StringWithColor(line, color) + "\n";
-            }
-/*
-            if (matchedRecipe.additionalChanceItems != null && matchedRecipe.additionalChanceItems.Count > 0)
-            {
-                result += "\n" + StringUtils.StringWithColorAndStyle(
-                    "Bonus Items:",
-                    GameColors.Lime,
-                    bold: true
-                ) + "\n";
-
-                foreach (var bonus in matchedRecipe.additionalChanceItems)
+                if (rule.Matches(inputItems))
                 {
-                    int count = inputItems
-                        .Where(i => i.data == bonus.item)
-                        .Sum(i => i.stack);
-
-                    Color color = (count >= bonus.quantity)
-                        ? GameColors.Green
-                        : GameColors.Gray;
-
-                    string line = $"{bonus.item.name} {count}/{bonus.quantity}";
-                    result += StringUtils.StringWithColor(line, color) + "\n";
+                    string preview = rule.GetPreview(inputItems);
+                    craftingText.text = StringUtils.StringWithColorAndStyle(preview, GameColors.Lime, bold: true);
+                    if (priceText) priceText.text = "0";
+                    return;
                 }
             }
-*/
 
-            craftingText.text = result;
+            craftingText.text = "No matching recipe or enhancement";
+            if (priceText) priceText.text = "";
         }
 
         private bool PartialMatches(CraftingRecipe recipe, List<ItemInstance> inputItems)
@@ -247,6 +211,7 @@ namespace PLAYERTWO.ARPGProject
                 }
             }
         }
+
         public void OnCraftButtonClicked()
         {
             var craftSection = m_section as GUICraftmanInventory;
@@ -263,22 +228,6 @@ namespace PLAYERTWO.ARPGProject
                 return;
             }
 
-            CraftingRecipe matchedRecipe = null;
-            foreach (var recipe in craftingManager.availableRecipes)
-            {
-                if (craftingManager.Matches(recipe, craftItems))
-                {
-                    matchedRecipe = recipe;
-                    break;
-                }
-            }
-
-            if (matchedRecipe == null)
-            {
-                craftingText.text = "No matching recipe for these items.";
-                return;
-            }
-
             ItemInstance resultItem = null;
             string failReason = "";
             bool success = craftingManager.TryCraft(craftItems, ref resultItem, ref failReason);
@@ -290,36 +239,22 @@ namespace PLAYERTWO.ARPGProject
                 return;
             }
 
-            var recipeItems = matchedRecipe.ingredients.Select(i => i.item).ToList();
-            if (matchedRecipe.additionalChanceItems != null)
-            {
-                recipeItems.AddRange(matchedRecipe.additionalChanceItems.Select(i => i.item));
-            }
-
             var guiItems = craftSection.GetComponentsInChildren<GUIItem>().ToList();
             foreach (var guiItem in guiItems)
             {
                 var item = guiItem.item;
 
-                if (recipeItems.Contains(item.data))
+                if (item.stack > 0)
                 {
-                    craftSection.inventory.TryRemoveItem(item);
-                    Destroy(guiItem.gameObject);
-                }
-                else
-                {
-                    if (item.stack > 0)
+                    bool added = m_playerInventory.TryAddItem(item);
+                    if (!added)
                     {
-                        bool added = m_playerInventory.TryAddItem(item);
-                        if (!added)
-                        {
-                            Debug.Log($"[Craftman] No space in inventory for {item.GetName()}");
-                        }
+                        Debug.Log($"[Craftman] No space in inventory for {item.GetName()}");
                     }
-
-                    craftSection.inventory.TryRemoveItem(item);
-                    Destroy(guiItem.gameObject);
                 }
+
+                craftSection.inventory.TryRemoveItem(item);
+                Destroy(guiItem.gameObject);
             }
 
             craftSection.UpdateSlots();

@@ -7,16 +7,31 @@ namespace PLAYERTWO.ARPGProject
     public class CraftingManager : MonoBehaviour
     {
         public List<CraftingRecipe> availableRecipes;
+        public List<CraftingRules> customRules = new();
 
+        private void Start()
+        {
+            customRules = new List<CraftingRules>
+            {
+                new JewelOfEmbersRule(),
+                new JewelOfLightRule(),
+                new JewelOfClarityRule(),
+                new OceanCrystalRule(),
+                new CrystalOfRefractionRule(),
+                new DuskCrystalRule(),
+                new HeartlyCrystalRule(),
+                new JewelOfVerdancyRule()
+            };
+        }
         public bool TryCraft(List<ItemInstance> inputItems, ref ItemInstance result, ref string failReason)
         {
+            var character = Game.instance.currentCharacter;
+            var inventory = character.inventory;
+
             foreach (var recipe in availableRecipes)
             {
                 if (!Matches(recipe, inputItems))
                     continue;
-
-                var character = Game.instance.currentCharacter;
-                var inventory = character.inventory;
 
                 if (inventory.GetGold() < recipe.goldCost)
                 {
@@ -40,7 +55,17 @@ namespace PLAYERTWO.ARPGProject
                 return true;
             }
 
-            failReason = "No matching recipe";
+            foreach (var rule in customRules)
+            {
+                if (!rule.Matches(inputItems))
+                    continue;
+
+                result = rule.Craft(inputItems);
+                failReason = "";
+                return true;
+            }
+
+            failReason = "No matching recipe or upgrade rule";
             return false;
         }
 

@@ -450,6 +450,11 @@ namespace PLAYERTWO.ARPGProject
                 attributes = new ArmorAttributes(minAttributes, maxAttributes);
         }
 
+        public void RerollAttributes()
+        {
+            GenerateAdditionalAttributes(1, 3);
+        }
+
         /// <summary>
         /// Returns the selling price of this Item Instance.
         /// </summary>

@@ -118,6 +118,37 @@ namespace PLAYERTWO.ARPGProject
             return text;
         }
 
+        public virtual void AddRandom()
+        {
+            var fields = GetFields().Where(f => f.FieldType == typeof(int)).ToList();
+            if (fields.Count == 0) return;
+
+            var randomField = fields[Random.Range(0, fields.Count)];
+            int value = (randomField.Name.Contains("Percent")) ? GetRandomPercentage() : GetRandomPoint();
+            int current = (int)randomField.GetValue(this);
+            randomField.SetValue(this, current + value);
+        }
+
+        public virtual ItemAttributes Clone()
+        {
+            return new ItemAttributes()
+            {
+                damage = this.damage,
+                damagePercent = this.damagePercent,
+                magicDamage = this.magicDamage,
+                magicDamagePercent = this.magicDamagePercent,
+                magicResistance = this.magicResistance,
+                attackSpeed = this.attackSpeed,
+                critical = this.critical,
+                defense = this.defense,
+                defensePercent = this.defensePercent,
+                mana = this.mana,
+                manaPercent = this.manaPercent,
+                health = this.health,
+                healthPercent = this.healthPercent
+            };
+        }
+
         public static ItemAttributes CreateFromSerializer(ItemSerializer.Attributes attributes)
         {
             return new ItemAttributes()
