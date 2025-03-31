@@ -28,6 +28,16 @@ namespace PLAYERTWO.ARPGProject
             var character = Game.instance.currentCharacter;
             var inventory = character.inventory;
 
+            foreach (var rule in customRules)
+            {
+                if (!rule.Matches(inputItems))
+                    continue;
+
+                result = rule.Craft(inputItems);
+                failReason = "";
+                return true;
+            }
+
             foreach (var recipe in availableRecipes)
             {
                 if (!Matches(recipe, inputItems))
@@ -52,16 +62,6 @@ namespace PLAYERTWO.ARPGProject
                 inventory.SpendGold(recipe.goldCost);
                 ConsumeIngredients(inputItems, recipe);
                 result = new ItemInstance(recipe.resultItem, false);
-                return true;
-            }
-
-            foreach (var rule in customRules)
-            {
-                if (!rule.Matches(inputItems))
-                    continue;
-
-                result = rule.Craft(inputItems);
-                failReason = "";
                 return true;
             }
 
@@ -129,6 +129,11 @@ namespace PLAYERTWO.ARPGProject
             }
 
             return baseChance;
+        }
+
+        public CraftingRules GetMatchedRule(List<ItemInstance> inputItems)
+        {
+            return customRules.FirstOrDefault(rule => rule.Matches(inputItems));
         }
 
         private void ConsumeIngredients(List<ItemInstance> input, CraftingRecipe recipe)

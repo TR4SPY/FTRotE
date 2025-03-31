@@ -17,20 +17,18 @@ namespace PLAYERTWO.ARPGProject
         {
             var weapon = items.FirstOrDefault(i => i.IsEquippable());
             var embers = items.Where(i => i.data.name == "Jewel of Embers").Sum(i => i.stack);
-
             return weapon != null && embers >= 1 && weapon.itemLevel < 9;
         }
 
         public override ItemInstance Craft(List<ItemInstance> items)
         {
-            var weapon = items.First(i => i.IsEquippable());
-            var embers = items.First(i => i.data.name == "Jewel of Embers");
+            var weapon = items.FirstOrDefault(i => i.IsEquippable());
+            var embers = items.FirstOrDefault(i => i.data.name == "Jewel of Embers" && i.stack > 0);
+            if (weapon == null || embers == null) return null;
 
             var newItem = new ItemInstance(weapon.data, false);
-            newItem.attributes = weapon.attributes.Clone();
+            newItem.attributes = weapon.attributes?.Clone();
             newItem.SetItemLevel(weapon.itemLevel + 1);
-
-            embers.stack--;
 
             return newItem;
         }
@@ -43,6 +41,7 @@ namespace PLAYERTWO.ARPGProject
             return $"Upgrade: {weapon.GetName()} → +{weapon.itemLevel + 1}";
         }
     }
+
     public class JewelOfLightRule : CraftingRules
     {
         public override bool Matches(List<ItemInstance> items)
@@ -54,17 +53,15 @@ namespace PLAYERTWO.ARPGProject
 
         public override ItemInstance Craft(List<ItemInstance> items)
         {
-            var eq = items.First(i => i.IsEquippable());
-            var light = items.First(i => i.data.name == "Jewel of Light");
+            var eq = items.FirstOrDefault(i => i.IsEquippable());
+            var light = items.FirstOrDefault(i => i.data.name == "Jewel of Light" && i.stack > 0);
+            if (eq == null || light == null) return null;
 
             var newItem = new ItemInstance(eq.data, false);
-            newItem.attributes = eq.attributes.Clone();
+            newItem.attributes = eq.attributes?.Clone();
             newItem.SetItemLevel(eq.itemLevel);
 
             // TODO: Add random skill here when implemented
-            // newItem.AddRandomSkill();
-
-            light.stack--;
 
             return newItem;
         }
@@ -77,6 +74,7 @@ namespace PLAYERTWO.ARPGProject
             return $"Imbue: {eq.GetName()} with random skill";
         }
     }
+
     public class JewelOfClarityRule : CraftingRules
     {
         public override bool Matches(List<ItemInstance> items)
@@ -88,13 +86,15 @@ namespace PLAYERTWO.ARPGProject
 
         public override ItemInstance Craft(List<ItemInstance> items)
         {
-            var eq = items.First(i => i.IsEquippable());
-            var clarity = items.First(i => i.data.name == "Jewel of Clarity");
+            var eq = items.FirstOrDefault(i => i.IsEquippable());
+            var clarity = items.FirstOrDefault(i => i.data.name == "Jewel of Clarity" && i.stack > 0);
+            if (eq == null || clarity == null) return null;
+
             var newItem = new ItemInstance(eq.data, false);
-            newItem.attributes = eq.attributes.Clone();
+            newItem.attributes = eq.attributes?.Clone();
             newItem.SetItemLevel(eq.itemLevel);
-            newItem.attributes.AddRandom();
-            clarity.stack--;
+            newItem.attributes?.AddRandom();
+
             return newItem;
         }
 
@@ -117,12 +117,14 @@ namespace PLAYERTWO.ARPGProject
 
         public override ItemInstance Craft(List<ItemInstance> items)
         {
-            var eq = items.First(i => i.IsEquippable());
-            var ocean = items.First(i => i.data.name == "Ocean Crystal");
+            var eq = items.FirstOrDefault(i => i.IsEquippable());
+            var ocean = items.FirstOrDefault(i => i.data.name == "Ocean Crystal" && i.stack > 0);
+            if (eq == null || ocean == null) return null;
+
             var newItem = new ItemInstance(eq.data, false);
             newItem.SetItemLevel(eq.itemLevel);
             newItem.RerollAttributes();
-            ocean.stack--;
+
             return newItem;
         }
 
@@ -150,14 +152,15 @@ namespace PLAYERTWO.ARPGProject
 
         public override ItemInstance Craft(List<ItemInstance> items)
         {
-            var item = items.First(i => i.IsEquippable());
-            var crystal = items.First(i => i.data.name == "Crystal of Refraction");
+            var item = items.FirstOrDefault(i => i.IsEquippable());
+            var crystal = items.FirstOrDefault(i => i.data.name == "Crystal of Refraction" && i.stack > 0);
+            if (item == null || crystal == null) return null;
 
             int requiredCrystals = item.itemLevel - 8;
-            crystal.stack -= requiredCrystals;
+            if (crystal.stack < requiredCrystals) return null;
 
             var newItem = new ItemInstance(item.data, false);
-            newItem.attributes = item.attributes.Clone();
+            newItem.attributes = item.attributes?.Clone();
             newItem.SetItemLevel(Mathf.Min(item.itemLevel + 1, 25));
 
             return newItem;
@@ -185,10 +188,12 @@ namespace PLAYERTWO.ARPGProject
 
         public override ItemInstance Craft(List<ItemInstance> items)
         {
-            var eq = items.First(i => i.IsEquippable());
-            var dusk = items.First(i => i.data.name == "Dusk Crystal");
+            var eq = items.FirstOrDefault(i => i.IsEquippable());
+            var dusk = items.FirstOrDefault(i => i.data.name == "Dusk Crystal" && i.stack > 0);
+            if (eq == null || dusk == null) return null;
+
             var newItem = new ItemInstance(eq.data, false);
-            newItem.attributes = eq.attributes.Clone();
+            newItem.attributes = eq.attributes?.Clone();
             newItem.SetItemLevel(eq.itemLevel);
 
             int random = Random.Range(0, 3);
@@ -198,14 +203,13 @@ namespace PLAYERTWO.ARPGProject
                     newItem.SetItemLevel(eq.itemLevel + 1);
                     break;
                 case 1:
-                    newItem.attributes.AddRandom();
+                    newItem.attributes?.AddRandom();
                     break;
                 case 2:
                     // TODO: Add random skill support
                     break;
             }
 
-            dusk.stack--;
             return newItem;
         }
 
@@ -228,16 +232,16 @@ namespace PLAYERTWO.ARPGProject
 
         public override ItemInstance Craft(List<ItemInstance> items)
         {
-            var eq = items.First(i => i.IsEquippable());
-            var heart = items.First(i => i.data.name == "Heartly Crystal");
+            var eq = items.FirstOrDefault(i => i.IsEquippable());
+            var heart = items.FirstOrDefault(i => i.data.name == "Heartly Crystal" && i.stack > 0);
+            if (eq == null || heart == null) return null;
 
             var newItem = new ItemInstance(eq.data, false);
-            newItem.attributes = eq.attributes.Clone();
+            newItem.attributes = eq.attributes?.Clone();
             newItem.SetItemLevel(eq.itemLevel);
 
             // TODO: Add passive HP regeneration effect
 
-            heart.stack--;
             return newItem;
         }
 
@@ -260,16 +264,16 @@ namespace PLAYERTWO.ARPGProject
 
         public override ItemInstance Craft(List<ItemInstance> items)
         {
-            var eq = items.First(i => i.IsEquippable());
-            var verdancy = items.First(i => i.data.name == "Jewel of Verdancy");
+            var eq = items.FirstOrDefault(i => i.IsEquippable());
+            var verdancy = items.FirstOrDefault(i => i.data.name == "Jewel of Verdancy" && i.stack > 0);
+            if (eq == null || verdancy == null) return null;
 
             var newItem = new ItemInstance(eq.data, false);
-            newItem.attributes = eq.attributes.Clone();
+            newItem.attributes = eq.attributes?.Clone();
             newItem.SetItemLevel(eq.itemLevel);
 
             // TODO: Add bonus XP passive effect
 
-            verdancy.stack--;
             return newItem;
         }
 
