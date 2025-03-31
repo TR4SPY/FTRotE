@@ -16,13 +16,25 @@ namespace PLAYERTWO.ARPGProject
 
 
         public CharacterItem(Item data,
-            CharacterItemAttributes attributes,
-            int durability, int stack)
+        CharacterItemAttributes attributes,
+        int durability, int stack)
         {
             this.data = data;
             this.attributes = attributes;
             this.durability = durability;
-            this.stack = stack;
+
+            if (data != null && !data.canStack && stack < 1)
+            {
+                this.stack = 1;
+            }
+            else if (data != null && data.canStack)
+            {
+                this.stack = Mathf.Clamp(stack, 1, data.stackCapacity);
+            }
+            else
+            {
+                this.stack = 1;
+            }
         }
 
         public ItemInstance ToItemInstance(bool withDefaultDurability = false)
@@ -47,9 +59,14 @@ namespace PLAYERTWO.ARPGProject
                 return new ItemInstance(data, a, durability, stack);
             }
 
-            var instance = new ItemInstance(data, a, durability, stack);
+            int finalStack = stack;
+            if (data.canStack)
+                finalStack = Mathf.Clamp(finalStack, 1, data.stackCapacity);
+            else
+                finalStack = 1;
+
+            var instance = new ItemInstance(data, a, durability, finalStack);
             instance.SetItemLevel(itemLevel);
-            
             return instance;
         }
 

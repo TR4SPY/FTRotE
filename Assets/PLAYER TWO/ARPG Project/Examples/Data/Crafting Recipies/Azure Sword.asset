@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53d1814bc2773702c937560124ad5a16, type: 3}
+  m_Name: Azure Sword
+  m_EditorClassIdentifier: 
+  ingredients:
+  - item: {fileID: 11400000, guid: 3b1dd3c3f61a177458934312f317bcf6, type: 2}
+    minQuantity: 1
+    maxQuantity: 1
+  - item: {fileID: 11400000, guid: 41a282418917f8874b8c5393ed3863c8, type: 2}
+    minQuantity: 2
+    maxQuantity: 6
+  - item: {fileID: 11400000, guid: da31a2d3e5492f97e8fd471404c01e17, type: 2}
+    minQuantity: 2
+    maxQuantity: 10
+  additionalChanceItems:
+  - item: {fileID: 11400000, guid: 23ac05a6c22b9690c937e572e3802199, type: 2}
+    quantity: 1
+  resultItem: {fileID: 11400000, guid: d75982b6a6f0a98bca271060a29f33c7, type: 2}
+  resultQuantity: 1
+  goldCost: 1000
+  baseSuccessChance: 0.5
+  maxSuccessChance: 0.95

@@ -29,4 +29,4 @@ MonoBehaviour:
   allowedClasses: -1
   group: 12
   successRate: 60
-  description: Used to reroll all attributes of an item.
+  description: Used to reroll all attributes of an item

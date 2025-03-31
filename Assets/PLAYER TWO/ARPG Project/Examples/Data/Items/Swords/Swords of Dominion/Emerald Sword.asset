@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 6
   prefab: {fileID: 9074562592178130187, guid: d48a11a32fbd038f0bac83c4d6acb0cf, type: 3}
-  price: 4000
+  price: 4500
   rarity: 0
   dropPosition: {x: 0, y: 0, z: 0}
   dropRotation: {x: -90, y: 0, z: 45}
@@ -29,6 +29,7 @@ MonoBehaviour:
   allowedClasses: 2
   group: 0
   maxDurability: 52
+  maxUpgradeLevel: 25
   requiredLevel: 15
   requiredStrength: 56
   requiredDexterity: 32

@@ -54,13 +54,25 @@ namespace PLAYERTWO.ARPGProject
             {
                 var data = GameDatabase.instance.FindElementById<Item>(item.item.itemId);
                 var attributes = CharacterItemAttributes.CreateFromSerializer(item.item.attributes);
+
                 var cItem = new CharacterItem(data, attributes, item.item.durability, item.item.stack);
                 cItem.itemLevel = item.item.itemLevel;
 
-                Debug.Log($"[INVENTORY LOAD] {data.name} → itemLevel: {cItem.itemLevel}");
+                if (data != null)
+                {
+                    if (data.canStack)
+                        cItem.stack = Mathf.Clamp(cItem.stack, 1, data.stackCapacity);
+                    else
+                        cItem.stack = 1;
+                }
+                else
+                {
+                    cItem.stack = 1;
+                }
+
+                Debug.Log($"[INVENTORY LOAD] {data.name} => stack={cItem.stack}, itemLevel={cItem.itemLevel}");
 
                 var inventoryItem = new CharacterInventoryItem(cItem, item.row, item.column);
-                
                 items.Add(inventoryItem);
             }
 
@@ -78,7 +90,21 @@ namespace PLAYERTWO.ARPGProject
             }
             return false;
         }
-        
+
+        public bool SpendGold(int amount)
+        {
+            if (m_inventory == null || m_inventory.instance.money < amount)
+                return false;
+
+            m_inventory.instance.money -= amount;
+            return true;
+        }
+                
+        public int GetGold()
+        {
+            return m_inventory != null ? m_inventory.instance.money : initialMoney;
+        }
+
         public bool RemoveItem(Item item)
         {
             foreach (var inventoryItem in currentItems.Keys)
@@ -88,7 +114,7 @@ namespace PLAYERTWO.ARPGProject
                     bool removed = m_inventory.instance.TryRemoveItem(inventoryItem);
                     if (removed)
                     {
-                        onInventoryUpdated?.Invoke(); // Powiadom UI o zmianie ekwipunku
+                        onInventoryUpdated?.Invoke();
                     }
                     return removed;
                 }

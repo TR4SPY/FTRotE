@@ -20,6 +20,10 @@ namespace PLAYERTWO.ARPGProject
             [Tooltip("Upgrade level of the item (only for equippable items).")]
             [Range(0, 25)]
             public int itemLevel;
+
+            [Tooltip("If the item is stackable, how many items to offer?")]
+            [Range(1, 999)]
+            public int quantity = 1;
         }
 
         [System.Serializable]
@@ -68,9 +72,18 @@ namespace PLAYERTWO.ARPGProject
                 {
                     if (item.data == null) continue;
 
-                    var instance = (item.attributes > 0)
-                        ? new ItemInstance(item.data, true, item.attributes, item.attributes)
-                        : new ItemInstance(item.data, false);
+                    ItemInstance instance;
+
+                    if (item.data.canStack)
+                    {
+                        instance = new ItemInstance(item.data, false);
+                        instance.ForceStack(item.quantity);
+                    }
+                    else
+                    {
+                        instance = new ItemInstance(item.data, false);
+                        instance.ForceStack(1);
+                    }
 
                     if (instance.IsEquippable())
                     {

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 121
   prefab: {fileID: 1553534218236778084, guid: 4b2f629d5efc75a6489bb64c3e465fe6, type: 3}
-  price: 10000000
+  price: 100
   rarity: 0
   dropPosition: {x: 0, y: 0, z: 0}
   dropRotation: {x: -90, y: 0, z: 45}
@@ -29,4 +29,4 @@ MonoBehaviour:
   allowedClasses: -1
   group: 12
   successRate: 50
-  description: Enhances items from +10 to +25. More crystals needed at higher levels.
+  description: Enhances items from +10 to +25. More crystals needed at higher levels

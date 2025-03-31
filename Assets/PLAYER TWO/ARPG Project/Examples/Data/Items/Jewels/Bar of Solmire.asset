@@ -29,4 +29,4 @@ MonoBehaviour:
   allowedClasses: -1
   group: 12
   successRate: 0
-  description: Used as high-value currency. Stackable up to 256 pieces.
+  description: Used as high-value currency. Stackable up to 256 pieces

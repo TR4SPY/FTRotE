@@ -34,6 +34,9 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("A reference to the GUI Craftman.")]
         public GUIWindow craftmanWindow;
 
+        [Tooltip("A reference to the GUI Crafting Recipies.")]
+        public GUIWindow craftingRecipiesWindow;
+
         [Tooltip("A reference to all GUI Windows in the game.")]
         private List<GUIWindow> windows; 
 

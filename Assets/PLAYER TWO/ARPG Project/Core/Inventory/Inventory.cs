@@ -197,12 +197,14 @@ namespace PLAYERTWO.ARPGProject
         /// <returns>Returns true if the item was successfully inserted.</returns>
         public virtual bool TryInsertItem(ItemInstance item, int row, int column)
         {
-            if (!CanInsertItem(item, row, column))
+                Debug.Log($"[DEBUG - Inventory] Trying insert '{item.GetName()}' row={row}, col={column}, stack={item.stack}");
+                
+                if (!CanInsertItem(item, row, column))
                 return false;
 
             if (items.ContainsKey(item))
             {
-                // Debug.LogWarning($"TryInsertItem skipped: {item.GetName()} is already in inventory.");
+                Debug.LogWarning($"TryInsertItem skipped: {item.GetName()} is already in inventory.");
                 return false;
             }
 
@@ -235,10 +237,9 @@ namespace PLAYERTWO.ARPGProject
 
             // Debug.Log($"Removing {item.GetName()} from inventory.");
 
-            var position = items[item]; // Pobierz pozycję przedmiotu w siatce
-            items.Remove(item); // Usuń z listy przedmiotów
+            var position = items[item];
+            items.Remove(item);
 
-            // Usuń przedmiot z siatki inventory (grid)
             for (int i = 0; i < rows; i++)
             {
                 for (int j = 0; j < columns; j++)
@@ -250,7 +251,7 @@ namespace PLAYERTWO.ARPGProject
                 }
             }
 
-            onItemRemoved?.Invoke(); // Wywołaj event usunięcia
+            onItemRemoved?.Invoke();
             // Debug.Log($"Item {item.GetName()} fully removed from inventory.");
             return true;
         }

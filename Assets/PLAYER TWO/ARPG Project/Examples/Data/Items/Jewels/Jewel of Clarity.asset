@@ -29,4 +29,4 @@ MonoBehaviour:
   allowedClasses: -1
   group: 12
   successRate: 80
-  description: Adds one random attribute to an item.
+  description: Adds one random attribute to an item

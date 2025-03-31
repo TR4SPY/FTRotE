@@ -29,4 +29,4 @@ MonoBehaviour:
   allowedClasses: -1
   group: 12
   successRate: 20
-  description: Grants a chance to regenerate health over time.
+  description: Grants a chance to regenerate health over time

@@ -55,6 +55,14 @@ namespace PLAYERTWO.ARPGProject
             }
         }
 
+        public void ForceStack(int newValue)
+        {
+            int maxCap = (data != null && data.stackCapacity > 0) ? data.stackCapacity : 999;
+            m_stack = Mathf.Clamp(newValue, 1, maxCap);
+            
+            onStackChanged?.Invoke();
+        }
+
         /// <summary>
         /// The amount of rows this Item Instance takes on the Inventory.
         /// </summary>
@@ -85,7 +93,13 @@ namespace PLAYERTWO.ARPGProject
                 durability = GetEquippable().maxDurability;
 
             if (IsStackable())
+            {
                 stack = 1;
+            }
+            else
+            {
+                stack = 1;
+            }
         }
 
         public ItemInstance(Item data, int durability, int stack, bool generateAttributes = true)
@@ -103,8 +117,22 @@ namespace PLAYERTWO.ARPGProject
             this.data = data;
             this.attributes = attributes;
             this.durability = durability;
-            this.stack = stack;
+
+            if (data != null)
+            {
+                if (data.canStack)
+                    m_stack = Mathf.Clamp(stack, 1, data.stackCapacity);
+                else
+                    m_stack = 1;
+            }
+            else
+            {
+                m_stack = 1;
+            }
+
+           // Debug.Log($"[ITEM INSTANCE CTOR] => {data?.name} stack={m_stack}, canStack={data?.canStack}");
         }
+
 
         /// <summary>
         /// Tries to stack another item on the stack.
@@ -398,7 +426,13 @@ namespace PLAYERTWO.ARPGProject
                 durability = GetEquippable().maxDurability;
 
             if (IsStackable())
+            {
                 stack = 1;
+            }
+            else
+            {
+                stack = 1;
+            }
         }
 
         /// <summary>

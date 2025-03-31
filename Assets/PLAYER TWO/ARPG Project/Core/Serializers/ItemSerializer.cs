@@ -32,7 +32,23 @@ namespace PLAYERTWO.ARPGProject
         {
             this.itemId = GameDatabase.instance.GetElementId<Item>(item.data);
             this.durability = item.durability;
-            this.stack = item.stack;
+
+            if (item.data != null)
+            {
+                if (item.data.canStack)
+                {
+                    this.stack = Mathf.Clamp(item.stack, 1, item.data.stackCapacity);
+                }
+                else
+                {
+                    this.stack = 1;
+                }
+            }
+            else
+            {
+                this.stack = 1;
+            }
+
             this.itemLevel = item.itemLevel;
             this.attributes = new Attributes();
 

@@ -29,4 +29,4 @@ MonoBehaviour:
   allowedClasses: -1
   group: 12
   successRate: 80
-  description: Provides bonus experience from kills when equipped.
+  description: Provides bonus experience from kills when equipped
