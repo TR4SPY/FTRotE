@@ -23,19 +23,64 @@ namespace PLAYERTWO.ARPGProject
                 new JewelOfVerdancyRule()
             };
         }
+        
         public bool TryCraft(List<ItemInstance> inputItems, ref ItemInstance result, ref string failReason)
         {
             var character = Game.instance.currentCharacter;
             var inventory = character.inventory;
+            var playerInventory = Level.instance.player.inventory.instance;
 
-            foreach (var rule in customRules)
+            if (ShouldUseCustomRules(inputItems))
             {
-                if (!rule.Matches(inputItems))
-                    continue;
+                foreach (var rule in customRules)
+                {
+                    if (!rule.Matches(inputItems))
+                        continue;
 
-                result = rule.Craft(inputItems);
-                failReason = "";
-                return true;
+                    int barUsed, barReturned;
+                    float successRate = GetSuccessRateFromJewels(inputItems, out barUsed, out barReturned);
+
+                    var bars = inputItems.Where(i => i.data.name == "Bar of Solmire").ToList();
+
+                    if (successRate <= 0f)
+                    {
+                        failReason = "Insert a jewel or crystal to enhance the item.";
+                        return false;
+                    }
+
+                    if (Random.value > successRate)
+                    {
+                        var usedJewel = inputItems.FirstOrDefault(i =>
+                            i.data is ItemJewel && i.data.name != "Bar of Solmire");
+
+                        if (usedJewel != null)
+                            usedJewel.stack--;
+
+                        RemoveBars(bars, barUsed);
+
+                        var enhancedItem = inputItems.FirstOrDefault(i => i.IsEquippable());
+                        rule.OnFail(enhancedItem);
+
+                        failReason = "<color=#cc4444>Enhancement failed!</color>";
+                        return false;
+                    }
+
+                    RemoveBars(bars, barUsed);
+
+                    for (int i = 0; i < barReturned; i++)
+                    {
+                        var barItem = new ItemInstance(bars[0].data, false);
+                        bool added = playerInventory.TryAddItem(barItem);
+                        if (!added)
+                        {
+                            Debug.LogWarning("[CraftingManager] Couldn't return Bar of Solmire (no space).");
+                        }
+                    }
+
+                    result = rule.Craft(inputItems);
+                    failReason = "";
+                    return true;
+                }
             }
 
             foreach (var recipe in availableRecipes)
@@ -69,9 +114,20 @@ namespace PLAYERTWO.ARPGProject
             return false;
         }
 
+        public bool ShouldUseCustomRules(List<ItemInstance> inputItems)
+        {
+            var jewelTypes = inputItems
+                .Where(i => i.data is ItemJewel && i.data.name != "Bar of Solmire")
+                .Select(i => i.data.name)
+                .Distinct()
+                .ToList();
+
+            return jewelTypes.Count <= 1;
+        }
+
         public bool Matches(CraftingRecipe recipe, List<ItemInstance> input)
         {
-            var inputDict = new Dictionary<PLAYERTWO.ARPGProject.Item, int>();
+            var inputDict = new Dictionary<Item, int>();
 
             foreach (var item in input)
             {
@@ -103,7 +159,7 @@ namespace PLAYERTWO.ARPGProject
 
                 if (available < ing.minQuantity)
                     return 0f;
-                    
+
                 float ratio = Mathf.Clamp01(
                     (float)(available - ing.minQuantity) / Mathf.Max(1, (ing.maxQuantity - ing.minQuantity))
                 );
@@ -129,6 +185,47 @@ namespace PLAYERTWO.ARPGProject
             }
 
             return baseChance;
+        }
+
+        private void RemoveBars(List<ItemInstance> bars, int amountToRemove)
+        {
+            int remaining = amountToRemove;
+            foreach (var bar in bars)
+            {
+                int toTake = Mathf.Min(remaining, bar.stack);
+                bar.stack -= toTake;
+                remaining -= toTake;
+                if (remaining <= 0) break;
+            }
+        }
+
+        public float GetSuccessRateFromJewels(List<ItemInstance> input, out int barOfSolmireUsed, out int barOfSolmireReturned)
+        {
+            barOfSolmireUsed = 0;
+            barOfSolmireReturned = 0;
+
+            var jewels = input.Where(i => i.data is ItemJewel).Select(i => i.data as ItemJewel).ToList();
+
+            if (!input.Any(i => i.IsEquippable()) || jewels.Count == 0)
+                return 0f;
+
+            var primaryJewel = jewels.FirstOrDefault(j => j.name != "Bar of Solmire");
+            var barsOfSolmire = input.Where(i => i.data.name == "Bar of Solmire").ToList();
+            int barsCount = barsOfSolmire.Sum(b => b.stack);
+
+            float baseRate = primaryJewel != null ? primaryJewel.successRate : 0f;
+            float bonusRate = barsCount * 10f;
+
+            float totalRate = baseRate + bonusRate;
+
+            if (totalRate >= 110f)
+            {
+                barOfSolmireReturned = Mathf.FloorToInt((Mathf.Floor(totalRate) - 100f) / 10f);
+            }
+
+            barOfSolmireUsed = Mathf.Clamp(barsCount - barOfSolmireReturned, 0, barsCount);
+
+            return Mathf.Clamp01(totalRate / 100f);
         }
 
         public CraftingRules GetMatchedRule(List<ItemInstance> inputItems)

@@ -9,6 +9,10 @@ namespace PLAYERTWO.ARPGProject
         public abstract bool Matches(List<ItemInstance> items);
         public abstract ItemInstance Craft(List<ItemInstance> items);
         public abstract string GetPreview(List<ItemInstance> items);
+        public virtual void OnFail(ItemInstance item)
+        {
+            // DEFAULT: Nothing will happen in default
+        }
     }
 
     public class JewelOfEmbersRule : CraftingRules
@@ -31,6 +35,11 @@ namespace PLAYERTWO.ARPGProject
             newItem.SetItemLevel(weapon.itemLevel + 1);
 
             return newItem;
+        }
+
+        public override void OnFail(ItemInstance item)
+        {
+            item.SetItemLevel(Mathf.Max(0, item.itemLevel - 1));
         }
 
         public override string GetPreview(List<ItemInstance> items)
@@ -61,9 +70,14 @@ namespace PLAYERTWO.ARPGProject
             newItem.attributes = eq.attributes?.Clone();
             newItem.SetItemLevel(eq.itemLevel);
 
-            // TODO: Add random skill here when implemented
+            // TODO: Add random skill implementation
 
             return newItem;
+        }
+
+        public override void OnFail(ItemInstance item)
+        {
+            // No downgrade – player just loses the jewel
         }
 
         public override string GetPreview(List<ItemInstance> items)
@@ -98,6 +112,11 @@ namespace PLAYERTWO.ARPGProject
             return newItem;
         }
 
+        public override void OnFail(ItemInstance item)
+        {
+            // No downgrade – player just loses the jewel
+        }
+
         public override string GetPreview(List<ItemInstance> items)
         {
             var eq = items.FirstOrDefault(i => i.IsEquippable());
@@ -128,6 +147,11 @@ namespace PLAYERTWO.ARPGProject
             return newItem;
         }
 
+        public override void OnFail(ItemInstance item)
+        {
+            // No downgrade – player just loses the jewel
+        }
+
         public override string GetPreview(List<ItemInstance> items)
         {
             var eq = items.FirstOrDefault(i => i.IsEquippable());
@@ -153,17 +177,31 @@ namespace PLAYERTWO.ARPGProject
         public override ItemInstance Craft(List<ItemInstance> items)
         {
             var item = items.FirstOrDefault(i => i.IsEquippable());
-            var crystal = items.FirstOrDefault(i => i.data.name == "Crystal of Refraction" && i.stack > 0);
-            if (item == null || crystal == null) return null;
+            var crystals = items.FirstOrDefault(i => i.data.name == "Crystal of Refraction");
 
-            int requiredCrystals = item.itemLevel - 8;
-            if (crystal.stack < requiredCrystals) return null;
+            if (item == null || crystals == null)
+                return null;
+
+            int required = item.itemLevel - 8;
+            float baseSuccessRate = (float)crystals.stack / required * 0.5f;
+            baseSuccessRate = Mathf.Clamp01(baseSuccessRate);
+
+            if (Random.value > baseSuccessRate)
+            {
+                return null;
+            }
 
             var newItem = new ItemInstance(item.data, false);
-            newItem.attributes = item.attributes?.Clone();
-            newItem.SetItemLevel(Mathf.Min(item.itemLevel + 1, 25));
+            newItem.SetItemLevel(item.itemLevel + 1);
+            newItem.attributes = item.attributes;
+            crystals.stack--;
 
             return newItem;
+        }
+
+        public override void OnFail(ItemInstance item)
+        {
+            item.SetItemLevel(0);
         }
 
         public override string GetPreview(List<ItemInstance> items)
@@ -213,6 +251,11 @@ namespace PLAYERTWO.ARPGProject
             return newItem;
         }
 
+        public override void OnFail(ItemInstance item)
+        {
+            // No downgrade – player just loses the jewel
+        }
+
         public override string GetPreview(List<ItemInstance> items)
         {
             var eq = items.FirstOrDefault(i => i.IsEquippable());
@@ -245,6 +288,11 @@ namespace PLAYERTWO.ARPGProject
             return newItem;
         }
 
+        public override void OnFail(ItemInstance item)
+        {
+            // No downgrade – player just loses the jewel
+        }
+
         public override string GetPreview(List<ItemInstance> items)
         {
             var eq = items.FirstOrDefault(i => i.IsEquippable());
@@ -275,6 +323,11 @@ namespace PLAYERTWO.ARPGProject
             // TODO: Add bonus XP passive effect
 
             return newItem;
+        }
+
+        public override void OnFail(ItemInstance item)
+        {
+            // No downgrade – player just loses the jewel
         }
 
         public override string GetPreview(List<ItemInstance> items)

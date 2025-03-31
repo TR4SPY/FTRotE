@@ -96,108 +96,129 @@ namespace PLAYERTWO.ARPGProject
             }
         }
 
+        
         public void UpdateCraftingPreview(List<ItemInstance> inputItems)
-{
-    if (craftingManager == null || craftingText == null)
-        return;
-
-    if (inputItems == null || inputItems.Count == 0)
-    {
-        craftingText.text = "";
-        if (priceText) priceText.text = "";
-        return;
-    }
-
-    // === PRIORYTET: CraftingRules (customowe ulepszenia) ===
-    foreach (var rule in craftingManager.customRules)
-    {
-        if (rule.Matches(inputItems))
         {
-            string preview = rule.GetPreview(inputItems);
-            craftingText.text = StringUtils.StringWithColorAndStyle(preview, GameColors.Lime, bold: true);
-            if (priceText) priceText.text = "0";
-            return;
-        }
-    }
+            if (craftingManager == null || craftingText == null)
+                return;
 
-    // === DRUGI PLAN: Najlepiej pasujący CraftingRecipe (partial match) ===
-    CraftingRecipe matchedRecipe = null;
-    int bestIngredientMatchCount = 0;
+            if (inputItems == null || inputItems.Count == 0)
+            {
+                craftingText.text = "";
+                if (priceText) priceText.text = "";
+                return;
+            }
 
-    foreach (var recipe in craftingManager.availableRecipes)
-    {
-        if (!PartialMatches(recipe, inputItems))
-            continue;
+            if (craftingManager.ShouldUseCustomRules(inputItems))
+            {
+                foreach (var rule in craftingManager.customRules)
+                {
+                    if (rule.Matches(inputItems))
+                    {
+                        string preview = rule.GetPreview(inputItems);
+                        int usedBars, returnedBars;
+                        float successRate = craftingManager.GetSuccessRateFromJewels(inputItems, out usedBars, out returnedBars);
 
-        int matchCount = recipe.ingredients.Count(i =>
-            inputItems.Any(input => input.data == i.item));
+                        if (successRate <= 0f)
+                        {
+                            craftingText.text = "Insert a jewel or crystal to enhance the item.";
+                            if (priceText) priceText.text = "";
+                            return;
+                        }
 
-        if (matchCount > bestIngredientMatchCount)
-        {
-            bestIngredientMatchCount = matchCount;
-            matchedRecipe = recipe;
-        }
-    }
+                        string chanceText = StringUtils.StringWithColor(
+                            $"Success Rate: {(int)(successRate * 100)}%",
+                            successRate >= 1f ? GameColors.Green : GameColors.LightBlue
+                        );
 
-    if (matchedRecipe != null)
-    {
-        float success = craftingManager.CalculateSuccessChance(matchedRecipe, inputItems);
-        bool guaranteed = (success >= 1f);
+                        craftingText.text = StringUtils.StringWithColorAndStyle(preview, GameColors.Lime, bold: true)
+                                            + "\n" + chanceText;
 
-        if (priceText)
-            priceText.text = matchedRecipe.goldCost.ToString();
+                        if (returnedBars > 0)
+                            craftingText.text += $"\nUnused Bars returned: {returnedBars}";
 
-        string result = "";
-        result += StringUtils.StringWithColorAndStyle(
-            $"{matchedRecipe.resultQuantity} {matchedRecipe.resultItem.name}",
-            GameColors.Lime,
-            bold: true
-        );
-        result += "\n";
+                        if (priceText) priceText.text = "0";
+                        return;
+                    }
+                }
+            }
 
-        string chanceText = StringUtils.StringWithColor(
-            $"Success Rate: {(int)(success * 100)}%",
-            guaranteed ? GameColors.Green : GameColors.LightBlue
-        );
+            CraftingRecipe matchedRecipe = null;
+            int bestIngredientMatchCount = 0;
 
-        result += chanceText + "\n\n";
+            foreach (var recipe in craftingManager.availableRecipes)
+            {
+                if (!PartialMatches(recipe, inputItems))
+                    continue;
 
-        foreach (var ingredient in matchedRecipe.ingredients)
-        {
-            int available = inputItems
-                .Where(i => i.data == ingredient.item)
-                .Sum(i => i.stack);
+                int matchCount = recipe.ingredients.Count(i =>
+                    inputItems.Any(input => input.data == i.item));
 
-            Color color;
-            if (available == 0)
-                color = GameColors.Crimson;
-            else if (available < ingredient.minQuantity)
-                color = GameColors.Orange;
-            else if (available >= ingredient.maxQuantity)
-                color = GameColors.Gold;
+                if (matchCount > bestIngredientMatchCount)
+                {
+                    bestIngredientMatchCount = matchCount;
+                    matchedRecipe = recipe;
+                }
+            }
+
+            if (matchedRecipe != null)
+            {
+                float success = craftingManager.CalculateSuccessChance(matchedRecipe, inputItems);
+                bool guaranteed = (success >= 1f);
+
+                if (priceText)
+                    priceText.text = matchedRecipe.goldCost.ToString();
+
+                string result = "";
+                result += StringUtils.StringWithColorAndStyle(
+                    $"{matchedRecipe.resultQuantity} {matchedRecipe.resultItem.name}",
+                    GameColors.Lime,
+                    bold: true
+                );
+                result += "\n";
+
+                string chanceText = StringUtils.StringWithColor(
+                    $"Success Rate: {(int)(success * 100)}%",
+                    guaranteed ? GameColors.Green : GameColors.LightBlue
+                );
+
+                result += chanceText + "\n\n";
+
+                foreach (var ingredient in matchedRecipe.ingredients)
+                {
+                    int available = inputItems
+                        .Where(i => i.data == ingredient.item)
+                        .Sum(i => i.stack);
+
+                    Color color;
+                    if (available == 0)
+                        color = GameColors.Crimson;
+                    else if (available < ingredient.minQuantity)
+                        color = GameColors.Orange;
+                    else if (available >= ingredient.maxQuantity)
+                        color = GameColors.Gold;
+                    else
+                        color = GameColors.Green;
+
+                    string line = $"{ingredient.item.name} {available}/{ingredient.minQuantity}";
+                    result += StringUtils.StringWithColor(line, color) + "\n";
+                }
+
+                craftingText.text = result;
+                return;
+            }
+
+            if (inputItems.Any(i => i.IsEquippable()))
+            {
+                craftingText.text = "Insert a jewel or crystal to enhance the item.";
+            }
             else
-                color = GameColors.Green;
+            {
+                craftingText.text = "No matching recipe or enhancement found.";
+            }
 
-            string line = $"{ingredient.item.name} {available}/{ingredient.minQuantity}";
-            result += StringUtils.StringWithColor(line, color) + "\n";
+            if (priceText) priceText.text = "";
         }
-
-        craftingText.text = result;
-        return;
-    }
-
-    // === BRAK DOPASOWANIA ===
-    if (inputItems.Any(i => i.IsEquippable()))
-    {
-        craftingText.text = "Place gems or crystals to enhance the item.";
-    }
-    else
-    {
-        craftingText.text = "No matching recipe or enhancement found.";
-    }
-
-    if (priceText) priceText.text = "";
-}
 
         private bool PartialMatches(CraftingRecipe recipe, List<ItemInstance> inputItems)
         {
