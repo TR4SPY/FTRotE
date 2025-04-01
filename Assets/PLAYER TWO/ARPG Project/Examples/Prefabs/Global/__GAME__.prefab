@@ -171,6 +171,7 @@ GameObject:
   - component: {fileID: 1668754394529997350}
   - component: {fileID: 105099512331301389}
   - component: {fileID: 7952096078989433651}
+  - component: {fileID: 1474556076409138792}
   m_Layer: 0
   m_Name: __GAME__
   m_TagString: Untagged
@@ -207,8 +208,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseExperience: 1973
-  experiencePerLevel: 179
   baseEnemyDefeatExperience: 679
+  expMultiplier: 1.5
   levelUpPoints: 5
   maxLevel: 100
   enemyLootMoneyIncreaseRate: 0.15
@@ -369,6 +370,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GUIAchievementsHUD: {fileID: 0}
+--- !u!114 &1474556076409138792
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2175000572608817883}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac09a627ea7ff124f9be111b7635a1c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chatPanel: {fileID: 0}
+  inputField: {fileID: 0}
+  logContent: {fileID: 0}
+  messagePrefab: {fileID: 0}
+  maxMessages: 50
+  inputActions: {fileID: -944628639613478452, guid: 5e7f2a6692e5a2048be8fd95f1c740b6, type: 3}
+  toggleActionName: ToggleChat
 --- !u!1 &2499290984610492485
 GameObject:
   m_ObjectHideFlags: 0

@@ -99,3 +99,12 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a4629b420704bceaeac87ebe0f0226f8, type: 2}
   questItems:
   - {fileID: 6325688752531504721, guid: 74ab1ea2f5b247d4ebde0dc6b3823943, type: 3}
+  enemies:
+  - {fileID: 6355741063253607571, guid: 14acde0b2f64fb3428891252a4421c54, type: 3}
+  - {fileID: 2214114482141136195, guid: fd8b3eabf84db914c8de1083b6f45bcc, type: 3}
+  - {fileID: 7112130279391419063, guid: d5d91230d7da09c4798855268d260252, type: 3}
+  - {fileID: 9137032837993464747, guid: 4c18074d779f310e190b1194b123a9ce, type: 3}
+  - {fileID: 9137032837993464747, guid: 0ff6eed2b896c68ddadc314fbe587a4c, type: 3}
+  - {fileID: 9137032837993464747, guid: b244756fc8216127091890f43cfa2281, type: 3}
+  - {fileID: 9137032837993464747, guid: 51d2f88a3d8937aa98ae107d341a4ac0, type: 3}
+  - {fileID: 273316549901078574, guid: 4b88f6d8a326ed73c8178e0b61097a38, type: 3}

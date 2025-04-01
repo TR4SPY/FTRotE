@@ -35,3 +35,8 @@ MonoBehaviour:
   moneyChance: 0.5
   minMoneyAmount: 500
   maxMoneyAmount: 2500
+  jewelDrops:
+  - jewel: {fileID: 11400000, guid: 41a282418917f8874b8c5393ed3863c8, type: 2}
+    dropChance: 0.1
+  - jewel: {fileID: 11400000, guid: cab7351598c4f31a799f57bec954e0e4, type: 2}
+    dropChance: 0.25

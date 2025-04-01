@@ -512,5 +512,33 @@ namespace AI_DDA.Assets.Scripts
             // totalCombatTime = 0f;
             // potionsUsed = 0;
         }
+
+        public void ResetData()
+        {
+            Debug.Log("Resetting player behavior data...");
+
+            playerDeaths = 0;
+            enemiesDefeated = 0;
+            totalCombatTime = 0f;
+            potionsUsed = 0;
+            questsCompleted = 0;
+            zonesDiscovered = 0;
+            npcInteractions = 0;
+            waypointsDiscovered = 0;
+            difficultyMultiplier = 0;
+
+            discoveredZones.Clear();
+            discoveredWaypoints.Clear();
+            unlockedAchievements.Clear();
+
+            currentDynamicPlayerType = "Unknown";
+
+            lastUpdateTime = Time.time;
+            lastPredictionTime = 0f;
+
+            statsManager?.Refresh();
+
+            Debug.Log("All behavior tracking data has been reset.");
+        }
     }
 }

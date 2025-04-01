@@ -181,6 +181,20 @@ namespace PLAYERTWO.ARPGProject
             }
         }
 
+        public void DropItem(ItemInstance item)
+        {
+            if (item == null || item.data == null || GUI.instance.droppedItemPrefab == null)
+                return;
+
+            Vector3 dropPosition = Level.instance.player.transform.position;
+
+            dropPosition += Random.insideUnitSphere * dropRange;
+            dropPosition.y = Level.instance.player.transform.position.y;
+
+            var collectible = Instantiate(droppedItemPrefab, dropPosition, Quaternion.identity);
+            collectible.SetItem(item);
+        }
+
         private bool IsDroppingIntoInventory()
         {
             return EventSystem.current.IsPointerOverGameObject();

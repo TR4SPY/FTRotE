@@ -455,6 +455,11 @@ namespace PLAYERTWO.ARPGProject
             GenerateAdditionalAttributes(1, 3);
         }
 
+        public void GenerateAttributes(int min = 1, int max = 3)
+        {
+            GenerateAdditionalAttributes(min, max);
+        }
+
         /// <summary>
         /// Returns the selling price of this Item Instance.
         /// </summary>

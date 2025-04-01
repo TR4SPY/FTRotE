@@ -67,6 +67,9 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("A reference to the GUI Help Window.")]
         public GUIHelpWindow helpWindow;
 
+        [Tooltip("A reference to the GUI Chat Window.")]
+        public GUIChatWindow chatWindow;
+
 
         [Header("Audio Settings")]
         [Tooltip("The Audio Clip that plays when opening windows.")]
@@ -127,6 +130,11 @@ namespace PLAYERTWO.ARPGProject
             if (!informationWindow) return null;
 
             return informationWindow.GetComponent<GUIInformation>();
+        }
+
+        public GUIChatWindow GetChatWindow()
+        {
+            return chatWindow.GetComponent<GUIChatWindow>();
         }
 
         protected virtual void Start()

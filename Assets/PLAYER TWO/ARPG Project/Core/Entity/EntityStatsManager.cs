@@ -317,7 +317,7 @@ namespace PLAYERTWO.ARPGProject
         {
             if (strength != _lastKnownStrength)
             {
-                Debug.LogWarning($"[EntityStatsManager - Update] {name} ID={GetInstanceID()} changed from {_lastKnownStrength} to {strength}");
+                // Debug.LogWarning($"[EntityStatsManager - Update] {name} ID={GetInstanceID()} changed from {_lastKnownStrength} to {strength}");
                 _lastKnownStrength = strength;
             }
         }
@@ -613,57 +613,6 @@ namespace PLAYERTWO.ARPGProject
         {
             return baseEnergy;
         }
- 
- /*
-        public void ValidateStatsDebug()
-        {
-            if (DifficultyManager.Instance == null)
-            {
-                Debug.LogWarning($"[ValidateStatsDebug] Skipped for {gameObject.name}: DifficultyManager.Instance is null");
-                return;
-            }
-
-            float difficulty = DifficultyManager.Instance.GetRawDifficulty();
-            float delta = difficulty - 5.0f;
-
-            float strengthMultiplier  = DifficultyManager.Instance.StrengthMultiplier;
-            float dexterityMultiplier = DifficultyManager.Instance.DexterityMultiplier;
-            float vitalityMultiplier  = DifficultyManager.Instance.VitalityMultiplier;
-            float energyMultiplier    = DifficultyManager.Instance.EnergyMultiplier;
-
-            if (strengthMultiplier <= 0.01f || dexterityMultiplier <= 0.01f ||
-                vitalityMultiplier <= 0.01f || energyMultiplier <= 0.01f)
-            {
-                Debug.LogWarning($"[ValidateStatsDebug] Skipped for {gameObject.name}: multipliers not initialized");
-                return;
-            }
-
-            int baseSTR = GetBaseStrength();
-            int baseDEX = GetBaseDexterity();
-            int baseVIT = GetBaseVitality();
-            int baseENE = GetBaseEnergy();
-
-            int expectedSTR = Mathf.RoundToInt(baseSTR * (1.0f + delta * strengthMultiplier));
-            int expectedDEX = Mathf.RoundToInt(baseDEX * (1.0f + delta * dexterityMultiplier));
-            int expectedVIT = Mathf.RoundToInt(baseVIT * (1.0f + delta * vitalityMultiplier));
-            int expectedENE = Mathf.RoundToInt(baseENE * (1.0f + delta * energyMultiplier));
-
-            bool matchSTR = (strength == expectedSTR);
-            bool matchDEX = (dexterity == expectedDEX);
-            bool matchVIT = (vitality == expectedVIT);
-            bool matchENE = (energy == expectedENE);
-
-            string status = (matchSTR && matchDEX && matchVIT && matchENE) ? "✅ OK" : "❌ MISMATCH";
-
-            string report = $"[Validate] {gameObject.name} (ID {GetInstanceID()}) @ Difficulty {difficulty:F2} — {status}\n";
-            report += $"• STR: {strength} {(matchSTR ? "✅" : $"(Expected: {expectedSTR}, Base: {baseSTR})")}\n";
-            report += $"• DEX: {dexterity} {(matchDEX ? "✅" : $"(Expected: {expectedDEX}, Base: {baseDEX})")}\n";
-            report += $"• VIT: {vitality} {(matchVIT ? "✅" : $"(Expected: {expectedVIT}, Base: {baseVIT})")}\n";
-            report += $"• ENE: {energy} {(matchENE ? "✅" : $"(Expected: {expectedENE}, Base: {baseENE})")}\n";
-
-            Debug.Log(report);
-        }
-        */
 
         /// <summary>
         /// Recalculates the points for all the Entity's dynamic stats.

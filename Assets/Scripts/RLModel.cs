@@ -100,6 +100,11 @@ namespace AI_DDA.Assets.Scripts
             return adjustedDifficulty;
         }
 
+        public void SetCurrentDifficulty(float value)
+        {
+            currentDifficulty = Mathf.Clamp01(value);
+        }
+
         public void AdjustDifficulty(float baseDifficulty)
         {
             lastDecisionTime = Time.time;

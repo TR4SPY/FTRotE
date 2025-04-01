@@ -56,5 +56,20 @@ namespace PLAYERTWO.ARPGProject
 
         [Tooltip("The maximum amount of money that can be looted.")]
         public int maxMoneyAmount = 2500;
+
+        [Header("Jewel Drop Settings")]
+        [Tooltip("Which Jewels can drop and with what chance.")]
+        public JewelDropEntry[] jewelDrops;
+
+        [Range(0f, 1f)]
+        public float jewelDropChance = 0.2f;
+    }
+
+    [System.Serializable]
+    public class JewelDropEntry
+    {
+        public ItemJewel jewel;
+        [Range(0f, 1f)]
+        public float dropChance;
     }
 }

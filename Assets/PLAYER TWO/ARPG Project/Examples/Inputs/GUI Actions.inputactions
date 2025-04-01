@@ -9,7 +9,7 @@
                     "name": "Toggle Skills",
                     "type": "Button",
                     "id": "c5cb3732-c8d7-48a9-9c59-a4857dd2837b",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -36,7 +36,7 @@
                     "name": "Toggle Quest Log",
                     "type": "Button",
                     "id": "0cc514eb-0997-4518-9a92-d5f6277420bc",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -45,7 +45,7 @@
                     "name": "Toggle Menu",
                     "type": "Button",
                     "id": "28239775-f15e-47e1-bc8b-925884ca54f6",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -54,7 +54,7 @@
                     "name": "Toggle Menu (WebGL)",
                     "type": "Button",
                     "id": "0b5598c3-63f0-4225-adf2-ed0606e4aa28",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -63,7 +63,7 @@
                     "name": "Drop Item",
                     "type": "Button",
                     "id": "84128447-0fe4-471d-8d9a-734fb06a2837",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -72,7 +72,16 @@
                     "name": "Toggle Collectibles Names",
                     "type": "Button",
                     "id": "eb260d72-5776-47c9-8f65-5f9c8bf5dd8a",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Toggle Chat",
+                    "type": "Button",
+                    "id": "ec147884-e4a1-47a7-8738-07e4e5acb078",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -175,6 +184,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Toggle Menu (WebGL)",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4be60e59-fce2-415a-a036-530cfeed56a4",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Toggle Chat",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

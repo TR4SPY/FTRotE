@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using System.Linq;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -59,6 +60,25 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void InstantiateItem(Vector3 position)
         {
+            if (stats.jewelDrops != null && stats.jewelDrops.Length > 0 && Random.value <= stats.jewelDropChance)
+            {
+                var possibleJewels = stats.jewelDrops
+                    .Where(j => j.jewel != null && Random.value <= j.dropChance)
+                    .Select(j => j.jewel)
+                    .ToList();
+    
+                if (possibleJewels.Count > 0)
+                {
+                    var jewel = possibleJewels[Random.Range(0, possibleJewels.Count)];
+                    var jewelItem = new ItemInstance(jewel, false);
+                    jewelItem.stack = 1;
+
+                    var jewelDrop = Instantiate(m_itemPrefab, position, Quaternion.identity);
+                    jewelDrop.SetItem(jewelItem);
+                    return;
+                }
+            }
+
             var index = Random.Range(0, stats.items.Length);
             var item = new ItemInstance(
                 stats.items[index],

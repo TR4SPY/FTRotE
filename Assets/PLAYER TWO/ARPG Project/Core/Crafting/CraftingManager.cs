@@ -56,12 +56,14 @@ namespace PLAYERTWO.ARPGProject
                         if (usedJewel != null)
                             usedJewel.stack--;
 
+                        inputItems.RemoveAll(i => i.stack <= 0);
+
                         RemoveBars(bars, barUsed);
 
                         var enhancedItem = inputItems.FirstOrDefault(i => i.IsEquippable());
                         rule.OnFail(enhancedItem);
 
-                        failReason = "<color=#cc4444>Enhancement failed!</color>";
+                        failReason = StringUtils.StringWithColor("Enhancement failed!", GameColors.Crimson);
                         return false;
                     }
 
@@ -73,7 +75,7 @@ namespace PLAYERTWO.ARPGProject
                         bool added = playerInventory.TryAddItem(barItem);
                         if (!added)
                         {
-                            Debug.LogWarning("[CraftingManager] Couldn't return Bar of Solmire (no space).");
+                            GUI.instance.DropItem(barItem);
                         }
                     }
 

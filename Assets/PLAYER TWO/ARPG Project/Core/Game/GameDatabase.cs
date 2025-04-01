@@ -15,6 +15,7 @@ namespace PLAYERTWO.ARPGProject
         public List<Skill> skills => gameData.skills;
         public List<Quest> quests => gameData.quests;
         public List<GameObject> questItems => gameData.questItems;
+        public List<GameObject> enemies => gameData.enemies;
 
         /// <summary>
         /// Returns the index of a given element on a list of a given type.

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 124
   prefab: {fileID: 1553534218236778084, guid: b7256abe1055dfda19906d34e24225c2, type: 3}
-  price: 10000000
+  price: 100
   rarity: 0
   dropPosition: {x: 0, y: 0, z: 0}
   dropRotation: {x: -90, y: 0, z: 45}

@@ -105,6 +105,12 @@ namespace PLAYERTWO.ARPGProject
             return m_inventory != null ? m_inventory.instance.money : initialMoney;
         }
 
+        public void AddGold(int amount)
+        {
+            if (m_inventory != null)
+                m_inventory.instance.money += amount;
+        }
+
         public bool RemoveItem(Item item)
         {
             foreach (var inventoryItem in currentItems.Keys)
