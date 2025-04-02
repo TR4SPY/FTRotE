@@ -22,7 +22,7 @@ namespace PLAYERTWO.ARPGProject
         public InputActionAsset inputActions;
         public InputActionAsset gameplayActions;
         public InputActionAsset guiActions;
-        public string toggleActionName = "ToggleChat";
+        public string toggleActionName = "Toggle Chat";
 
         private bool isChatOpen = false;
         private bool wasFocusedLastFrame = false;
@@ -168,7 +168,7 @@ namespace PLAYERTWO.ARPGProject
             {
                 case "help":
                     AddMessageToLog(StringUtils.StringWithColorAndStyle(
-                        "/money [amount], /drop [group] [id] [level] [attr] [durability], /tp x y z, /wp [index], /summon [enemyId]",
+                        "/money [amount], /drop [group] [id] [level] [attr] [durability], /tp x y z, /wp [index], /listwp, /whereami, /summon [enemyId]",
                         GameColors.Gray, italic: true));
 
                     AddMessageToLog(StringUtils.StringWithColorAndStyle(
@@ -176,7 +176,7 @@ namespace PLAYERTWO.ARPGProject
                         GameColors.Gray, italic: true));
 
                     AddMessageToLog(StringUtils.StringWithColorAndStyle(
-                        "/dda [log|reset|export|force|type|diff value], /clear, /whereami, /listwp",
+                        "/dda [log|reset|export|force|type|diff value|achievements|quests], /clear",
                         GameColors.Gray, italic: true));
                     break;
 
@@ -184,7 +184,7 @@ namespace PLAYERTWO.ARPGProject
                     if (parts.Length >= 2 && int.TryParse(parts[1], out int gold))
                     {
                         inventory.AddGold(gold);
-                        AddMessageToLog(StringUtils.StringWithColorAndStyle($"+{gold} money", GameColors.Gold, bold: true));
+                        AddMessageToLog(StringUtils.StringWithColorAndStyle($"Get rich quick scheme: +{gold} money", GameColors.Gold, bold: true));
                     }
                     break;
                 
@@ -215,7 +215,7 @@ namespace PLAYERTWO.ARPGProject
                             if (entity != null)
                             {
                                 entity.stats.AddExperience(exp);
-                                AddMessageToLog(StringUtils.StringWithColorAndStyle($"+{exp} EXP gained", GameColors.Lime));
+                                AddMessageToLog(StringUtils.StringWithColorAndStyle($"+{exp} Experience gained", GameColors.Lime));
                             }
                             else
                             {
@@ -230,19 +230,41 @@ namespace PLAYERTWO.ARPGProject
                     }
 
                 case "lvlup":
+                {
+                    var entity = character.Entity;
+                    if (entity != null)
                     {
-                        var entity = character.Entity;
-                        if (entity != null)
+                        int amount = 1;
+                        if (parts.Length >= 2)
+                            int.TryParse(parts[1], out amount);
+
+                        int maxLevel = Game.instance.maxLevel;
+
+                        if (entity.stats.level >= maxLevel)
                         {
-                            entity.stats.LevelUp();
-                            AddMessageToLog(StringUtils.StringWithColorAndStyle("Level up forced!", GameColors.Orange));
+                            AddMessageToLog(StringUtils.StringWithColor("Already at max level!", GameColors.Crimson));
+                            break;
+                        }
+
+                        int targetLevel = entity.stats.level + amount;
+                        if (targetLevel > maxLevel)
+                        {
+                            int allowedAmount = maxLevel - entity.stats.level;
+                            entity.stats.ForceLevelUp(allowedAmount);
+                            AddMessageToLog(StringUtils.StringWithColor($"Level capped at {maxLevel}. Gained {allowedAmount} level(s).", GameColors.Orange));
                         }
                         else
                         {
-                            AddMessageToLog(StringUtils.StringWithColor("Entity not found.", GameColors.Crimson));
+                            entity.stats.ForceLevelUp(amount);
+                            AddMessageToLog(StringUtils.StringWithColor($"Leveled up by {amount}. Current level: {entity.stats.level}", GameColors.Orange));
                         }
-                        break;
                     }
+                    else
+                    {
+                        AddMessageToLog(StringUtils.StringWithColor("Entity not found.", GameColors.Crimson));
+                    }
+                    break;
+                }
 
                 case "kill":
                     {
@@ -358,19 +380,27 @@ namespace PLAYERTWO.ARPGProject
                     break;
 
                 case "drop":
-                    if (parts.Length == 6 &&
+                {
+                    int level = 0;
+                    int attributes = 0;
+                    int durabilityPercent = 100;
+
+                    if (parts.Length >= 3 &&
                         int.TryParse(parts[1], out int group) &&
-                        int.TryParse(parts[2], out int id) &&
-                        int.TryParse(parts[3], out int level) &&
-                        int.TryParse(parts[4], out int attributes) &&
-                        int.TryParse(parts[5], out int durabilityPercent))
+                        int.TryParse(parts[2], out int idInGroup))
                     {
+                        if (parts.Length >= 4) int.TryParse(parts[3], out level);
+                        if (parts.Length >= 5) int.TryParse(parts[4], out attributes);
+                        if (parts.Length >= 6) int.TryParse(parts[5], out durabilityPercent);
+
+                        int combinedID = int.Parse($"{group}{idInGroup}");
+
                         var item = GameDatabase.instance.items
-                            .FirstOrDefault(i => (int)i.group == group && i.id == id);
+                            .FirstOrDefault(i => i.id == combinedID);
 
                         if (item == null)
                         {
-                            AddMessageToLog(StringUtils.StringWithColor($"Item not found (Group {group}, ID {id})", GameColors.Crimson));
+                            AddMessageToLog(StringUtils.StringWithColor($"Item not found (Group {group}, ID {idInGroup})", GameColors.Crimson));
                             break;
                         }
 
@@ -412,10 +442,11 @@ namespace PLAYERTWO.ARPGProject
                     else
                     {
                         AddMessageToLog(StringUtils.StringWithColor(
-                            "Usage: /drop [group] [id] [level] [attributes] [durability]",
+                            "Usage: /drop [group] [idInGroup] [level] [attributes] [durability]",
                             GameColors.Gray));
                     }
                     break;
+                }
 
                 case "tp":
                     if (parts.Length == 4 &&
@@ -434,8 +465,9 @@ namespace PLAYERTWO.ARPGProject
                         var wpList = LevelWaypoints.instance.waypoints;
                         if (wpIndex >= 0 && wpIndex < wpList.Count)
                         {
-                            LevelWaypoints.instance.TravelTo(wpList[wpIndex]);
-                            AddMessageToLog(StringUtils.StringWithColorAndStyle($"Warped to waypoint {wpIndex}", GameColors.LightBlue));
+                            var waypoint = wpList[wpIndex];
+                            LevelWaypoints.instance.TravelTo(waypoint);
+                            AddMessageToLog(StringUtils.StringWithColorAndStyle($"Warped to {waypoint.title}", GameColors.LightBlue));
                         }
                         else
                         {
@@ -448,11 +480,13 @@ namespace PLAYERTWO.ARPGProject
                     }
                     break;
 
+
                     case "listwp":
                         var waypoints = LevelWaypoints.instance.waypoints;
                         for (int i = 0; i < waypoints.Count; i++)
                         {
-                            AddMessageToLog($"[{i}] {waypoints[i].name}");
+                            var wp = waypoints[i];
+                            AddMessageToLog(StringUtils.StringWithColor($"[{i}] - {wp.title}", GameColors.Gray));
                         }
                         break;
 
@@ -500,7 +534,11 @@ namespace PLAYERTWO.ARPGProject
                             case "log":
                                 if (logger != null)
                                 {
-                                    string msg = $"[AI-DDA] PlayerDeaths: {logger.playerDeaths}, EnemiesDefeated: {logger.enemiesDefeated}, PotionsUsed: {logger.potionsUsed}, ZonesDiscovered: {logger.zonesDiscovered}, CurrentType: {logger.currentDynamicPlayerType}";
+                                    string playtimeFormatted = PlayerBehaviorLogger.FormatPlayTime(character.totalPlayTime);
+
+                                    string msg = $"[AI-DDA] Player Deaths: {logger.playerDeaths}, Enemies Defeated: {logger.enemiesDefeated}, Potions Used: {logger.potionsUsed}, Zones Discovered: {logger.zonesDiscovered}, " +
+                                                $"Play Time: {playtimeFormatted}, Combat Time: {logger.totalCombatTime:F1}s, Quests Completed: {logger.questsCompleted}, " +
+                                                $"Achievements: {logger.unlockedAchievements.Count}, Current Bartle's Type: {logger.currentDynamicPlayerType}";
                                     AddMessageToLog(StringUtils.StringWithColor(msg, GameColors.LightBlue));
                                 }
                                 else
@@ -544,7 +582,7 @@ namespace PLAYERTWO.ARPGProject
                             case "type":
                                 if (logger != null)
                                 {
-                                    AddMessageToLog(StringUtils.StringWithColor($"Dynamic player type: {logger.currentDynamicPlayerType}", GameColors.Cyan));
+                                    AddMessageToLog(StringUtils.StringWithColor($"Dynamic player Bartle's type: {logger.currentDynamicPlayerType}", GameColors.Cyan));
                                 }
                                 break;
 
@@ -560,6 +598,55 @@ namespace PLAYERTWO.ARPGProject
                                 else
                                 {
                                     AddMessageToLog(StringUtils.StringWithColor("Usage: /dda diff [value]", GameColors.Gray));
+                                }
+                                break;
+
+                            case "achievements":
+                                if (logger != null)
+                                {
+                                    if (logger.unlockedAchievements.Count > 0)
+                                    {
+                                        AddMessageToLog(StringUtils.StringWithColor($"Unlocked Achievements ({logger.unlockedAchievements.Count}):", GameColors.Lime));
+                                        foreach (var a in logger.unlockedAchievements)
+                                            AddMessageToLog(StringUtils.StringWithColor($"• {a}", GameColors.Gold));
+                                    }
+                                    else
+                                    {
+                                        AddMessageToLog(StringUtils.StringWithColor("No achievements unlocked yet.", GameColors.Gray));
+                                    }
+                                }
+                                else
+                                {
+                                    AddMessageToLog(StringUtils.StringWithColor("Logger not initialized.", GameColors.Crimson));
+                                }
+                                break;
+
+
+                            case "quests":
+                                var questData = Game.instance.currentCharacter.quests;
+
+                                if (questData != null && questData.currentQuests != null)
+                                {
+                                    var completed = questData.currentQuests
+                                        .Where(q => q != null && q.completed)
+                                        .ToList();
+
+                                    if (completed.Count == 0)
+                                    {
+                                        AddMessageToLog("No quests completed yet.");
+                                    }
+                                    else
+                                    {
+                                        AddMessageToLog(StringUtils.StringWithColor("Completed Quests:", GameColors.Cyan));
+                                        foreach (var quest in completed)
+                                        {
+                                            AddMessageToLog($"✔ {quest.data.title}");
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    AddMessageToLog(StringUtils.StringWithColor("Quest system not initialized.", GameColors.Crimson));
                                 }
                                 break;
 

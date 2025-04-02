@@ -728,6 +728,20 @@ namespace PLAYERTWO.ARPGProject
             // Debug.Log($"[EXP] Pokonano {other.name}, zdobyto {gainedExp} EXP");
         }
 
+        public void ForceLevelUp(int amount = 1)
+        {
+            if (m_reachedMaxLevel)
+                return;
+
+            level = Mathf.Min(level + amount, Game.instance.maxLevel);
+            availablePoints += Game.instance.levelUpPoints * amount;
+
+            Recalculate();
+            Revitalize();
+
+            onLevelUp?.Invoke();
+        }
+
         public bool IsMaxLevel()
         {
             return m_reachedMaxLevel;

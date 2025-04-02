@@ -59,6 +59,7 @@ namespace PLAYERTWO.ARPGProject
                 groupCounters[group]++;
             }
         }
+        
         private int GetMaxIndexInGroup(Item.ItemGroup group)
         {
             return items
