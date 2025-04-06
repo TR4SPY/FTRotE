@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -68,6 +69,10 @@ namespace PLAYERTWO.ARPGProject
         [Header("Collectibles Prefabs")]
         public CollectibleItem collectibleItemPrefab;
         public CollectibleMoney collectibleMoneyPrefab;
+
+        [Header("Input Actions references")]
+        public InputActionAsset gameplayActions;
+        public InputActionAsset guiActions;
 
         [Space(15)]
         public UnityEvent<int> onCharacterAdded;

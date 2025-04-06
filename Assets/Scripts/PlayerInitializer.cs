@@ -56,6 +56,17 @@ namespace AI_DDA.Assets.Scripts
             {
                 Debug.LogError("PlayerBehaviorLogger not found on the player entity!");
             }
+
+            var chatManager = Object.FindFirstObjectByType<ChatManager>();
+            if (chatManager != null)
+            {
+                chatManager.Reinitialize();
+                Debug.Log("[ChatManager] Reinitialized after player load.");
+            }
+            else
+            {
+                Debug.LogWarning("[ChatManager] ChatManager not found during PlayerInitializer.");
+            }
         }
     }
 }

@@ -56,7 +56,7 @@ namespace AI_DDA.Assets.Scripts
 
             if (statsManager == null)
             {
-                Debug.LogError("GUIStatsManager not found in Game.instance!");
+              //  Debug.LogError("GUIStatsManager not found in Game.instance!");
             }
         }
 

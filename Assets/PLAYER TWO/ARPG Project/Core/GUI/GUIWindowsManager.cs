@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using AI_DDA.Assets.Scripts;
+using UnityEngine.SceneManagement;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -70,7 +71,6 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("A reference to the GUI Chat Window.")]
         public GUIChatWindow chatWindow;
 
-
         [Header("Audio Settings")]
         [Tooltip("The Audio Clip that plays when opening windows.")]
         public AudioClip openClip;
@@ -88,53 +88,65 @@ namespace PLAYERTWO.ARPGProject
                 Destroy(gameObject);
                 return;
             }
+
             Instance = this;
             base.Awake();
+
+            // Podpinamy się do eventu ładowania sceny
+            SceneManager.sceneLoaded += OnSceneLoaded;
         }
 
-        /// <summary>
-        /// Returns the reference to the GUI Player Inventory.
-        /// </summary>
+        private void OnDestroy()
+        {
+            // Odpinamy event na wszelki wypadek
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
+
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            RebuildWindowsList();
+        }
+
+        private void RebuildWindowsList()
+        {
+            windows = new List<GUIWindow>(GetComponentsInChildren<GUIWindow>(true));
+
+            foreach (var window in windows)
+            {
+                window.onOpen.AddListener(() => m_audio?.PlayUiEffect(openClip));
+                window.onClose.AddListener(() => m_audio?.PlayUiEffect(closeClip));
+            }
+
+            Debug.Log($"[GUIWindowsManager] Windows list rebuilt. Found {windows.Count} windows.");
+        }
+
         public GUIPlayerInventory GetInventory()
         {
             if (!inventoryWindow) return null;
-
             return inventoryWindow.GetComponent<GUIPlayerInventory>();
         }
 
-        /// <summary>
-        /// Returns the reference to the GUI Merchant.
-        /// </summary>
         public GUIMerchant GetMerchant()
         {
             if (!merchantWindow) return null;
-
             return merchantWindow.GetComponent<GUIMerchant>();
         }
 
-        /// <summary>
-        /// Returns the reference to the GUI Craftman.
-        /// </summary>
         public GUICraftman GetCraftman()
         {
             if (!craftmanWindow) return null;
-
             return craftmanWindow.GetComponent<GUICraftman>();
         }
 
-        /// <summary>
-        /// Returns the reference to the GUI Information.
-        /// </summary>
         public GUIInformation GetInformation()
         {
             if (!informationWindow) return null;
-
             return informationWindow.GetComponent<GUIInformation>();
         }
 
         public GUIChatWindow GetChatWindow()
         {
-            return chatWindow.GetComponent<GUIChatWindow>();
+            return chatWindow;
         }
 
         protected virtual void Start()
@@ -145,14 +157,8 @@ namespace PLAYERTWO.ARPGProject
             {
                 Debug.LogError("[GUIWindowsManager] settingsWindow is NULL! Assign it in the Inspector.");
             }
-            
-            windows = new List<GUIWindow>(GetComponentsInChildren<GUIWindow>(true));
 
-            foreach (var window in windows)
-            {
-                window.onOpen.AddListener(() => m_audio?.PlayUiEffect(openClip));
-                window.onClose.AddListener(() => m_audio?.PlayUiEffect(closeClip));
-            }
+            RebuildWindowsList();
 
             Debug.Log($"GUIWindowsManager initialized. Found {windows.Count} windows.");
         }
@@ -161,7 +167,10 @@ namespace PLAYERTWO.ARPGProject
         {
             foreach (var window in windows)
             {
-                window.Hide(); // Zamknij wszystkie okna
+                if (window != null)
+                {
+                    window.Hide(); // Zamknij wszystkie okna, tylko istniejące
+                }
             }
         }
 

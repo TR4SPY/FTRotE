@@ -8,6 +8,13 @@ namespace PLAYERTWO.ARPGProject
         Chest,
         Pants,
         Gloves,
-        Boots
+        Boots,
+        Wings,
+        LeftRing,
+        RightRing,
+        Necklace,
+        Mount,
+        Pet,
+        Charm
     }
 }

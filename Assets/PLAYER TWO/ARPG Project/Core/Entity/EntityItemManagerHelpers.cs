@@ -48,6 +48,11 @@ namespace PLAYERTWO.ARPGProject
         public virtual ItemInstance GetLeftHand() => GetOrInitializeItem(ItemSlots.LeftHand);
 
         /// <summary>
+        /// Returns the Item Instance of the item equipped on the wings slot.
+        /// </summary>
+        public virtual ItemInstance GetWings() => GetOrInitializeItem(ItemSlots.Wings);
+
+        /// <summary>
         /// Returns the Item Instance of the item equipped on the helm slot.
         /// </summary>
         public virtual ItemInstance GetHelm() => GetOrInitializeItem(ItemSlots.Helm);
@@ -106,5 +111,35 @@ namespace PLAYERTWO.ARPGProject
         /// Returns the Item Bow of the item equipped on the right hand slot.
         /// </summary>
         public virtual ItemBow GetBow() => GetOrInitializeItem(ItemSlots.RightHand).GetData<ItemBow>();
+
+        /// <summary>
+        /// Returns the Item Instance of the item equipped on the left ring slot.
+        /// </summary>
+        public virtual ItemInstance GetLeftRing() => GetOrInitializeItem(ItemSlots.LeftRing);
+
+        /// <summary>
+        /// Returns the Item Instance of the item equipped on the right ring slot.
+        /// </summary>
+        public virtual ItemInstance GetRightRing() => GetOrInitializeItem(ItemSlots.RightRing);
+
+        /// <summary>
+        /// Returns the Item Instance of the item equipped on the necklace slot.
+        /// </summary>
+        public virtual ItemInstance GetNecklace() => GetOrInitializeItem(ItemSlots.Necklace);
+
+        /// <summary>
+        /// Returns the Item Instance of the item equipped on the mount slot.
+        /// </summary>
+        public virtual ItemInstance GetMount() => GetOrInitializeItem(ItemSlots.Mount);
+
+        /// <summary>
+        /// Returns the Item Instance of the item equipped on the pet slot.
+        /// </summary>
+        public virtual ItemInstance GetPet() => GetOrInitializeItem(ItemSlots.Pet);
+
+        /// <summary>
+        /// Returns the Item Instance of the item equipped on the charm slot.
+        /// </summary>
+        public virtual ItemInstance GetCharm() => GetOrInitializeItem(ItemSlots.Charm);
     }
 }

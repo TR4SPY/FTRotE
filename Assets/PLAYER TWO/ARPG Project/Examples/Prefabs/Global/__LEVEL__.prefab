@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 4745687086142828830}
   - component: {fileID: 7423587651095501951}
   - component: {fileID: 6818988902394239575}
+  - component: {fileID: 459104444925299866}
   m_Layer: 0
   m_Name: __LEVEL__
   m_TagString: Untagged
@@ -152,3 +153,21 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+--- !u!114 &459104444925299866
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 664077300431741928}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac09a627ea7ff124f9be111b7635a1c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chatPanel: {fileID: 0}
+  inputField: {fileID: 0}
+  logContent: {fileID: 0}
+  messagePrefab: {fileID: 0}
+  maxMessages: 50
+  toggleActionName: Toggle Chat

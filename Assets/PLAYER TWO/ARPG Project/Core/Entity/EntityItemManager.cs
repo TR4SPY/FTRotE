@@ -21,6 +21,9 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("A transform used as a shield slot.")]
         public Transform leftHandShieldSlot;
 
+        [Tooltip("A transform used as a wings slot on the characters back.")]
+        public Transform wingsSlot;
+
         [Tooltip("A transform used as the origin to instantiate projectiles from.")]
         public Transform projectileOrigin;
 

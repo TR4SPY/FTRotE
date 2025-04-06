@@ -200,7 +200,7 @@ namespace PLAYERTWO.ARPGProject
 
                 if (entity.stats.wasBoosted)
                 {
-                    Debug.LogWarning($"[Diff-Manager] {entity.name} był już boostowany – pomijam ApplyDifficultyToEntities");
+                    // Debug.LogWarning($"[Diff-Manager] {entity.name} był już boostowany – pomijam ApplyDifficultyToEntities");
                     continue;
                 }
 

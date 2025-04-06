@@ -5145,7 +5145,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 94128309}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0.19026199, z: 0, w: -0.9817334}
+  m_LocalRotation: {x: 0, y: -0.22593173, z: 0, w: -0.9741432}
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -17628,7 +17628,7 @@ Transform:
   m_GameObject: {fileID: 758569906}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2428.9565, y: 496.88205, z: -271.1368}
+  m_LocalPosition: {x: 1183.4258, y: 101.897064, z: -26.985067}
   m_LocalScale: {x: 5, y: 5, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -24954,7 +24954,7 @@ MonoBehaviour:
     m_equatorAmbient: {r: 0.52613986, g: 0.6215125, b: 0.68796355, a: 0.77413857}
     m_groundAmbient: {r: 0.5505181, g: 0.49112505, b: 0.4682816, a: 0.77413857}
     m_intensityAmbient: 1.1
-    m_skyboxExposure: 1.7481929
+    m_skyboxExposure: 1.7481921
     m_skyboxTint: {r: 0.6745073, g: 0.6745073, b: 0.6745073, a: 1}
     m_skyboxAtmosphereThickness: 0.8035408
     m_skyboxFogHeight: 0.01
@@ -29021,14 +29021,14 @@ MonoBehaviour:
   m_snowingHeight: 60
   m_snowFadeHeight: 50
   m_snowDuration: 0
-  m_snowWaitTime: 327.2859
+  m_snowWaitTime: 428.0508
   m_snowSampleStrength: 0
   m_savedSnowingHeight: 66.47059
   m_enableRain: 1
   m_rainIntensity: 0
   m_rainSampleStrength: 0
   m_rainDuration: 0
-  m_rainWaitTime: 224.46622
+  m_rainWaitTime: 464.07703
   m_thunderLightColor: {r: 0, g: 0.6313726, b: 1, a: 1}
   m_thunderLightIntensity: 2
   m_thunderAudioSources:
@@ -29399,7 +29399,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1363076298}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0.2138119, z: 0, w: -0.9768749}
+  m_LocalRotation: {x: 0, y: -0.31920108, z: 0, w: -0.9476871}
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -35520,7 +35520,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1960832360}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.16401118, z: 0, w: 0.98645854}
+  m_LocalRotation: {x: 0, y: 0.23546419, z: 0, w: 0.9718831}
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -35652,6 +35652,10 @@ PrefabInstance:
       value: -22.500002
       objectReference: {fileID: 0}
     - target: {fileID: 615137784440718354, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
+      propertyPath: m_Size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 615137784440718354, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
       propertyPath: m_Value
       value: 1
       objectReference: {fileID: 0}
@@ -35693,7 +35697,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 996639750028847107, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000011588498
+      value: 0.0008413214
       objectReference: {fileID: 0}
     - target: {fileID: 1650209087616716296, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
       propertyPath: m_AnchorMax.y
@@ -36650,7 +36654,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _AtmosphereThickness: 0.8035408
-    - _Exposure: 1.7481929
+    - _Exposure: 1.7481921
     - _FogGradient: 0.9000916
     - _FogHeight: 0.01
     - _SunDisk: 2

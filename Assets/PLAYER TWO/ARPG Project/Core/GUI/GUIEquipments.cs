@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace PLAYERTWO.ARPGProject
@@ -27,6 +28,27 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("Reference to the GUI Equipment Slot that corresponds to the boots slot.")]
         public GUIEquipmentSlot bootsSlots;
 
+        [Tooltip("Reference to the GUI Equipment Slot that corresponds to the wings slot.")]
+        public GUIEquipmentSlot wingsSlot;
+
+        [Tooltip("Reference to the GUI Equipment Slot that corresponds to the left ring slot.")]
+        public GUIEquipmentSlot leftRingSlot;
+
+        [Tooltip("Reference to the GUI Equipment Slot that corresponds to the right ring slot.")]
+        public GUIEquipmentSlot rightRingSlot;
+
+        [Tooltip("Reference to the GUI Equipment Slot that corresponds to the necklace slot.")]
+        public GUIEquipmentSlot necklaceSlot;
+
+        [Tooltip("Reference to the GUI Equipment Slot that corresponds to the mount slot.")]
+        public GUIEquipmentSlot mountSlot;
+
+        [Tooltip("Reference to the GUI Equipment Slot that corresponds to the pet slot.")]
+        public GUIEquipmentSlot petSlot;
+
+        [Tooltip("Reference to the GUI Equipment Slot that corresponds to the charm slot.")]
+        public GUIEquipmentSlot charmSlot;
+
         protected EntityItemManager m_equipments;
 
         /// <summary>
@@ -52,6 +74,13 @@ namespace PLAYERTWO.ARPGProject
             Equip(equipments.GetPants(), pantsSlot);
             Equip(equipments.GetGloves(), glovesSlot);
             Equip(equipments.GetBoots(), bootsSlots);
+            Equip(equipments.GetWings(), wingsSlot);
+            Equip(equipments.GetLeftRing(), leftRingSlot);
+            Equip(equipments.GetRightRing(), rightRingSlot);
+            Equip(equipments.GetNecklace(), necklaceSlot);
+            Equip(equipments.GetMount(), mountSlot);
+            Equip(equipments.GetPet(), petSlot);
+            Equip(equipments.GetCharm(), charmSlot);
         }
 
         /// <summary>
@@ -69,6 +98,13 @@ namespace PLAYERTWO.ARPGProject
             if (TryEquip(item, pantsSlot)) return true;
             if (TryEquip(item, glovesSlot)) return true;
             if (TryEquip(item, bootsSlots)) return true;
+            if (TryEquip(item, wingsSlot)) return true;
+            if (TryEquip(item, leftRingSlot)) return true;
+            if (TryEquip(item, rightRingSlot)) return true;
+            if (TryEquip(item, necklaceSlot)) return true;
+            if (TryEquip(item, mountSlot)) return true;
+            if (TryEquip(item, petSlot)) return true;
+            if (TryEquip(item, charmSlot)) return true;
 
             return false;
         }
