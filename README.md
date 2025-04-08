@@ -1,6 +1,6 @@
 # AI-DDA (Artificial Intelligence Dynamic Difficulty Adjustment)
 
-This project explores the integration of machine learning techniques, specifically through Unity ML-Agents and potentially other AI models, to dynamically adjust the difficulty in an RPG game environment.
+This project explores the integration of machine learning techniques, specifically through Unity ML-Agents and custom AI models, to dynamically adjust the difficulty in an RPG game environment. The system also incorporates player behavior modeling and psychological player profiling (Bartle's Player Types) as part of an academic research project at the Master's degree in Computer Science at University of Bath.
 
 ---
 
@@ -8,30 +8,29 @@ This project explores the integration of machine learning techniques, specifical
 
 ### **Objective**
 The primary goal of this project is to design and implement an AI system capable of:
-- Adapting game difficulty dynamically to suit the player's skill level and preferences.
-- Enhancing player engagement by providing a tailored gaming experience.
-- Leveraging advanced AI techniques for real-time player modeling and difficulty adjustment.
+- Dynamically adjusting game difficulty to suit the player's skill level and playstyle.
+- Enhancing player engagement by providing a personalized gaming experience.
+- Utilizing advanced AI techniques for real-time player modeling and difficulty scaling.
+- Integrating player profiling based on Bartle's Player Types taxonomy.
 
 ### **Current Status**
-The project is built upon a heavily modified version of the **ARPG Project** asset and utilizes the **Gaia Pro 2023** terrain generation asset for an immersive environment. The game prototype currently focuses on integrating machine learning systems for AI-driven adaptations.
+The project is built upon a heavily modified version of the **ARPG Project** asset and utilizes the **Gaia Pro 2023** terrain generation asset to create an immersive game environment. The prototype focuses on combining player behavioral analysis with AI-driven adaptive difficulty.
 
 #### ✔ **Completed**
 
-- **AI Agent Implementation**: AI can explore, interact with NPCs, fight enemies, and discover zones and waypoints.
-- **Data Logging & Player Modeling**: System logs player and AI behavior (kills, deaths, interactions, exploration, etc.).
-- **Bartle’s Player Type Classification**: AI classifies players based on behavior (Achiever, Explorer, Socializer, Killer).
-- **ML-Agents Integration**: AI functions within Unity ML-Agents for behavior learning.
-- **Final DDA Implementation**: Prototype system for difficulty adjustment is in place.
+- **AI Agent Implementation**: AI can explore, interact with NPCs, engage in combat, and navigate waypoints.
+- **Data Logging & Player Modeling**: Comprehensive system logs player behavior (kills, deaths, interactions, exploration).
+- **Bartle’s Player Type Classification**: Initial player survey and dynamic behavioral analysis determine the player's evolving profile (Achiever, Explorer, Socializer, Killer).
+- **ML-Agents Integration**: AI operates within Unity ML-Agents for behavioral learning.
+- **AI Model Integration**: MLP (ONNX) and Reinforcement Learning (ONNX integrated with ML-Agents) models predict and fine-tune difficulty.
+- **Experimental Validation**: Controlled experiments conducted with player groups to evaluate AI-DDA effectiveness.
 
 #### 🚧 **In Progress**
 
-- **Finalizing DDA Implementation**: AI should dynamically adjust difficulty based on player behavior.
-- **Training AI Based on Player Data**: AI should learn from real players' behavior to adjust difficulty effectively.
-- **Experiment Setup & Testing**: Two test groups:
-Group A (DDA ON) – AI adjusts difficulty dynamically
-Group B (DDA OFF) – Static difficulty
-- **Optimizing Enemy AI Behavior**: Ensuring enemies behave correctly when AI Agent interacts with them.
-- **Refinement of Player Modeling & Difficulty Scaling**
+- **AI System Optimization**: Improving enemy AI behaviors and responsiveness to difficulty adjustments.
+- **Final Documentation and Academic Publication**: Preparing materials for thesis submission and publication of experimental results.
+- **Gameplay Expansion**: Further development of game mechanics for extended testing scenarios.
+- **Data Analysis & Refinement**: Post-experiment data analysis to refine player modeling and difficulty scaling.
 
 ---
 
@@ -39,25 +38,81 @@ Group B (DDA OFF) – Static difficulty
 
 ### **Technology Stack**
 - **Game Engine**: Unity (URP 6+)
-- **ML Toolkit**: Unity ML-Agents
+- **ML Toolkit**: Unity ML-Agents, Unity Sentis (ONNX integration)
 - **Assets**:
-  - ARPG Project (heavily modified to fit the purpose of the project)
-  - Gaia Pro 2023 (terrain generation and environment design)
-- **Programming Languages**: C# (Unity), Python (for ML model training)
+  - ARPG Project (custom-modified for research purposes)
+  - Gaia Pro 2023 (procedural terrain generation and environment design)
+- **Programming Languages**: 
+  - C# (Unity game logic)
+  - Python (training AI models and data processing)
+
+### **AI Models**
+- **Multilayer Perceptron (MLP) — ONNX format**: Performs initial difficulty prediction based on real-time player behavior data.
+- **Reinforcement Learning (RL) — ONNX format**: Fine-tunes difficulty dynamically in response to player performance and actions.
+- Both models collaborate for layered, adaptive scaling of game difficulty.
 
 ### **Core Components**
-- **Dynamic Difficulty Adjustment (DDA)**: AI adapts enemy strength, spawn rates, and mechanics based on the player.
-- **Player Modeling**: AI analyzes player interactions to classify playstyle.
-- **Bartle’s Player Types**: Comparison of player-declared vs. dynamically classified types.
-- **ML-Agents Training**: AI learns to adjust game mechanics based on real player data.
-- **Experimental Validation**: AI's impact on player experience is tested with two groups of participants.
+- **Dynamic Difficulty Adjustment (DDA)**: AI adapts enemy stats, spawn rates, and mechanics based on player behavior and AI predictions.
+- **Player Behavior Logging**: Real-time tracking of player actions (kills, deaths, potion use, quest completion, exploration).
+- **Bartle’s Player Type Profiling**: Combines initial questionnaire with continuous in-game behavioral analysis to determine player type.
+- **AI-Driven Game Adjustment**: Game world adapts dynamically in response to AI difficulty predictions.
+- **Experimental Data Collection**: System logs player behavior and AI activity for academic analysis.
+
+---
+
+## **Experiment Design**
+
+The experimental phase of the project has been completed, with data collected from player groups under controlled conditions:
+
+- **Group A (DDA ON)**: AI dynamically adjusts difficulty throughout gameplay.
+- **Group B (DDA OFF)**: Static, pre-defined difficulty setting.
+
+Data collection included:
+- Real-time player activity logs.
+- AI decision-making records.
+- Comparison of declared vs. dynamically inferred player types.
+- In-game performance metrics.
+
+The focus now shifts to final data analysis, optimization, and preparation for academic publication.
+
+---
+
+## **In-Game Command Reference**
+
+| Command | Description |
+|---------|-------------|
+| `/help` | Displays a list of available commands. |
+| `/help [command]` | Displays detailed help for the specified command. |
+| `/money [amount]` | Adds the specified amount of gold to the player. |
+| `/drop [group] [id] [level] [attr] [durability]` | Spawns an item with the specified parameters. |
+| `/tp x y z` | Teleports the player to the given coordinates. |
+| `/wp [index]` | Teleports the player to the waypoint at the specified index. |
+| `/listwp` | Lists all available waypoints in the current scene. |
+| `/whereami` | Displays the player's current coordinates. |
+| `/summon [enemyId]` | Spawns an enemy with the specified ID. |
+| `/heal` | Fully restores the player's health and mana. |
+| `/kill` | Kills the player character. |
+| `/addexp [value]` | Adds the specified amount of experience points. |
+| `/lvlup` | Increases the player's level by one. |
+| `/godmode` | Toggles invincibility mode for the player. |
+| `/time [day, night]` | Changes the time of day in-game. |
+| `/weather [sun, rain, snow]` | Changes the in-game weather. |
+| `/dda log` | Displays the AI-DDA activity log. |
+| `/dda reset` | Resets the AI-DDA data for the current player session. |
+| `/dda export` | Exports player data to CSV for analysis. |
+| `/dda force` | Forces an immediate recalculation of difficulty. |
+| `/dda type` | Displays the dynamically estimated player type. |
+| `/dda diff [value]` | Manually sets the difficulty level. |
+| `/dda achievements` | Lists unlocked achievements. |
+| `/dda quests` | Lists completed quests. |
+| `/clear` | Clears the in-game chat log. |
 
 ---
 
 ## **How to Contribute**
 This project is part of an academic research effort and is not open to external contributions at the moment. However, feedback and suggestions are always welcome!
 
-You can reach me through my official [Contact Page](https://tr4spy.co.uk/portfolio/kontakt/) for any questions or discussions about the project.
+You can reach me through my official [Contact Page](https://tr4spy.com/portfolio/kontakt/) for any questions or discussions about the project.
 
 ---
 
