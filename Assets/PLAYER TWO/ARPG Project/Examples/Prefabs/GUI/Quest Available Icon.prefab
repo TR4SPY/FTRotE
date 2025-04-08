@@ -57,8 +57,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 343275122e2268e47b5b0ff18c1935d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  iconSprite: {fileID: 21300000, guid: c815e714462e5c470a5e62869cc52917, type: 3}
+  iconSprite: {fileID: -34301211, guid: bb49c698945b42b81a9cbdec675e3de8, type: 3}
   initialVisibility: 1
-  initialSize: {x: 32, y: 32}
+  initialSize: {x: 32, y: 40}
   rotationOffset: 0
   rotateWithOwner: 0

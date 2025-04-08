@@ -80,7 +80,7 @@ namespace PLAYERTWO.ARPGProject
 
             if (string.IsNullOrEmpty(m_craftman.section.title))
             {
-                Debug.LogWarning("[GUICraftman] Section title is empty.");
+               // Debug.LogWarning("[GUICraftman] Section title is empty.");
             }
 
             if (m_craftman.inventories.TryGetValue(m_craftman.section.title, out var inventory))
