@@ -13,18 +13,17 @@ namespace PLAYERTWO.ARPGProject
         [Header("Ground Settings")]
         [Tooltip(
             "The ground layer mask. The loot won't be "
-                + "spawned if the ground below the loot point is not in this layer."
+            + "spawned if the ground below the loot point is not in this layer."
         )]
         public LayerMask groundMask = -5;
 
         [Tooltip(
             "The maximum distance to the ground. If the ground is "
-                + "further than this distance from the loot point, the loot won't be spawned."
+            + "further than this distance from the loot point, the loot won't be spawned."
         )]
         public float maxGroundDistance = 2f;
 
         protected Entity m_entity;
-
         protected WaitForSeconds m_waitForLootLoopDelay;
 
         protected const float k_groundOffset = 0.1f;
@@ -32,7 +31,9 @@ namespace PLAYERTWO.ARPGProject
         protected const float k_lootLoopDelay = 0.1f;
 
         protected Game m_game => Game.instance;
+
         protected CollectibleItem m_itemPrefab => m_game.collectibleItemPrefab;
+
         protected CollectibleMoney m_moneyPrefab => m_game.collectibleMoneyPrefab;
 
         protected virtual void InitializeWaits()
@@ -43,7 +44,9 @@ namespace PLAYERTWO.ARPGProject
         protected virtual void InitializeEntity()
         {
             if (TryGetComponent(out m_entity))
+            {
                 m_entity.onDie.AddListener(Loot);
+            }
         }
 
         /// <summary>
@@ -60,13 +63,14 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void InstantiateItem(Vector3 position)
         {
-            if (stats.jewelDrops != null && stats.jewelDrops.Length > 0 && Random.value <= stats.jewelDropChance)
+            if (stats.jewelDrops != null && stats.jewelDrops.Length > 0 
+                && Random.value <= stats.jewelDropChance)
             {
                 var possibleJewels = stats.jewelDrops
                     .Where(j => j.jewel != null && Random.value <= j.dropChance)
                     .Select(j => j.jewel)
                     .ToList();
-    
+
                 if (possibleJewels.Count > 0)
                 {
                     var jewel = possibleJewels[Random.Range(0, possibleJewels.Count)];
@@ -91,8 +95,8 @@ namespace PLAYERTWO.ARPGProject
             {
                 int lvl = Random.Range(stats.minItemLevel, stats.maxItemLevel + 1);
                 int maxLvl = item.GetEquippable().maxUpgradeLevel;
-
                 lvl = Mathf.Clamp(lvl, 0, maxLvl);
+
                 for (int i = 0; i < lvl; i++)
                     item.UpgradeLevel();
             }
@@ -104,11 +108,21 @@ namespace PLAYERTWO.ARPGProject
         protected virtual void InstantiateMoney(Vector3 position)
         {
             var level = m_entity ? m_entity.stats.level : 1;
-            var money = Instantiate(m_moneyPrefab, position, Quaternion.identity);
             var baseAmount = Random.Range(stats.minMoneyAmount, stats.maxMoneyAmount);
-            var multiplier = 1 + (level - 1) * m_game.enemyLootMoneyIncreaseRate;
-            var finalAmount = Mathf.RoundToInt(baseAmount * multiplier);
-            money.amount = finalAmount;
+
+            float multiplier = 1 + (level - 1) * m_game.enemyLootMoneyIncreaseRate;
+            int finalAmount = Mathf.RoundToInt(baseAmount * multiplier);
+
+            Currency.SplitCurrency(finalAmount, out int solmire, out int lunaris, out int amber);
+
+            if (solmire == 0 && lunaris == 0 && amber == 0) 
+                return;
+
+            var moneyDrop = Instantiate(m_moneyPrefab, position, Quaternion.identity);
+
+            moneyDrop.solmire = solmire;
+            moneyDrop.lunaris = lunaris;
+            moneyDrop.amberlings = amber;
         }
 
         protected virtual Vector3 GetLootOrigin()
@@ -148,10 +162,11 @@ namespace PLAYERTWO.ARPGProject
                     if (Random.Range(0, 1f) > stats.moneyChance)
                     {
                         InstantiateItem(position);
-                        continue;
                     }
-
-                    InstantiateMoney(position);
+                    else
+                    {
+                        InstantiateMoney(position);
+                    }
                 }
             }
         }

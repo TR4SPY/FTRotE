@@ -19,6 +19,7 @@ namespace PLAYERTWO.ARPGProject
         public UnityEvent onItemRemoved;
 
         protected Inventory m_inventory;
+        public Currency currency => instance.currency;
 
         /// <summary>
         /// Returns the instance of the Inventory.

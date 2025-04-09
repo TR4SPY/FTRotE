@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -133,19 +134,37 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         public string GetRewardText()
         {
-            var text = "";
-            int finalExperience = GetTotalExperience();
-            int finalCoins = GetTotalCoins();
-
             if (!hasReward) return "None";
-            if (finalExperience > 0) text += $"{finalExperience} exp";
-            if (finalCoins > 0) text += $"\n{finalCoins} coins";
+
+            var parts = new List<string>();
+
+            int finalExperience = GetTotalExperience();
+            if (finalExperience > 0)
+                parts.Add($"{finalExperience} EXP");
+
+            int totalCoins = GetTotalCoins();
+            if (totalCoins > 0)
+            {
+                int solmire, lunaris, amberlings;
+                Currency.SplitCurrency(totalCoins, out solmire, out lunaris, out amberlings);
+
+                if (solmire > 0)
+                    parts.Add($"{solmire} Solmires");
+
+                if (lunaris > 0)
+                    parts.Add($"{lunaris} Lunaris");
+
+                if (amberlings > 0)
+                    parts.Add($"{amberlings} Amberlings");
+            }
 
             foreach (var item in items)
-                if (item.data)
-                    text += $"\n{item.data.name}";
+            {
+                if (item.data != null)
+                    parts.Add(item.data.name);
+            }
 
-            return text;
+            return string.Join("\n", parts);
         }
 
         public int GetTotalExperience()
@@ -197,6 +216,7 @@ namespace PLAYERTWO.ARPGProject
 
             return Mathf.CeilToInt(coins * multiplier);
         }
+
         public string GetFormattedRewardText()
         {
             int baseExperience = experience;
@@ -204,11 +224,11 @@ namespace PLAYERTWO.ARPGProject
             int baseCoins = coins;
             int finalCoins = GetTotalCoins();
 
-            float expMultiplier = (float)finalExperience / baseExperience;
-            float goldMultiplier = (float)finalCoins / baseCoins;
+            float expMultiplier = baseExperience > 0 ? (float)finalExperience / baseExperience : 1f;
+            float goldMultiplier = baseCoins > 0 ? (float)finalCoins / baseCoins : 1f;
 
-            string expColor = GetMultiplierColor(expMultiplier);
-            string goldColor = GetMultiplierColor(goldMultiplier);
+            Color expColor = GetMultiplierColor(expMultiplier);
+            Color goldColor = GetMultiplierColor(goldMultiplier);
 
             string expChange = FormatMultiplierText(expMultiplier, expColor, baseExperience, finalExperience);
             string goldChange = FormatMultiplierText(goldMultiplier, goldColor, baseCoins, finalCoins);
@@ -219,37 +239,45 @@ namespace PLAYERTWO.ARPGProject
         /// <summary>
         /// Formatuje tekst dla mnożnika nagrody i dodaje wartość bazową oraz końcową.
         /// </summary>
-        private string FormatMultiplierText(float multiplier, string color, int baseValue, int finalValue)
+        private string FormatMultiplierText(float multiplier, Color color, int baseValue, int finalValue)
         {
-            if (multiplier > 1f)
-                return $"(<color=#{color}>+{Mathf.RoundToInt((multiplier - 1) * 100)}%</color>)";
-            if (multiplier < 1f)
-                return $"(<color=#{color}>-{Mathf.RoundToInt((1 - multiplier) * 100)}%</color>)";
+            string text;
 
-            return $"(<color=#{color}>-/-</color>)";
+            if (multiplier > 1f)
+                text = $"+{Mathf.RoundToInt((multiplier - 1) * 100)}%";
+            else if (multiplier < 1f)
+                text = $"-{Mathf.RoundToInt((1 - multiplier) * 100)}%";
+            else
+                text = "-/-";
+
+            return $"({StringUtils.StringWithColor(text, color)})";
         }
 
         /// <summary>
         /// Zwraca kolor tekstu w zależności od mnożnika.
         /// </summary>
-        private string GetMultiplierColor(float multiplier)
+        private Color GetMultiplierColor(float multiplier)
         {
-            if (multiplier > 1f) return ColorUtility.ToHtmlStringRGB(GameColors.Green);
-            if (multiplier < 1f) return ColorUtility.ToHtmlStringRGB(GameColors.LightRed);
-            return ColorUtility.ToHtmlStringRGB(GameColors.LightBlue);
+            if (multiplier > 1f) return GameColors.Green;
+            if (multiplier < 1f) return GameColors.LightRed;
+            return GameColors.LightBlue;
         }
 
         /// <summary>
         /// Formatuje tekst dla mnożnika nagrody.
         /// </summary>
-        private string FormatMultiplierText(float multiplier, string color)
+        private string FormatMultiplierText(float multiplier, Color color)
         {
+            string text;
+
             if (multiplier > 1f)
-                return $"(<color=#{color}>+{Mathf.RoundToInt((multiplier - 1) * 100)}%</color>)";
-            if (multiplier < 1f)
-                return $"(<color=#{color}>-{Mathf.RoundToInt((1 - multiplier) * 100)}%</color>)";
-            
-            return $"(<color=#{color}>-/-</color>)";
+                text = $"+{Mathf.RoundToInt((multiplier - 1) * 100)}%";
+            else if (multiplier < 1f)
+                text = $"-{Mathf.RoundToInt((1 - multiplier) * 100)}%";
+            else
+                text = "-/-";
+
+            return $"({StringUtils.StringWithColor(text, color)})";
         }
 
         public int GetTargetProgress()

@@ -11,10 +11,13 @@ namespace PLAYERTWO.ARPGProject
 
         [Tooltip("The color of the text on the GUI Collectible.")]
         public Color nameColor = Color.white;
-    
+
         [Header("Collectible Items Settings")]
         [Tooltip("Time (in seconds) before the collectible is automatically removed.")]
         public float lifetime = 30f;
+
+        [HideInInspector]
+        public bool suppressNameDisplay = false;
 
         protected virtual void InitializeCanvas()
         {
@@ -29,14 +32,6 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         /// <param name="other">The object that is collecting this Collectible.</param>
         public virtual void Collect(object other) => Destroy(gameObject);
-
-        /*
-        protected override void OnInteract(object other)
-        {
-            if (other is Entity && TryCollect((other as Entity).inventory.instance))
-                Collect(other);
-        }
-        */
 
         protected override void OnInteract(object other)
         {
@@ -65,10 +60,13 @@ namespace PLAYERTWO.ARPGProject
         }
 
         /// <summary>
-        /// Returns the name of the Item on the Collectible.
+        /// Returns the name of the item (or items) on this Collectible.
         /// </summary>
         public abstract string GetName();
 
+        /// <summary>
+        /// Attempts to add this Collectible's contents to the given inventory.
+        /// </summary>
         protected abstract bool TryCollect(Inventory inventory);
 
         private void StartLifetimeTimer()
@@ -85,7 +83,12 @@ namespace PLAYERTWO.ARPGProject
         protected override void Start()
         {
             base.Start();
-            InitializeCanvas();
+
+            if (!suppressNameDisplay)
+            {
+                InitializeCanvas();
+            }
+
             StartLifetimeTimer();
         }
     }

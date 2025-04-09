@@ -96,7 +96,13 @@ namespace PLAYERTWO.ARPGProject
             }
         }
 
-        
+        private string FormatCurrency(int totalAmberlings)
+        {
+            var currency = new Currency();
+            currency.SetFromTotalAmberlings(totalAmberlings);
+            return currency.ToString();
+        }
+
         public void UpdateCraftingPreview(List<ItemInstance> inputItems)
         {
             if (craftingManager == null || craftingText == null)
@@ -167,7 +173,8 @@ namespace PLAYERTWO.ARPGProject
                 bool guaranteed = (success >= 1f);
 
                 if (priceText)
-                    priceText.text = matchedRecipe.goldCost.ToString();
+                    // priceText.text = matchedRecipe.goldCost.ToString();
+                    priceText.text = FormatCurrency(matchedRecipe.goldCost);
 
                 string result = "";
                 result += StringUtils.StringWithColorAndStyle(

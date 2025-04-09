@@ -126,7 +126,7 @@ namespace PLAYERTWO.ARPGProject
 
             if (entity.inventory)
             {
-                entity.inventory.instance.money += finalCoins;
+                entity.inventory.currency.AddAmberlings(finalCoins);
 
                 foreach (var item in data.items)
                 {

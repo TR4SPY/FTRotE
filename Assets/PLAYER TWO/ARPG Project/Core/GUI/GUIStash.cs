@@ -7,37 +7,23 @@ namespace PLAYERTWO.ARPGProject
     public class GUIStash : GUIInventory
     {
         [Header("Stash Settings")]
-        [Tooltip("The index of the stash from the Game Stash this GUI Stash represents.")]
         public int stashIndex;
 
         [Header("Deposit Settings")]
-        [Tooltip("A reference to the Button that activates the deposit Window.")]
         public Button depositButton;
-
-        [Tooltip("A reference to the Input Field to input the amount of depositing coins.")]
         public InputField depositField;
-
-        [Tooltip("A reference to the Window to deposit coins.")]
         public GUIWindow depositWindow;
+        public Dropdown depositCurrencyDropdown;
 
         [Header("Withdraw Settings")]
-        [Tooltip("A reference to the Button that activates the withdraw Window.")]
         public Button withdrawButton;
-
-        [Tooltip("A reference to the Input Field to input the amount of withdraw coins.")]
         public InputField withdrawField;
-
-        [Tooltip("A reference to the Window to withdraw coins.")]
         public GUIWindow withdrawWindow;
+        public Dropdown withdrawCurrencyDropdown;
 
         [Header("Audio Settings")]
-        [Tooltip("The Audio Clip that plays when the Stash shows up.")]
         public AudioClip showClip;
-
-        [Tooltip("The Audio Clip that plays when depositing coins.")]
         public AudioClip depositClip;
-
-        [Tooltip("The Audio Clip that plays when withdraw coins.")]
         public AudioClip withdrawClip;
 
         protected GUIWindow m_window;
@@ -58,24 +44,44 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void OnDeposit()
         {
-            var amount = int.Parse(depositField.text);
+            if (!int.TryParse(depositField.text, out int amount) || amount <= 0)
+                return;
 
-            if (m_playerInventory.instance.money < amount) return;
+            var selectedText = depositCurrencyDropdown.options[depositCurrencyDropdown.value].text;
 
-            m_playerInventory.instance.money -= amount;
-            m_inventory.money += amount;
+            if (!System.Enum.TryParse(selectedText, out CurrencyType selectedCurrencyType))
+                return;
+
+            int totalAmberlings = Currency.ConvertToAmberlings(amount, selectedCurrencyType);
+
+            if (m_playerInventory.instance.currency.GetTotalAmberlings() < totalAmberlings)
+                return;
+
+            m_playerInventory.instance.SpendMoney(totalAmberlings);
+            m_inventory.AddMoney(totalAmberlings);
+
             depositWindow.Hide();
             PlayAudio(depositClip);
         }
 
         protected virtual void OnWithdraw()
         {
-            var amount = int.Parse(withdrawField.text);
+            if (!int.TryParse(withdrawField.text, out int amount) || amount <= 0)
+                return;
 
-            if (m_inventory.money < amount) return;
+            var selectedText = withdrawCurrencyDropdown.options[withdrawCurrencyDropdown.value].text;
 
-            m_inventory.money -= amount;
-            m_playerInventory.instance.money += amount;
+            if (!System.Enum.TryParse(selectedText, out CurrencyType selectedCurrencyType))
+                return;
+
+            int totalAmberlings = Currency.ConvertToAmberlings(amount, selectedCurrencyType);
+
+            if (m_inventory.currency.GetTotalAmberlings() < totalAmberlings)
+                return;
+
+            m_inventory.SpendMoney(totalAmberlings);
+            m_playerInventory.instance.AddMoney(totalAmberlings);
+
             withdrawWindow.Hide();
             PlayAudio(withdrawClip);
         }

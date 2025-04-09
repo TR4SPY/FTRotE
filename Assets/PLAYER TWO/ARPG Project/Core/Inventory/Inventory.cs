@@ -10,6 +10,7 @@ namespace PLAYERTWO.ARPGProject
         public Action<ItemInstance, InventoryCell> onItemInserted;
         public Action onItemRemoved;
         public Action onMoneyChanged;
+        public Currency currency = new Currency();
 
         protected ItemInstance[,] m_grid;
         protected int m_money;
@@ -42,12 +43,27 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         public int money
         {
-            get { return m_money; }
+            get => currency.GetTotalAmberlings();
             set
             {
-                m_money = Mathf.Max(0, value);
+                currency.SetFromTotalAmberlings(value);
                 onMoneyChanged?.Invoke();
             }
+        }
+
+        public void AddMoney(int amount)
+        {
+            currency.AddAmberlings(amount);
+            onMoneyChanged?.Invoke();
+        }
+
+        public bool SpendMoney(int amount)
+        {
+            bool success = currency.RemoveAmberlings(amount);
+            if (success)
+                onMoneyChanged?.Invoke();
+
+            return success;
         }
 
         public Inventory(int rows, int columns)

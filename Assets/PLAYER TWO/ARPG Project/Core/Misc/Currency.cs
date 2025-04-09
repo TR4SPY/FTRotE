@@ -1,82 +1,138 @@
 using UnityEngine;
 
-[System.Serializable]
-public class Currency
+namespace PLAYERTWO.ARPGProject
 {
-    public int solmire;    // Złoto
-    public int lunaris;    // Srebro
-    public int amberlings; // Brąz
-
-    private const int AmberlingsToLunaris = 100;
-    private const int LunarisToSolmire = 1000;
-
-    /// <summary>
-    /// Automatycznie konwertuje waluty, jeśli wartości przekraczają limit.
-    /// </summary>
-    public void Normalize()
+    [System.Serializable]
+    public enum CurrencyType
     {
-        if (amberlings >= AmberlingsToLunaris)
+        Amberlings, // "Amber"
+        Lunaris,    // "Silver"
+        Solmire     // "Gold"
+    }
+
+    [System.Serializable]
+    public class Currency
+    {
+        //  - 1 Solmire = 1000 Lunaris = 100,000 Amberlings
+        //  - 1 Lunaris = 100 Amberlings
+
+        public int solmire;   
+        public int lunaris;   
+        public int amberlings;
+
+        private const int AmberlingsToLunaris = 100;
+        private const int LunarisToSolmire = 1000;
+
+        public int TotalAmberlings => GetTotalAmberlings();
+
+        public int GetTotalAmberlings()
         {
-            lunaris += amberlings / AmberlingsToLunaris;
-            amberlings %= AmberlingsToLunaris;
+            return amberlings
+                 + (lunaris * AmberlingsToLunaris)
+                 + (solmire * LunarisToSolmire * AmberlingsToLunaris);
         }
 
-        if (lunaris >= LunarisToSolmire)
+        public void SetFromTotalAmberlings(int totalAmberlings)
         {
-            solmire += lunaris / LunarisToSolmire;
-            lunaris %= LunarisToSolmire;
+            solmire = totalAmberlings / (LunarisToSolmire * AmberlingsToLunaris);
+            totalAmberlings %= (LunarisToSolmire * AmberlingsToLunaris);
+
+            lunaris = totalAmberlings / AmberlingsToLunaris;
+            amberlings = totalAmberlings % AmberlingsToLunaris;
         }
-    }
 
-    /// <summary>
-    /// Dodaje określoną ilość Amberlings, automatycznie konwertując je w razie potrzeby.
-    /// </summary>
-    public void AddAmberlings(int amount)
-    {
-        amberlings += amount;
-        Normalize();
-    }
+        public void AddAmberlings(int amount)
+        {
+            amberlings += amount;
+            Normalize();
+        }
 
-    /// <summary>
-    /// Odejmowanie określonej ilości Amberlings (z automatycznym konwertowaniem)
-    /// </summary>
-    public bool RemoveAmberlings(int amount)
-    {
-        int totalAmberlings = GetTotalAmberlings();
+        public bool RemoveAmberlings(int amount)
+        {
+            int total = GetTotalAmberlings();
+            if (amount > total)
+                return false;
 
-        if (amount > totalAmberlings) return false; // Brak wystarczającej ilości waluty
+            total -= amount;
+            SetFromTotalAmberlings(total);
+            return true;
+        }
 
-        totalAmberlings -= amount;
-        SetFromTotalAmberlings(totalAmberlings);
+        public void AddSpecificCurrency(CurrencyType type, int amount)
+        {
+            switch (type)
+            {
+                case CurrencyType.Solmire:
+                    solmire += amount;
+                    break;
+                case CurrencyType.Lunaris:
+                    lunaris += amount;
+                    break;
+                case CurrencyType.Amberlings:
+                    amberlings += amount;
+                    break;
+            }
+            Normalize();
+        }
 
-        return true;
-    }
+        public bool RemoveSpecificCurrency(CurrencyType type, int amount)
+        {
+            switch (type)
+            {
+                case CurrencyType.Solmire:
+                    if (solmire < amount) return false;
+                    solmire -= amount;
+                    return true;
+                case CurrencyType.Lunaris:
+                    if (lunaris < amount) return false;
+                    lunaris -= amount;
+                    return true;
+                case CurrencyType.Amberlings:
+                    if (amberlings < amount) return false;
+                    amberlings -= amount;
+                    return true;
+            }
+            return false;
+        }
 
-    /// <summary>
-    /// Zwraca łączną wartość Amberlings (z uwzględnieniem konwersji Lunaris i Solmire).
-    /// </summary>
-    public int GetTotalAmberlings()
-    {
-        return amberlings + (lunaris * AmberlingsToLunaris) + (solmire * LunarisToSolmire * AmberlingsToLunaris);
-    }
+        public void Normalize()
+        {
+            if (amberlings >= AmberlingsToLunaris)
+            {
+                lunaris += amberlings / AmberlingsToLunaris;
+                amberlings %= AmberlingsToLunaris;
+            }
 
-    /// <summary>
-    /// Ustawia wartości waluty na podstawie całkowitej liczby Amberlings.
-    /// </summary>
-    public void SetFromTotalAmberlings(int totalAmberlings)
-    {
-        solmire = totalAmberlings / (LunarisToSolmire * AmberlingsToLunaris);
-        totalAmberlings %= LunarisToSolmire * AmberlingsToLunaris;
+             if (lunaris >= LunarisToSolmire)
+            {
+                solmire += lunaris / LunarisToSolmire;
+                lunaris %= LunarisToSolmire;
+            }
+        }
 
-        lunaris = totalAmberlings / AmberlingsToLunaris;
-        amberlings = totalAmberlings % AmberlingsToLunaris;
-    }
+        public static void SplitCurrency(int total, out int solmire, out int lunaris, out int amberlings)
+        {
+            solmire = total / 100000;
+            int remainder = total % 100000;
 
-    /// <summary>
-    /// Zwraca czytelną wersję waluty np. "3 Solmire, 450 Lunaris, 50 Amberlings".
-    /// </summary>
-    public override string ToString()
-    {
-        return $"{solmire} Solmire, {lunaris} Lunaris, {amberlings} Amberlings";
+            lunaris = remainder / 100;
+            amberlings = remainder % 100;
+        }
+
+        public static int ConvertToAmberlings(int amount, CurrencyType type)
+        {
+            switch (type)
+            {
+                case CurrencyType.Solmire:    return amount * 100000;
+                case CurrencyType.Lunaris:    return amount * 100;
+                case CurrencyType.Amberlings: return amount;
+                default:                      return 0;
+            }
+        }
+
+        public override string ToString()
+        {
+            return $"{solmire} Solmire, {lunaris} Lunaris, {amberlings} Amberlings";
+        }
     }
 }

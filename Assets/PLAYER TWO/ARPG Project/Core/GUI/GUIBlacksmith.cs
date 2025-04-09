@@ -106,13 +106,23 @@ namespace PLAYERTWO.ARPGProject
             UpdateButtons();
         }
 
+        private string FormatCurrency(int totalAmberlings)
+        {
+            var currency = new Currency();
+            currency.SetFromTotalAmberlings(totalAmberlings);
+            return currency.ToString();
+        }
+
         protected virtual void UpdateRepairCost() =>
-            repairCostText.text = m_blacksmith.GetPriceToRepair(slot.item?.item).ToString();
+           // repairCostText.text = m_blacksmith.GetPriceToRepair(slot.item?.item).ToString();
+            repairCostText.text = FormatCurrency(m_blacksmith.GetPriceToRepair(slot.item?.item));
+
 
         protected virtual void ClearRepairCost() => repairCostText.text = "0";
 
         protected virtual void UpdateRepairAllCost() =>
-            repairAllCostText.text = m_blacksmith.GetPriceToRepairAll().ToString();
+            // repairAllCostText.text = m_blacksmith.GetPriceToRepairAll().ToString();
+            repairAllCostText.text = FormatCurrency(m_blacksmith.GetPriceToRepairAll());
 
         protected override void OnClose()
         {

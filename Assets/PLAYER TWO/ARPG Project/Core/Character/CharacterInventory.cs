@@ -22,7 +22,7 @@ namespace PLAYERTWO.ARPGProject
         public virtual void InitializeInventory(EntityInventory inventory)
         {
             m_inventory = inventory;
-            m_inventory.instance.money = initialMoney;
+            m_inventory.instance.currency.SetFromTotalAmberlings(initialMoney);
 
             foreach (var item in initialItems)
             {
@@ -91,24 +91,20 @@ namespace PLAYERTWO.ARPGProject
             return false;
         }
 
-        public bool SpendGold(int amount)
-        {
-            if (m_inventory == null || m_inventory.instance.money < amount)
-                return false;
-
-            m_inventory.instance.money -= amount;
-            return true;
-        }
-                
-        public int GetGold()
-        {
-            return m_inventory != null ? m_inventory.instance.money : initialMoney;
-        }
+        public int GetGold() => m_inventory != null ? m_inventory.instance.money : initialMoney;
 
         public void AddGold(int amount)
         {
             if (m_inventory != null)
-                m_inventory.instance.money += amount;
+                m_inventory.instance.AddMoney(amount);
+        }
+
+        public bool SpendGold(int amount)
+        {
+            if (m_inventory == null)
+                return false;
+
+            return m_inventory.instance.SpendMoney(amount);
         }
 
         public bool RemoveItem(Item item)

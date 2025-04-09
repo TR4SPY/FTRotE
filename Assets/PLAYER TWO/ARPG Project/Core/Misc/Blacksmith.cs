@@ -28,10 +28,12 @@ namespace PLAYERTWO.ARPGProject
         {
             var price = GetPriceToRepair(item);
 
-            if (m_entity.inventory.instance.money < price) return false;
+            // if (m_entity.inventory.instance.money < price) return false;
+            if (m_entity.inventory.currency.TotalAmberlings < price) return false;
 
             item.Repair();
-            m_entity.inventory.instance.money -= price;
+            // m_entity.inventory.instance.money -= price;
+            m_entity.inventory.currency.RemoveAmberlings(price);
             return true;
         }
 

@@ -9,8 +9,12 @@ namespace PLAYERTWO.ARPGProject
     public class GUIInventory : MonoBehaviour, IPointerDownHandler, IDropHandler
     {
         [Header("Inventory Settings")]
-        [Tooltip("A reference to the Text component used to represent the coins.")]
-        public Text moneyText;
+        [Tooltip("A reference to the Solmire Coins Text component used to represent the gold coins.")]
+        public Text solmireText;
+        [Tooltip("A reference to the Lunaris Coins Text component used to represent the silver coins.")]
+        public Text lunarisText;
+        [Tooltip("A reference to the Amberlings Coins Text component used to represent the amber coins.")]
+        public Text amberlingsText;
 
         [Tooltip("The prefab of the slot used to represent cells.")]
         public GUIInventorySlot inventorySlot;
@@ -359,10 +363,19 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void UpdateMoney()
         {
-            if (!moneyText)
+            if (m_inventory == null || m_inventory.currency == null)
                 return;
 
-            moneyText.text = m_inventory.money.ToString();
+            var currency = m_inventory.currency;
+
+            if (solmireText != null)
+                solmireText.text = currency.solmire.ToString();
+
+            if (lunarisText != null)
+                lunarisText.text = currency.lunaris.ToString();
+
+            if (amberlingsText != null)
+                amberlingsText.text = currency.amberlings.ToString();
         }
 
         protected virtual void PlayAudio(AudioClip audio)
