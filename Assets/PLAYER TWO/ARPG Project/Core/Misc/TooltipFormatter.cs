@@ -23,11 +23,11 @@ namespace PLAYERTWO.ARPGProject
         {
             if (targetProgress == 0)
             {
-                return $"{objectiveText}: "; // ✅ Jeśli target = 0, pokazuje tylko cel
+                return $"{objectiveText}: ";
             }
 
             string adjustmentText = "";
-            if (targetProgress != baseTargetProgress) // ✅ Jeśli targetProgress jest różny od bazowego, pokazujemy przelicznik
+            if (targetProgress != baseTargetProgress)
             {
                 int difference = targetProgress - baseTargetProgress;
                 float percentage = ((float)difference / baseTargetProgress) * 100f;
@@ -42,9 +42,9 @@ namespace PLAYERTWO.ARPGProject
 
             string tooltipText = $"{objectiveText}\n{currentProgress} / {targetProgress}{adjustmentText}";
 
-            if (targetProgress != baseTargetProgress) // ✅ Jeśli wystąpiło dostosowanie, dodajemy dodatkowy tekst
+            if (targetProgress != baseTargetProgress)
             {
-                tooltipText += $"\n\n{GetObjectiveMessage()}"; // ✅ Używamy gotowej funkcji!
+                tooltipText += $"\n\n{GetObjectiveMessage()}";
             }
 
             return tooltipText;
@@ -77,6 +77,28 @@ namespace PLAYERTWO.ARPGProject
             if (multiplier < 1f)
                 return $"-{Mathf.RoundToInt((1 - multiplier) * 100)}%";
             return "0%";
+        }
+
+        public static string FormatColoredMultiplier(float multiplier)
+        {
+            Color bonusColor = GameColors.GetMultiplierColor(multiplier);
+            return StringUtils.StringWithColor(FormatMultiplierText(multiplier), bonusColor);
+        }
+
+        public static string FormatCurrencyBreakdown(int totalAmberlings)
+        {
+            if (totalAmberlings <= 0)
+                return "";
+
+            var c = new Currency();
+            c.SetFromTotalAmberlings(totalAmberlings);
+
+            string result = "";
+            if (c.solmire > 0) result += $"{c.solmire} Solmire ";
+            if (c.lunaris > 0) result += $"{c.lunaris} Lunaris ";
+            if (c.amberlings > 0) result += $"{c.amberlings} Amberlings";
+
+            return result.Trim();
         }
 
         public static string GenerateItemRewardsTooltip(QuestItemReward[] items)

@@ -250,7 +250,7 @@ namespace PLAYERTWO.ARPGProject
     trigger.triggers.Add(entryEnter);
 
     EventTrigger.Entry entryExit = new EventTrigger.Entry { eventID = EventTriggerType.PointerExit };
-    entryExit.callback.AddListener((eventData) => GUITooltip.instance.HideTooltip());
+    entryExit.callback.AddListener((eventData) => GUITooltip.instance.HideTooltipDynamic());
     trigger.triggers.Add(entryExit);
 }
 

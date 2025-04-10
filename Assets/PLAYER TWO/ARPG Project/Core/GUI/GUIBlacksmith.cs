@@ -16,11 +16,26 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The reference to the 'repair all' Button.")]
         public Button repairAllButton;
 
-        [Tooltip("The reference to the 'repair cost' Text.")]
-        public Text repairCostText;
+       // [Tooltip("The reference to the 'repair cost' Text.")]
+       // public Text repairCostText;
 
-        [Tooltip("The reference to the 'repair all cost' Text.")]
-        public Text repairAllCostText;
+       // [Tooltip("The reference to the 'repair all cost' Text.")]
+       // public Text repairAllCostText;
+
+        [Header("Dynamic Repair Cost")]
+        [Tooltip("Container for the single-item repair cost.")]
+        public Transform repairCostContainer;
+
+        [Tooltip("Container for the 'repair all' cost.")]
+        public Transform repairAllCostContainer;
+
+        [Tooltip("Prefab z 'Name'(Text) i 'Icon'(Image).")]
+        public GameObject priceTagPrefab;
+
+        [Header("Currency Icons")]
+        public Sprite solmireIcon;
+        public Sprite lunarisIcon;
+        public Sprite amberlingsIcon;
 
         [Header("Audio Settings")]
         [Tooltip("The Audio Clip that plays when repairing an Item.")]
@@ -113,16 +128,69 @@ namespace PLAYERTWO.ARPGProject
             return currency.ToString();
         }
 
+/*
         protected virtual void UpdateRepairCost() =>
            // repairCostText.text = m_blacksmith.GetPriceToRepair(slot.item?.item).ToString();
             repairCostText.text = FormatCurrency(m_blacksmith.GetPriceToRepair(slot.item?.item));
+*/
 
+        protected virtual void UpdateRepairCost()
+        {
+            int price = m_blacksmith.GetPriceToRepair(slot.item?.item);
+            ShowPriceTags(repairCostContainer, price);
+        }
 
-        protected virtual void ClearRepairCost() => repairCostText.text = "0";
+        protected virtual void ClearRepairCost()
+        {
+            ClearPriceTags(repairCostContainer);
+        }
 
+/*
         protected virtual void UpdateRepairAllCost() =>
             // repairAllCostText.text = m_blacksmith.GetPriceToRepairAll().ToString();
             repairAllCostText.text = FormatCurrency(m_blacksmith.GetPriceToRepairAll());
+*/
+
+        protected virtual void UpdateRepairAllCost()
+        {
+            int priceAll = m_blacksmith.GetPriceToRepairAll();
+            ShowPriceTags(repairAllCostContainer, priceAll);
+        }
+
+        private void ClearPriceTags(Transform container)
+        {
+            if (!container) return;
+            foreach (Transform child in container)
+                Destroy(child.gameObject);
+        }
+
+        private void AddPriceTag(Transform container, int amount, Sprite icon)
+        {
+            var go = Instantiate(priceTagPrefab, container);
+            var textObj = go.transform.Find("Name")?.GetComponent<Text>();
+            if (textObj) textObj.text = amount.ToString();
+
+            var imageObj = go.transform.Find("Icon")?.GetComponent<Image>();
+            if (imageObj && icon)
+                imageObj.sprite = icon;
+        }
+
+        private void ShowPriceTags(Transform container, int totalAmberlings)
+        {
+            ClearPriceTags(container);
+
+            if (totalAmberlings <= 0) return;
+
+            var c = new Currency();
+            c.SetFromTotalAmberlings(totalAmberlings);
+
+            if (c.solmire > 0)
+                AddPriceTag(container, c.solmire, solmireIcon);
+            if (c.lunaris > 0)
+                AddPriceTag(container, c.lunaris, lunarisIcon);
+            if (c.amberlings > 0)
+                AddPriceTag(container, c.amberlings, amberlingsIcon);
+        }
 
         protected override void OnClose()
         {

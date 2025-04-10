@@ -22,8 +22,17 @@ namespace PLAYERTWO.ARPGProject
 
         public AudioClip successSound;
 
-        [Tooltip("Crafting cost Text reference.")]
-        public Text priceText;
+        [Header("Dynamic Crafting Cost")]
+        [Tooltip("Where we place the dynamic price tags for the crafting cost.")]
+        public Transform craftingCostContainer;
+
+        [Tooltip("Prefab with 'Name'(Text) and 'Icon'(Image).")]
+        public GameObject priceTagPrefab;
+
+        [Header("Currency Icons")]
+        public Sprite solmireIcon;
+        public Sprite lunarisIcon;
+        public Sprite amberlingsIcon;
 
         protected Craftman m_craftman;
         protected GUIInventory m_section;
@@ -54,7 +63,7 @@ namespace PLAYERTWO.ARPGProject
 
             DestroySection();
             craftingText.text = "";
-            if (priceText) priceText.text = "";
+            ClearPriceTags(craftingCostContainer); 
 
             GUIWindowsManager.instance.inventoryWindow.Hide();
         }
@@ -103,6 +112,42 @@ namespace PLAYERTWO.ARPGProject
             return currency.ToString();
         }
 
+        private void ClearPriceTags(Transform container)
+        {
+            if (!container) return;
+            foreach (Transform child in container)
+                Destroy(child.gameObject);
+        }
+
+        private void AddPriceTag(Transform container, int amount, Sprite icon)
+        {
+            var go = Instantiate(priceTagPrefab, container);
+
+            var textObj = go.transform.Find("Name")?.GetComponent<Text>();
+            if (textObj) textObj.text = amount.ToString();
+
+            var imageObj = go.transform.Find("Icon")?.GetComponent<Image>();
+            if (imageObj && icon)
+                imageObj.sprite = icon;
+        }
+
+        private void ShowPriceTags(Transform container, int totalAmberlings)
+        {
+            ClearPriceTags(container);
+
+            if (totalAmberlings <= 0) return;
+
+            var c = new Currency();
+            c.SetFromTotalAmberlings(totalAmberlings);
+
+            if (c.solmire > 0)
+                AddPriceTag(container, c.solmire, solmireIcon);
+            if (c.lunaris > 0)
+                AddPriceTag(container, c.lunaris, lunarisIcon);
+            if (c.amberlings > 0)
+                AddPriceTag(container, c.amberlings, amberlingsIcon);
+        }
+
         public void UpdateCraftingPreview(List<ItemInstance> inputItems)
         {
             if (craftingManager == null || craftingText == null)
@@ -111,7 +156,7 @@ namespace PLAYERTWO.ARPGProject
             if (inputItems == null || inputItems.Count == 0)
             {
                 craftingText.text = "";
-                if (priceText) priceText.text = "";
+                ClearPriceTags(craftingCostContainer); 
                 return;
             }
 
@@ -123,12 +168,16 @@ namespace PLAYERTWO.ARPGProject
                     {
                         string preview = rule.GetPreview(inputItems);
                         int usedBars, returnedBars;
-                        float successRate = craftingManager.GetSuccessRateFromJewels(inputItems, out usedBars, out returnedBars);
+                        float successRate = craftingManager.GetSuccessRateFromJewels(
+                            inputItems, 
+                            out usedBars, 
+                            out returnedBars
+                        );
 
                         if (successRate <= 0f)
                         {
                             craftingText.text = "Insert a jewel or crystal to enhance the item.";
-                            if (priceText) priceText.text = "";
+                            ClearPriceTags(craftingCostContainer); 
                             return;
                         }
 
@@ -137,13 +186,14 @@ namespace PLAYERTWO.ARPGProject
                             successRate >= 1f ? GameColors.Green : GameColors.LightBlue
                         );
 
-                        craftingText.text = StringUtils.StringWithColorAndStyle(preview, GameColors.Lime, bold: true)
-                                            + "\n" + chanceText;
+                        craftingText.text =
+                            StringUtils.StringWithColorAndStyle(preview, GameColors.Lime, bold: true)
+                            + "\n" + chanceText;
 
                         if (returnedBars > 0)
                             craftingText.text += $"\nUnused Bars returned: {returnedBars}";
 
-                        if (priceText) priceText.text = "0";
+                        ClearPriceTags(craftingCostContainer); 
                         return;
                     }
                 }
@@ -172,9 +222,7 @@ namespace PLAYERTWO.ARPGProject
                 float success = craftingManager.CalculateSuccessChance(matchedRecipe, inputItems);
                 bool guaranteed = (success >= 1f);
 
-                if (priceText)
-                    // priceText.text = matchedRecipe.goldCost.ToString();
-                    priceText.text = FormatCurrency(matchedRecipe.goldCost);
+                ShowPriceTags(craftingCostContainer, matchedRecipe.goldCost);
 
                 string result = "";
                 result += StringUtils.StringWithColorAndStyle(
@@ -224,7 +272,7 @@ namespace PLAYERTWO.ARPGProject
                 craftingText.text = "No matching recipe or enhancement found.";
             }
 
-            if (priceText) priceText.text = "";
+            ClearPriceTags(craftingCostContainer);
         }
 
         private bool PartialMatches(CraftingRecipe recipe, List<ItemInstance> inputItems)

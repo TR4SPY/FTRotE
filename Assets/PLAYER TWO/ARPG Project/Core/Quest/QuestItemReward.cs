@@ -11,6 +11,9 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The amount of additional attributes the Item will have.")]
         public int attributes;
 
+        [Tooltip("The number of items to reward.")]
+        public int amount = 1;
+
         /// <summary>
         /// Returns a new Item Instance based on this object's attributes.
         /// </summary>

@@ -155,7 +155,8 @@ namespace PLAYERTWO.ARPGProject
                 Destroy(item.gameObject);
 
             // m_playerInventory.money += price;
-            m_playerInventory.currency.AddAmberlings(price);
+            // m_playerInventory.currency.AddAmberlings(price);
+            m_playerInventory.AddMoney(price);
             m_audio.PlayUiEffect(buyClip);
             return true;
         }
@@ -188,7 +189,8 @@ namespace PLAYERTWO.ARPGProject
 
             section.TryRemove(item);
            // m_playerInventory.money -= price;
-            m_playerInventory.currency.RemoveAmberlings(price);
+           // m_playerInventory.currency.RemoveAmberlings(price);
+            m_playerInventory.SpendMoney(price);
             m_audio.PlayUiEffect(sellClip);
             return true;
         }

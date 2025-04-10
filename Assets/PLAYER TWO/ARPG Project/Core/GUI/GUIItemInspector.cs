@@ -20,9 +20,16 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("References the parent of the potion description text.")]
         public GameObject potionDescriptionContainer;
 
+        [Header("Price Tag (dynamic)")]
+        public Transform priceContainer;         // <-- obiekt typu "Price" w hierarchii (zawiera 'Title' itd.)
+        public GameObject priceTagPrefab;       // <-- prefab: (Name: Text, Icon: Image)
+        public Sprite solmireIcon;              // <-- ikony walut
+        public Sprite lunarisIcon;
+        public Sprite amberlingsIcon;
+
         [Header("Texts")]
-        [Tooltip("A reference to the Text component that represents the Item's price.")]
-        public Text itemPriceText;
+       // [Tooltip("A reference to the Text component that represents the Item's price.")]
+       // public Text itemPriceText;
 
         [Tooltip("A reference to the Text component that represents the Item's name.")]
         public Text itemName;
@@ -155,17 +162,93 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void UpdatePriceText()
         {
-            itemPriceText.gameObject.SetActive(GUIWindowsManager.instance.merchantWindow.isOpen);
+            // Pokaż/ukryj contianer ceny zależnie od tego, czy okno merchanta jest otwarte
+            bool isMerchantOpen = GUIWindowsManager.instance.merchantWindow.isOpen;
+            if (priceContainer)
+                priceContainer.gameObject.SetActive(isMerchantOpen);
 
-            if (itemPriceText.gameObject.activeSelf)
+            // Jeśli merchant zamknięty, wyczyść
+            if (!isMerchantOpen)
             {
-                var buying = m_guiItem.onMerchant;
-                var price = buying ? m_item.GetPrice() : m_item.GetSellPrice();
-                var prefix = buying ? "Buy" : "Sell";
-                itemPriceText.text = $"{prefix}:  {price.ToString()}";
+                ClearPriceTags();
+                return;
+            }
+
+            // Gdy merchant otwarty – ustalamy "Buy:" lub "Sell:" i pobieramy kwotę
+            var buying = m_guiItem.onMerchant;
+            var price = buying ? m_item.GetPrice() : m_item.GetSellPrice();
+            var prefix = buying ? "Buy:" : "Sell:";
+
+            // Wyświetl w priceContainer
+            ShowPriceTags(prefix, price);
+        }
+
+        /// <summary>
+        /// Czyści wszystkie dzieci w priceContainer (usuwamy wszystko, bo nie mamy Title).
+        /// </summary>
+        private void ClearPriceTags()
+        {
+            if (!priceContainer) return;
+            foreach (Transform child in priceContainer)
+            {
+                Destroy(child.gameObject);
             }
         }
 
+        /// <summary>
+        /// Dodaje jeden element "priceTagPrefab" (z liczbą i ikoną) do priceContainer.
+        /// </summary>
+        private void AddPriceTag(int amount, Sprite icon)
+        {
+            var go = Instantiate(priceTagPrefab, priceContainer);
+
+            var textObj = go.transform.Find("Name")?.GetComponent<Text>();
+            if (textObj) textObj.text = amount.ToString();
+
+            var iconObj = go.transform.Find("Icon")?.GetComponent<Image>();
+            if (iconObj && icon)
+                iconObj.sprite = icon;
+        }
+
+        /// <summary>
+        /// Dodaje prefab zawierający sam prefix (np. "Buy:"), ale bez ikony.
+        /// </summary>
+        private void AddPrefixTag(string prefix)
+        {
+            var go = Instantiate(priceTagPrefab, priceContainer);
+
+            var textObj = go.transform.Find("Name")?.GetComponent<Text>();
+            if (textObj) textObj.text = prefix;
+
+            var iconObj = go.transform.Find("Icon")?.GetComponent<Image>();
+            if (iconObj) iconObj.gameObject.SetActive(false); // prefix nie ma ikony
+        }
+
+        /// <summary>
+        /// Wyświetla prefiks (Buy/Sell) oraz dynamicznie dodaje elementy waluty w priceContainer.
+        /// </summary>
+        private void ShowPriceTags(string prefix, int cost)
+        {
+            ClearPriceTags();
+
+            // Dodaj prefab z prefixem (np. "Buy:") 
+            if (!string.IsNullOrEmpty(prefix))
+                AddPrefixTag(prefix);
+
+            if (cost <= 0) return;
+
+            // Rozbij cost na Solmire, Lunaris, Amberlings
+            var c = new Currency();
+            c.SetFromTotalAmberlings(cost);
+
+            if (c.solmire > 0)
+                AddPriceTag(c.solmire, solmireIcon);
+            if (c.lunaris > 0)
+                AddPriceTag(c.lunaris, lunarisIcon);
+            if (c.amberlings > 0)
+                AddPriceTag(c.amberlings, amberlingsIcon);
+        } 
+        
         protected virtual void UpdateItemName()
         {
             if (m_item == null || m_item.data == null)

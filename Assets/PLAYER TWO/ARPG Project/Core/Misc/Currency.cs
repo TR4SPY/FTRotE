@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -73,6 +75,25 @@ namespace PLAYERTWO.ARPGProject
                     break;
             }
             Normalize();
+        }
+
+        public static string FormatCurrencyString(int totalAmberlings)
+        {
+            if (totalAmberlings <= 0)
+                return "0 Amberlings";
+
+            var c = new Currency();
+            c.SetFromTotalAmberlings(totalAmberlings);
+
+            var parts = new List<string>();
+            if (c.solmire > 0) parts.Add($"{c.solmire} Solmire");
+            if (c.lunaris > 0) parts.Add($"{c.lunaris} Lunaris");
+            if (c.amberlings > 0) parts.Add($"{c.amberlings} Amberlings");
+
+            if (parts.Count == 0)
+                return "0 Amberlings";
+
+            return string.Join(", ", parts);
         }
 
         public bool RemoveSpecificCurrency(CurrencyType type, int amount)
