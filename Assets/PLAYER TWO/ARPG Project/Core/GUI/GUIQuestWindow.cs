@@ -198,16 +198,7 @@ namespace PLAYERTWO.ARPGProject
             bool hasCurrencyRewards = finalCoins > 0;
             bool hasItemRewards = finalExp > 0 || (quest.items != null && quest.items.Length > 0);
 
-            if (hasCurrencyRewards)
-            {
-                AddHeader(currencyContainer, "Rewards:");
-                ToggleContainerActive(currencyContainer, true);
-            }
-            else if (hasItemRewards)
-            {
-                AddHeader(rewardsContainer, "Rewards:");
-                ToggleContainerActive(rewardsContainer, true);
-            }
+            ToggleContainerActive(currencyContainer, true);
 
             if (finalExp > 0)
             {
@@ -215,17 +206,18 @@ namespace PLAYERTWO.ARPGProject
                 ToggleContainerActive(rewardsContainer, true);
             }
 
-            if (finalCoins > 0)
-            {
-                var c = new Currency();
-                c.SetFromTotalAmberlings(finalCoins);
+            var c = new Currency();
+            c.SetFromTotalAmberlings(finalCoins);
 
-                if (c.solmire > 0) AddPriceTag(currencyContainer, c.solmire, solmireIcon);
-                if (c.lunaris > 0) AddPriceTag(currencyContainer, c.lunaris, lunarisIcon);
-                if (c.amberlings > 0) AddPriceTag(currencyContainer, c.amberlings, amberlingsIcon);
+            if (c.solmire > 0)
+                AddPriceTag(currencyContainer, c.solmire, solmireIcon);
+            if (c.lunaris > 0)
+                AddPriceTag(currencyContainer, c.lunaris, lunarisIcon);
+            if (c.amberlings > 0)
+                AddPriceTag(currencyContainer, c.amberlings, amberlingsIcon);
 
-                ToggleContainerActive(currencyContainer, true);
-            }
+            if (c.solmire == 0 && c.lunaris == 0 && c.amberlings == 0)
+                AddPriceTag(currencyContainer, 0, amberlingsIcon);
 
             if (quest.items != null && quest.items.Length > 0)
             {
@@ -242,7 +234,6 @@ namespace PLAYERTWO.ARPGProject
             AttachTooltipsToObjective();
             AttachTooltipsToRewards();
         }
-
         private void ClearContainer(Transform container)
         {
             if (!container) return;
@@ -350,13 +341,24 @@ namespace PLAYERTWO.ARPGProject
             string itemsText = "";
             if (quest.items != null && quest.items.Length > 0)
             {
-                itemsText = "Item Rewards:\n";
+                //itemsText = "Item Rewards:\n";
                 foreach (var item in quest.items)
                 {
                     if (item?.data != null && item.amount > 0)
                     {
-                        Color rarityColor = GameColors.GetItemRarityColor(item.data.rarity);
-                        string itemName = StringUtils.StringWithColor($"[{item.data.name}]", rarityColor);
+                        Color itemColor;
+
+                        if (item.data.IsQuestSpecific)
+                        {
+                            itemColor = GameColors.Gold;
+                        }
+                        else
+                        {
+                            itemColor = GameColors.GetItemRarityColor(item.data.rarity);
+                        }
+
+                        string itemName = StringUtils.StringWithColor($"[{item.data.name}]", itemColor);
+
                         string attributes = item.attributes > 0 ? $" (+{item.attributes} Attributes)" : "";
 
                         itemsText += $"   🔹 {item.amount}x {itemName}{attributes}\n";

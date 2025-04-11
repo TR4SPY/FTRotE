@@ -12,6 +12,14 @@ PrefabInstance:
       propertyPath: m_ChildAlignment
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 950391175727460185, guid: 65db6968ffb7321b082054a34ad36c66, type: 3}
+      propertyPath: m_Padding.m_Left
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 950391175727460185, guid: 65db6968ffb7321b082054a34ad36c66, type: 3}
+      propertyPath: m_Padding.m_Right
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3027287488273366125, guid: 65db6968ffb7321b082054a34ad36c66, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -34,7 +42,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3027287488273366125, guid: 65db6968ffb7321b082054a34ad36c66, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 27
+      value: 22
       objectReference: {fileID: 0}
     - target: {fileID: 3027287488273366125, guid: 65db6968ffb7321b082054a34ad36c66, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -98,11 +106,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5933156231491837684, guid: 65db6968ffb7321b082054a34ad36c66, type: 3}
       propertyPath: m_Pivot.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5933156231491837684, guid: 65db6968ffb7321b082054a34ad36c66, type: 3}
       propertyPath: m_Pivot.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5933156231491837684, guid: 65db6968ffb7321b082054a34ad36c66, type: 3}
       propertyPath: m_AnchorMax.x
@@ -162,7 +170,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5933156231491837684, guid: 65db6968ffb7321b082054a34ad36c66, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -267.203
+      value: 267.203
       objectReference: {fileID: 0}
     - target: {fileID: 5933156231491837684, guid: 65db6968ffb7321b082054a34ad36c66, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
