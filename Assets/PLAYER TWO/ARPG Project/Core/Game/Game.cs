@@ -243,7 +243,17 @@ namespace PLAYERTWO.ARPGProject
         protected virtual void OnApplicationFocus(bool hasFocus)
         {
             if (!hasFocus)
-                GameSave.instance.Save();
+            {
+                if (currentCharacter != null)
+                {
+                    if (currentCharacter.Entity == null)
+                    {
+                        currentCharacter.Instantiate();
+                    }
+
+                    GameSave.instance.Save();
+                }
+            }
         }
 
         protected virtual void OnApplicationQuit() => GameSave.instance.Save();

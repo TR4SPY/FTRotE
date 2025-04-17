@@ -3,6 +3,7 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using AI_DDA.Assets.Scripts;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -47,6 +48,13 @@ namespace PLAYERTWO.ARPGProject
                 SaveLogsForCharacter(m_currentCharacter);
                 SaveLogsIfEnabled();
             }
+
+            foreach (var craftman in GUICraftman.OpenCraftman.ToList())
+            {
+                craftman.ReturnItemsToPlayerOrDrop();
+            }
+
+            CaptureVitalStats();
 
             switch (mode)
             {
@@ -126,6 +134,22 @@ namespace PLAYERTWO.ARPGProject
             }
 
             return null;
+        }
+
+        public void CaptureVitalStats()
+        {
+            foreach (var character in Game.instance.characters)
+            {
+                if (character.Entity != null)
+                {
+                    character.savedHealth = character.Entity.stats.health;
+                    character.savedMana   = character.Entity.stats.mana;
+                }
+                else
+                {
+                    Debug.LogWarning($"[SAVE WARNING] {character.name}: Entity == null → No HP/MP overwrite");
+                }
+            }
         }
 
         public void LoadDifficultyForCharacter(CharacterInstance character)

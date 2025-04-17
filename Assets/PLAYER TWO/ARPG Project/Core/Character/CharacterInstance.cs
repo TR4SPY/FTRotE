@@ -43,13 +43,14 @@ namespace PLAYERTWO.ARPGProject
         public CharacterQuests quests;
         public CharacterScenes scenes;
 
+        public int savedHealth = -1;
+        public int savedMana = -1;
         public int playerDeaths = 0;
         public int enemiesDefeated = 0;
         public float totalCombatTime = 0f;
         public int potionsUsed = 0;
         public int difficultyMultiplier = 0;
         public int zonesDiscovered = 0;
-       // public int achievementsUnlocked = 0;
         public int npcInteractions = 0;
         public int questsCompleted = 0;
         public int waypointsDiscovered = 0;
@@ -193,7 +194,7 @@ namespace PLAYERTWO.ARPGProject
             {
                 return multipliers[statName];
             }
-            return 1.0f; // Domyślna wartość, jeśli statystyka nie istnieje
+            return 1.0f;
         }
 
         /// <summary>
@@ -251,6 +252,17 @@ namespace PLAYERTWO.ARPGProject
             }
 
             return m_entity;
+        }
+
+        public void RestoreSavedVitals()
+        {
+            if (m_entity == null) return;
+
+            int hp = savedHealth < 0 ? m_entity.stats.maxHealth : savedHealth;
+            int mp = savedMana   < 0 ? m_entity.stats.maxMana   : savedMana;
+
+            m_entity.stats.health = Mathf.Clamp(hp, 0, m_entity.stats.maxHealth);
+            m_entity.stats.mana   = Mathf.Clamp(mp, 0, m_entity.stats.maxMana);
         }
         
         public static CharacterInstance CreateFromSerializer(CharacterSerializer serializer)
@@ -314,6 +326,9 @@ namespace PLAYERTWO.ARPGProject
                 parsedCondition = SpecialCondition.None;
             }
             characterInstance.specialCondition = parsedCondition;
+
+            characterInstance.savedHealth = serializer.health;
+            characterInstance.savedMana = serializer.mana;
 
             characterInstance.SetMultiplier("Dexterity", serializer.dexterityMultiplier);
             characterInstance.SetMultiplier("Strength", serializer.strengthMultiplier);

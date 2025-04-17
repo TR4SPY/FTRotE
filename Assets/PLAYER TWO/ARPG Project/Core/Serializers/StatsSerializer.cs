@@ -13,11 +13,6 @@ namespace PLAYERTWO.ARPGProject
         public int availablePoints;
         public int experience;
 
-        // Dodane pola dla mnożników trudności
-      //  public float dexterityMultiplier;
-      //  public float strengthMultiplier;
-       // public float speedMultiplier;
-
         public StatsSerializer(CharacterStats stats)
         {
             level = stats.currentLevel;
@@ -27,11 +22,6 @@ namespace PLAYERTWO.ARPGProject
             energy = stats.currentEnergy;
             availablePoints = stats.currentAvailablePoints;
             experience = stats.currentExperience;
-
-            // Przypisanie mnożników trudności
-         //   dexterityMultiplier = stats.dexterityMultiplier;
-         //   strengthMultiplier = stats.strengthMultiplier;
-            //speedMultiplier = stats.speedMultiplier;
         }
 
         public virtual string ToJson() => JsonUtility.ToJson(this);

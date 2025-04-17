@@ -459,6 +459,7 @@ namespace PLAYERTWO.ARPGProject
                     int level = 0;
                     int attributes = 0;
                     int durabilityPercent = 100;
+                    int stackAmount = 1;
 
                     if (parts.Length >= 3 &&
                         int.TryParse(parts[1], out int group) &&
@@ -467,6 +468,9 @@ namespace PLAYERTWO.ARPGProject
                         if (parts.Length >= 4) int.TryParse(parts[3], out level);
                         if (parts.Length >= 5) int.TryParse(parts[4], out attributes);
                         if (parts.Length >= 6) int.TryParse(parts[5], out durabilityPercent);
+                        if (parts.Length >= 7) int.TryParse(parts[6], out stackAmount);
+
+                        stackAmount = Mathf.Max(1, stackAmount);
 
                         int combinedID = int.Parse($"{group}{idInGroup}");
 
@@ -479,45 +483,54 @@ namespace PLAYERTWO.ARPGProject
                             break;
                         }
 
-                        var instance = new ItemInstance(item, false);
+                        bool isStackable = item.canStack;
 
-                        level = Mathf.Clamp(level, 0, 25);
-                        for (int i = 0; i < level; i++)
-                            instance.UpgradeLevel();
-
-                        if (attributes > 0)
+                        for (int i = 0; i < (isStackable ? 1 : stackAmount); i++)
                         {
-                            instance.GenerateAttributes();
+                            int actualStack = isStackable ? stackAmount : 1;
 
-                            var method = typeof(ItemInstance).GetMethod(
-                                "GenerateAdditionalAttributes",
-                                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic
+                            var instance = new ItemInstance(item, false);
+                            instance.ForceStack(actualStack);
+
+                            level = Mathf.Clamp(level, 0, 25);
+                            for (int j = 0; j < level; j++)
+                                instance.UpgradeLevel();
+
+                            if (attributes > 0)
+                            {
+                                instance.GenerateAttributes();
+
+                                var method = typeof(ItemInstance).GetMethod(
+                                    "GenerateAdditionalAttributes",
+                                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic
+                                );
+
+                                method?.Invoke(instance, new object[] { attributes, attributes });
+                            }
+
+                            float percent = Mathf.Clamp01((float)durabilityPercent / 100f);
+                            var durabilityField = typeof(ItemInstance).GetField(
+                                "m_durability",
+                                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance
                             );
 
-                            method?.Invoke(instance, new object[] { attributes, attributes });
+                            if (durabilityField != null && item is ItemEquippable eq)
+                            {
+                                int durabilityValue = Mathf.RoundToInt(eq.maxDurability * percent);
+                                durabilityField.SetValue(instance, durabilityValue);
+                            }
+
+                            GUI.instance.DropItem(instance);
                         }
 
-                        float percent = Mathf.Clamp01((float)durabilityPercent / 100f);
-                        var durabilityField = typeof(ItemInstance).GetField(
-                            "m_durability",
-                            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance
-                        );
-
-                        if (durabilityField != null && item is ItemEquippable eq)
-                        {
-                            int durabilityValue = Mathf.RoundToInt(eq.maxDurability * percent);
-                            durabilityField.SetValue(instance, durabilityValue);
-                        }
-
-                        GUI.instance.DropItem(instance);
                         AddSystemMessage(StringUtils.StringWithColorAndStyle(
-                            $"Dropped {item.GetName()} (+{level}, {attributes} attr, {durabilityPercent}% durability)",
+                            $"Dropped {item.GetName()} (+{level}, {attributes} attr, {durabilityPercent}% durability, stack {stackAmount})",
                             GameColors.Orange));
                     }
                     else
                     {
                         AddSystemMessage(StringUtils.StringWithColor(
-                            "Usage: /drop [group] [idInGroup] [level] [attributes] [durability]",
+                            "Usage: /drop [group] [idInGroup] [level] [attributes] [durability] [stack]",
                             GameColors.Gray));
                     }
                     break;

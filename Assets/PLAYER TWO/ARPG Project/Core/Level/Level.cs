@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Linq;
 using AI_DDA.Assets.Scripts;
+using System.Collections;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -38,10 +39,13 @@ namespace PLAYERTWO.ARPGProject
             {
                 player = currentCharacter.Instantiate();
 
+                StartCoroutine(RestoreVitalsNextFrame());
+
                 if (currentCharacter.currentScene.CompareTo(currentScene.name) == 0 &&
-                    (currentCharacter.initialPosition != Vector3.zero ||
-                    currentCharacter.initialRotation.eulerAngles != Vector3.zero))
+                    (currentCharacter.initialPosition != Vector3.zero || currentCharacter.initialRotation.eulerAngles != Vector3.zero))
+                {
                     player.Teleport(currentCharacter.initialPosition, currentCharacter.initialRotation);
+                }
                 else
                 {
                     var position = hit.point + Vector3.up;
@@ -50,6 +54,12 @@ namespace PLAYERTWO.ARPGProject
                     player.Teleport(position, rotation);
                 }
             }
+        }
+
+        private IEnumerator RestoreVitalsNextFrame()
+        {
+            yield return null;
+            currentCharacter.RestoreSavedVitals();
         }
 
         protected virtual void RestoreState()

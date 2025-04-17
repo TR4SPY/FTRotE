@@ -433,6 +433,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdf08bfe4f66e9246b561590565cc2bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  baseStrength: 0
+  baseDexterity: 0
+  baseVitality: 0
+  baseEnergy: 0
+  wasBoosted: 0
   onLevelUp:
     m_PersistentCalls:
       m_Calls: []
@@ -452,7 +457,7 @@ MonoBehaviour:
   strength: 25
   dexterity: 15
   vitality: 15
-  energy: 10
+  energy: 25
   alwaysUseBaseComboStats: 0
   baseMaxCombos: 1
   baseTimeToStopCombo: 1
@@ -536,6 +541,7 @@ MonoBehaviour:
   rightHandSlot: {fileID: 2957117560326856721}
   leftHandSlot: {fileID: 2957117560190231176}
   leftHandShieldSlot: {fileID: 2957117559350994316}
+  wingsSlot: {fileID: 0}
   projectileOrigin: {fileID: 2957117559850772991}
   helmRenderer: {fileID: 5060356243640433258}
   chestRenderer: {fileID: 3642791985941429866}

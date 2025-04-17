@@ -39,7 +39,8 @@ namespace PLAYERTWO.ARPGProject
         public float totalCombatTime;
         public float totalPlayTime = 0f; 
 
-
+        public int health;
+        public int mana;
         public int playerDeaths;
         public int enemiesDefeated;
         public int potionsUsed;
@@ -65,6 +66,9 @@ namespace PLAYERTWO.ARPGProject
             skills = new SkillsSerializer(character.skills);
             quests = new QuestsSerializer(character.quests);
             scenes = new ScenesSerializer(character.scenes);
+
+            health = character.savedHealth;
+            mana   = character.savedMana;
 
             dexterityMultiplier = character.GetMultiplier("Dexterity");
             strengthMultiplier = character.GetMultiplier("Strength");
@@ -100,12 +104,9 @@ namespace PLAYERTWO.ARPGProject
             }
 
             selectedDialogPaths = character.viewedDialogPages.Count == 0 ? new Dictionary<int, int>() : new Dictionary<int, int>(character.selectedDialogPaths);
-
-            Debug.Log($"Character '{name}' serialized with visited zones: {string.Join(", ", visitedZones)}, activated waypoints: {string.Join(", ", activatedWaypoints)}, and logs: PlayerDeaths={playerDeaths}, EnemiesDefeated={enemiesDefeated}, AchievementsUnlocked={achievementsUnlocked}");
         
             if (!Enum.TryParse(character.specialCondition.ToString(), out SpecialCondition validCondition))
             {
-                Debug.LogError($"[AI-DDA] Niepoprawny specialCondition: {character.specialCondition}. Ustawiono 'None'.");
                 validCondition = SpecialCondition.None;
             }
             specialCondition = validCondition.ToString();

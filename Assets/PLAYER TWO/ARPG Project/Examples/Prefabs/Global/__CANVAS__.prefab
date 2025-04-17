@@ -8119,8 +8119,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4202839085706061861}
   m_HandleRect: {fileID: 1284374384747649391}
   m_Direction: 2
-  m_Value: -0.0010786449
-  m_Size: 0.63708115
+  m_Value: -0.0000002459851
+  m_Size: 0.63820785
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -23957,7 +23957,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0.5690613, y: -195.05257}
+  m_AnchoredPosition: {x: 0.000076293945, y: -195.60489}
   m_SizeDelta: {x: 403, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8279650500772592729
@@ -24442,7 +24442,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 3493503435704044342}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.9959238
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -52044,7 +52044,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 5434420369541179297}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.99592364
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -57702,7 +57702,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -1.0800171, y: -94.51849}
+  m_AnchoredPosition: {x: -0.00018310547, y: -94.78609}
   m_SizeDelta: {x: 764.92, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2683628518585182366
@@ -62130,7 +62130,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 6032920133146700144}
   m_Direction: 0
   m_Value: 1
-  m_Size: 0.996018
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -84274,6 +84274,14 @@ PrefabInstance:
     - target: {fileID: 4131427028992637896, guid: b5a4c9a11a8617943be504656cd60967, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4824343905430456670, guid: b5a4c9a11a8617943be504656cd60967, type: 3}
+      propertyPath: m_CellSize.x
+      value: 48.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4824343905430456670, guid: b5a4c9a11a8617943be504656cd60967, type: 3}
+      propertyPath: m_CellSize.y
+      value: 48.5
       objectReference: {fileID: 0}
     - target: {fileID: 6194234578244511540, guid: b5a4c9a11a8617943be504656cd60967, type: 3}
       propertyPath: m_AnchorMax.y

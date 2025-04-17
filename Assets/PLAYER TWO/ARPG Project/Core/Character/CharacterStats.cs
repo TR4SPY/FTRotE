@@ -55,12 +55,20 @@ namespace PLAYERTWO.ARPGProject
         /// Initializes a given Entity Stats Manager.
         /// </summary>
         /// <param name="stats">The Entity Stats Manager you want to initialize.</param>
-        public virtual void InitializeStats(EntityStatsManager stats)
+        public virtual void InitializeStats(EntityStatsManager stats, bool resetVitals = true)
         {
             m_stats = stats;
-            m_stats.BulkUpdate(initialLevel, initialStrength,
+
+            if (!resetVitals)
+            {
+                m_stats.Recalculate(); // przelicz statystyki, ale nie resetuj HP/MP
+            }
+            else
+            {
+                m_stats.BulkUpdate(initialLevel, initialStrength,
                 initialDexterity, initialVitality, initialEnergy,
                 initialAvailablePoints, initialExperience);
+            }
         }
 
         public static CharacterStats CreateFromSerializer(StatsSerializer serializer)
