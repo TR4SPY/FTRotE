@@ -23,7 +23,7 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         protected virtual MinMax CalculateMagicDamage()
         {
-            var weaponMagicDamage = GetItemsMagicDamage();
+            var weaponMagicDamage = GetMagicDamage();
 
             return new MinMax
             {
@@ -34,7 +34,7 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual int CalculateMagicResistance()
         {
-            return (int)((level * 2) + GetItemsMagicResistance() + m_additionalAttributes.magicResistance);
+            return (int)((level * 2) + GetMagicResistance() + m_additionalAttributes.magicResistance);
         }
 
         /// <summary>

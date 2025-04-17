@@ -198,9 +198,8 @@ namespace PLAYERTWO.ARPGProject
 
             var equippable = item.GetEquippable();
 
-            if (entity.stats.level < equippable.requiredLevel) return false;
-            if (entity.stats.strength < equippable.requiredStrength) return false;
-            if (entity.stats.dexterity < equippable.requiredDexterity) return false;
+            if (!item.MeetsRequirements(entity)) 
+                return false;
 
             string className = entity.name.Replace("(Clone)", "").Trim();
             if (ClassHierarchy.NameToBits.TryGetValue(className, out var playerClass))
@@ -545,7 +544,7 @@ namespace PLAYERTWO.ARPGProject
             return total;
         }
 
-        public virtual MinMax GetItemsMagicDamage()
+        public virtual MinMax GetMagicDamage()
         {
             var total = MinMax.Zero;
 
@@ -564,7 +563,7 @@ namespace PLAYERTWO.ARPGProject
             return total;
         }
 
-        public virtual int GetItemsMagicResistance()
+        public virtual int GetMagicResistance()
         {
             int total = 0;
 

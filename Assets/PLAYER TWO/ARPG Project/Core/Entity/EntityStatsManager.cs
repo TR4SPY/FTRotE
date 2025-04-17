@@ -416,12 +416,12 @@ namespace PLAYERTWO.ARPGProject
             magicResistance = CalculateMagicResistance();
         }
 
-        protected virtual int GetItemsMagicResistance()
+        protected virtual int GetMagicResistance()
         {
             if (m_items == null)
                 return 0;
 
-            return m_items.GetItemsMagicResistance();
+            return m_items.GetMagicResistance();
         }
 
         /// <summary>
@@ -511,12 +511,12 @@ namespace PLAYERTWO.ARPGProject
             return m_items.GetDamage();
         }
 
-        protected virtual MinMax GetItemsMagicDamage()
+        protected virtual MinMax GetMagicDamage()
         {
             if (!m_items)
                 return MinMax.Zero;
 
-            return m_items.GetItemsMagicDamage();
+            return m_items.GetMagicDamage();
         }
 
         /// <summary>

@@ -133,6 +133,14 @@ namespace PLAYERTWO.ARPGProject
            // Debug.Log($"[ITEM INSTANCE CTOR] => {data?.name} stack={m_stack}, canStack={data?.canStack}");
         }
 
+        public bool MeetsRequirements(Entity entity)
+        {
+            if (!IsEquippable()) return false;
+
+            return entity.stats.strength  >= GetRequiredStrength()
+                && entity.stats.dexterity >= GetRequiredDexterity()
+                && entity.stats.level     >= GetRequiredLevel();
+        }
 
         /// <summary>
         /// Tries to stack another item on the stack.
