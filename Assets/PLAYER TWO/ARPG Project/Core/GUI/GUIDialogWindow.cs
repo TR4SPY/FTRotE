@@ -130,8 +130,30 @@ namespace AI_DDA.Assets.Scripts
                     OpenExclusiveWindow();
                     break;
                 case Dialog.DialogAction.SetSpecialCondition:
-                    Game.instance.currentCharacter.SetSpecialCondition(option.specialConditionToSet);
-                    Debug.Log($"[AI-DDA] Gracz wybrał ścieżkę: {option.specialConditionToSet}");
+                    var character = Game.instance.currentCharacter;
+                    character.SetSpecialCondition(option.specialConditionToSet);
+
+                    var entity = character.Entity;
+                    if (entity != null && entity.nametag != null)
+                    {
+                        string playerName = character.name;
+                        int playerLevel = character.stats.currentLevel;
+                        string classDisplay = character.GetName();
+                        string guild = character.guildName;
+
+                        entity.nametag.SetNametag(
+                            playerName: playerName,
+                            level: playerLevel,
+                            guild: guild,
+                            className: classDisplay
+                        );
+                    }
+
+                    if (GUIWindowsManager.instance?.stats != null)
+                    {
+                        GUIWindowsManager.instance.stats.Refresh();
+                    }
+
                     ContinueDialog(option.nextPageIndex);
                     break;
                 default:

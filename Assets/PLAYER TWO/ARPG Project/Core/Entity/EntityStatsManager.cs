@@ -276,6 +276,15 @@ namespace PLAYERTWO.ARPGProject
             */
 
             // ValidateStatsDebug();    -   Validate function for enemy stats (bug already fixed)
+
+            var entity = GetComponent<Entity>();
+            if (entity && entity.nametag)
+            {
+                onLevelUp.AddListener(() =>
+                {
+                    entity.nametag.SetNametag(entity.name, level);
+                });
+            }
         }
 
         protected virtual void InitializeItems()

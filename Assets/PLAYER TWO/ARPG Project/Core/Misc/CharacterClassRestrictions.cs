@@ -5,6 +5,25 @@ using System.Threading.Tasks;
 
 namespace PLAYERTWO.ARPGProject
 {
+    public enum Affinity
+    {
+        None,
+        Light,
+        Dark,
+        Master
+    }
+
+    public static class AffinityNaming
+    {
+        public static readonly Dictionary<Affinity, string[]> TierNames = new()
+        {
+            { Affinity.Light,   new[] { "Light", "Holy", "Divine" } },
+            { Affinity.Dark,    new[] { "Dark", "Evil", "Forsaken" } },
+            { Affinity.Master,  new[] { "Master", "Master", "Master" } }
+            // None → No prefix
+        };
+    }
+
     [System.Flags]
     public enum CharacterClassRestrictions
     {
@@ -62,5 +81,18 @@ namespace PLAYERTWO.ARPGProject
             { "Spellbinder", CharacterClassRestrictions.Spellbinder },
             { "Clairvoyant", CharacterClassRestrictions.Clairvoyant },
         };
+
+        public static int GetTier(CharacterClassRestrictions classType)
+        {
+            foreach (var family in ClassHierarchy.Families)
+            {
+                for (int i = 0; i < family.Tiers.Length; i++)
+                {
+                    if (family.Tiers[i] == classType)
+                        return i;
+                }
+            }
+            return 0; // fallback
+        }
     }
 }

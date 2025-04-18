@@ -107,7 +107,7 @@ MonoBehaviour:
       isForExplorer: 0
       action: 5
       nextPageIndex: -1
-      specialConditionToSet: 0
+      specialConditionToSet: 1
     showOnce: 1
     isSpecial: 1
   - dialogText: Ashenvale is in danger, though most do not see it. Shadows creep
@@ -150,7 +150,7 @@ MonoBehaviour:
       isForExplorer: 0
       action: 5
       nextPageIndex: -1
-      specialConditionToSet: 0
+      specialConditionToSet: 2
     showOnce: 1
     isSpecial: 1
   - dialogText: "The night calls to many, offering power without cost, knowledge

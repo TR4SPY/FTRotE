@@ -230,7 +230,8 @@ namespace PLAYERTWO.ARPGProject
 
             if (classText != null)
             {
-                classText.text = rawClassName;
+                string classDisplayName = Game.instance.currentCharacter?.GetName() ?? "Unknown";
+                classText.text = classDisplayName;
             }
 
             levelText.text = m_entity.stats.level.ToString();

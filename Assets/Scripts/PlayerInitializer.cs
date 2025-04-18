@@ -6,8 +6,53 @@ namespace AI_DDA.Assets.Scripts
 {
     public class PlayerInitializer : MonoBehaviour
     {
+        public GameObject nameplatePrefab;
+        private Nametag nametagInstance;
+
         private void Start()
         {
+            GameObject go = Instantiate(nameplatePrefab);
+            nametagInstance = go.GetComponent<Nametag>();
+            nametagInstance.target = this.transform;
+
+            var entity = GetComponent<Entity>();
+            if (entity != null)
+            {
+                entity.nametag = nametagInstance;
+            }
+
+            var character = Game.instance?.currentCharacter;
+            if (character != null)
+            {
+                string playerName = character.name;
+                int playerLevel = character.stats.currentLevel;
+                string classDisplay = character.GetName();
+                string guild = character.guildName;
+
+                nametagInstance.SetNametag(playerName, playerLevel, guild, classDisplay);
+            }
+            else
+            {
+                Debug.LogWarning("PlayerInitializer: Missing currentCharacter in Game.instance");
+            }
+
+            if (entity?.stats != null && nametagInstance != null)
+            {
+                entity.stats.onLevelUp.AddListener(() =>
+                {
+                    var currentCharacter = Game.instance?.currentCharacter;
+                    if (currentCharacter != null)
+                    {
+                        string charName = currentCharacter.name;
+                        int level = entity.stats.level;
+                        string classDisplay = currentCharacter.GetName();
+                        string guild = currentCharacter.guildName;
+
+                        nametagInstance.SetNametag(charName, level, guild, classDisplay);
+                    }
+                });
+            }
+
             var difficultyManager = Object.FindFirstObjectByType<DifficultyManager>();
             if (difficultyManager != null)
             {
@@ -18,7 +63,8 @@ namespace AI_DDA.Assets.Scripts
             {
                 Debug.LogError("DifficultyManager not found in the scene!");
             }
-            
+
+            // RLModel
             var rlModel = Object.FindFirstObjectByType<RLModel>();
             if (rlModel != null)
             {

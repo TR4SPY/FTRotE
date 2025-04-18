@@ -412,6 +412,7 @@ MonoBehaviour:
       m_Calls: []
   isAgent: 0
   isPlayer: 1
+  nametag: {fileID: 0}
   targetTags:
   - Entity/Enemy
   moveSpeed: 6
@@ -694,6 +695,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e05ce10f80a3a99e1909c424a19d059a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  nameplatePrefab: {fileID: 3229325632779371517, guid: 6c7558c55b4fe942e9e14d1926f0b386, type: 3}
 --- !u!1 &4482667373222356333
 GameObject:
   m_ObjectHideFlags: 0

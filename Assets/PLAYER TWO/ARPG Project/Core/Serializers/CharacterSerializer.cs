@@ -105,9 +105,9 @@ namespace PLAYERTWO.ARPGProject
 
             selectedDialogPaths = character.viewedDialogPages.Count == 0 ? new Dictionary<int, int>() : new Dictionary<int, int>(character.selectedDialogPaths);
         
-            if (!Enum.TryParse(character.specialCondition.ToString(), out SpecialCondition validCondition))
+            if (!Enum.TryParse(character.specialCondition.ToString(), out Affinity validCondition))
             {
-                validCondition = SpecialCondition.None;
+                validCondition = Affinity.None;
             }
             specialCondition = validCondition.ToString();
         }

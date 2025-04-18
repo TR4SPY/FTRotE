@@ -412,6 +412,7 @@ MonoBehaviour:
       m_Calls: []
   isAgent: 0
   isPlayer: 1
+  nametag: {fileID: 0}
   targetTags:
   - Entity/Enemy
   moveSpeed: 6
@@ -433,6 +434,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdf08bfe4f66e9246b561590565cc2bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  baseStrength: 0
+  baseDexterity: 0
+  baseVitality: 0
+  baseEnergy: 0
+  wasBoosted: 0
   onLevelUp:
     m_PersistentCalls:
       m_Calls: []
@@ -536,6 +542,7 @@ MonoBehaviour:
   rightHandSlot: {fileID: 2957117560326856721}
   leftHandSlot: {fileID: 2957117560190231176}
   leftHandShieldSlot: {fileID: 2957117559350994316}
+  wingsSlot: {fileID: 0}
   projectileOrigin: {fileID: 2957117559850772991}
   helmRenderer: {fileID: 5060356243640433258}
   chestRenderer: {fileID: 3642791985941429866}
@@ -595,6 +602,8 @@ MonoBehaviour:
   blockClips:
   - {fileID: 8300000, guid: a420a524dc0e4fd4f8bf3bd9a4808bc5, type: 3}
   stunClips: []
+  m_audioCooldown: 0.3
+  distanceLimit: 30
 --- !u!114 &2957117560480157708
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -686,6 +695,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e05ce10f80a3a99e1909c424a19d059a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  nameplatePrefab: {fileID: 3229325632779371517, guid: 6c7558c55b4fe942e9e14d1926f0b386, type: 3}
 --- !u!1 &4482667373222356333
 GameObject:
   m_ObjectHideFlags: 0

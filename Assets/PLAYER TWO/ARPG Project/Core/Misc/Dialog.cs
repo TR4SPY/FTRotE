@@ -30,7 +30,7 @@ namespace AI_DDA.Assets.Scripts
             public bool isForExplorer;
             public DialogAction action;
             public int nextPageIndex = -1;
-            public SpecialCondition specialConditionToSet = SpecialCondition.None;
+            public Affinity specialConditionToSet = Affinity.None;
         }
 
         public enum DialogAction
@@ -64,7 +64,7 @@ namespace AI_DDA.Assets.Scripts
             {
                 if (string.IsNullOrEmpty(currentPage.specialCondition)) return false;
                 
-                if (!Enum.TryParse<SpecialCondition>(currentPage.specialCondition, out SpecialCondition pageCondition) || character.specialCondition != pageCondition)
+                if (!Enum.TryParse<Affinity>(currentPage.specialCondition, out Affinity pageCondition) || character.specialCondition != pageCondition)
                 {
                     return false;
                 }

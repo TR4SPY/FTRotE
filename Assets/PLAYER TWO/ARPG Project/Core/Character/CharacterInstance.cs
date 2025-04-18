@@ -4,13 +4,6 @@ using System.Collections.Generic;
 
 namespace PLAYERTWO.ARPGProject
 {
-    public enum SpecialCondition
-        {
-            None,
-            Light,
-            Dark
-        }
-
     public class CharacterInstance
     {
         public Character data;
@@ -58,9 +51,11 @@ namespace PLAYERTWO.ARPGProject
         public bool questionnaireCompleted = false;
         public string playerType = "Undefined";
         public string currentDynamicPlayerType = "Unknown";
+        public string guildName = "";
         public float totalPlayTime = 0f;
         protected Entity m_entity;
         public Entity Entity => m_entity;
+        public Affinity affinity = Affinity.None;
 
         public Vector3 currentPosition => m_entity ? m_entity.position : initialPosition;
         public Quaternion currentRotation => m_entity ? m_entity.transform.rotation : initialRotation;
@@ -164,9 +159,9 @@ namespace PLAYERTWO.ARPGProject
             return specialCondition.ToString();
         }
 
-        public SpecialCondition specialCondition = SpecialCondition.None;
+        public Affinity specialCondition = Affinity.None;
 
-            public void SetSpecialCondition(SpecialCondition condition)
+            public void SetSpecialCondition(Affinity condition)
             {
                 specialCondition = condition;
             }
@@ -183,6 +178,22 @@ namespace PLAYERTWO.ARPGProject
             {
                 return CharacterClassRestrictions.None;
             }
+        }
+
+        public string GetName()
+        {
+            if (!ClassHierarchy.NameToBits.TryGetValue(Entity?.name?.Replace("(Clone)", "").Trim() ?? "", out var classType))
+                return "Unknown";
+
+            int tier = ClassHierarchy.GetTier(classType);
+            
+            if (specialCondition == Affinity.None)
+                return classType.ToString();
+
+            if (AffinityNaming.TierNames.TryGetValue(specialCondition, out var names) && tier < names.Length)
+                return $"{names[tier]} {classType}";
+
+            return classType.ToString();
         }
 
         /// <summary>
@@ -320,10 +331,10 @@ namespace PLAYERTWO.ARPGProject
                 }
             }
 
-            if (!Enum.TryParse(serializer.specialCondition, out SpecialCondition parsedCondition))
+            if (!Enum.TryParse(serializer.specialCondition, out Affinity parsedCondition))
             {
                 Debug.LogError($"[AI-DDA] Błąd wczytywania specialCondition: {serializer.specialCondition}. Ustawiono 'None'.");
-                parsedCondition = SpecialCondition.None;
+                parsedCondition = Affinity.None;
             }
             characterInstance.specialCondition = parsedCondition;
 
