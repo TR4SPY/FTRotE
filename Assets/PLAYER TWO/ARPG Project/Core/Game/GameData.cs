@@ -32,13 +32,11 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         public void AssignItemIDs()
         {
-            // Grupa => index do przypisania
             Dictionary<Item.ItemGroup, int> groupCounters = new();
 
-            // Wyciągamy tylko te przedmioty, które mają ID = 0
             var itemsToFix = items
                 .Where(i => i != null && i.id == 0)
-                .OrderBy(i => (int)i.group) // tylko dla spójności
+                .OrderBy(i => (int)i.group)
                 .ToList();
 
             foreach (var item in itemsToFix)
@@ -64,7 +62,14 @@ namespace PLAYERTWO.ARPGProject
         {
             return items
                 .Where(i => i != null && i.group == group && i.id != 0)
-                .Select(i => int.Parse(i.id.ToString().Substring(1))) // wyciągnij indeks
+                .Select(i =>
+                {
+                    var idStr = i.id.ToString();
+                    if (idStr.Length <= 1 || !int.TryParse(idStr.Substring(1), out var index))
+                        return 0;
+
+                    return index;
+                })
                 .DefaultIfEmpty(-1)
                 .Max();
         }

@@ -156,30 +156,26 @@ namespace PLAYERTWO.ARPGProject
             else
             {
                 if (classRestrictionsText != null)
-                    classRestrictionsText.gameObject.SetActive(false);
+                    classRestrictionsText.text = "";
             }
         }
 
         protected virtual void UpdatePriceText()
         {
-            // Pokaż/ukryj contianer ceny zależnie od tego, czy okno merchanta jest otwarte
             bool isMerchantOpen = GUIWindowsManager.instance.merchantWindow.isOpen;
             if (priceContainer)
                 priceContainer.gameObject.SetActive(isMerchantOpen);
 
-            // Jeśli merchant zamknięty, wyczyść
             if (!isMerchantOpen)
             {
                 ClearPriceTags();
                 return;
             }
 
-            // Gdy merchant otwarty – ustalamy "Buy:" lub "Sell:" i pobieramy kwotę
             var buying = m_guiItem.onMerchant;
             var price = buying ? m_item.GetPrice() : m_item.GetSellPrice();
             var prefix = buying ? "Buy:" : "Sell:";
 
-            // Wyświetl w priceContainer
             ShowPriceTags(prefix, price);
         }
 
@@ -231,13 +227,10 @@ namespace PLAYERTWO.ARPGProject
         {
             ClearPriceTags();
 
-            // Dodaj prefab z prefixem (np. "Buy:") 
             if (!string.IsNullOrEmpty(prefix))
                 AddPrefixTag(prefix);
 
             if (cost <= 0) return;
-
-            // Rozbij cost na Solmire, Lunaris, Amberlings
             var c = new Currency();
             c.SetFromTotalAmberlings(cost);
 

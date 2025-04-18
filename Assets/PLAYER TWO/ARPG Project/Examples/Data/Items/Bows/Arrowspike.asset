@@ -29,6 +29,7 @@ MonoBehaviour:
   allowedClasses: -1
   group: 2
   maxDurability: 10
+  maxUpgradeLevel: 25
   requiredLevel: 1
   requiredStrength: 15
   requiredDexterity: 10

@@ -26,7 +26,7 @@ MonoBehaviour:
   isQuestSpecific: 0
   cannotBeDropped: 0
   cannotBeSold: 0
-  allowedClasses: 0
+  allowedClasses: -1
   group: 5
   skill: {fileID: 11400000, guid: 25b593d88a6ff2d438a81f855b3180d2, type: 2}
   requiredLevel: 5
