@@ -5,6 +5,7 @@ using AI_DDA.Assets.Scripts;
 using System.Linq;
 using Gaia;
 using System.Collections.Generic;
+using System;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -23,6 +24,10 @@ namespace PLAYERTWO.ARPGProject
         private bool isChatOpen = false;
         private bool wasFocusedLastFrame = false;
         private bool chatWasManuallyOpened = false;
+
+        private List<string> messageHistory = new();
+
+        public static ChatManager Instance { get; private set; }
 
         private static readonly Dictionary<string, List<string>> helpMessages = new()
         {
@@ -57,6 +62,14 @@ namespace PLAYERTWO.ARPGProject
 
         private void Awake()
         {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            Instance = this;
+
             gameplayActions = Game.instance.gameplayActions;
             guiActions = Game.instance.guiActions;
 
@@ -156,10 +169,22 @@ namespace PLAYERTWO.ARPGProject
                 chatWasManuallyOpened = true;
                 cw?.Show();
                 cw?.FocusInput();
+
+                var recentMessages = GetLog();
+                cw?.RepopulateOverlayFromHistory(recentMessages, maxToShow: cw.overlayMaxMessages);
+                cw?.ScrollOverlayToBottom();
+
+                cw?.SetOverlayVisible(true);
+                cw?.StopOverlayFadeOut();
             }
             else
             {
                 chatWasManuallyOpened = false;
+
+                Debug.Log(">>> Chat closed — triggering overlay fade out");
+
+                cw?.StartFadeOutCountdown();
+
                 cw?.Hide();
                 cw?.RemoveFocus();
 
@@ -168,13 +193,23 @@ namespace PLAYERTWO.ARPGProject
             }
         }
 
+        public bool IsChatOpen => isChatOpen;
+
         public void SubmitMessage(string text)
         {
             if (string.IsNullOrWhiteSpace(text)) return;
 
             var cw = GUIWindowsManager.instance?.chatWindow;
+            string time = StringUtils.StringWithColor($"[{DateTime.Now:HH:mm}]", GameColors.SlateGray);
             string prefix = StringUtils.StringWithColorAndStyle("You:", GameColors.LightBlue, bold: true);
-            cw?.AddMessageToLog($"{prefix} {text}");
+            string formatted = $"{time} {prefix} {text}";
+
+            // cw?.AddMessageToLog(formatted);
+            cw?.AddOverlayMessage(formatted);
+
+            messageHistory.Add(formatted);
+            if (cw != null && messageHistory.Count > cw.maxMessages)
+                messageHistory.RemoveAt(0);
 
             if (text.StartsWith("/"))
                 ProcessCommand(text.Substring(1));
@@ -186,24 +221,44 @@ namespace PLAYERTWO.ARPGProject
             }
         }
 
+        public List<string> GetLog()
+        {
+            return messageHistory.ToList();
+        }
+
         private void AddSystemMessage(string message)
         {
             var cw = GUIWindowsManager.instance?.chatWindow;
             if (cw == null) return;
 
+            string time = StringUtils.StringWithColor($"[{DateTime.Now:HH:mm}]", GameColors.White);
             string prefix = StringUtils.StringWithColorAndStyle("[System]", GameColors.Gold, bold: true);
-            cw.AddMessageToLog(prefix + " " + message);
+            string formatted = $"{time} {prefix} {message}";
+
+            // cw.AddMessageToLog(formatted);
+            cw.AddOverlayMessage(formatted);
+
+            messageHistory.Add(formatted);
+            if (cw != null && messageHistory.Count > cw.maxMessages)
+                messageHistory.RemoveAt(0);
         }
 
-        private void AddSystemMessageBatch(IEnumerable<string> messages)
+        private void AddSystemMessageBatch(List<string> messages)
         {
             var cw = GUIWindowsManager.instance?.chatWindow;
-            if (cw == null) return;
+            if (cw == null || messages == null || messages.Count == 0) return;
 
+            string time = StringUtils.StringWithColor($"[{DateTime.Now:HH:mm}]", GameColors.White);
             string prefix = StringUtils.StringWithColorAndStyle("[System]", GameColors.Gold, bold: true);
-
             string combined = string.Join("\n", messages);
-            cw.AddMessageToLog($"{prefix} {combined}");
+            string formatted = $"{time} {prefix} {combined}";
+
+            // cw.AddMessageToLog(formatted);
+            cw.AddOverlayMessage(formatted);
+
+            messageHistory.Add(formatted);
+            if (cw != null && messageHistory.Count > cw.maxMessages)
+                messageHistory.RemoveAt(0);
         }
 
         private void ProcessCommand(string commandLine)
@@ -449,7 +504,8 @@ namespace PLAYERTWO.ARPGProject
                 case "clear":
                 {
                     var cw = GUIWindowsManager.instance?.chatWindow;
-                    cw?.ClearLog();
+                    // cw?.ClearLog();
+                    cw?.ClearOverlayLog();
                     //AddSystemMessage(StringUtils.StringWithColor("Chat log cleared.", GameColors.Gray));
                     break;
                 }

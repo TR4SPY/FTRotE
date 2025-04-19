@@ -213,8 +213,6 @@ namespace PLAYERTWO.ARPGProject
         /// <returns>Returns true if the item was successfully inserted.</returns>
         public virtual bool TryInsertItem(ItemInstance item, int row, int column)
         {
-                Debug.Log($"[DEBUG - Inventory] Trying insert '{item.GetName()}' row={row}, col={column}, stack={item.stack}");
-                
                 if (!CanInsertItem(item, row, column))
                 return false;
 
@@ -250,8 +248,6 @@ namespace PLAYERTWO.ARPGProject
                // Debug.LogWarning($"TryRemoveItem failed: Item {item.GetName()} not found in inventory.");
                 return false;
             }
-
-            // Debug.Log($"Removing {item.GetName()} from inventory.");
 
             var position = items[item];
             items.Remove(item);

@@ -14,7 +14,7 @@ namespace PLAYERTWO.ARPGProject
         public Transform target;
 
         [Header("Offsets")]
-        public Vector3 worldOffset = new Vector3(0, 1.2f, 0);
+        public Vector3 worldOffset = new Vector3(0, 2f, 0);
 
         private void LateUpdate()
         {
