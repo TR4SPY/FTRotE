@@ -49,6 +49,12 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("Reference to the Text component displaying class Restrictions.")]
         public Text classRestrictionsText;
 
+        [Tooltip("Displays the skill name granted by the weapon.")]
+        public Text itemSkill;
+
+        [Tooltip("Displays the skill's stat requirements (if any).")]
+        public Text itemSkillReq;
+
         [Header("Color Settings")]
         [Tooltip("Regular text colors.")]
         public Color regularColor = new(1, 1, 1, 1);
@@ -144,6 +150,7 @@ namespace PLAYERTWO.ARPGProject
             UpdateAdditionalAttributes();
             UpdateSkillInstruction();
             UpdateItemDescription(); 
+            UpdateWeaponSkill();
 
             if (m_item.IsEquippable())
             {
@@ -336,6 +343,91 @@ namespace PLAYERTWO.ARPGProject
 
                     potionDescription.text +=
                         $"Increases Mana Points by {m_item.GetPotion().manaAmount}.";
+                }
+            }
+        }
+
+        protected virtual void UpdateWeaponSkill()
+        {
+            if (!(m_item.data is ItemWeapon weapon) || weapon.skill == null)
+            {
+                if (itemSkill != null)
+                {
+                    itemSkill.text = "";
+                    SetParentActive(itemSkill, false);
+                }
+
+                if (itemSkillReq != null)
+                {
+                    itemSkillReq.text = "";
+                    SetParentActive(itemSkillReq, false);
+                }
+
+                return;
+            }
+
+            // Jeśli Is Skill Enabled = false → całkowicie ukrywamy wszystko
+            if (!m_item.isSkillEnabled)
+            {
+                if (itemSkill != null)
+                {
+                    itemSkill.text = "";
+                    SetParentActive(itemSkill, false);
+                }
+
+                if (itemSkillReq != null)
+                {
+                    itemSkillReq.text = "";
+                    SetParentActive(itemSkillReq, false);
+                }
+
+                return;
+            }
+
+            string name = StringUtils.StringWithColorAndStyle(weapon.skill.name + " Skill", GameColors.Purple, bold: true);
+            if (itemSkill != null)
+            {
+                itemSkill.text = name;
+                SetParentActive(itemSkill, true);
+            }
+
+            if (weapon.skillSource != null)
+            {
+                if (weapon.skillSource.skill != weapon.skill)
+                {
+                    return;
+                }
+
+                var stats = m_entity.stats;
+                var itemSkillSource = weapon.skillSource;
+
+                int missingLvl = Mathf.Max(0, itemSkillSource.requiredLevel - stats.level);
+                int missingStr = Mathf.Max(0, itemSkillSource.requiredStrength - stats.strength);
+                int missingEne = Mathf.Max(0, itemSkillSource.requiredEnergy - stats.energy);
+
+                string reqText = "";
+
+                if (missingLvl > 0)
+                    reqText += StringUtils.StringWithColor($"Skill requires +{missingLvl} Level", invalidColor) + "\n";
+
+                if (missingStr > 0)
+                    reqText += StringUtils.StringWithColor($"Skill requires +{missingStr} Strength", invalidColor) + "\n";
+
+                if (missingEne > 0)
+                    reqText += StringUtils.StringWithColor($"Skill requires +{missingEne} Energy", invalidColor) + "\n";
+
+                if (itemSkillReq != null)
+                {
+                    itemSkillReq.text = reqText.TrimEnd('\n');
+                    SetParentActive(itemSkillReq, !string.IsNullOrEmpty(itemSkillReq.text));
+                }
+            }
+            else
+            {
+                if (itemSkillReq != null)
+                {
+                    itemSkillReq.text = "";
+                    SetParentActive(itemSkillReq, false);
                 }
             }
         }

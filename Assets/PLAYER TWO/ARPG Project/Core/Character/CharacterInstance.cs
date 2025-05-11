@@ -258,6 +258,7 @@ namespace PLAYERTWO.ARPGProject
                 equipments.InitializeEquipments(m_entity.items);
                 inventory.InitializeInventory(m_entity.inventory);
                 skills.InitializeSkills(m_entity.skills);
+                RestoreWeaponSkill(m_entity);
                 quests.InitializeQuests();
                 scenes.InitializeScenes();
             }
@@ -275,7 +276,28 @@ namespace PLAYERTWO.ARPGProject
             m_entity.stats.health = Mathf.Clamp(hp, 0, m_entity.stats.maxHealth);
             m_entity.stats.mana   = Mathf.Clamp(mp, 0, m_entity.stats.maxMana);
         }
-        
+
+        void RestoreWeaponSkill(Entity entity)
+        {
+            var items = entity.items;
+            var right = items.GetRightHand();
+            var left = items.GetLeftHand();
+
+            foreach (var item in new[] { right, left })
+            {
+                if (item?.data is ItemWeapon weapon)
+                {
+                    var skill = weapon.skill;
+                    var source = weapon.skillSource;
+
+                    if (item.isSkillEnabled && skill != null && source != null)
+                    {
+                        entity.skills.TryLearnSkill(source);
+                    }
+                }
+            }
+        }
+
         public static CharacterInstance CreateFromSerializer(CharacterSerializer serializer)
         {
             var data = GameDatabase.instance.FindElementById<Character>(serializer.characterId);

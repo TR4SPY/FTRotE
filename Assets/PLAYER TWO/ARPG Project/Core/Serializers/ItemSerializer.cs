@@ -24,6 +24,7 @@ namespace PLAYERTWO.ARPGProject
         public int durability;
         public int stack;
         public int itemLevel = 0;
+        public bool skillEnabled = false;
         public Attributes attributes;
 
         public ItemSerializer() { }
@@ -50,6 +51,7 @@ namespace PLAYERTWO.ARPGProject
             }
 
             this.itemLevel = item.itemLevel;
+            this.skillEnabled = item.isSkillEnabled;
             this.attributes = new Attributes();
 
             if (item.ContainAttributes())

@@ -20,6 +20,12 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The base attack speed of this Item.")]
         public int attackSpeed;
 
+        [Tooltip("Optional skill granted while this weapon is equipped.")]
+        public Skill skill;
+
+        [Tooltip("Optional skill requirement source (typically a skill book).")]
+        public ItemSkill skillSource;
+
         [Tooltip("The list of audio clips this Item can play when used to perform attacks.")]
         public AudioClip[] attackClips;
 
@@ -50,6 +56,11 @@ namespace PLAYERTWO.ARPGProject
         /// Returns true if the weapon has magic damage.
         /// </summary>
         public bool HasMagicDamage() => minMagicDamage > 0 || maxMagicDamage > 0;
+
+        public override ItemAttributes CreateDefaultAttributes()
+        {
+            return new WeaponAttributes();
+        }
 
     }
 }

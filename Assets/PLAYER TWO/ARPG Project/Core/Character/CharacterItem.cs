@@ -13,6 +13,7 @@ namespace PLAYERTWO.ARPGProject
         public int durability;
         [HideInInspector]
         public int itemLevel = 0;
+        public bool skillEnabled;
 
 
         public CharacterItem(Item data,
@@ -67,6 +68,8 @@ namespace PLAYERTWO.ARPGProject
 
             var instance = new ItemInstance(data, a, durability, finalStack);
             instance.SetItemLevel(itemLevel);
+            instance.isSkillEnabled = this.skillEnabled;
+
             return instance;
         }
 
@@ -76,6 +79,7 @@ namespace PLAYERTWO.ARPGProject
             var attributes = CharacterItemAttributes.CreateFromSerializer(serializer.attributes);
             var characterItem = new CharacterItem(data, attributes, serializer.durability, serializer.stack);
             characterItem.itemLevel = serializer.itemLevel;
+            characterItem.skillEnabled = serializer.skillEnabled;
 
             return characterItem;
         }

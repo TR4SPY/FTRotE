@@ -20,25 +20,23 @@ namespace PLAYERTWO.ARPGProject
         [Header("UI Buttons (Apply/Cancel + L/R)")]
         public Button buttonApply;
         public Button buttonCancel;
-        public Button buttonLeft;   // przycisk do przełączania na Set1
-        public Button buttonRight;  // przycisk do przełączania na Set2
+        public Button buttonLeft;
+        public Button buttonRight;
 
         [Tooltip("Tekst typu '1/2' lub '2/2' itp.")]
         public Text skillSetText;
 
-        // -- Dostępne skille (dynamicznie):
         private List<GUISkillSlot> m_dynamicAvailableSlots = new List<GUISkillSlot>();
 
-        // -- Sloty w 2 zestawach (po 4 sloty) na wyposażone skille:
         private GUISkillSlot[] m_equippedSet1Slots;
         private GUISkillSlot[] m_equippedSet2Slots;
 
-        // -- Łącznie 8 wyposażonych skilli
         private List<Skill> m_equippedSkills;
         private List<Skill> equippedSkillsBefore;
 
         private Entity m_entity;
-        private bool showingFirstSet = true; // flaga: czy aktualnie pokazuję zestaw 1
+        private bool showingFirstSet = true;
+        private bool suppressButtonUpdate = false;
 
         protected virtual void Start()
         {
@@ -51,7 +49,6 @@ namespace PLAYERTWO.ARPGProject
             equippedSkillsBefore = new List<Skill>(m_equippedSkills);
             UpdateButtons();
 
-            // Domyślnie pokaż Set 1
             ShowSet1();
         }
 
@@ -68,7 +65,6 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         protected virtual void InitializeSlots()
         {
-            // W set 1 i set 2 masz po 4 sloty.
             m_equippedSet1Slots = equippedSkillsSet1.GetComponentsInChildren<GUISkillSlot>();
             m_equippedSet2Slots = equippedSkillsSet2.GetComponentsInChildren<GUISkillSlot>();
         }
@@ -78,16 +74,13 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         protected virtual void InitializeLists()
         {
-            // Dajemy 8 elementów (null)
             m_equippedSkills = new List<Skill>(new Skill[8]);
 
-            // Podpinamy OnDropSkill w set1 (indeksy 0..3)
             for (int i = 0; i < m_equippedSet1Slots.Length; i++)
             {
-                int index = i; // 0..3
+                int index = i;
                 m_equippedSet1Slots[i].OnDropSKill += (skill) => EquipSkill(index, skill);
             }
-            // Podpinamy OnDropSkill w set2 (indeksy 4..7)
             for (int i = 0; i < m_equippedSet2Slots.Length; i++)
             {
                 int index = i + 4;
@@ -104,28 +97,28 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         protected virtual void InitializeCallbacks()
         {
-            // Gdy EntitySkillManager zmieni dostępne lub wyposażone, odśwież
             m_entity.skills.onUpdatedSkills.AddListener(_ => Refresh());
-            m_entity.skills.onUpdatedEquippedSkills.AddListener(_ => Refresh());
+            m_entity.skills.onUpdatedEquippedSkills.AddListener(_ =>
+            {
+                suppressButtonUpdate = true;
+                Refresh();
+                suppressButtonUpdate = false;
+            });
 
-            // Doubleclick usuń skill – set1
             for (int i = 0; i < m_equippedSet1Slots.Length; i++)
             {
                 int index = i; 
                 m_equippedSet1Slots[i].onIconDoubleClick.AddListener(() => RemoveSkill(index));
             }
-            // Doubleclick usuń skill – set2
             for (int i = 0; i < m_equippedSet2Slots.Length; i++)
             {
                 int index = i + 4;
                 m_equippedSet2Slots[i].onIconDoubleClick.AddListener(() => RemoveSkill(index));
             }
 
-            // Obsługa przycisków do przełączania set1 / set2
             if (buttonLeft)  buttonLeft.onClick.AddListener(ShowSet1);
             if (buttonRight) buttonRight.onClick.AddListener(ShowSet2);
 
-            // Obsługa apply/cancel
             if (buttonApply)   buttonApply.onClick.AddListener(Apply);
             if (buttonCancel)  buttonCancel.onClick.AddListener(Cancel);
         }
@@ -137,7 +130,6 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         public virtual void SetAvailableSkills(Skill[] skills)
         {
-            // 1) Dodaj sloty, jeśli jest za mało
             while (m_dynamicAvailableSlots.Count < skills.Length)
             {
                 GUISkillSlot newSlot = Instantiate(slotPrefab, availableSkillsContainer.transform);
@@ -149,7 +141,6 @@ namespace PLAYERTWO.ARPGProject
                     EquipSkill(newSlot.skill);
                 });
             }
-            // 2) Usuń nadmiar
             while (m_dynamicAvailableSlots.Count > skills.Length)
             {
                 int lastIndex = m_dynamicAvailableSlots.Count - 1;
@@ -174,13 +165,11 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         public virtual void SetEquippedSkills(Skill[] skills)
         {
-            // Upewniamy się, że mamy listę 8
             if (m_equippedSkills.Count < 8)
             {
                 m_equippedSkills = new List<Skill>(new Skill[8]);
             }
 
-            // Skopiuj param. "skills" do m_equippedSkills (max 8)
             for (int i = 0; i < 8; i++)
             {
                 if (i < skills.Length)
@@ -197,13 +186,12 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         public virtual void RefreshEquippedSkills()
         {
-            // set1
             for (int i = 0; i < m_equippedSet1Slots.Length; i++)
             {
                 var skill = m_equippedSkills[i]; 
                 m_equippedSet1Slots[i].SetSkill(skill, true);
             }
-            // set2
+
             for (int i = 0; i < m_equippedSet2Slots.Length; i++)
             {
                 var skill = m_equippedSkills[i + 4];
@@ -236,13 +224,11 @@ namespace PLAYERTWO.ARPGProject
         {
             if (index < 0 || index >= m_equippedSkills.Count) return;
 
-            // Jeśli skill jest już w innym slocie, przenieś go
             if (m_equippedSkills.Contains(skill))
             {
                 var oldIndex = m_equippedSkills.IndexOf(skill);
                 if (m_equippedSkills[index] != null)
                 {
-                    // zamiana
                     m_equippedSkills[oldIndex] = m_equippedSkills[index];
                 }
                 else
@@ -276,18 +262,18 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         public virtual void Refresh()
         {
-            // Dostępne skille = toArray
             var allSkills = m_entity.skills.ToArray();
             SetAvailableSkills(allSkills);
 
-            // Wyekwipowane = getEquipped
             var eq = m_entity.skills.GetEquippedSkills();
             SetEquippedSkills(eq);
+
+            if (!suppressButtonUpdate)
+                UpdateButtons();
         }
 
         public virtual void Apply()
         {
-            // Zapisz skille do entity
             m_entity.skills.SetEquippedSkills(m_equippedSkills.ToArray());
             equippedSkillsBefore = new List<Skill>(m_equippedSkills);
             UpdateButtons();
@@ -295,7 +281,6 @@ namespace PLAYERTWO.ARPGProject
 
         public void Cancel()
         {
-            // cofnij do poprzedniego stanu
             m_equippedSkills = new List<Skill>(equippedSkillsBefore);
             RefreshEquippedSkills();
             UpdateButtons();
@@ -333,8 +318,6 @@ namespace PLAYERTWO.ARPGProject
             showingFirstSet = true;
             if (skillSetText) skillSetText.text = "1 / 2 Equipped skill set";
 
-            // Przykład: chowanie/przywracanie przycisków
-            //           (opcjonalnie)
             if (buttonLeft)  SetCanvasGroup(buttonLeft.gameObject, false);
             if (buttonRight) SetCanvasGroup(buttonRight.gameObject, true);
         }
@@ -347,7 +330,6 @@ namespace PLAYERTWO.ARPGProject
             showingFirstSet = false;
             if (skillSetText) skillSetText.text = "2 / 2 Equipped skill set";
 
-            // Przykład:
             if (buttonLeft)  SetCanvasGroup(buttonLeft.gameObject, true);
             if (buttonRight) SetCanvasGroup(buttonRight.gameObject, false);
         }

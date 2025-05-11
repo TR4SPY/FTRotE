@@ -23,6 +23,8 @@ MonoBehaviour:
   overrideClip: {fileID: 0}
   useMana: 0
   manaCost: 0
+  useBlood: 0
+  bloodCost: 0
   useHealing: 0
   healingAmount: 0
   useMeleeHitbox: 0
@@ -31,3 +33,7 @@ MonoBehaviour:
   damageMode: 0
   minDamage: 1
   maxDamage: 4
+  destroyOnHit: 0
+  particleDestroyOnCollision: 0
+  destroyOnFirstParticleCollision: 0
+  particleCollideOnce: 0

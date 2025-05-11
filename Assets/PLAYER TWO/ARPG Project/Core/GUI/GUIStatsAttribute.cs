@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using System.Collections;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -21,6 +23,10 @@ namespace PLAYERTWO.ARPGProject
 
         [Tooltip("The Audio Clip that plays when points are removed.")]
         public AudioClip removePointClip;
+
+        private Coroutine holdRoutine;
+        private bool isHolding = false;
+        private bool isAddButtonHeld = false;
 
         protected GUIStatsManager m_stats;
 
@@ -118,6 +124,69 @@ namespace PLAYERTWO.ARPGProject
             pointsText.text = (currentPoints + distributedPoints).ToString();
         }
 
+        private void AddHoldEvents(EventTrigger trigger, bool isAdd)
+        {
+            var pointerDown = new EventTrigger.Entry { eventID = EventTriggerType.PointerDown };
+            pointerDown.callback.AddListener((_) => StartHold(isAdd));
+            trigger.triggers.Add(pointerDown);
+
+            var pointerUp = new EventTrigger.Entry { eventID = EventTriggerType.PointerUp };
+            pointerUp.callback.AddListener((_) => StopHold());
+            trigger.triggers.Add(pointerUp);
+        }
+
+        private void StartHold(bool isAdd)
+        {
+            isHolding = true;
+            isAddButtonHeld = isAdd;
+            ClickOnce();
+            holdRoutine = StartCoroutine(HoldLoop());
+        }
+
+        private void StopHold()
+        {
+            isHolding = false;
+            if (holdRoutine != null)
+                StopCoroutine(holdRoutine);
+        }
+
+        private void ClickOnce()
+        {
+            if (isAddButtonHeld)
+            {
+                if (stats.availablePoints > 0)
+                {
+                    AddPoint();
+                }
+                else
+                {
+                    StopHold();
+                }
+            }
+            else
+            {
+                if (distributedPoints > 0)
+                {
+                    SubPoint();
+                }
+                else
+                {
+                    StopHold();
+                }
+            }
+        }
+
+        private IEnumerator HoldLoop()
+        {
+            yield return new WaitForSeconds(0.5f); 
+
+            while (isHolding)
+            {
+                ClickOnce();
+                yield return new WaitForSeconds(0.05f);
+            }
+        }
+
         protected virtual void Start()
         {
             stats.onPointsChanged += (availablePoints) =>
@@ -127,6 +196,13 @@ namespace PLAYERTWO.ARPGProject
 
             addButton.onClick.AddListener(AddPoint);
             removeButton.onClick.AddListener(SubPoint);
+
+            var addTrigger = addButton.gameObject.AddComponent<EventTrigger>();
+            var removeTrigger = removeButton.gameObject.AddComponent<EventTrigger>();
+
+            AddHoldEvents(addTrigger, isAdd: true);
+            AddHoldEvents(removeTrigger, isAdd: false);
+
 
             addButton.transform.localScale = stats.availablePoints > 0 ? Vector3.one : Vector3.zero;
             removeButton.transform.localScale = distributedPoints > 0 ? Vector3.one : Vector3.zero;

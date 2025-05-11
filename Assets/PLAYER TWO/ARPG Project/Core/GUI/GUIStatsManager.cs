@@ -224,7 +224,13 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         public virtual void Refresh()
         {
-            string rawClassName = Game.instance.currentCharacter?.Entity != null
+            if (m_entity == null || m_entity.stats == null)
+		{
+    			Debug.LogError("[StatsManager] Entity or stats are null during Refresh. Aborting.");
+			return;
+		}
+
+	string rawClassName = Game.instance.currentCharacter?.Entity != null
                 ? Game.instance.currentCharacter.Entity.name.Replace("(Clone)", "").Trim()
                 : "Unknown";
 

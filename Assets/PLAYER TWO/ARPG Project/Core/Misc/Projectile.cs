@@ -14,13 +14,11 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The speed at which this Projectile moves.")]
         public float speed = 15f;
 
-        [Header("Ground Settings")]
-        [Tooltip("If true, the Projectile will adjust its position relative to the ground.")]
-        public bool adjustToGround = true;
+        [Tooltip("If true, the projectile is destroyed when it hits one or more targets.")]
+        public bool destroyOnHit = true;
 
-        [Tooltip(
-            "The minimum distance this Projectile can reach from the ground to start adjusting its position."
-        )]
+        [Header("Ground Settings")]
+        public bool adjustToGround = true;
         public float minimumGroundDistance = 1f;
 
         protected int m_damage;
@@ -28,24 +26,12 @@ namespace PLAYERTWO.ARPGProject
         protected List<string> m_targets;
 
         protected Vector3 m_origin;
-
         protected Entity m_entity;
         protected Entity m_otherEntity;
         protected Destructible m_destructible;
+        protected HashSet<Entity> m_hitEntities = new();
 
-        /// <summary>
-        /// Sets the damage data for this Projectile.
-        /// </summary>
-        /// <param name="entity">The Entity casting this Projectile.</param>
-        /// <param name="damage">The amount of damage points.</param>
-        /// <param name="critical">If true, the Projectile damage will be considered critical.</param>
-        /// <param name="target">The list of targets' tags for this Projectile to interact with.</param>
-        public virtual void SetDamage(
-            Entity entity,
-            int damage,
-            bool critical,
-            List<string> targets
-        )
+        public virtual void SetDamage(Entity entity, int damage, bool critical, List<string> targets)
         {
             m_entity = entity;
             m_damage = damage;
@@ -53,66 +39,89 @@ namespace PLAYERTWO.ARPGProject
             m_targets = new List<string>(targets);
         }
 
+        public void SetTarget(Vector3 targetPosition)
+        {
+            Vector3 direction = (targetPosition - transform.position).normalized;
+            transform.rotation = Quaternion.LookRotation(direction);
+        }
+
+        protected virtual void OnEnable()
+        {
+            m_origin = transform.position;
+
+            if (adjustToGround)
+            {
+                var start = transform.position;
+                var end = start + Vector3.down * minimumGroundDistance;
+
+                if (Physics.Linecast(start, end, out var hit))
+                {
+                    var safeDistance = Vector3.Distance(hit.point, end);
+                    transform.position += Vector3.up * safeDistance;
+                }
+            }
+        }
+
         protected virtual void Update()
         {
             HandleMovement();
             HandleDistanceCulling();
-            HandleGroundDistance();
         }
 
-        protected virtual void OnEnable() => m_origin = transform.position;
-
-        protected virtual void OnTriggerEnter(Collider other)
+        protected virtual void HandleMovement()
         {
-            HandleEntityAttack(other);
-            HandleDestructibleAttack(other);
-        }
-
-        protected virtual void HandleEntityAttack(Collider other)
-        {
-            if (GameTags.InTagList(other, m_targets) && other.TryGetComponent(out m_otherEntity))
-            {
-                gameObject.SetActive(false);
-                m_otherEntity.Damage(m_entity, m_damage, m_critical);
-                Destroy(gameObject);
-            }
-        }
-
-        protected virtual void HandleDestructibleAttack(Collider other)
-        {
-            if (
-                m_entity.CompareTag(GameTags.Player)
-                && other.CompareTag(GameTags.Destructible)
-                && other.TryGetComponent(out m_destructible)
-            )
-            {
-                m_destructible.Damage(m_damage);
-                Destroy(gameObject);
-            }
-        }
-
-        protected virtual void HandleMovement() =>
             transform.position += speed * Time.deltaTime * transform.forward;
+        }
 
         protected virtual void HandleDistanceCulling()
         {
-            if (Vector3.Distance(m_origin, transform.position) >= maxDistance)
+            Vector3 originFlat = new Vector3(m_origin.x, 0, m_origin.z);
+            Vector3 currentFlat = new Vector3(transform.position.x, 0, transform.position.z);
+
+            if (Vector3.Distance(originFlat, currentFlat) >= maxDistance)
                 Destroy(gameObject);
         }
 
-        protected virtual void HandleGroundDistance()
+        protected virtual void OnTriggerEnter(Collider other)
         {
-            if (!adjustToGround)
-                return;
+            bool hitSomething = false;
 
-            var start = transform.position;
-            var end = start + Vector3.down * minimumGroundDistance;
+            if (HandleEntityAttack(other))
+                hitSomething = true;
 
-            if (Physics.Linecast(start, end, out var hit))
+            if (HandleDestructibleAttack(other))
+                hitSomething = true;
+
+            if (destroyOnHit && hitSomething)
+                Destroy(gameObject);
+        }
+
+        protected virtual bool HandleEntityAttack(Collider other)
+        {
+            if (GameTags.InTagList(other, m_targets) &&
+                other.TryGetComponent(out m_otherEntity) &&
+                !m_hitEntities.Contains(m_otherEntity))
             {
-                var safeDistance = Vector3.Distance(hit.point, end);
-                transform.position += Vector3.up * safeDistance;
+                m_hitEntities.Add(m_otherEntity);
+                m_otherEntity.Damage(m_entity, m_damage, m_critical);
+                return true;
             }
+
+            return false;
+        }
+
+        protected virtual bool HandleDestructibleAttack(Collider other)
+        {
+            if (
+                m_entity.CompareTag(GameTags.Player) &&
+                other.CompareTag(GameTags.Destructible) &&
+                other.TryGetComponent(out m_destructible))
+            {
+                m_destructible.Damage(m_damage);
+                return true;
+            }
+
+            return false;
         }
     }
 }

@@ -5145,7 +5145,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 94128309}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0.22593173, z: 0, w: -0.9741432}
+  m_LocalRotation: {x: 0, y: -0.27879184, z: 0, w: -0.9603516}
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -16575,9 +16575,29 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2175000572608817878, guid: a8cd76679e88cc3498662ee0ad1a1bd1, type: 3}
+      propertyPath: maxLevel
+      value: 500
+      objectReference: {fileID: 0}
+    - target: {fileID: 2175000572608817878, guid: a8cd76679e88cc3498662ee0ad1a1bd1, type: 3}
+      propertyPath: guiActions
+      value: 
+      objectReference: {fileID: -944628639613478452, guid: 5e7f2a6692e5a2048be8fd95f1c740b6, type: 3}
+    - target: {fileID: 2175000572608817878, guid: a8cd76679e88cc3498662ee0ad1a1bd1, type: 3}
+      propertyPath: gameplayActions
+      value: 
+      objectReference: {fileID: -944628639613478452, guid: 8d9b5d05542219a4292fd6f0cd014262, type: 3}
     - target: {fileID: 2175000572608817883, guid: a8cd76679e88cc3498662ee0ad1a1bd1, type: 3}
       propertyPath: m_Name
       value: __GAME__
+      objectReference: {fileID: 0}
+    - target: {fileID: 6104723037080685213, guid: a8cd76679e88cc3498662ee0ad1a1bd1, type: 3}
+      propertyPath: fileName
+      value: dissertation
+      objectReference: {fileID: 0}
+    - target: {fileID: 6599070479724307756, guid: a8cd76679e88cc3498662ee0ad1a1bd1, type: 3}
+      propertyPath: columns
+      value: 9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -17628,7 +17648,7 @@ Transform:
   m_GameObject: {fileID: 758569906}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1183.4258, y: 101.897064, z: -26.985067}
+  m_LocalPosition: {x: 758.73456, y: 191.96739, z: -71.59091}
   m_LocalScale: {x: 5, y: 5, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -24966,8 +24986,8 @@ MonoBehaviour:
     m_cloudSpeed: 33.00988
     m_cloudOpacity: 0.4714074
     m_fxBloomIntensity: 3
-    m_fxTemperature: 0
-    m_fxTint: 0
+    m_fxTemperature: 3
+    m_fxTint: 9
     m_fxVignetteIntensity: 0.24
     m_fxColorFilter: {r: 1, g: 1, b: 1, a: 1}
     m_rainAudioVolume: 0
@@ -24982,8 +25002,8 @@ MonoBehaviour:
     m_hdrpFogDepthExtent: 0
   CurrentScenePostFXSettings:
     m_fxBloomIntensity: 3
-    m_fxTemperature: 0
-    m_fxTint: 0
+    m_fxTemperature: 3
+    m_fxTint: 9
     m_fxVignetteIntensity: 0.24
     m_fxColorFilter: {r: 1, g: 1, b: 1, a: 1}
     m_windSpeed: 0.35
@@ -29021,14 +29041,14 @@ MonoBehaviour:
   m_snowingHeight: 60
   m_snowFadeHeight: 50
   m_snowDuration: 0
-  m_snowWaitTime: 428.0508
+  m_snowWaitTime: 225.38925
   m_snowSampleStrength: 0
   m_savedSnowingHeight: 66.47059
   m_enableRain: 1
   m_rainIntensity: 0
   m_rainSampleStrength: 0
   m_rainDuration: 0
-  m_rainWaitTime: 464.07703
+  m_rainWaitTime: 339.1496
   m_thunderLightColor: {r: 0, g: 0.6313726, b: 1, a: 1}
   m_thunderLightIntensity: 2
   m_thunderAudioSources:
@@ -29399,7 +29419,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1363076298}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0.31920108, z: 0, w: -0.9476871}
+  m_LocalRotation: {x: 0, y: -0.46956313, z: 0, w: -0.8828989}
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -35520,7 +35540,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1960832360}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.23546419, z: 0, w: 0.9718831}
+  m_LocalRotation: {x: 0, y: 0.3400498, z: 0, w: 0.94040745}
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -35782,6 +35802,10 @@ PrefabInstance:
     - target: {fileID: 1999176159447432393, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -22.500002
+      objectReference: {fileID: 0}
+    - target: {fileID: 2100147787278624175, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
+      propertyPath: m_Text
+      value: v.0.33B+ (Research Build) | Apr '25
       objectReference: {fileID: 0}
     - target: {fileID: 2190729677818156058, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
       propertyPath: m_AnchorMax.x
@@ -36222,6 +36246,30 @@ PrefabInstance:
     - target: {fileID: 7838300371610804397, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 35.69995
+      objectReference: {fileID: 0}
+    - target: {fileID: 7971171803296047956, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7971171803296047956, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7971171803296047956, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 500
+      objectReference: {fileID: 0}
+    - target: {fileID: 7971171803296047956, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 7971171803296047956, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -150
+      objectReference: {fileID: 0}
+    - target: {fileID: 7971171803296047956, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 7981838847493321326, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
       propertyPath: m_SizeDelta.x

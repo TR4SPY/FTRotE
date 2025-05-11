@@ -18,6 +18,9 @@ namespace PLAYERTWO.ARPGProject
         public Text craftingText;
         public GUIItemSlot resultSlot;
         public AudioClip successSound;
+        private bool canCraft = false;
+        public Button craftButton;
+
 
         [Header("Dynamic Crafting Cost")]
         [Tooltip("Where we place the dynamic price tags for the crafting cost.")]
@@ -146,8 +149,11 @@ namespace PLAYERTWO.ARPGProject
             if (c.amberlings > 0)
                 AddPriceTag(container, c.amberlings, amberlingsIcon);
         }
+
         public void UpdateCraftingPreview(List<ItemInstance> inputItems)
         {
+            canCraft = false;
+
             if (craftingManager == null || craftingText == null)
                 return;
 
@@ -155,7 +161,11 @@ namespace PLAYERTWO.ARPGProject
             ClearPriceTags(craftingCostContainer);
 
             if (inputItems == null || inputItems.Count == 0)
+            {
+                craftingText.text = "You haven't placed any items for crafting.";
+                if (craftButton != null) craftButton.interactable = false;
                 return;
+            }
 
             bool hasEquippableItem = inputItems.Any(i => i.IsEquippable());
             bool hasJewel = inputItems.Any(i => i.data is ItemJewel && i.data.name != "Bar of Solmire");
@@ -165,6 +175,8 @@ namespace PLAYERTWO.ARPGProject
             if (exactRecipe != null)
             {
                 DisplayRecipe(exactRecipe, inputItems);
+                canCraft = true;
+                if (craftButton != null) craftButton.interactable = true;
                 return;
             }
 
@@ -175,12 +187,66 @@ namespace PLAYERTWO.ARPGProject
             foreach (var rule in craftingManager.customRules)
             {
                 if (!rule.Matches(inputItems))
-                    continue;
+                {
+                    if (rule is JewelOfLightRule)
+                    {
+                        var item = inputItems.FirstOrDefault(i => i.IsEquippable());
+                        if (item?.data is ItemWeapon weapon)
+                        {
+                            if (weapon.skill == null)
+                            {
+                                craftingText.text = "No skills are available. Try a different combination.";
+                                craftButton.interactable = false;
+                                continue;
+                            }
 
-                if (enchantSuccess <= 0f)
+                            if (item.isSkillEnabled)
+                            {
+                                craftingText.text = "Item already has a skill.";
+                                craftButton.interactable = false;
+                                continue;
+                            }
+                        }
+                    }
+
+                    if (rule is DuskCrystalRule)
+                    {
+                        var item = inputItems.FirstOrDefault(i => i.IsEquippable());
+                        if (item != null)
+                        {
+                            bool hasMaxLevel = item.itemLevel >= 9;
+                            bool hasSkill = item.isSkillEnabled;
+                            bool hasMaxAttributes = item.attributes?.MaxAttributes() == true;
+
+                            if (hasMaxLevel && hasSkill && hasMaxAttributes)
+                            {
+                                craftingText.text = "Item cannot be further upgraded.";
+                                if (craftButton != null) craftButton.interactable = false;
+                                return;
+                            }
+                        }
+                    }
+
+                    if (rule is JewelOfClarityRule)
+                    {
+                        var item = inputItems.FirstOrDefault(i => i.IsEquippable());
+                        if (item?.attributes?.MaxAttributes() == true)
+                        {
+                            craftingText.text = "Item has maximum number of attributes.";
+                            if (craftButton != null) craftButton.interactable = false;
+                            continue;
+                        }
+                    }
+
                     continue;
+                }
 
                 float score = craftingManager.GetRuleScore(rule, inputItems);
+                float success = craftingManager.GetSuccessRateFromJewels(inputItems, out _, out _);
+
+                if (score <= 0f && success <= 0f)
+                    continue;
+
                 if (score > bestRuleScore)
                 {
                     bestRuleScore = score;
@@ -211,61 +277,76 @@ namespace PLAYERTWO.ARPGProject
             bool hasPartial = bestPartial.recipe != null &&
                 (!bestPartial.recipe.ingredients.Any(i => i.item is ItemEquippable) || hasEquippableItem);
 
-                if (!hasEquippableItem && bestPartial.recipe != null)
+            if (!hasEquippableItem && bestPartial.recipe != null)
+            {
+                DisplayRecipe(bestPartial.recipe, inputItems);
+                canCraft = true;
+                if (craftButton != null) craftButton.interactable = true;
+                return;
+            }
+
+            if (jewelCount > 1)
+            {
+                if (hasPartial)
                 {
                     DisplayRecipe(bestPartial.recipe, inputItems);
+                    canCraft = true;
+                    if (craftButton != null) craftButton.interactable = true;
                     return;
                 }
 
-                if (jewelCount > 1)
+                if (bestRule != null)
                 {
-                    if (hasPartial)
-                    {
-                        DisplayRecipe(bestPartial.recipe, inputItems);
-                        return;
-                    }
-
-                    if (bestRule != null)
-                    {
-                        DisplayRule(bestRule, inputItems);
-                        return;
-                    }
+                    DisplayRule(bestRule, inputItems);
+                    canCraft = true;
+                    if (craftButton != null) craftButton.interactable = true;
+                    return;
                 }
-                else
+            }
+            else
+            {
+                if (bestRule != null)
                 {
-                    if (bestRule != null)
-                    {
-                        DisplayRule(bestRule, inputItems);
-                        return;
-                    }
-
-                    if (hasPartial)
-                    {
-                        DisplayRecipe(bestPartial.recipe, inputItems);
-                        return;
-                    }
-                }
-
-                if (hasEquippableItem && !hasJewel)
-                {
-                    craftingText.text = "Add a jewel or crystal to enhance the item.";
+                    DisplayRule(bestRule, inputItems);
+                    canCraft = true;
+                    if (craftButton != null) craftButton.interactable = true;
                     return;
                 }
 
-                if (hasJewel && !hasEquippableItem)
+                if (hasPartial)
                 {
-                    craftingText.text = "Add an item to be enhanced.";
+                    DisplayRecipe(bestPartial.recipe, inputItems);
+                    canCraft = true;
+                    if (craftButton != null) craftButton.interactable = true;
                     return;
                 }
+            }
 
-                if (craftingManager.availableRecipes.Any(r => craftingManager.LooseMatches(r, inputItems)))
-                {
-                    craftingText.text = "You are missing some ingredients for a valid recipe.";
-                    return;
-                }
+            if (hasEquippableItem && !hasJewel)
+            {
+                craftingText.text = "Add a jewel or crystal to enhance the item.";
+                if (craftButton != null) craftButton.interactable = false;
+                return;
+            }
 
-                craftingText.text = "No matching recipe or enhancement found.";
+            if (hasJewel && !hasEquippableItem)
+            {
+                craftingText.text = "Add an item to be enhanced.";
+                if (craftButton != null) craftButton.interactable = false;
+                return;
+            }
+
+            if (craftingManager.availableRecipes.Any(r => craftingManager.LooseMatches(r, inputItems)))
+            {
+                craftingText.text = "You are missing some ingredients for a valid recipe.";
+                if (craftButton != null) craftButton.interactable = false;
+                return;
+            }
+
+            craftingText.text = "No matching recipe or enhancement found.";
+            if (craftButton != null) craftButton.interactable = false;
         }
+
         private void DisplayRecipe(CraftingRecipe recipe, List<ItemInstance> inputItems)
         {
             float success = craftingManager.CalculateSuccessChance(recipe, inputItems);
@@ -358,13 +439,23 @@ namespace PLAYERTWO.ARPGProject
             if (craftSection == null)
             {
                 craftingText.text = "No crafting section found.";
+                GameAudio.instance?.PlayDeniedSound();
                 return;
             }
 
             var craftItems = craftSection.inventory.items.Keys.ToList();
+
             if (craftItems.Count == 0)
             {
                 craftingText.text = "You haven't placed any items for crafting.";
+                GameAudio.instance?.PlayDeniedSound();
+                return;
+            }
+
+            if (!canCraft)
+            {
+                craftingText.text = "Crafting is not available with current combination.";
+                GameAudio.instance?.PlayDeniedSound();
                 return;
             }
 
@@ -378,6 +469,7 @@ namespace PLAYERTWO.ARPGProject
                 craftSection.inventory.TryRemoveItem(guiItem.item);
                 Destroy(guiItem.gameObject);
             }
+
             craftSection.UpdateSlots();
 
             if (resultSlot.item != null)
@@ -395,7 +487,7 @@ namespace PLAYERTWO.ARPGProject
             if (!success)
             {
                 craftingText.text = failReason;
-                GameAudio.instance.PlayDeniedSound();
+                GameAudio.instance?.PlayDeniedSound();
             }
             else
             {

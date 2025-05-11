@@ -37,5 +37,10 @@ namespace PLAYERTWO.ARPGProject
         /// Returns true if this Item has custom materials.
         /// </summary>
         public virtual bool HasMaterials() => materials != null && materials.Length > 0;
+
+        public override ItemAttributes CreateDefaultAttributes()
+        {
+            return new ArmorAttributes();
+        }
     }
 }

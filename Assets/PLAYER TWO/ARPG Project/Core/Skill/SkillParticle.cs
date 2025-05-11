@@ -17,6 +17,12 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("If true, the particle can collide only once with the another Game Object.")]
         public bool collideOnce;
 
+        [HideInInspector]
+        public bool destroyOnCollision = false;
+
+        [HideInInspector]
+        public bool destroyOnFirstParticleCollision = false;
+
         protected Collider m_collider;
         protected ParticleSystem m_particle;
         protected Entity m_entity;
@@ -48,10 +54,20 @@ namespace PLAYERTWO.ARPGProject
         /// <param name="entity">The Entity of the caster.</param>
         /// <param name="skill">The Skill data.</param>
         public virtual void SetSkills(Entity entity, Skill skill)
-        {
-            m_entity = entity;
-            m_skill = skill;
-        }
+{
+    m_entity = entity;
+    m_skill = skill;
+
+    if (skill is SkillAttack attack)
+    {
+        destroyOnCollision = attack.particleDestroyOnCollision;
+        destroyOnFirstParticleCollision = attack.destroyOnFirstParticleCollision;
+        collideOnce = attack.particleCollideOnce;
+
+        Debug.Log($"[{name}] Skill set: destroyOnCollision={destroyOnCollision}, destroyOnFirstParticleCollision={destroyOnFirstParticleCollision}, collideOnce={collideOnce}");
+    }
+}
+
 
         protected virtual void Start()
         {
@@ -62,25 +78,20 @@ namespace PLAYERTWO.ARPGProject
         protected virtual void LateUpdate()
         {
             if (!destroyWhenParticleStop || !m_particle.isStopped) return;
-
             Destroy(gameObject);
         }
 
         protected virtual void OnEnable() => m_targets.Clear();
 
         protected virtual bool ValidCollision(GameObject other)
-{
-    bool isValid = (GameTags.InTagList(other, m_entity.targetTags) || other.CompareTag(GameTags.Destructible)) &&
-        (!collideOnce || !m_targets.Contains(other));
-
-    Debug.Log($"ValidCollision with {other.name}: {isValid}");
-    return isValid;
-}
+        {
+            return (GameTags.InTagList(other, m_entity.targetTags) || other.CompareTag(GameTags.Destructible)) &&
+                   (!collideOnce || !m_targets.Contains(other));
+        }
 
         protected virtual void HandleEntityAttack(GameObject other, int damage, bool critical)
         {
             if (!other.TryGetComponent(out m_target)) return;
-
             m_target.Damage(m_entity, damage, critical);
         }
 
@@ -102,18 +113,21 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void OnTriggerStay(Collider other)
         {
-            Debug.Log("Trigger stay with: " + other.gameObject.name);
             if (!ValidCollision(other.gameObject)) return;
 
             m_targets.Add(other.gameObject);
-
             var damage = m_entity.stats.GetSkillDamage(m_skill, out var critical);
             HandleAttack(other.gameObject, damage, critical);
+
+            if (destroyOnFirstParticleCollision)
+            {
+                Destroy(gameObject);
+            }
         }
 
         protected virtual void OnParticleCollision(GameObject other)
         {
-            Debug.Log("Particle collided with: " + other.gameObject.name);
+                Debug.Log($"[{name}] OnParticleCollision with {other.name}, destroyOnCollision={destroyOnCollision}, destroyOnFirstParticleCollision={destroyOnFirstParticleCollision}");
 
             if (!ValidCollision(other)) return;
 
@@ -122,9 +136,32 @@ namespace PLAYERTWO.ARPGProject
 
             for (int i = 0; i < collisions; i++)
             {
-                Debug.Log($"Dealing {damage} damage to {other.name}");
-                m_targets.Add(other);
+                if (m_targets.Contains(other)) continue;
+
+                var shouldDestroy = false;
+
                 HandleAttack(other, damage, critical);
+                m_targets.Add(other);
+
+                if (destroyOnFirstParticleCollision)
+                {
+                    shouldDestroy = true;
+                }
+                else if (destroyOnCollision)
+                {
+                    shouldDestroy = true;
+                }
+
+                if (shouldDestroy)
+                {
+                    Destroy(gameObject);
+                    return;
+                }
+
+                if (collideOnce)
+                {
+                    break;
+                }
             }
         }
     }

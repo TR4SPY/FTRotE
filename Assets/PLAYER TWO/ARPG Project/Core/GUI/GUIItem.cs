@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -97,6 +98,7 @@ namespace PLAYERTWO.ARPGProject
         protected GUIBlacksmith m_blacksmith => windowsManager.blacksmith;
         protected GUIWindow m_stash => windowsManager.stashWindow;
         protected GUIWindow m_merchant => windowsManager.merchantWindow;
+        protected GUIWindow m_craftman => windowsManager.craftmanWindow;
         protected GUIInventory m_inventory => windowsManager.GetInventory();
 
         /// <summary>
@@ -164,6 +166,10 @@ namespace PLAYERTWO.ARPGProject
             {
                 HandleSell();
             }
+            else if (m_craftman.isOpen)
+            {
+                HandleMoveToCraftman();
+            }
             else
             {
                 HandleEquip();
@@ -183,6 +189,45 @@ namespace PLAYERTWO.ARPGProject
             if (merchant.TryBuy(this))
                 this.merchant = merchant;
         }
+
+        protected virtual void HandleMoveToCraftman()
+{
+    var craftInventory = m_craftman.GetComponentInChildren<GUICraftmanInventory>();
+    var playerInventory = GUIWindowsManager.instance.GetInventory();
+
+    if (craftInventory == null || playerInventory == null)
+        return;
+
+    bool changed = false;
+
+    if (transform.IsChildOf(playerInventory.itemsContainer))
+    {
+        if (craftInventory.TryAutoInsert(this))
+        {
+            playerInventory.TryRemove(this);
+            changed = true;
+        }
+    }
+    else if (transform.IsChildOf(craftInventory.itemsContainer))
+    {
+        if (playerInventory.TryAutoInsert(this))
+        {
+            craftInventory.TryRemove(this);
+            changed = true;
+        }
+    }
+
+    // 🔁 Odśwież GUI Craftmana jeśli cokolwiek się zmieniło
+    if (changed)
+    {
+        var items = craftInventory.inventory.items.Keys.ToList();
+
+        // UWAGA: Nie ma GUICraftman.instance – użyj referencji do komponentu
+        m_craftman.GetComponent<GUICraftman>()?.UpdateCraftingPreview(items);
+    }
+}
+
+
 
         protected virtual void HandleBlacksmithEquip()
         {

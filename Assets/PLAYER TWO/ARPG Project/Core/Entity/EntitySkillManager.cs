@@ -238,7 +238,10 @@ namespace PLAYERTWO.ARPGProject
         /// <returns>Returns true if the Entity was able to learn the Skill.</returns>
         public virtual bool TryLearnSkill(ItemSkill itemSkill)
         {
-            if (!itemSkill?.skill)
+            if (itemSkill?.skill == null)
+                return false;
+
+            if (skills.Contains(itemSkill.skill))
                 return false;
 
             if (m_entity.stats.level < itemSkill.requiredLevel ||
@@ -255,7 +258,57 @@ namespace PLAYERTWO.ARPGProject
                     return false;
             }
 
-            return TryLearnSkill(itemSkill.skill);
+            bool added = TryLearnSkill(itemSkill.skill);
+
+            if (added)
+            {
+                EquipWeaponSkill(itemSkill.skill);
+            }
+
+            return added;
+        }
+
+        public void ForgetSkill(Skill skill)
+        {
+            if (!skills.Contains(skill)) return;
+
+            skills.Remove(skill);
+
+            if (equipped != null)
+            {
+                equipped.RemoveAll(e => e?.data == skill);
+            }
+
+            onUpdatedSkills?.Invoke(skills.ToArray());
+            onUpdatedEquippedSkills?.Invoke(GetEquippedSkills());
+        }
+
+        public void EquipWeaponSkill(Skill skill)
+        {
+            if (equipped == null)
+                equipped = new List<SkillInstance>();
+
+            if (equipped.Any(e => e != null && e.data == skill))
+                return;
+
+            int firstEmpty = equipped.FindIndex(e => e == null);
+
+            SkillInstance instance = new SkillInstance(skill);
+
+            if (firstEmpty >= 0)
+            {
+                equipped[firstEmpty] = instance;
+            }
+            else if (equipped.Count < 8)
+            {
+                equipped.Add(instance);
+            }
+            else
+            {
+                return;
+            }
+
+            onUpdatedEquippedSkills?.Invoke(GetEquippedSkills());
         }
 
         /// <summary>
@@ -327,7 +380,7 @@ namespace PLAYERTWO.ARPGProject
         /// <summary>
         /// Returns an array of the equipped Skills.
         /// </summary>
-        public virtual Skill[] GetEquippedSkills() => equipped.Select(e => e?.data).ToArray();
+        public virtual Skill[] GetEquippedSkills() => equipped != null ? equipped.Select(e => e?.data).ToArray() : new Skill[0];
 
         /// <summary>
         /// Returns the casting position and rotation in world space of the current Skill.
@@ -408,29 +461,32 @@ namespace PLAYERTWO.ARPGProject
         /// Returns true if the Entity is equipping the required weapon to perform the current selected Skill.
         /// </summary>
         protected virtual bool ValidRequiredWeapon()
-{
-    // Jeśli Agent AI, ignorujemy wymagania dotyczące broni
-    if (m_entity != null && m_entity.isAgent)
-    {
-        Debug.Log("Agent AI is not required to equip specific weapons.");
-        return true;
-    }
+        {
+            if (m_entity != null && m_entity.isAgent)
+            {
+                Debug.Log("Agent AI is not required to equip specific weapons.");
+                return true;
+            }
 
-    // Standardowa logika dla gracza lub przeciwników
-    if (!IsAttack()) return true;
+            if (!IsAttack()) return true;
 
-    switch (current.AsAttack().requiredWeapon)
-    {
-        default:
-        case SkillAttack.RequiredWeapon.None:
-            return true;
-        case SkillAttack.RequiredWeapon.Blade:
-            return m_entity.items.IsUsingBlade();
-        case SkillAttack.RequiredWeapon.Bow:
-            return m_entity.items.IsUsingBow();
-    }
-}
+            switch (current.AsAttack().requiredWeapon)
+            {
+                default:
+                case SkillAttack.RequiredWeapon.None:
+                    return true;
+                case SkillAttack.RequiredWeapon.Blade:
+                    return m_entity.items.IsUsingBlade();
+                case SkillAttack.RequiredWeapon.Bow:
+                    return m_entity.items.IsUsingBow();
+            }
+        }
 
+        public void NotifySkillsChanged()
+        {
+            onUpdatedSkills?.Invoke(skills.ToArray());
+            onUpdatedEquippedSkills?.Invoke(GetEquippedSkills());
+        }
 
         protected virtual void Awake()
         {

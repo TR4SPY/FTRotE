@@ -38,7 +38,16 @@ namespace PLAYERTWO.ARPGProject
                 inputField.onEndEdit.RemoveAllListeners();
                 var cm = FindAnyObjectByType<ChatManager>();
                 if (cm != null)
-                    inputField.onEndEdit.AddListener(cm.SubmitMessage);
+                    // inputField.onEndEdit.AddListener(cm.SubmitMessage);
+		    inputField.onEndEdit.AddListener((text) =>
+                    {
+			if (!string.IsNullOrWhiteSpace(text) && text != inputField.placeholder.GetComponent<TMP_Text>()?.text)
+			{
+				cm.SubmitMessage(text);
+			}
+
+			cm.ForceCloseChat();
+		    });
             }
         }
 

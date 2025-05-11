@@ -38,6 +38,9 @@ MonoBehaviour:
   minMagicDamage: 0
   maxMagicDamage: 0
   attackSpeed: 5
+  isSkillEnabled: 0
+  skill: {fileID: 11400000, guid: e403768c6915d0e4195d688e223450e7, type: 2}
+  skillSource: {fileID: 11400000, guid: d239df6556bc03b4ab99627b2746c457, type: 2}
   attackClips:
   - {fileID: 8300000, guid: 36ecab5f5149b374a87e11f76210452b, type: 3}
   maxCombos: 1

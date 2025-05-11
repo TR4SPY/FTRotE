@@ -119,10 +119,15 @@ namespace PLAYERTWO.ARPGProject
 
             wasFocusedLastFrame = false;
             chatWasManuallyOpened = false;
+	   
+	    toggleChatAction?.Enable();
+	    guiMap?.Enable();
         }
 
         private void OnEnable()
         {
+	    guiMap?.Enable();
+	    gameplayMap?.Enable();
             toggleChatAction?.Enable();
         }
 
@@ -164,19 +169,30 @@ namespace PLAYERTWO.ARPGProject
             isChatOpen = !isChatOpen;
             var cw = GUIWindowsManager.instance?.chatWindow;
 
+	    Debug.Log($"[ToggleChat] isChatOpen = {isChatOpen}");
+	    Debug.Log($"[ToggleChat] chatWindow = {cw}");
+
             if (isChatOpen)
             {
                 chatWasManuallyOpened = true;
-                cw?.Show();
-                cw?.FocusInput();
 
-                var recentMessages = GetLog();
-                cw?.RepopulateOverlayFromHistory(recentMessages, maxToShow: cw.overlayMaxMessages);
-                cw?.ScrollOverlayToBottom();
+		if (cw == null)
+		{
+			Debug.LogError("[ToggleChat] ChatWindow is null!");
+		}
+		else
+		{
+                	cw?.Show();
+              	  	cw?.FocusInput();
 
-                cw?.SetOverlayVisible(true);
-                cw?.StopOverlayFadeOut();
-            }
+                	var recentMessages = GetLog();
+                	cw?.RepopulateOverlayFromHistory(recentMessages, maxToShow: cw.overlayMaxMessages);
+                	cw?.ScrollOverlayToBottom();
+
+                	cw?.SetOverlayVisible(true);
+                	cw?.StopOverlayFadeOut();
+            	}
+	    }
             else
             {
                 chatWasManuallyOpened = false;
@@ -260,6 +276,23 @@ namespace PLAYERTWO.ARPGProject
             if (cw != null && messageHistory.Count > cw.maxMessages)
                 messageHistory.RemoveAt(0);
         }
+
+	public void ForceCloseChat()
+	{
+		if (!isChatOpen) return;
+		
+		isChatOpen = false;
+		chatWasManuallyOpened = false;
+		
+		var cw = GUIWindowsManager.instance?.chatWindow;
+		
+		cw?.StartFadeOutCountdown();
+		cw?.Hide();
+		cw?.RemoveFocus();
+		
+		gameplayMap?.Enable();
+		guiMap?.Enable();
+	}
 
         private void ProcessCommand(string commandLine)
         {

@@ -85,11 +85,21 @@ namespace PLAYERTWO.ARPGProject
 
             if (instance.TryGetComponent(out Projectile projectile))
             {
-                var damage = caster.stats.GetSkillDamage(caster.skills.current, out var critical);
-                projectile.SetDamage(caster, caster.skills.current.AsAttack().GetDamage(caster), critical, caster.targetTags);
+                var skillAttack = caster.skills.current.AsAttack();
+                var damage = caster.stats.GetSkillDamage(skillAttack, out var critical);
+                projectile.SetDamage(caster, skillAttack.GetDamage(caster), critical, caster.targetTags);
+                projectile.destroyOnHit = skillAttack.destroyOnHit;
             }
             else if (instance.TryGetComponent(out SkillParticle hitbox))
-                hitbox.SetSkills(caster, caster.skills.current);
+            {
+                var skillAttack = caster.skills.current.AsAttack();
+                hitbox.SetSkills(caster, skillAttack);
+
+                // 🔧 Dodane poprawnie — na podstawie ustawień z assetu:
+                hitbox.destroyOnCollision = skillAttack.particleDestroyOnCollision;
+                hitbox.destroyOnFirstParticleCollision = skillAttack.destroyOnFirstParticleCollision;
+                hitbox.collideOnce = skillAttack.particleCollideOnce;
+            }
 
             return instance;
         }

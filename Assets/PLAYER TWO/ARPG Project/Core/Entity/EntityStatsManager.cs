@@ -297,6 +297,29 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void InitializeSkills() => m_skills = GetComponent<EntitySkillManager>();
 
+        public void RecheckWeaponSkill()
+        {
+            if (m_items == null || m_skills == null)
+                return;
+
+            var right = m_items.GetRightHand();
+            var left = m_items.GetLeftHand();
+
+            foreach (var item in new[] { right, left })
+            {
+                if (item?.data is ItemWeapon weapon)
+                {
+                    var skill = weapon.skill;
+                    var source = weapon.skillSource;
+
+                    if (item.isSkillEnabled && skill != null && source != null)
+                    {
+                        m_skills.TryLearnSkill(source);
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Bulk update all stats points and recalculate the stats.
         /// </summary>
@@ -653,7 +676,11 @@ namespace PLAYERTWO.ARPGProject
             stunSpeed = CalculateStunSpeed();
             health = Mathf.Min(health, maxHealth);
             mana = Mathf.Min(mana, maxMana);
+            
             onRecalculate?.Invoke();
+
+            onRecalculate.RemoveListener(RecheckWeaponSkill);
+            onRecalculate.AddListener(RecheckWeaponSkill);
         }
 
         /// <summary>

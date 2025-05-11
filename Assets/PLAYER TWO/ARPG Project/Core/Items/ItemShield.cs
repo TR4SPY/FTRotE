@@ -34,5 +34,10 @@ namespace PLAYERTWO.ARPGProject
             instance.transform.localRotation *= Quaternion.Euler(armRotation);
             return instance;
         }
+
+        public override ItemAttributes CreateDefaultAttributes()
+        {
+            return new ArmorAttributes();
+        }
     }
 }

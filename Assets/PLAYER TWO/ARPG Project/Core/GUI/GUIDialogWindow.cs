@@ -149,11 +149,6 @@ namespace AI_DDA.Assets.Scripts
                         );
                     }
 
-                    if (GUIWindowsManager.instance?.stats != null)
-                    {
-                        GUIWindowsManager.instance.stats.Refresh();
-                    }
-
                     ContinueDialog(option.nextPageIndex);
                     break;
                 default:

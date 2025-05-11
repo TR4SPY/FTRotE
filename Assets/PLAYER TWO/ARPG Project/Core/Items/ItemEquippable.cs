@@ -18,5 +18,11 @@ namespace PLAYERTWO.ARPGProject
 
         [Tooltip("The minimum required dexterity to equip this Item.")]
         public int requiredDexterity;
+
+        public virtual ItemAttributes CreateDefaultAttributes()
+        {
+            return new ItemAttributes();
+        }
+
     }
 }

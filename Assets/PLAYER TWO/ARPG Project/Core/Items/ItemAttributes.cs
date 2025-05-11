@@ -149,6 +149,33 @@ namespace PLAYERTWO.ARPGProject
             };
         }
 
+        public bool MaxAttributesOptions(FieldInfo field)
+        {
+            int value = (int)field.GetValue(this);
+
+            if (field.Name.Contains("Percent"))
+                return value >= m_percentages.Max();
+
+            return value >= m_points.Max();
+        }
+
+        public virtual bool MaxAttributes(int maxAttributes = 4)
+        {
+                var fields = GetFields().Where(f => f.FieldType == typeof(int)).ToList();
+
+                int activeCount = 0;
+                foreach (var field in fields)
+                {
+                    int val = (int)field.GetValue(this);
+                    if (val > 0 && !MaxAttributesOptions(field))
+                        return false;
+
+                    if (val > 0) activeCount++;
+                }
+
+                return activeCount >= maxAttributes;
+        }
+
         public static ItemAttributes CreateFromSerializer(ItemSerializer.Attributes attributes)
         {
             return new ItemAttributes()

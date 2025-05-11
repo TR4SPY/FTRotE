@@ -267,7 +267,7 @@ QualitySettings:
     terrainMaxTrees: 50
     excludedTargetPlatforms: []
   - serializedVersion: 4
-    name: Ultra
+    name: Medium
     pixelLightCount: 4
     shadows: 2
     shadowResolution: 2
@@ -282,7 +282,7 @@ QualitySettings:
     globalTextureMipmapLimit: 0
     textureMipmapLimitSettings: []
     anisotropicTextures: 2
-    antiAliasing: 2
+    antiAliasing: 0
     softParticles: 1
     softVegetation: 1
     realtimeReflectionProbes: 0
@@ -307,13 +307,13 @@ QualitySettings:
     asyncUploadBufferSize: 16
     asyncUploadPersistentBuffer: 1
     resolutionScalingFixedDPIFactor: 1
-    customRenderPipeline: {fileID: 11400000, guid: 8e47a8ddbbb478af6a81abce7f00dac7, type: 2}
+    customRenderPipeline: {fileID: 11400000, guid: 8d861ecfd128e2244b91b2a1ecb4dc2e, type: 2}
     terrainQualityOverrides: 16
     terrainPixelError: 1
     terrainDetailDensityScale: 1
     terrainBasemapDistance: 1000
     terrainDetailDistance: 80
-    terrainTreeDistance: 250
+    terrainTreeDistance: 150
     terrainBillboardStart: 50
     terrainFadeLength: 5
     terrainMaxTrees: 50

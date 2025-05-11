@@ -33,3 +33,5 @@ MonoBehaviour:
   damageMode: 1
   minDamage: 8
   maxDamage: 15
+  destroyOnHit: 0
+  particleDestroyOnCollision: 0

@@ -31,6 +31,7 @@ namespace PLAYERTWO.ARPGProject
         public ItemAttributes attributes;
 
         public int itemLevel { get; private set; } = 0;
+        public bool isSkillEnabled = false;
 
         protected int m_stack;
 
@@ -629,8 +630,8 @@ namespace PLAYERTWO.ARPGProject
             var attributes = ItemAttributes.CreateFromSerializer(serializer.attributes);
 
             var instance = new ItemInstance(item, attributes, serializer.durability, serializer.stack);
-
             instance.SetItemLevel(serializer.itemLevel);
+            instance.isSkillEnabled = serializer.skillEnabled;
 
             return instance;
         }

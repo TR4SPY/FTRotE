@@ -147,6 +147,7 @@ namespace PLAYERTWO.ARPGProject
             Debug.Log("Initializing Level...");
 
             InitializePlayer();
+
             RestoreState();
             UpdateTrackedEntities();
             ApplyDifficultyToEntities();

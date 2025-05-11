@@ -48,6 +48,9 @@ namespace PLAYERTWO.ARPGProject
             }
         }
 
+        public ArmorAttributes() { }
+
+
         protected virtual List<(Attribute type, int points)> GetAttributes()
         {
             var attributes = new List<(Attribute, int)>();

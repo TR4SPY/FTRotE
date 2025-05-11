@@ -285,9 +285,37 @@ namespace PLAYERTWO.ARPGProject
             m_items[slot].onChanged += OnItemChanged;
 
             if (item.IsWeapon() || item.IsShield())
+            {
                 EquipAndInstantiate(item, slot);
+
+                if (item.data is ItemWeapon weapon && item.isSkillEnabled && weapon.skill != null)
+                {
+                    var source = weapon.skillSource;
+
+                    bool meetsRequirements =
+                        source == null || (
+                            entity.stats.level >= source.requiredLevel &&
+                            entity.stats.strength >= source.requiredStrength &&
+                            entity.stats.energy >= source.requiredEnergy
+                        );
+
+                    if (meetsRequirements)
+                    {
+                        entity.skills.TryLearnSkill(weapon.skill);
+
+                        if (item.isSkillEnabled && weapon.skill != null && weapon.skillSource != null)
+                        {
+                            entity.skills.TryLearnSkill(weapon.skillSource);
+                            entity.skills.EquipWeaponSkill(weapon.skill);
+                            entity.skills.NotifySkillsChanged();
+                        }
+                    }
+                }
+            }
             else if (item.IsArmor())
+            {
                 UpdateArmor(item);
+            }
 
             onChanged?.Invoke();
         }
@@ -379,6 +407,13 @@ namespace PLAYERTWO.ARPGProject
             if (item.IsWeapon() || item.IsShield())
             {
                 m_itemInstances[slot][m_items[slot]]?.SetActive(false);
+
+                if (item.data is ItemWeapon weapon && item.isSkillEnabled && weapon.skill != null && weapon.skillSource != null)
+                {
+                    entity.skills.ForgetSkill(weapon.skill);
+
+                    entity.skills.NotifySkillsChanged();
+                }
             }
             else if (item.IsArmor())
             {
@@ -626,7 +661,12 @@ namespace PLAYERTWO.ARPGProject
             if (!IsUsingBow()) return null;
 
             var damage = entity.stats.GetDamage(out var critical);
-            var projectile = Instantiate(GetBow().projectile, projectileOrigin.position, Quaternion.LookRotation(direction));
+            // var projectile = Instantiate(GetBow().projectile, projectileOrigin.position, Quaternion.LookRotation(direction));
+            var projectileObject = Instantiate(GetBow().projectile, projectileOrigin.position, Quaternion.identity);
+            var projectile = projectileObject.GetComponent<Projectile>();
+
+            projectile.SetTarget(projectileOrigin.position + direction * 10f);
+
 
             projectile.SetDamage(entity, damage, critical, entity.targetTags);
             return projectile;

@@ -49,6 +49,8 @@ MonoBehaviour:
   destroyWhenParticleStop: 1
   useParticleCollisionEvents: 1
   collideOnce: 0
+  destroyOnCollision: 0
+  destroyOnFirstParticleCollision: 0
 --- !u!198 &1939688788036364895
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -996,7 +998,7 @@ ParticleSystem:
       countCurve:
         serializedVersion: 2
         minMaxState: 0
-        scalar: 5
+        scalar: 10
         minScalar: 30
         maxCurve:
           serializedVersion: 2
