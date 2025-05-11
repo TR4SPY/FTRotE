@@ -299,6 +299,11 @@ namespace AI_DDA.Assets.Scripts
             }
         }
 
+        public void Refresh()
+        {
+            SetupDialog();
+        }
+
         public void Close()
         {
             gameObject.SetActive(false);

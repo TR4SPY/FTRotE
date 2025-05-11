@@ -92,13 +92,11 @@ namespace PLAYERTWO.ARPGProject
             Instance = this;
             base.Awake();
 
-            // Podpinamy się do eventu ładowania sceny
             SceneManager.sceneLoaded += OnSceneLoaded;
         }
 
         private void OnDestroy()
         {
-            // Odpinamy event na wszelki wypadek
             SceneManager.sceneLoaded -= OnSceneLoaded;
         }
 
@@ -160,7 +158,42 @@ namespace PLAYERTWO.ARPGProject
 
             RebuildWindowsList();
 
-            Debug.Log($"GUIWindowsManager initialized. Found {windows.Count} windows.");
+           // Debug.Log($"GUIWindowsManager initialized. Found {windows.Count} windows.");
+
+            if (stats != null)
+            {
+                var statsWindow = stats.GetComponent<GUIWindow>();
+                if (statsWindow != null)
+                {
+                    statsWindow.onOpen.AddListener(() =>
+                    {
+                        PlayerBehaviorLogger.Instance?.UpdatePlayerType();
+                        stats.Refresh();
+                    });
+                }
+                else
+                {
+                    Debug.LogWarning("[GUIWindowsManager] Cannot find GUIStatsManager.");
+
+                }
+            }
+
+            if (dialogWindow != null)
+            {
+                var dialogGUIWindow = dialogWindow.GetComponent<GUIWindow>();
+                if (dialogGUIWindow != null)
+                {
+                    dialogGUIWindow.onOpen.AddListener(() =>
+                    {
+                        PlayerBehaviorLogger.Instance?.UpdatePlayerType();
+                        dialogWindow.Refresh();
+                    });
+                }
+                else
+                {
+                    Debug.LogWarning("[GUIWindowsManager] Cannot find GUIDialogWindow.");
+                }
+            }
         }
 
         public void ResetWindowsState()
@@ -169,7 +202,7 @@ namespace PLAYERTWO.ARPGProject
             {
                 if (window != null)
                 {
-                    window.Hide(); // Zamknij wszystkie okna, tylko istniejące
+                    window.Hide();
                 }
             }
         }

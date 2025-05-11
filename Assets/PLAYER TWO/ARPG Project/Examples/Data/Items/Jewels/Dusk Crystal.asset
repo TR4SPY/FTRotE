@@ -29,4 +29,6 @@ MonoBehaviour:
   allowedClasses: -1
   group: 12
   successRate: 100
-  description: 'Applies a random effect: upgrade, attribute, or skill. Unpredictable'
+  description: 'Applies a random effect: upgrade, attribute or skill
+
+    Unpredictable'

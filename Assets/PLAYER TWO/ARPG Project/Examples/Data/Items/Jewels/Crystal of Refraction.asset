@@ -29,4 +29,7 @@ MonoBehaviour:
   allowedClasses: -1
   group: 12
   successRate: 50
-  description: Enhances items from +10 to +25. More crystals needed at higher levels
+  description: 'Enhances items from +10 to +25
+
+    More crystals needed at higher
+    levels'
