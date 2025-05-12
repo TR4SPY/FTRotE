@@ -77,8 +77,11 @@ namespace PLAYERTWO.ARPGProject
         public GameObject ModelPrefab => data.prefab;
         
         public ItemInstance(Item data, bool generateAttributes = true,
-            int minAttributes = 0, int maxAttributes = 0)
+    int minAttributes = 0, int maxAttributes = 0)
         {
+            this.data = data;
+            this.m_stack = 1;
+
             SetDefaultData(data);
 
             if (generateAttributes)
@@ -93,25 +96,27 @@ namespace PLAYERTWO.ARPGProject
             if (IsEquippable())
                 durability = GetEquippable().maxDurability;
 
-            if (IsStackable())
-            {
-                stack = 1;
-            }
-            else
-            {
-                stack = 1;
-            }
+            m_stack = 1; 
         }
 
         public ItemInstance(Item data, int durability, int stack, bool generateAttributes = true)
         {
             this.data = data;
             this.durability = durability;
-            this.stack = stack;
+
+            if (data != null)
+            {
+                m_stack = Mathf.Clamp(stack, 1, data.stackCapacity);
+            }
+            else
+            {
+                m_stack = 1;
+            }
 
             if (generateAttributes)
                 GenerateAdditionalAttributes();
         }
+
 
         public ItemInstance(Item data, ItemAttributes attributes, int durability, int stack)
         {
@@ -121,17 +126,14 @@ namespace PLAYERTWO.ARPGProject
 
             if (data != null)
             {
-                if (data.canStack)
-                    m_stack = Mathf.Clamp(stack, 1, data.stackCapacity);
-                else
-                    m_stack = 1;
+                m_stack = data.canStack
+                    ? Mathf.Clamp(stack, 1, data.stackCapacity)
+                    : 1;
             }
             else
             {
                 m_stack = 1;
             }
-
-           // Debug.Log($"[ITEM INSTANCE CTOR] => {data?.name} stack={m_stack}, canStack={data?.canStack}");
         }
 
         public bool MeetsRequirements(Entity entity)
@@ -433,15 +435,6 @@ namespace PLAYERTWO.ARPGProject
 
             if (IsEquippable())
                 durability = GetEquippable().maxDurability;
-
-            if (IsStackable())
-            {
-                stack = 1;
-            }
-            else
-            {
-                stack = 1;
-            }
         }
 
         /// <summary>

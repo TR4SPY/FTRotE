@@ -11,15 +11,17 @@ namespace PLAYERTWO.ARPGProject
 
         [Header("Deposit Settings")]
         public Button depositButton;
-        public InputField depositField;
+        public InputField depositSolmireField;
+        public InputField depositLunarisField;
+        public InputField depositAmberlingsField;
         public GUIWindow depositWindow;
-        public Dropdown depositCurrencyDropdown;
 
         [Header("Withdraw Settings")]
         public Button withdrawButton;
-        public InputField withdrawField;
+        public InputField withdrawSolmireField;
+        public InputField withdrawLunarisField;
+        public InputField withdrawAmberlingsField;
         public GUIWindow withdrawWindow;
-        public Dropdown withdrawCurrencyDropdown;
 
         [Header("Audio Settings")]
         public AudioClip showClip;
@@ -42,17 +44,36 @@ namespace PLAYERTWO.ARPGProject
             withdrawButton.onClick.AddListener(OnWithdraw);
         }
 
+        private void ClearDepositFields()
+        {
+            depositSolmireField.text = "0";
+            depositLunarisField.text = "0";
+            depositAmberlingsField.text = "0";
+        }
+
+        private void ClearWithdrawFields()
+        {
+            withdrawSolmireField.text = "0";
+            withdrawLunarisField.text = "0";
+            withdrawAmberlingsField.text = "0";
+        }
+
         protected virtual void OnDeposit()
         {
-            if (!int.TryParse(depositField.text, out int amount) || amount <= 0)
+
+            int totalAmberlings = 0;
+
+            if (int.TryParse(depositSolmireField.text, out int solmire) && solmire > 0)
+                totalAmberlings += Currency.ConvertToAmberlings(solmire, CurrencyType.Solmire);
+
+            if (int.TryParse(depositLunarisField.text, out int lunaris) && lunaris > 0)
+                totalAmberlings += Currency.ConvertToAmberlings(lunaris, CurrencyType.Lunaris);
+
+            if (int.TryParse(depositAmberlingsField.text, out int amberlings) && amberlings > 0)
+                totalAmberlings += amberlings;
+
+            if (totalAmberlings <= 0)
                 return;
-
-            var selectedText = depositCurrencyDropdown.options[depositCurrencyDropdown.value].text;
-
-            if (!System.Enum.TryParse(selectedText, out CurrencyType selectedCurrencyType))
-                return;
-
-            int totalAmberlings = Currency.ConvertToAmberlings(amount, selectedCurrencyType);
 
             if (m_playerInventory.instance.currency.GetTotalAmberlings() < totalAmberlings)
                 return;
@@ -62,19 +83,24 @@ namespace PLAYERTWO.ARPGProject
 
             depositWindow.Hide();
             PlayAudio(depositClip);
+
         }
 
         protected virtual void OnWithdraw()
         {
-            if (!int.TryParse(withdrawField.text, out int amount) || amount <= 0)
+            int totalAmberlings = 0;
+
+            if (int.TryParse(withdrawSolmireField.text, out int solmire) && solmire > 0)
+                totalAmberlings += Currency.ConvertToAmberlings(solmire, CurrencyType.Solmire);
+
+            if (int.TryParse(withdrawLunarisField.text, out int lunaris) && lunaris > 0)
+                totalAmberlings += Currency.ConvertToAmberlings(lunaris, CurrencyType.Lunaris);
+
+            if (int.TryParse(withdrawAmberlingsField.text, out int amberlings) && amberlings > 0)
+                totalAmberlings += amberlings;
+
+            if (totalAmberlings <= 0)
                 return;
-
-            var selectedText = withdrawCurrencyDropdown.options[withdrawCurrencyDropdown.value].text;
-
-            if (!System.Enum.TryParse(selectedText, out CurrencyType selectedCurrencyType))
-                return;
-
-            int totalAmberlings = Currency.ConvertToAmberlings(amount, selectedCurrencyType);
 
             if (m_inventory.currency.GetTotalAmberlings() < totalAmberlings)
                 return;
@@ -84,6 +110,7 @@ namespace PLAYERTWO.ARPGProject
 
             withdrawWindow.Hide();
             PlayAudio(withdrawClip);
+
         }
 
         protected virtual void Start()
@@ -92,6 +119,16 @@ namespace PLAYERTWO.ARPGProject
             InitializeWindow();
             InitializeInventory();
             InitializeActions();
+
+            if (depositWindow != null)
+            {
+                depositWindow.onClose.AddListener(ClearDepositFields);
+            }
+
+            if (withdrawWindow != null)
+            {
+                withdrawWindow.onClose.AddListener(ClearWithdrawFields);
+            }
         }
 
         protected virtual void OnEnable()

@@ -194,8 +194,8 @@ namespace PLAYERTWO.ARPGProject
                 addButton.transform.localScale = availablePoints > 0 ? Vector3.one : Vector3.zero;
             };
 
-            addButton.onClick.AddListener(AddPoint);
-            removeButton.onClick.AddListener(SubPoint);
+            // addButton.onClick.AddListener(AddPoint);
+            // removeButton.onClick.AddListener(SubPoint);
 
             var addTrigger = addButton.gameObject.AddComponent<EventTrigger>();
             var removeTrigger = removeButton.gameObject.AddComponent<EventTrigger>();

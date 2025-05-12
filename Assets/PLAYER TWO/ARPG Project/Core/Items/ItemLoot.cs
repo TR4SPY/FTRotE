@@ -91,6 +91,14 @@ namespace PLAYERTWO.ARPGProject
                 stats.maxAttributes
             );
 
+            /*  SANITY CHECK - item dropping with stack = 0 instead of = 1.
+            if (item.stack <= 0)
+            {
+                Debug.LogWarning($"[ItemLoot] Dropping item with stack=0: {item.GetName()} → forcing stack=1");
+                item.stack = 1;
+            }
+            */
+            
             if (item.IsEquippable())
             {
                 int lvl = Random.Range(stats.minItemLevel, stats.maxItemLevel + 1);
