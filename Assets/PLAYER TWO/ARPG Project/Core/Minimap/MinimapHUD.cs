@@ -28,6 +28,10 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("If true, the Minimap will also rotate with the target Y axis.")]
         public bool rotateWithTarget;
 
+        [Header("Region Display")]
+        public Text regionLabel;
+
+
         protected readonly List<MinimapIcon> m_icons = new();
 
         protected WaitForSeconds m_coroutineWait = new(1f / 30);
@@ -88,6 +92,25 @@ namespace PLAYERTWO.ARPGProject
             }
         }
 
+        protected virtual void UpdateRegionLabel()
+        {
+            if (regionLabel == null || target == null) return;
+
+            var zone = AI_DDA.Assets.Scripts.ZoneTrigger.GetCurrentRegion(target.position);
+            string zoneName = zone != null ? zone.zoneName : "Wilderness";
+
+            Vector3 pos = target.position;
+
+            int z = Mathf.RoundToInt(pos.z);
+            int x = Mathf.RoundToInt(pos.x);
+            int y = Mathf.RoundToInt(pos.y);
+
+            string ns = z >= 0 ? $"{z}N" : $"{-z}S";
+            string ew = x >= 0 ? $"{x}E" : $"{-x}W";
+
+            regionLabel.text = $"{zoneName} | ({ns}, {ew}, {y}m)";
+        }
+
         /// <summary>
         /// Change the scale, zoom level, of the minimap texture.
         /// </summary>
@@ -137,6 +160,7 @@ namespace PLAYERTWO.ARPGProject
         {
             UpdateRect();
             UpdateRotation();
+            UpdateRegionLabel();
         }
     }
 }

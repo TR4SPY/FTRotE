@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 using PLAYERTWO.ARPGProject;
 
 namespace AI_DDA.Assets.Scripts
@@ -7,6 +8,11 @@ namespace AI_DDA.Assets.Scripts
     [AddComponentMenu("PLAYER TWO/ARPG Project/Misc/Zone Trigger")]
     public class ZoneTrigger : MonoBehaviour
     {
+
+        [Header("Zone Trigger Options")]
+        public bool showInHUD = true;
+        public bool giveReward = true;
+
         public string zoneStatus = "New Area Discovered";
 
         [Tooltip("The name of the zone.")]
@@ -15,38 +21,56 @@ namespace AI_DDA.Assets.Scripts
         [Tooltip("The description of the zone.")]
         public string zoneDescription;
 
+        [Header("Region Tracking")]
+        public bool requireInside = true;
+        public float influenceRadius = 60f;
+        public int priority = 0;
+
         [Header("Zone Discovery Rewards")]
         [Header("Achiever Rewards")]
-        [Tooltip("EXP reward for Achiever")]
         public int achieverExpReward = 100;
-        [Tooltip("Gold reward for Achiever")]
         public int achieverGoldReward = 100;
 
         [Header("Killer Rewards")]
-        [Tooltip("EXP reward for Killer")]
         public int killerExpReward = 100;
-        [Tooltip("Gold reward for Killer")]
         public int killerGoldReward = 100;
 
         [Header("Socializer Rewards")]
-        [Tooltip("EXP reward for Socializer")]
         public int socializerExpReward = 100;
-        [Tooltip("Gold reward for Socializer")]
         public int socializerGoldReward = 100;
 
         [Header("Explorer Rewards")]
-        [Tooltip("EXP reward for Explorer")]
         public int explorerExpReward = 500;
-        [Tooltip("Gold reward for Explorer")]
         public int explorerGoldReward = 500;
 
         private GUIZoneHUD guiZoneHUD;
+        private bool wasTriggeredOnce = false;
+
         protected Collider m_collider;
+
+        private static readonly List<ZoneTrigger> allZones = new();
+        private static readonly HashSet<string> triggeredZoneNames = new();
 
         protected virtual void InitializeCollider()
         {
             m_collider = GetComponent<Collider>();
-            m_collider.isTrigger = true;
+
+            if (!m_collider.isTrigger)
+            {
+                m_collider.isTrigger = true;
+                Debug.LogWarning($"[ZoneTrigger] Collider on '{gameObject.name}' was not set as Trigger. Automatically corrected.");
+            }
+        }
+
+        private void OnEnable()
+        {
+            if (!allZones.Contains(this))
+                allZones.Add(this);
+        }
+
+        private void OnDisable()
+        {
+            allZones.Remove(this);
         }
 
         private void Start()
@@ -107,62 +131,97 @@ namespace AI_DDA.Assets.Scripts
             bool isPlayer = other.CompareTag(GameTags.Player);
             bool isAI = other.GetComponent<AgentController>()?.isAI == true;
 
-            if (!isPlayer && !isAI)
-                return;
+            if (!isPlayer && !isAI) return;
 
             if (string.IsNullOrEmpty(zoneName))
             {
-                Debug.LogError("[ZoneTrigger] Zone name is null or empty. Cannot log zone discovery.");
+                Debug.LogError("[ZoneTrigger] Zone name is null or empty.");
                 return;
             }
+
+            if (triggeredZoneNames.Contains(zoneName))
+                return;
 
             if (isAI)
             {
-                var agentController = other.GetComponent<AgentController>();
-                if (agentController != null)
+                var agent = other.GetComponent<AgentController>();
+                if (agent != null)
                 {
-                    if (agentController.HasDiscoveredZone(zoneName))
+                    if (agent.HasDiscoveredZone(zoneName))
                     {
-                        Debug.Log($"[ZoneTrigger] AI Agent already discovered '{zoneName}', ignoring duplicate.");
+                       // Debug.Log($"[ZoneTrigger] AI Agent already discovered '{zoneName}', skipping.");
                         return;
                     }
 
-                    if (agentController.GetTargetName() == zoneName)
+                    if (agent.GetTargetName() == zoneName)
                     {
-                        Debug.Log($"[ZoneTrigger] AI Agent reached and confirmed discovery of '{zoneName}'.");
-                        agentController.DiscoverZone(zoneName, true);
+                       // Debug.Log($"[ZoneTrigger] AI Agent reached and confirmed discovery of '{zoneName}'.");
+                        agent.DiscoverZone(zoneName, true);
                     }
+
+                    PlayerBehaviorLogger.Instance?.LogAgentZoneDiscovery(zoneName);
                 }
-                Debug.Log($"[ZoneTrigger] AI Agent discovered zone '{zoneName}'.");
-                PlayerBehaviorLogger.Instance?.LogAgentZoneDiscovery(zoneName);
+
                 return;
             }
 
-            var currentCharacter = Game.instance.currentCharacter;
-            if (currentCharacter == null)
+            var character = Game.instance.currentCharacter;
+            if (character == null)
             {
                 Debug.LogError("[ZoneTrigger] Current character is null. Cannot log zone discovery.");
                 return;
             }
 
-            if (currentCharacter.HasVisitedZone(zoneName))
+            if (character.HasVisitedZone(zoneName))
             {
-                Debug.Log($"[ZoneTrigger] Zone '{zoneName}' has already been visited by the player. No reward given.");
+               // Debug.Log($"[ZoneTrigger] Zone '{zoneName}' already visited by player.");
                 return;
             }
 
-            currentCharacter.MarkZoneAsVisited(zoneName);
+            character.MarkZoneAsVisited(zoneName);
             GameSave.instance.Save();
+            triggeredZoneNames.Add(zoneName);
 
             var entity = other.GetComponent<Entity>();
             if (entity != null)
             {
                 PlayerBehaviorLogger.Instance?.LogAreaDiscovered(entity, zoneName);
-                GiveZoneReward(entity);
+                if (giveReward)
+                    GiveZoneReward(entity);
             }
 
-            guiZoneHUD?.ShowZone(zoneStatus, zoneName, zoneDescription);
-            Debug.Log($"[ZoneTrigger] Zone '{zoneName}' discovered and saved for character '{currentCharacter.name}'.");
+            if (showInHUD)
+                guiZoneHUD?.ShowZone(zoneStatus, zoneName, zoneDescription);
+
+           // Debug.Log($"[ZoneTrigger] Zone '{zoneName}' discovered and saved for '{character.name}'.");
+        }
+
+        /// <summary>
+        /// Static method for determining the most appropriate region for a given position.
+        /// </summary>
+        public static ZoneTrigger GetCurrentRegion(Vector3 position)
+        {
+            ZoneTrigger exact = allZones
+                .Where(z =>
+                {
+                    Bounds bounds = z.m_collider.bounds;
+                    bounds.Expand(1f);
+                    return z.requireInside && bounds.Contains(position);
+                })
+                .OrderByDescending(z => z.priority)
+                .ThenBy(z => Vector3.Distance(position, z.transform.position))
+                .FirstOrDefault();
+
+            if (exact != null) return exact;
+
+            ZoneTrigger nearby = allZones
+                .Where(z => !z.requireInside)
+                .Where(z => Vector3.Distance(position, z.transform.position) <= z.influenceRadius)
+                .OrderByDescending(z => z.priority)
+                .ThenBy(z => Vector3.Distance(position, z.transform.position))
+                .FirstOrDefault();
+
+            return nearby;
         }
     }
 }

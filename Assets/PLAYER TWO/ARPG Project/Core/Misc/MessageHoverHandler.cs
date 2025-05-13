@@ -13,7 +13,7 @@ public class MessageHoverHandler : MonoBehaviour, IPointerEnterHandler, IPointer
         if (canvasGroup != null)
             canvasGroup.alpha = 1f;
 
-        chatWindow?.StopOverlayFadeOut();
+       // chatWindow?.StopOverlayFadeOut();
     }
 
     public void OnPointerExit(PointerEventData eventData)
@@ -33,7 +33,7 @@ public class MessageHoverHandler : MonoBehaviour, IPointerEnterHandler, IPointer
 
         if (!cursorStillOnAny)
         {
-            chatWindow?.StartFadeOutCountdown();
+           // chatWindow?.StartFadeOutCountdown();
         }
     }
 
