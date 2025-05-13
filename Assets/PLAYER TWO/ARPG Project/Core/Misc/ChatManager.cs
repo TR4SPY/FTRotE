@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using AI_DDA.Assets.Scripts;
 using System.Collections;
 using System.Linq;
@@ -350,12 +351,67 @@ namespace PLAYERTWO.ARPGProject
                 }
 
                 case "money":
-                    if (parts.Length >= 2 && int.TryParse(parts[1], out int gold))
+                {
+                    if (parts.Length < 2)
                     {
-                        inventory.AddGold(gold);
-                        AddSystemMessage(StringUtils.StringWithColorAndStyle($"Get rich quick scheme: +{gold} money", GameColors.Gold, bold: true));
+                        AddSystemMessage(StringUtils.StringWithColor("Usage: /money <amount> [unit]", GameColors.Gray));
+                        break;
                     }
+
+                    int totalAmberlings = 0;
+
+                    for (int i = 1; i < parts.Length; i++)
+                    {
+                        string part = parts[i].Trim().ToLower();
+
+                        if (int.TryParse(part, out int value))
+                        {
+                            totalAmberlings += value;
+                            continue;
+                        }
+
+                        var matchShort = Regex.Match(part, @"^(\d+)([a-z]+)$");
+                        if (matchShort.Success)
+                        {
+                            int amount = int.Parse(matchShort.Groups[1].Value);
+                            string unit = matchShort.Groups[2].Value;
+
+                            CurrencyType? type = Currency.ParseUnit(unit);
+                            if (type.HasValue)
+                            {
+                                totalAmberlings += Currency.ConvertToAmberlings(amount, type.Value);
+                            }
+                            else
+                            {
+                                AddSystemMessage(StringUtils.StringWithColor($"Unknown currency unit: {unit}", GameColors.Crimson));
+                            }
+
+                            continue;
+                        }
+
+                        if (i + 1 < parts.Length && int.TryParse(part, out int val) && Currency.ParseUnit(parts[i + 1]) is CurrencyType unitType)
+                        {
+                            totalAmberlings += Currency.ConvertToAmberlings(val, unitType);
+                            i++;
+                            continue;
+                        }
+
+                        AddSystemMessage(StringUtils.StringWithColor($"Invalid input: {parts[i]}", GameColors.Crimson));
+                    }
+
+                    if (totalAmberlings > 0)
+                    {
+                        inventory.AddGold(totalAmberlings);
+                        string formatted = Currency.FormatCurrencyString(totalAmberlings);
+                        AddSystemMessage(StringUtils.StringWithColorAndStyle($"Get Rich Quick Scheme: {formatted} were given.", GameColors.Gold, bold: true));
+                    }
+                    else
+                    {
+                        AddSystemMessage(StringUtils.StringWithColor("No valid currency amount found.", GameColors.Gray));
+                    }
+
                     break;
+                }
                 
                 case "heal":
                 {
@@ -548,14 +604,11 @@ namespace PLAYERTWO.ARPGProject
                     messageHistory.Clear();
                     cw?.ClearOverlayLog();
 
-                    // Dodajemy systemową wiadomość
                     string msg = StringUtils.StringWithColor("Chat history cleared.", GameColors.Gray);
                     cw?.AddOverlayMessage(msg);
 
-                    // Automatyczne usunięcie po 5s
                     if (cw?.overlayController != null)
                     {
-                        // Startujemy coroutine
                         cw.StartCoroutine(RemoveAfterDelay(msg, 5f));
                     }
 
@@ -654,7 +707,6 @@ namespace PLAYERTWO.ARPGProject
                     break;
                 }
 
-
                 case "tp":
                 {
                     if (parts.Length == 4)
@@ -684,8 +736,40 @@ namespace PLAYERTWO.ARPGProject
                             TryParseCoordinate(parts[2], out float x) &&
                             TryParseCoordinate(parts[3], out float y))
                         {
-                            var targetPos = new Vector3(x, y, z);
-                            Level.instance.player.transform.position = targetPos;
+                            Vector3 targetPos = new Vector3(x, y, z);
+
+                            var player = Level.instance?.player;
+
+                            if (player == null)
+                            {
+                                Debug.LogError("[Teleport System] Player is null!");
+                                AddSystemMessage(StringUtils.StringWithColor("Teleport failed: Player not found.", GameColors.Crimson));
+                                break;
+                            }
+
+                            Vector3 before = player.transform.position;
+
+                            var cc = player.GetComponent<CharacterController>();
+                            if (cc != null)
+                            {
+                                cc.enabled = false;
+                                player.transform.position = targetPos;
+                                cc.enabled = true;
+                            }
+                            else
+                            {
+                                var agent = player.GetComponent<UnityEngine.AI.NavMeshAgent>();
+                                if (agent != null)
+                                {
+                                    agent.Warp(targetPos);
+                                }
+                                else
+                                {
+                                    player.transform.position = targetPos;
+                                }
+                            }
+
+                            Vector3 after = player.transform.position;
 
                             var zone = AI_DDA.Assets.Scripts.ZoneTrigger.GetCurrentRegion(targetPos);
                             string zoneName = zone != null ? zone.zoneName : "Unknown";
@@ -699,6 +783,7 @@ namespace PLAYERTWO.ARPGProject
                         }
                         else
                         {
+                            Debug.LogWarning("[Teleport System] Could not parse all coordinates.");
                             AddSystemMessage(StringUtils.StringWithColor("Invalid coordinates. Try /tp 000 000 000 or /tp 000N 000E 000m", GameColors.Gray));
                         }
                     }
@@ -735,6 +820,8 @@ namespace PLAYERTWO.ARPGProject
                         var waypoints = LevelWaypoints.instance.waypoints;
                         var lines = new List<string>();
 
+                        AddSystemMessage(StringUtils.StringWithColor($"List of available waypoints:", GameColors.Cyan));
+
                         for (int i = 0; i < waypoints.Count; i++)
                         {
                             var wp = waypoints[i];
@@ -744,7 +831,7 @@ namespace PLAYERTWO.ARPGProject
                         AddSystemMessageBatch(lines);
                         break;
 
-                    case "whereami":
+                case "whereami":
                     {
                         var pos = Level.instance.player.transform.position;
                         var zone = AI_DDA.Assets.Scripts.ZoneTrigger.GetCurrentRegion(pos);
@@ -756,98 +843,118 @@ namespace PLAYERTWO.ARPGProject
 
                         string ns = z >= 0 ? $"{z}N" : $"{-z}S";
                         string ew = x >= 0 ? $"{x}E" : $"{-x}W";
+                        string h  = $"{y}m";
 
-                        string readable = $"{zoneName} | ({ns}, {ew}, {y}m)";
-                        AddSystemMessage(StringUtils.StringWithColor($"You are at: {readable}", GameColors.LightBlue));
+                        string formatted = 
+                            StringUtils.StringWithColor("You are at: ", GameColors.White) +
+                            StringUtils.StringWithColor(zoneName, GameColors.Cyan) +
+                            StringUtils.StringWithColor(" | (", GameColors.White) +
+                            StringUtils.StringWithColor(ns, GameColors.Gold) +
+                            StringUtils.StringWithColor(", ", GameColors.White) +
+                            StringUtils.StringWithColor(ew, GameColors.Gold) +
+                            StringUtils.StringWithColor(", ", GameColors.White) +
+                            StringUtils.StringWithColor(h, GameColors.Gold) +
+                            StringUtils.StringWithColor(")", GameColors.White);
+
+                        AddSystemMessage(formatted);
                         break;
                     }
-
 
                 case "summon":
-                    if (parts.Length >= 2 && int.TryParse(parts[1], out int enemyId))
                     {
-                        var enemies = GameDatabase.instance.enemies;
-                        if (enemyId >= 0 && enemyId < enemies.Count)
+                        if (parts.Length >= 2 && int.TryParse(parts[1], out int enemyId))
                         {
-                            var prefab = enemies[enemyId];
-                            var position = Level.instance.player.transform.position + Vector3.forward * 2f;
-                            GameObject.Instantiate(prefab, position, Quaternion.identity);
-                            AddSystemMessage(StringUtils.StringWithColorAndStyle($"Summoned enemy {enemyId}", GameColors.Orange));
-                        }
-                        else
-                        {
-                            AddSystemMessage(StringUtils.StringWithColor($"Enemy ID {enemyId} is out of range.", GameColors.Crimson));
-                        }
-                    }
-                    else
-                    {
-                        AddSystemMessage(StringUtils.StringWithColor("/summon [enemyId]", GameColors.Gray));
-                    }
-                    break;
-
-                    case "achievements":
-                    {
-                        var pbLogger = PlayerBehaviorLogger.Instance;
-
-                        if (pbLogger != null && pbLogger.unlockedAchievements.Count > 0)
-                        {
-                            AddSystemMessage(StringUtils.StringWithColor($"Unlocked Achievements ({pbLogger.unlockedAchievements.Count}):", GameColors.Lime));
-                            foreach (var a in pbLogger.unlockedAchievements)
-                                AddSystemMessage(StringUtils.StringWithColor($"• {a}", GameColors.Gold));
-                        }
-                        else
-                        {
-                            AddSystemMessage(StringUtils.StringWithColor("No achievements unlocked yet.", GameColors.Gray));
-                        }
-                        break;
-                    }
-
-                    case "quests":
-                    {
-                        var questData = Game.instance.currentCharacter?.quests;
-
-                        if (questData != null && questData.currentQuests != null)
-                        {
-                            var completed = questData.currentQuests
-                                .Where(q => q != null && q.completed)
-                                .ToList();
-
-                            if (completed.Count == 0)
+                            var enemies = GameDatabase.instance.enemies;
+                            if (enemyId >= 0 && enemyId < enemies.Count)
                             {
-                                AddSystemMessage("No quests completed yet.");
+                                var prefab = enemies[enemyId];
+                                var position = Level.instance.player.transform.position + Vector3.forward * 2f;
+                                GameObject.Instantiate(prefab, position, Quaternion.identity);
+
+                                string enemyName = prefab.name.Replace("(Clone)", "").Trim();
+
+                                string message = StringUtils.StringWithColor("Summoned enemy: ", GameColors.White) +
+                                                StringUtils.StringWithColor(enemyName, GameColors.Orange);
+
+                                AddSystemMessage(message);
                             }
                             else
                             {
-                                AddSystemMessage(StringUtils.StringWithColor("Completed Quests:", GameColors.Cyan));
-                                foreach (var quest in completed)
-                                {
-                                    AddSystemMessage($"✔ {quest.data.title}");
-                                }
+                                AddSystemMessage(StringUtils.StringWithColor($"Enemy ID {enemyId} is out of range.", GameColors.Crimson));
                             }
                         }
                         else
                         {
-                            AddSystemMessage(StringUtils.StringWithColor("Quest system not initialized.", GameColors.Crimson));
+                            AddSystemMessage(StringUtils.StringWithColor("Usage: /summon [enemyId]", GameColors.Gray));
                         }
                         break;
                     }
+
+                    case "achievements":
+                        {
+                            var pbLogger = PlayerBehaviorLogger.Instance;
+
+                            if (pbLogger != null && pbLogger.unlockedAchievements.Count > 0)
+                            {
+                                AddSystemMessage(StringUtils.StringWithColor($"Unlocked Achievements ({pbLogger.unlockedAchievements.Count}):", GameColors.Cyan));
+                                foreach (var a in pbLogger.unlockedAchievements)
+                                    AddSystemMessage(StringUtils.StringWithColor($"• {a}", GameColors.White));
+                            }
+                            else
+                            {
+                                AddSystemMessage(StringUtils.StringWithColor("No achievements unlocked yet.", GameColors.Gray));
+                            }
+                            break;
+                        }
+
+                    case "quests":
+                        {
+                            var questData = Game.instance.currentCharacter?.quests;
+
+                            if (questData != null && questData.currentQuests != null)
+                            {
+                                var completed = questData.currentQuests
+                                    .Where(q => q != null && q.completed)
+                                    .ToList();
+
+                                if (completed.Count == 0)
+                                {
+                                    AddSystemMessage("No quests completed yet.");
+                                }
+                                else
+                                {
+                                    string header = $"Completed Quests ({completed.Count}):";
+                                    AddSystemMessage(StringUtils.StringWithColor(header, GameColors.Cyan));
+
+                                    foreach (var quest in completed)
+                                    {
+                                        AddSystemMessage($"✔ {quest.data.title}");
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                AddSystemMessage(StringUtils.StringWithColor("Quest system not initialized.", GameColors.Crimson));
+                            }
+                            break;
+                        }
 
                     case "zones":
-                    {
-                        var zones = Game.instance.currentCharacter?.visitedZones;
+                        {
+                            var zones = Game.instance.currentCharacter?.visitedZones;
 
-                        if (zones != null && zones.Count > 0)
-                        {
-                            AddSystemMessage(StringUtils.StringWithColor($"Discovered Zones ({zones.Count}):", GameColors.Cyan));
-                            foreach (var zone in zones)
-                                AddSystemMessage($"• {zone}");
+                            if (zones != null && zones.Count > 0)
+                            {
+                                AddSystemMessage(StringUtils.StringWithColor($"Discovered Zones ({zones.Count}):", GameColors.Cyan));
+                                foreach (var zone in zones)
+                                    AddSystemMessage($"• {zone}");
+                            }
+                            else
+                            {
+                                AddSystemMessage(StringUtils.StringWithColor("No zones discovered yet.", GameColors.Gray));
+                            }
+                            break;
                         }
-                        else
-                        {
-                            AddSystemMessage(StringUtils.StringWithColor("No zones discovered yet.", GameColors.Gray));
-                        }
-                        break;
-                    }
 
                     case "dda":
                         if (parts.Length == 1)
@@ -864,20 +971,48 @@ namespace PLAYERTWO.ARPGProject
                         switch (sub)
                         {
                             case "log":
-                                if (logger != null)
                                 {
-                                    string playtimeFormatted = PlayerBehaviorLogger.FormatPlayTime(character.totalPlayTime);
+                                    if (logger != null)
+                                    {
+                                        string playtimeFormatted = PlayerBehaviorLogger.FormatPlayTime(character.totalPlayTime);
 
-                                    string msg = $"[AI-DDA] Player Deaths: {logger.playerDeaths}, Enemies Defeated: {logger.enemiesDefeated}, Potions Used: {logger.potionsUsed}, Zones Discovered: {logger.zonesDiscovered}, " +
-                                                $"Play Time: {playtimeFormatted}, Combat Time: {logger.totalCombatTime:F1}s, Quests Completed: {logger.questsCompleted}, " +
-                                                $"Achievements: {logger.unlockedAchievements.Count}, Current Bartle's Type: {logger.currentDynamicPlayerType}";
-                                    AddSystemMessage(StringUtils.StringWithColor(msg, GameColors.LightBlue));
+                                        float mlpPrediction = AIModel.Instance.PredictDifficulty(
+                                            logger.playerDeaths,
+                                            logger.enemiesDefeated,
+                                            logger.totalCombatTime,
+                                            logger.potionsUsed
+                                        );
+
+                                        float rlFinal = RLModel.Instance.GetCurrentDifficulty();
+
+                                        List<string> loglines = new()
+                                        {
+                                            StringUtils.StringWithColor("[AI-DDA]", GameColors.Cyan),
+                                            $"{ColorLabel("Play Time")}{ColorValue(playtimeFormatted)}",
+                                            $"{ColorLabel("Combat Time")}{ColorValue($"{logger.totalCombatTime:F1}s")}",
+                                            $"{ColorLabel("Player Deaths")}{ColorValue(logger.playerDeaths)}",
+                                            $"{ColorLabel("Enemies Defeated")}{ColorValue(logger.enemiesDefeated)}",
+                                            $"{ColorLabel("Potions Used")}{ColorValue(logger.potionsUsed)}",
+                                            $"{ColorLabel("Zones Discovered")}{ColorValue(logger.zonesDiscovered)}",
+                                            $"{ColorLabel("Quests Completed")}{ColorValue(logger.questsCompleted)}",
+                                            $"{ColorLabel("Achievements")}{ColorValue(logger.unlockedAchievements.Count)}",
+                                            $"{ColorLabel("Current Bartle's Type")}{ColorValue(logger.currentDynamicPlayerType.ToString())}",
+                                            $"{ColorLabel("MLP Predicted Difficulty")}{ColorValue($"{mlpPrediction:F2}")}",
+                                            $"{ColorLabel("RL Final Difficulty")}{ColorValue($"{rlFinal:F2}")}"
+                                        };
+
+                                        string joined = string.Join("\n", loglines);
+                                        AddSystemMessage(joined);
+                                    }
+                                    else
+                                    {
+                                        AddSystemMessage(StringUtils.StringWithColor("Logger not initialized.", GameColors.Crimson));
+                                    }
+                                    break;
+
+                                    string ColorLabel(string label) => StringUtils.StringWithColor($"  {label}: ", GameColors.Gold);
+                                    string ColorValue(object value) => StringUtils.StringWithColor(value.ToString(), GameColors.White);
                                 }
-                                else
-                                {
-                                    AddSystemMessage(StringUtils.StringWithColor("Logger not initialized.", GameColors.Crimson));
-                                }
-                                break;
 
                             case "reset":
                                 if (logger != null)
@@ -912,11 +1047,21 @@ namespace PLAYERTWO.ARPGProject
                                 }
 
                             case "type":
-                                if (logger != null)
                                 {
-                                    AddSystemMessage(StringUtils.StringWithColor($"Dynamic player Bartle's type: {logger.currentDynamicPlayerType}", GameColors.Cyan));
+                                    if (logger != null)
+                                    {
+                                        string message =
+                                            StringUtils.StringWithColor("Dynamic player Bartle's type: ", GameColors.White) +
+                                            StringUtils.StringWithColor(logger.currentDynamicPlayerType.ToString(), GameColors.Cyan);
+
+                                        AddSystemMessage(message);
+                                    }
+                                    else
+                                    {
+                                        AddSystemMessage(StringUtils.StringWithColor("Logger not initialized.", GameColors.Crimson));
+                                    }
+                                    break;
                                 }
-                                break;
 
                             case "diff":
                                 if (parts.Length >= 3 && float.TryParse(parts[2], out float val))

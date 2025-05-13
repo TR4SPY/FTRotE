@@ -77,6 +77,31 @@ namespace PLAYERTWO.ARPGProject
             Normalize();
         }
 
+        public static CurrencyType? ParseUnit(string unit)
+        {
+            switch (unit.ToLowerInvariant())
+            {
+                case "sol":
+                case "s":
+                case "solmire":
+                    return CurrencyType.Solmire;
+
+                case "lun":
+                case "l":
+                case "lunaris":
+                    return CurrencyType.Lunaris;
+
+                case "amb":
+                case "a":
+                case "amber":
+                case "amberlings":
+                    return CurrencyType.Amberlings;
+
+                default:
+                    return null;
+            }
+        }
+
         public static string FormatCurrencyString(int totalAmberlings)
         {
             if (totalAmberlings <= 0)

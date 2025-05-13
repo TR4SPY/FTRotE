@@ -5,44 +5,48 @@ using PLAYERTWO.ARPGProject;
 
 public class MessageHoverHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IScrollHandler
 {
-    public GUIChatWindow chatWindow;
+    private GUIOverlay overlay;
+    private ScrollRect scrollRect;
+
+    void Awake()
+    {
+        overlay = Object.FindFirstObjectByType<GUIOverlay>();
+        scrollRect = GetComponentInParent<ScrollRect>();
+    }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        var canvasGroup = GetComponent<CanvasGroup>();
-        if (canvasGroup != null)
-            canvasGroup.alpha = 1f;
+        Debug.Log($"[Hover] Pointer ENTER on: {gameObject.name}");
 
-       // chatWindow?.StopOverlayFadeOut();
+        overlay?.PauseAllFade();
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        bool cursorStillOnAny = false;
-        foreach (var msg in chatWindow.overlayLogContent.GetComponentsInChildren<MessageHoverHandler>())
-        {
-            if (msg == null) continue;
+        Debug.Log($"[Hover] Pointer EXIT from: {gameObject.name}");
 
-            var rt = msg.GetComponent<RectTransform>();
-            if (rt != null && RectTransformUtility.RectangleContainsScreenPoint(rt, Input.mousePosition))
+        bool stillHoveringAny = false;
+
+        foreach (var hover in overlay.GetComponentsInChildren<MessageHoverHandler>())
+        {
+            if (hover == null) continue;
+
+            var rt = hover.GetComponent<RectTransform>();
+            if (rt != null && RectTransformUtility.RectangleContainsScreenPoint(rt, eventData.position, eventData.enterEventCamera))
             {
-                cursorStillOnAny = true;
+                stillHoveringAny = true;
                 break;
             }
         }
 
-        if (!cursorStillOnAny)
+        if (!stillHoveringAny)
         {
-           // chatWindow?.StartFadeOutCountdown();
+            overlay?.ResumeAllFade();
         }
     }
 
     public void OnScroll(PointerEventData eventData)
     {
-        var scrollRect = chatWindow?.overlayScrollRect;
-        if (scrollRect != null)
-        {
-            scrollRect.OnScroll(eventData);
-        }
+        scrollRect?.OnScroll(eventData);
     }
 }

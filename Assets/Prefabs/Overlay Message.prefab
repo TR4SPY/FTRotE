@@ -212,6 +212,7 @@ GameObject:
   - component: {fileID: 787254728563724240}
   - component: {fileID: 8749279371918593539}
   - component: {fileID: 6477164046833932396}
+  - component: {fileID: 1726842542275009651}
   m_Layer: 5
   m_Name: Overlay Message
   m_TagString: Untagged
@@ -314,3 +315,15 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &1726842542275009651
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3702572371998003593}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1273dd6ff766c49edb922b92a401b0f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

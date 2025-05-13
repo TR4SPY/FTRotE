@@ -118,7 +118,7 @@ namespace PLAYERTWO.ARPGProject
                 overlayScrollRect.verticalNormalizedPosition = 0f;
         }
 
-        public void RepopulateOverlayFromHistory(List<string> log, int maxToShow = 10)
+        public void RepopulateOverlayFromHistory(List<string> log, int maxToShow = 20)
         {
             // Debug.Log("[Overlay] Repopulating from history (" + log.Count + " messages)");
 

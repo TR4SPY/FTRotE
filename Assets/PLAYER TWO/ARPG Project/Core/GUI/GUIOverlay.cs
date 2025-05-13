@@ -14,61 +14,62 @@ namespace PLAYERTWO.ARPGProject
             public GameObject obj;
             public float expireAt;
             public bool fading;
+            public Coroutine fadeCoroutine;
         }
 
         private readonly Dictionary<GameObject, OverlayEntry> messages = new();
+        private readonly HashSet<GameObject> hoveredMessages = new();
 
         void Update()
         {
             float now = Time.time;
 
-            var toFade = new List<GameObject>();
-
             foreach (var kvp in messages)
             {
                 var entry = kvp.Value;
 
-                if (entry.obj == null)
-                {
-                    toFade.Add(kvp.Key); // null-safe cleanup
-                    continue;
-                }
+                if (entry.obj == null) continue;
+                if (entry.fading) continue;
+                if (hoveredMessages.Contains(entry.obj)) continue;
 
-                if (!entry.fading && now >= entry.expireAt)
+                if (now >= entry.expireAt)
                 {
                     entry.fading = true;
-                    StartCoroutine(FadeAndDestroy(entry));
+                    entry.fadeCoroutine = StartCoroutine(FadeAndDestroy(entry));
                 }
             }
-
-            foreach (var key in toFade)
-                messages.Remove(key);
         }
 
         public void FadeMessage(GameObject obj)
         {
             if (obj == null) return;
 
+            var cg = obj.GetComponent<CanvasGroup>() ?? obj.AddComponent<CanvasGroup>();
+            cg.alpha = 1f;
+
             if (!messages.ContainsKey(obj))
             {
-                var cg = obj.GetComponent<CanvasGroup>() ?? obj.AddComponent<CanvasGroup>();
-                cg.alpha = 1f;
-
                 messages[obj] = new OverlayEntry
                 {
                     obj = obj,
                     expireAt = Time.time + messageLifetime,
-                    fading = false
+                    fading = false,
+                    fadeCoroutine = null
                 };
-
-                // Debug.Log($"[GUIOverlay] FadeMessage: registered {obj.name}, expires at {messages[obj].expireAt:F2}");
             }
             else
             {
-                messages[obj].expireAt = Time.time + messageLifetime;
-                messages[obj].fading = false;
+                var entry = messages[obj];
+                entry.expireAt = Time.time + messageLifetime;
+                entry.fading = false;
 
-                // Debug.Log($"[GUIOverlay] FadeMessage: updated {obj.name} with new expireAt {messages[obj].expireAt:F2}");
+                if (entry.fadeCoroutine != null)
+                {
+                    StopCoroutine(entry.fadeCoroutine);
+                    entry.fadeCoroutine = null;
+                }
+
+                cg.alpha = 1f;
             }
         }
 
@@ -76,42 +77,103 @@ namespace PLAYERTWO.ARPGProject
         {
             if (obj == null) return;
 
-            if (!messages.ContainsKey(obj))
-            {
-                var cg = obj.GetComponent<CanvasGroup>() ?? obj.AddComponent<CanvasGroup>();
-                cg.alpha = 1f;
+            var cg = obj.GetComponent<CanvasGroup>() ?? obj.AddComponent<CanvasGroup>();
+            cg.alpha = 1f;
 
-                messages[obj] = new OverlayEntry
-                {
-                    obj = obj,
-                    expireAt = float.PositiveInfinity,
-                    fading = false
-                };
-
-                // Debug.Log($"[GUIOverlay] Registered historical message {obj.name}, no fade yet");
-            }
-            else
+            messages[obj] = new OverlayEntry
             {
-                // Debug.Log($"[GUIOverlay] Historical message {obj.name} already tracked");
-            }
+                obj = obj,
+                expireAt = float.PositiveInfinity,
+                fading = false,
+                fadeCoroutine = null
+            };
         }
 
         public void ResumeFadeForAllVisible()
         {
-            // Debug.Log($"[GUIOverlay - DEBUG] ResumeFadeForAllVisible() called. Messages tracked: {messages.Count}");
-
             float now = Time.time;
 
             foreach (var kvp in messages)
             {
                 var entry = kvp.Value;
 
-                // Debug.Log($"[GUIOverlay - DEBUG] Checking {entry.obj?.name}, fading={entry.fading}, expireAt={entry.expireAt}");
-
                 if (entry.obj != null && !entry.fading && float.IsInfinity(entry.expireAt))
                 {
-                    entry.expireAt = Time.time + messageLifetime;
-                    // Debug.Log($"[GUIOverlay - DEBUG] Set {entry.obj.name} to expire at {entry.expireAt:F2}");
+                    entry.expireAt = now + messageLifetime;
+                }
+            }
+        }
+
+        public void PauseFade(GameObject obj)
+        {
+            if (obj == null || !messages.TryGetValue(obj, out var entry)) return;
+
+            hoveredMessages.Add(obj);
+
+            if (entry.fadeCoroutine != null)
+            {
+                StopCoroutine(entry.fadeCoroutine);
+                entry.fadeCoroutine = null;
+            }
+
+            entry.fading = false;
+            entry.expireAt = float.PositiveInfinity;
+
+            var cg = obj.GetComponent<CanvasGroup>();
+            if (cg != null) cg.alpha = 1f;
+        }
+
+        public void ResumeFade(GameObject obj)
+        {
+            if (obj == null || !messages.TryGetValue(obj, out var entry)) return;
+
+            hoveredMessages.Remove(obj);
+
+            entry.expireAt = Time.time + messageLifetime;
+            entry.fading = false;
+
+            var cg = obj.GetComponent<CanvasGroup>();
+            if (cg != null) cg.alpha = 1f;
+        }
+
+        public void PauseAllFade()
+        {
+            foreach (var entry in messages.Values)
+            {
+                if (entry.obj != null)
+                {
+                    if (entry.fadeCoroutine != null)
+                    {
+                        StopCoroutine(entry.fadeCoroutine);
+                        entry.fadeCoroutine = null;
+                    }
+
+                    entry.expireAt = float.PositiveInfinity;
+                    entry.fading = false;
+
+                    var cg = entry.obj.GetComponent<CanvasGroup>();
+                    if (cg != null) cg.alpha = 1f;
+
+                    hoveredMessages.Add(entry.obj);
+                }
+            }
+        }
+
+        public void ResumeAllFade()
+        {
+            float now = Time.time;
+
+            foreach (var entry in messages.Values)
+            {
+                if (entry.obj != null)
+                {
+                    entry.expireAt = now + messageLifetime;
+                    entry.fading = false;
+
+                    var cg = entry.obj.GetComponent<CanvasGroup>();
+                    if (cg != null) cg.alpha = 1f;
+
+                    hoveredMessages.Remove(entry.obj);
                 }
             }
         }
@@ -123,23 +185,28 @@ namespace PLAYERTWO.ARPGProject
             var cg = entry.obj.GetComponent<CanvasGroup>();
             if (cg == null) yield break;
 
-            // Debug.Log($"[GUIOverlay] Fading out {entry.obj.name}");
-
             float duration = 1f;
             float elapsed = 0f;
 
             while (elapsed < duration)
             {
+                if (hoveredMessages.Contains(entry.obj))
+                {
+                    cg.alpha = 1f;
+                    entry.fading = false;
+                    entry.expireAt = Time.time + messageLifetime;
+                    entry.fadeCoroutine = null;
+                    yield break;
+                }
+
                 cg.alpha = Mathf.Lerp(1f, 0f, elapsed / duration);
                 elapsed += Time.deltaTime;
                 yield return null;
             }
 
             cg.alpha = 0f;
-            Destroy(entry.obj);
-
             messages.Remove(entry.obj);
-            // Debug.Log($"[GUIOverlay] Destroyed {entry.obj.name}");
+            Destroy(entry.obj);
         }
     }
 }
