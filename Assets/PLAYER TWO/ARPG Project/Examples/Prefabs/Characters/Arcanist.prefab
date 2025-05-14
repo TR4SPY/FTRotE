@@ -455,7 +455,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   level: 1
-  strength: 25
+  strength: 18
   dexterity: 15
   vitality: 15
   energy: 25

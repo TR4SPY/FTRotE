@@ -80,7 +80,7 @@ MonoBehaviour:
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 0
-      action: 7
+      action: 8
       nextPageIndex: 3
       specialConditionToSet: 1
     - optionText: The DARK side!
@@ -88,7 +88,7 @@ MonoBehaviour:
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 0
-      action: 7
+      action: 8
       nextPageIndex: 6
       specialConditionToSet: 2
     showOnce: 1

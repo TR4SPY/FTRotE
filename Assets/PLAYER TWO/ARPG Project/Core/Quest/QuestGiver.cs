@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using AI_DDA.Assets.Scripts;
+using System.Collections;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -86,6 +87,11 @@ namespace PLAYERTWO.ARPGProject
             return null;
         }
 
+        public bool HasQuest(Quest quest)
+        {
+            return quests.Contains(quest) || additionalQuests.Contains(quest);
+        }
+
         public Quest CurrentExclusiveQuest(string pType)
         {
             foreach (var quest in additionalQuests)
@@ -107,16 +113,66 @@ namespace PLAYERTWO.ARPGProject
             return null; 
         }
 
+        public Quest CurrentClassUpgradeQuest()
+        {
+            var player = Game.instance.currentCharacter;
+            var className = player.Entity?.name?.Replace("(Clone)", "").Trim() ?? "";
+            Debug.Log($"[ClassUpgrade] Entity class name: {className}");
+
+            if (!ClassHierarchy.NameToBits.TryGetValue(className, out var currentClass))
+            {
+                Debug.LogWarning($"[ClassUpgrade] Klasa nieznana: '{className}'");
+                return null;
+            }
+
+            int currentLevel = player.stats.currentLevel;
+            int maxLevel = Game.instance.maxLevel;
+            Debug.Log($"[ClassUpgrade] Level: {currentLevel}, Max: {maxLevel}, Class: {currentClass}");
+
+            var allQuests = quests.Concat(additionalQuests);
+            foreach (var quest in allQuests)
+            {
+                if (quest.questType != QuestType.ClassUpgrade)
+                {
+                    Debug.Log($"[ClassUpgrade] Pomijam '{quest.title}' – nie jest typu ClassUpgrade");
+                    continue;
+                }
+
+                // Poprawne sprawdzenie zgodności klasy z maską bitową
+                if (quest.requiredClass != CharacterClassRestrictions.None &&
+                    (quest.requiredClass & currentClass) == 0)
+                {
+                    Debug.Log($"[ClassUpgrade] Pomijam '{quest.title}' – wymaga klasy {quest.requiredClass}, gracz ma {currentClass}");
+                    continue;
+                }
+
+                if (quest.requireMaxLevel && currentLevel < maxLevel)
+                {
+                    Debug.Log($"[ClassUpgrade] Pomijam '{quest.title}' – wymaga max levelu");
+                    continue;
+                }
+
+                if (!Game.instance.quests.ContainsQuest(quest) || 
+                    (Game.instance.quests.TryGetQuest(quest, out var q) && !q.completed))
+                {
+                    Debug.Log($"[ClassUpgrade] ✅ Zwracam questa: {quest.title}");
+                    return quest;
+                }
+            }
+
+            Debug.Log("[ClassUpgrade] ❌ Żaden quest nie pasuje.");
+            return null;
+        }
+
         private bool MatchesPlayerType(Quest q, string pType)
         {
-            if (!q.isExclusive) return false;
+            if (q.questType != QuestType.Exclusive) return false;
             if (q.forKiller && pType == "Killer") return true;
             if (q.forAchiever && pType == "Achiever") return true;
             if (q.forExplorer && pType == "Explorer") return true;
             if (q.forSocializer && pType == "Socializer") return true;
             return false;
         }
-
         private bool IsQuestOwnedByThisNPC(Quest q)
         {
             return true;
@@ -156,22 +212,58 @@ namespace PLAYERTWO.ARPGProject
 
         public void ReceiveFetchItem(QuestItemReward item)
         {
-            if (Game.instance.currentCharacter.inventory.HasItem(item.data))
+            var player = Game.instance.currentCharacter;
+
+            if (!player.inventory.HasItem(item.data))
             {
-                if (Game.instance.currentCharacter.inventory.RemoveItem(item.data))
+                Debug.Log($"[Quest] Gracz nie ma wymaganego przedmiotu: {item.data.name}");
+                return;
+            }
+
+            if (!player.inventory.RemoveItem(item.data))
+            {
+                Debug.LogWarning($"[Quest] Nie udało się usunąć przedmiotu: {item.data.name}");
+                return;
+            }
+
+            Debug.Log($"[Quest] Przedmiot {item.data.name} został zwrócony do {name}");
+
+            Quest currentQuest = CurrentQuest();
+            if (currentQuest == null)
+            {
+                Debug.LogWarning("[Quest] Nie znaleziono aktualnego questa przy NPC.");
+                return;
+            }
+
+            if (!Game.instance.quests.TryGetQuest(currentQuest, out var instance))
+            {
+                Debug.LogWarning("[Quest] Brak instancji questa dla gracza.");
+                return;
+            }
+
+            if (instance.IsMultiStage())
+            {
+                var stage = instance.GetCurrentStage();
+                if (stage.completingMode == Quest.CompletingMode.FetchAfterKill)
                 {
-                    Debug.Log($"Item {item.data.name} returned to {name}. Quest completed!");
-                    Game.instance.quests.RemoveQuest(CurrentQuest());
-                    ChangeStateTo(State.None);
+                    Debug.Log($"[Quest] Etap {instance.currentStageIndex + 1} questa '{instance.data.title}' zakończony.");
+                    instance.AdvanceStage();
+
+                    if (instance.IsFullyCompleted())
+                    {
+                        Debug.Log($"[Quest] ✅ Quest zakończony: {instance.data.title}");
+                        Game.instance.quests.CompleteQuest(instance);
+                    }
                 }
                 else
                 {
-                    Debug.LogWarning($"Failed to remove item {item.data.name} from inventory.");
+                    Debug.LogWarning($"[Quest] Błąd logiczny: aktualny etap nie jest typu FetchAfterKill.");
                 }
             }
             else
             {
-                Debug.Log($"Player does not have {item.data.name} yet.");
+                Debug.Log($"[Quest] ✅ Quest zakończony: {currentQuest.title}");
+                Game.instance.quests.CompleteQuest(instance);
             }
         }
 
@@ -239,11 +331,9 @@ namespace PLAYERTWO.ARPGProject
         /// <param name="instance">The QuestInstance to check.</param>
         protected virtual bool MatchesQuest(QuestInstance instance)
         {
-            if (quests.Length == 0 || !quests.Contains(instance.data))
-                return false;
-
-            return true;
+            return quests.Contains(instance.data) || additionalQuests.Contains(instance.data);
         }
+
 
         protected virtual void ChangeStateTo(State state)
         {
@@ -259,26 +349,127 @@ namespace PLAYERTWO.ARPGProject
             ChangeStateTo(State.QuestInProgress);
         }
 
-        protected virtual void OnQuestCompleted(QuestInstance instance)
+        public virtual void OnQuestCompleted(QuestInstance instance)
         {
             if (!MatchesQuest(instance)) return;
 
             var quest = instance.data;
 
-            if (quest.IsFetchAfterKill())
+            bool isFetch = (!instance.IsMultiStage() && quest.IsFetchAfterKill()) ||
+                        (instance.IsMultiStage() && instance.GetCurrentStage().completingMode == Quest.CompletingMode.FetchAfterKill);
+
+            if (isFetch && !instance.completed)
             {
-                QuestGiver returnNPC = FindReturnNPC(quest.returnToNPC);
+                var fetchItem = instance.IsMultiStage()
+                    ? instance.GetCurrentStage().requiredItem
+                    : quest.requiredItem;
+
+                var returnToNpc = instance.IsMultiStage()
+                    ? instance.GetCurrentStage().returnToNPC
+                    : quest.returnToNPC;
+
+                QuestGiver returnNPC = FindReturnNPC(returnToNpc);
 
                 if (returnNPC != null)
                 {
-                    Debug.Log($"Quest '{quest.title}' requires the player to return {quest.requiredItem.data.name} to NPC {returnNPC.name}.");
-                    returnNPC.ReceiveFetchItem(quest.requiredItem);
+                    returnNPC.ReceiveFetchItem(fetchItem);
                 }
                 else
                 {
                     Debug.LogWarning($"Quest '{quest.title}' has no assigned NPC! Check returnToNPC.");
                 }
+
                 return;
+            }
+
+            if (quest.questType == QuestType.ClassUpgrade)
+            {
+                var player = Game.instance.currentCharacter;
+                var oldEntity = player.Entity;
+
+                string currentClassName = oldEntity?.name?.Replace("(Clone)", "").Trim() ?? "";
+
+                if (!ClassHierarchy.NameToBits.TryGetValue(currentClassName, out var currentClass))
+                {
+                    Debug.LogWarning($"[ClassUpgrade] Nieznana klasa gracza: {currentClassName}");
+                    return;
+                }
+
+                if ((quest.requiredClass & currentClass) == 0)
+                {
+                    Debug.LogWarning($"[ClassUpgrade] Gracz nie spełnia wymagań klasy: {currentClass}");
+                    return;
+                }
+
+                var nextClass = ClassHierarchy.GetNextTierClass(currentClass);
+                if (nextClass == CharacterClassRestrictions.None)
+                {
+                    Debug.LogWarning($"[ClassUpgrade] Brak dalszej klasy po: {currentClass}");
+                    return;
+                }
+
+                string newClassName = nextClass.ToString();
+                var newCharacter = GameDatabase.instance.characters.FirstOrDefault(c => c.name == newClassName);
+                if (newCharacter == null)
+                {
+                    Debug.LogWarning($"[ClassUpgrade] Nie znaleziono prefabu dla klasy: {newClassName}");
+                    return;
+                }
+
+                Vector3 oldPos = oldEntity.transform.position;
+                Quaternion oldRot = oldEntity.transform.rotation;
+
+                player.savedHealth = oldEntity.stats.health;
+                player.savedMana = oldEntity.stats.mana;
+                player.data = newCharacter;
+                player.stats = new CharacterStats(newCharacter);
+
+                var newEntity = player.Instantiate();
+                newEntity.name = newClassName;
+
+                newEntity.Teleport(oldPos, oldRot);
+
+                newEntity.isPlayer = true;
+                newEntity.controller.enabled = true;
+                newEntity.stats.Initialize();
+                newEntity.inputs.enabled = true;
+                newEntity.skills.enabled = true;
+                newEntity.items.enabled = true;
+
+                var feedback = newEntity.GetComponent<EntityFeedback>();
+                feedback?.SendMessage("InitializeEntity", SendMessageOptions.DontRequireReceiver);
+
+                newEntity.gameObject.tag = "Entity/Player";
+                newEntity.gameObject.layer = LayerMask.NameToLayer("Entities");
+
+                newEntity.stats.BulkUpdate(
+                    level: 1,
+                    strength: newCharacter.strength,
+                    dexterity: newCharacter.dexterity,
+                    vitality: newCharacter.vitality,
+                    energy: newCharacter.energy,
+                    availablePoints: 0,
+                    experience: 0
+                );
+
+                if (newEntity.nametag != null)
+                {
+                    var cc = Game.instance.currentCharacter;
+                    newEntity.nametag.SetNametag(
+                        cc.name,
+                        newEntity.stats.level,
+                        cc.guildName,
+                        cc.GetName()
+                    );
+                }
+
+                player.RestoreSavedVitals();
+                player.SetEntity(newEntity);
+                Level.instance.SetPlayer(newEntity);
+
+                FindFirstObjectByType<GUIStatsManager>()?.Refresh();
+
+                newEntity.GetComponent<PlayerInitializer>()?.Initialize();
             }
 
             ChangeStateTo(CurrentQuest() ? State.QuestAvailable : State.None);
@@ -290,6 +481,16 @@ namespace PLAYERTWO.ARPGProject
                 return;
 
             ChangeStateTo(State.QuestAvailable);
+        }
+
+        private void OnEnable()
+        {
+            QuestGiverRegistry.Instance?.Register(this);
+        }
+
+        private void OnDisable()
+        {
+            QuestGiverRegistry.Instance?.Unregister(this);
         }
     }
 }

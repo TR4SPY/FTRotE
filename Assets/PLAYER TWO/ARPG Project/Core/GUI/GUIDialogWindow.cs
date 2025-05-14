@@ -78,7 +78,8 @@ namespace AI_DDA.Assets.Scripts
             dialogText.text = currentPage.dialogText;
 
             string playerType = Game.instance.currentCharacter.currentDynamicPlayerType;
-            List<Dialog.DialogOption> availableOptions = currentDialog.GetFilteredOptions(currentPageIndex, playerType);
+            var questGiver = currentNPC?.GetComponent<QuestGiver>();
+            List<Dialog.DialogOption> availableOptions = currentDialog.GetFilteredOptions(currentPageIndex, playerType, questGiver);
 
             for (int i = 0; i < optionButtons.Length; i++)
             {
@@ -110,15 +111,19 @@ namespace AI_DDA.Assets.Scripts
                 case Dialog.DialogAction.OpenQuests:
                     OpenQuestWindow();
                     break;
+
                 case Dialog.DialogAction.OpenShop:
                     OpenMerchantWindow();
                     break;
+
                 case Dialog.DialogAction.OpenCrafting:
                     OpenCraftmanWindow();
                     break;
+
                 case Dialog.DialogAction.OpenBlacksmith:
                     OpenBlacksmithWindow();
                     break;
+
                 case Dialog.DialogAction.ContinueDialog:
                     if (option.nextPageIndex != -1)
                     {
@@ -126,9 +131,15 @@ namespace AI_DDA.Assets.Scripts
                     }
                     ContinueDialog(option.nextPageIndex);
                     break;
+
                 case Dialog.DialogAction.Exclusive:
                     OpenExclusiveWindow();
                     break;
+
+                case Dialog.DialogAction.OpenClassUpgrade:
+                    OpenClassUpgradeWindow();
+                    break;
+
                 case Dialog.DialogAction.SetSpecialCondition:
                     var character = Game.instance.currentCharacter;
                     character.SetSpecialCondition(option.specialConditionToSet);
@@ -151,6 +162,7 @@ namespace AI_DDA.Assets.Scripts
 
                     ContinueDialog(option.nextPageIndex);
                     break;
+
                 default:
                     Close();
                     break;
@@ -250,7 +262,6 @@ namespace AI_DDA.Assets.Scripts
             
             blacksmith.OpenBlackSmithService(player);
         }
-
         public void OpenExclusiveWindow()
         {
             var questGiver = currentNPC.GetComponent<QuestGiver>();
@@ -272,7 +283,24 @@ namespace AI_DDA.Assets.Scripts
 
             GUIWindowsManager.instance.exclusiveWindow.SetQuest(exQuest);
         }
+        public void OpenClassUpgradeWindow()
+        {
+            var questGiver = currentNPC.GetComponent<QuestGiver>();
+            if (questGiver == null)
+            {
+                Debug.LogError("Brak komponentu QuestGiver.");
+                return;
+            }
 
+            var upgradeQuest = questGiver.CurrentClassUpgradeQuest();
+            if (upgradeQuest == null)
+            {
+                Debug.Log("Brak questów typu class upgrade.");
+                return;
+            }
+
+            GUIWindowsManager.instance.exclusiveWindow.SetQuest(upgradeQuest);
+        }
         private void SetPlayerTypeIcon(Dialog.DialogOption option, Image iconImage)
         {
             iconImage.gameObject.SetActive(false);

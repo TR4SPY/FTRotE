@@ -94,5 +94,22 @@ namespace PLAYERTWO.ARPGProject
             }
             return 0; // fallback
         }
+
+        public static CharacterClassRestrictions GetNextTierClass(CharacterClassRestrictions currentClass)
+        {
+            foreach (var family in Families)
+            {
+                for (int i = 0; i < family.Tiers.Length - 1; i++)
+                {
+                    if (family.Tiers[i] == currentClass)
+                    {
+                        return family.Tiers[i + 1];
+                    }
+                }
+            }
+
+            return CharacterClassRestrictions.None;
+        }
+
     }
 }

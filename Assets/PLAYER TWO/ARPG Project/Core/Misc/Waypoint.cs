@@ -203,5 +203,10 @@ namespace PLAYERTWO.ARPGProject
                 Debug.LogWarning("[Waypoint] PlayerBehaviorLogger.Instance is null. Cannot log waypoint discovery.");
             }
         }
+
+        public static void SetPlayer(Entity entity)
+        {
+            Level.instance?.SetPlayer(entity);
+        }
     }
 }

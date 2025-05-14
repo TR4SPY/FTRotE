@@ -90,7 +90,7 @@ namespace PLAYERTWO.ARPGProject
         /// Completes a given Quest Instance.
         /// </summary>
         /// <param name="quest">The Quest Instance you want to complete.</param>
-        protected virtual void CompleteQuest(QuestInstance quest)
+        public virtual void CompleteQuest(QuestInstance quest)
         {
             if (quest.completed)
                 return;
@@ -100,10 +100,18 @@ namespace PLAYERTWO.ARPGProject
 
             quest.Complete();
 
-            // Logowanie ukończenia questa
             PlayerBehaviorLogger.Instance?.LogQuestCompleted();
 
             onQuestCompleted?.Invoke(quest);
+
+            foreach (var giver in QuestGiverRegistry.Instance.GetAll())
+            {
+                if (giver.HasQuest(quest.data))
+                {
+                    giver.OnQuestCompleted(quest);
+                    break;
+                }
+            }
         }
 
         /// <summary>
@@ -141,13 +149,34 @@ namespace PLAYERTWO.ARPGProject
 
                     if (quest.progress >= quest.GetFinalTargetProgress())
                     {
-                        if (quest.data.IsFetchAfterKill())
+                        if (quest.IsMultiStage())
                         {
-                            Debug.Log($"Quest '{quest.data.title}' wymaga zwrócenia przedmiotu do {quest.data.returnToNPC}.");
+                            var stage = quest.GetCurrentStage();
+
+                            if (stage.completingMode == Quest.CompletingMode.FetchAfterKill)
+                            {
+                                Debug.Log($"[Quest] '{quest.data.title}' (etap {quest.currentStageIndex + 1}) wymaga zwrotu przedmiotu do {stage.returnToNPC}.");
+                            }
+                            else
+                            {
+                                quest.AdvanceStage();
+
+                                if (quest.IsFullyCompleted())
+                                {
+                                    CompleteQuest(quest);
+                                }
+                            }
                         }
                         else
                         {
-                            CompleteQuest(quest);
+                            if (quest.data.IsFetchAfterKill())
+                            {
+                                Debug.Log($"[Quest] '{quest.data.title}' wymaga zwrócenia przedmiotu do {quest.data.returnToNPC}.");
+                            }
+                            else
+                            {
+                                CompleteQuest(quest);
+                            }
                         }
                     }
                 }
@@ -159,15 +188,25 @@ namespace PLAYERTWO.ARPGProject
             if (!TryGetQuest(quest, out var instance))
                 return;
 
-            if (!instance.RequiresManualCompletion()) return; // Upewnij się, że quest wymaga manualnego zakończenia.
+            if (!instance.RequiresManualCompletion())
+                return;
 
-            // Nagrody i zakończenie questa
+            foreach (var giver in QuestGiverRegistry.Instance.GetAll())
+            {
+                if (giver.HasQuest(quest))
+                {
+                    giver.OnQuestCompleted(instance);
+                    break;
+                }
+            }
+
             if (Level.instance.player)
                 instance.Reward(Level.instance.player);
 
             instance.Complete();
             onQuestCompleted?.Invoke(instance);
         }
+
         
         /// <summary>
         /// Zwraca pierwszy dostępny nieukończony quest.
@@ -193,16 +232,83 @@ namespace PLAYERTWO.ARPGProject
             if (!TryGetQuest(quest, out var instance))
                 return;
 
-            if (instance.CanCompleteByTrigger())
+            if (!instance.CanCompleteByTrigger())
+                return;
+
+            if (instance.IsMultiStage())
+            {
+                instance.AdvanceStage();
+
+                if (instance.IsFullyCompleted())
+                {
+                    CompleteQuest(instance);
+                }
+            }
+            else
+            {
                 CompleteQuest(instance);
+            }
         }
 
+
+        /*
         public void AdjustQuestItems(QuestInstance questInstance)
         {
             if (questInstance == null || !questInstance.data.IsProgress()) return;
 
             string itemKey = questInstance.data.progressKey;
             int requiredAmount = questInstance.GetFinalTargetProgress(); 
+
+            QuestItem[] existingItems = Object.FindObjectsByType<QuestItem>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+                .Where(item => item.itemKey == itemKey)
+                .ToArray();
+
+            int currentAmount = existingItems.Length;
+
+            Debug.Log($"[QUEST] Checking quest items for key: {itemKey} - Found {currentAmount}, Required: {requiredAmount}");
+
+            if (currentAmount < requiredAmount)
+            {
+                int toSpawn = requiredAmount - currentAmount;
+                Debug.Log($"[QUEST] Spawning {toSpawn} missing Quest Items for key: {itemKey}");
+                SpawnQuestItems(itemKey, toSpawn);
+            }
+            else if (currentAmount > requiredAmount)
+            {
+                int toDisable = currentAmount - requiredAmount;
+                Debug.Log($"[QUEST] Disabling {toDisable} extra Quest Items for key: {itemKey}");
+                DisableExtraQuestItems(existingItems, toDisable);
+            }
+        }
+        */
+
+        public void AdjustQuestItems(QuestInstance questInstance)
+        {
+            if (questInstance == null)
+                return;
+
+            string itemKey = null;
+            int requiredAmount = 0;
+
+            // ✅ Obsługa Multi-Stage
+            if (questInstance.IsMultiStage())
+            {
+                var stage = questInstance.GetCurrentStage();
+                if (stage.completingMode != Quest.CompletingMode.Progress)
+                    return;
+
+                itemKey = stage.progressKey;
+                requiredAmount = stage.targetProgress;
+            }
+            else if (questInstance.data.IsProgress())
+            {
+                itemKey = questInstance.data.progressKey;
+                requiredAmount = questInstance.GetFinalTargetProgress();
+            }
+            else
+            {
+                return; // ❌ Nie jest questem Progress i nie ma etapu Progress
+            }
 
             QuestItem[] existingItems = Object.FindObjectsByType<QuestItem>(FindObjectsInactive.Include, FindObjectsSortMode.None)
                 .Where(item => item.itemKey == itemKey)

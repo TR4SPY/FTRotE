@@ -96,6 +96,7 @@ GameObject:
   - component: {fileID: 1668754394529997350}
   - component: {fileID: 105099512331301389}
   - component: {fileID: 7952096078989433651}
+  - component: {fileID: 2549783833396777464}
   m_Layer: 0
   m_Name: __GAME__
   m_TagString: Untagged
@@ -296,6 +297,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GUIAchievementsHUD: {fileID: 0}
+--- !u!114 &2549783833396777464
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2175000572608817883}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 417f54619dbc30d399efa82f26c17d9f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2499290984610492485
 GameObject:
   m_ObjectHideFlags: 0

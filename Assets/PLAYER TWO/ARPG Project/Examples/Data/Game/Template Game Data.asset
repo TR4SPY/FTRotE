@@ -15,6 +15,10 @@ MonoBehaviour:
   characters:
   - {fileID: 11400000, guid: 05c3010d87c523b42b3b943050efd6b4, type: 2}
   - {fileID: 11400000, guid: a66f20fb3287f8ca1bbc37808f269088, type: 2}
+  - {fileID: 11400000, guid: 1f277ac5e57548134bca44ee10e50813, type: 2}
+  - {fileID: 11400000, guid: cb598c84c734834f6adee6173fb70bb8, type: 2}
+  - {fileID: 11400000, guid: fbfd3d8054f48530da5396aa4f98616c, type: 2}
+  - {fileID: 11400000, guid: 4892fb09da89893f78ef18c73867de32, type: 2}
   items:
   - {fileID: 11400000, guid: 5cf83e0ed05e81641bdc02abc92de27f, type: 2}
   - {fileID: 11400000, guid: f22f499c2ce172c49a19b59020c71cb7, type: 2}
@@ -97,6 +101,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 2cc5d9d56d2a63316b56ce98e1e43475, type: 2}
   - {fileID: 11400000, guid: a2ba5503d60d8911cb45d760d887c709, type: 2}
   - {fileID: 11400000, guid: a4629b420704bceaeac87ebe0f0226f8, type: 2}
+  - {fileID: 11400000, guid: fde9b50e5ba88ee5a8a7689838bb0ade, type: 2}
+  - {fileID: 11400000, guid: 61e271a593a209e73b091246a05f04f6, type: 2}
+  - {fileID: 11400000, guid: da37b5d3eccac3cd7b974c651e1144ce, type: 2}
   questItems:
   - {fileID: 6325688752531504721, guid: 74ab1ea2f5b247d4ebde0dc6b3823943, type: 3}
   enemies:

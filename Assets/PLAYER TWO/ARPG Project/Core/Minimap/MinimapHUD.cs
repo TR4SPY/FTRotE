@@ -162,5 +162,11 @@ namespace PLAYERTWO.ARPGProject
             UpdateRotation();
             UpdateRegionLabel();
         }
+
+        public void SetTarget(Entity entity)
+        {
+            if (entity == null) return;
+            target = entity.transform;
+        }
     }
 }

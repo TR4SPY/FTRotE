@@ -3,7 +3,21 @@ using System.Collections.Generic;
 
 namespace PLAYERTWO.ARPGProject
 {
-    public enum PlayerType { None, Achiever, Killer, Socializer, Explorer }
+    public enum PlayerType
+    { 
+        None, 
+        Achiever, 
+        Killer, 
+        Socializer, 
+        Explorer 
+    }
+
+    public enum QuestType
+    {
+        Normal = 0,
+        Exclusive = 1,
+        ClassUpgrade = 2
+    }
 
     [CreateAssetMenu(fileName = "New Quest", menuName = "PLAYER TWO/ARPG Project/Quest/Quest")]
     public class Quest : ScriptableObject
@@ -54,8 +68,17 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("If true, the player must manually complete the quest at the NPC.")]
         public bool requiresManualCompletion;
 
+        [Header("Quest Type")]
+        public QuestType questType = QuestType.Normal;
+        public CharacterClassRestrictions requiredClass;
+        public bool requireMaxLevel;
+
+        [Header("Multi-Stage Quest")]
+        public bool isMultiStage = false;
+        public List<QuestStage> stages = new();
+
+
         [Header("Exclusive Settings")]
-        public bool isExclusive;
         public bool forKiller;
         public bool forAchiever;
         public bool forExplorer;
@@ -335,6 +358,5 @@ namespace PLAYERTWO.ARPGProject
                 return experience;
             }
         }
-
     }
 }

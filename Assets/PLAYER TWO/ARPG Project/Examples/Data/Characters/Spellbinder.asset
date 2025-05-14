@@ -1,0 +1,187 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b59ec0f2f626ec144ba083fbe7146536, type: 3}
+  m_Name: Spellbinder
+  m_EditorClassIdentifier: 
+  entity: {fileID: 2957117560480157750, guid: e0e93eafc5f130fe39d4194c0718eac5, type: 3}
+  classPrefab: {fileID: 6424578100128487837, guid: fd17a49f15b8fed64b4151dc3ea5c00e, type: 3}
+  initialScene: Tutorial
+  level: 1
+  strength: 22
+  dexterity: 25
+  vitality: 25
+  energy: 35
+  rightHand:
+    data: {fileID: 11400000, guid: b5eabe5e653c87a48b3ec1bfe7f64ab7, type: 2}
+    stack: 0
+    attributes:
+      damage: 0
+      damagePercent: 0
+      attackSpeed: 0
+      critical: 0
+      defense: 0
+      defensePercent: 0
+      mana: 0
+      manaPercent: 0
+      health: 0
+      healthPercent: 0
+    durability: 0
+    itemLevel: 0
+    skillEnabled: 0
+  leftHand:
+    data: {fileID: 0}
+    stack: 0
+    attributes:
+      damage: 0
+      damagePercent: 0
+      attackSpeed: 0
+      critical: 0
+      defense: 0
+      defensePercent: 0
+      mana: 0
+      manaPercent: 0
+      health: 0
+      healthPercent: 0
+    durability: 0
+    itemLevel: 0
+    skillEnabled: 0
+  helm:
+    data: {fileID: 0}
+    stack: 0
+    attributes:
+      damage: 0
+      damagePercent: 0
+      attackSpeed: 0
+      critical: 0
+      defense: 0
+      defensePercent: 0
+      mana: 0
+      manaPercent: 0
+      health: 0
+      healthPercent: 0
+    durability: 0
+    itemLevel: 0
+    skillEnabled: 0
+  chest:
+    data: {fileID: 0}
+    stack: 0
+    attributes:
+      damage: 0
+      damagePercent: 0
+      attackSpeed: 0
+      critical: 0
+      defense: 0
+      defensePercent: 0
+      mana: 0
+      manaPercent: 0
+      health: 0
+      healthPercent: 0
+    durability: 0
+    itemLevel: 0
+    skillEnabled: 0
+  pants:
+    data: {fileID: 0}
+    stack: 0
+    attributes:
+      damage: 0
+      damagePercent: 0
+      attackSpeed: 0
+      critical: 0
+      defense: 0
+      defensePercent: 0
+      mana: 0
+      manaPercent: 0
+      health: 0
+      healthPercent: 0
+    durability: 0
+    itemLevel: 0
+    skillEnabled: 0
+  gloves:
+    data: {fileID: 0}
+    stack: 0
+    attributes:
+      damage: 0
+      damagePercent: 0
+      attackSpeed: 0
+      critical: 0
+      defense: 0
+      defensePercent: 0
+      mana: 0
+      manaPercent: 0
+      health: 0
+      healthPercent: 0
+    durability: 0
+    itemLevel: 0
+    skillEnabled: 0
+  boots:
+    data: {fileID: 0}
+    stack: 0
+    attributes:
+      damage: 0
+      damagePercent: 0
+      attackSpeed: 0
+      critical: 0
+      defense: 0
+      defensePercent: 0
+      mana: 0
+      manaPercent: 0
+      health: 0
+      healthPercent: 0
+    durability: 0
+    itemLevel: 0
+    skillEnabled: 0
+  maxConsumableSlots: 4
+  initialConsumables:
+  - {fileID: 11400000, guid: a9d3393a671f7c441a74af4a81c00896, type: 2}
+  - {fileID: 11400000, guid: 7de6cdd817a59a0418b75bf32982c2a3, type: 2}
+  initialMoney: 20000
+  inventory:
+  - item:
+      data: {fileID: 11400000, guid: a9d3393a671f7c441a74af4a81c00896, type: 2}
+      stack: 2
+      attributes:
+        damage: 0
+        damagePercent: 0
+        attackSpeed: 0
+        critical: 0
+        defense: 0
+        defensePercent: 0
+        mana: 0
+        manaPercent: 0
+        health: 0
+        healthPercent: 0
+      durability: 0
+      itemLevel: 0
+      skillEnabled: 0
+    row: 0
+    column: 0
+  - item:
+      data: {fileID: 11400000, guid: 7de6cdd817a59a0418b75bf32982c2a3, type: 2}
+      stack: 2
+      attributes:
+        damage: 0
+        damagePercent: 0
+        attackSpeed: 0
+        critical: 0
+        defense: 0
+        defensePercent: 0
+        mana: 0
+        manaPercent: 0
+        health: 0
+        healthPercent: 0
+      durability: 0
+      itemLevel: 0
+      skillEnabled: 0
+    row: 0
+    column: 1
+  availableSkills: []
+  equippedSkills: []

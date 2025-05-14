@@ -186,6 +186,10 @@ namespace PLAYERTWO.ARPGProject
             }
         }
 
+        public void SetPlayer(Entity entity)
+        {
+            player = entity;
+        }
 
         /// <summary>
         /// Applies the current difficulty settings to all tracked entities.

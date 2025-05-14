@@ -298,6 +298,16 @@ namespace PLAYERTWO.ARPGProject
             }
         }
 
+        public void SetEntity(Entity entity)
+        {
+            m_entity = entity;
+            Level.instance.SetPlayer(entity);
+            EntityCamera.Instance?.SetTarget(entity);
+            MinimapHUD.instance?.SetTarget(entity);
+            Waypoint.SetPlayer(entity); 
+        }
+
+
         public static CharacterInstance CreateFromSerializer(CharacterSerializer serializer)
         {
             var data = GameDatabase.instance.FindElementById<Character>(serializer.characterId);

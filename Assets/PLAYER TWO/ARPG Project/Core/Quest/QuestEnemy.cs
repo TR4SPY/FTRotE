@@ -24,10 +24,19 @@ namespace PLAYERTWO.ARPGProject
             var questManager = Game.instance.quests;
             foreach (var quest in questManager.list)
             {
-                if (quest.data.IsProgressKey(enemyKey))
+                if (
+                    (!quest.IsMultiStage() && quest.data.IsProgressKey(enemyKey)) ||
+                    (quest.IsMultiStage() &&
+                    quest.GetCurrentStage().completingMode == Quest.CompletingMode.Progress &&
+                    quest.GetCurrentStage().progressKey == enemyKey)
+                )
                 {
-                    int remaining = quest.data.GetTargetProgress() - quest.progress;
-                    // Debug.Log($"{quest.data.title} → zostało do zabicia: {remaining}");
+                    int target = quest.IsMultiStage()
+                        ? quest.GetCurrentStage().targetProgress
+                        : quest.data.GetTargetProgress();
+
+                    int current = quest.progress;
+                    int remaining = target - current;
                 }
             }
         }

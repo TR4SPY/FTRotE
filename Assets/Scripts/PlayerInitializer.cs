@@ -9,8 +9,18 @@ namespace AI_DDA.Assets.Scripts
         public GameObject nameplatePrefab;
         private Nametag nametagInstance;
 
+        private bool m_initialized = false;
+
         private void Start()
         {
+            Initialize();
+        }
+
+        public void Initialize()
+        {
+            if (m_initialized) return;
+            m_initialized = true;
+
             GameObject go = Instantiate(nameplatePrefab);
             nametagInstance = go.GetComponent<Nametag>();
             nametagInstance.target = this.transform;
@@ -57,19 +67,16 @@ namespace AI_DDA.Assets.Scripts
             if (difficultyManager != null)
             {
                 difficultyManager.playerLogger = GetComponent<PlayerBehaviorLogger>();
-                Debug.Log("PlayerBehaviorLogger assigned to DifficultyManager dynamically.");
             }
             else
             {
                 Debug.LogError("DifficultyManager not found in the scene!");
             }
 
-            // RLModel
             var rlModel = Object.FindFirstObjectByType<RLModel>();
             if (rlModel != null)
             {
                 rlModel.SetPlayerLogger(GetComponent<PlayerBehaviorLogger>());
-                Debug.Log("[AI-DDA] PlayerBehaviorLogger assigned to RLModel dynamically.");
             }
             else
             {
@@ -86,7 +93,6 @@ namespace AI_DDA.Assets.Scripts
                     if (currentCharacter != null)
                     {
                         gameSave.LoadLogsForCharacter(currentCharacter);
-                        Debug.Log($"Logs loaded for character: {currentCharacter.name}");
                     }
                     else
                     {
@@ -107,7 +113,6 @@ namespace AI_DDA.Assets.Scripts
             if (chatManager != null)
             {
                 chatManager.Reinitialize();
-                Debug.Log("[ChatManager] Reinitialized after player load.");
             }
             else
             {

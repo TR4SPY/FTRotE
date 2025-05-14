@@ -13,6 +13,7 @@ namespace PLAYERTWO.ARPGProject
         public int FinalTargetProgress => finalTargetProgress;
         public int FinalCoins => finalCoins;
         public int FinalExperience => finalExperience;
+        public int currentStageIndex = 0;
 
         protected int m_progress;
 
@@ -96,13 +97,42 @@ namespace PLAYERTWO.ARPGProject
         /// <summary>
         /// Returns true if this Quest can add progress with a given progress key.
         /// </summary>
+        /*
         public virtual bool CanAddProgress(string key) =>
             !completed && data.IsProgress() && data.IsProgressKey(key);
+        */
+        public virtual bool CanAddProgress(string key)
+        {
+            if (completed)
+                return false;
+
+            if (IsMultiStage())
+            {
+                var stage = GetCurrentStage();
+                return stage.completingMode == Quest.CompletingMode.Progress &&
+                    stage.progressKey == key;
+            }
+
+            return data.IsProgress() && data.IsProgressKey(key);
+        }
 
         /// <summary>
         /// Returns true if this Quest can be completed with a trigger.
         /// </summary>
-        public virtual bool CanCompleteByTrigger() => !completed && data.IsTrigger();
+        public virtual bool CanCompleteByTrigger()
+        {
+            if (completed)
+                return false;
+
+            if (IsMultiStage())
+            {
+                var stage = GetCurrentStage();
+                return stage.completingMode == Quest.CompletingMode.Trigger &&
+                    !stage.requiresManualCompletion;
+            }
+
+            return data.IsTrigger() && !RequiresManualCompletion();
+        }
 
         /// <summary>
         /// Returns true if this Quest is completed by progress.
@@ -140,11 +170,24 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         public bool CanCompleteFetchAfterKill()
         {
+            if (completed) return false;
+
+            if (IsMultiStage() && GetCurrentStage().completingMode == Quest.CompletingMode.FetchAfterKill)
+            {
+                var stage = GetCurrentStage();
+
+                if (stage.requiresManualCompletion)
+                    return false;
+
+                QuestGiver returnNPC = QuestGiver.FindReturnNPC(stage.returnToNPC);
+                return PlayerHasItem(stage.requiredItem) && TalkedToNPC(returnNPC);
+            }
+
             if (!data.IsFetchAfterKill()) return false;
             if (RequiresManualCompletion()) return false;
 
-            QuestGiver returnNPC = QuestGiver.FindReturnNPC(data.returnToNPC);
-            return PlayerHasItem(data.requiredItem) && TalkedToNPC(returnNPC);
+            QuestGiver npc = QuestGiver.FindReturnNPC(data.returnToNPC);
+            return PlayerHasItem(data.requiredItem) && TalkedToNPC(npc);
         }
 
         public bool RequiresManualCompletion()
@@ -160,6 +203,38 @@ namespace PLAYERTWO.ARPGProject
         private bool TalkedToNPC(QuestGiver npc)
         {
             return npc != null && npc.state == QuestGiver.State.QuestInProgress;
+        }
+
+        public bool IsMultiStage() => data.isMultiStage && data.stages.Count > 0;
+
+        public QuestStage GetCurrentStage()
+        {
+            if (!IsMultiStage()) return null;
+            return data.stages[Mathf.Clamp(currentStageIndex, 0, data.stages.Count - 1)];
+        }
+
+        public bool IsFullyCompleted()
+        {
+            return IsMultiStage()
+                ? currentStageIndex >= data.stages.Count
+                : completed;
+        }
+
+        public void AdvanceStage()
+        {
+            if (!IsMultiStage()) return;
+
+            currentStageIndex++;
+
+            if (currentStageIndex >= data.stages.Count)
+            {
+                completed = true;
+                Debug.Log($"[Quest] Zakończono quest etapowy: {data.title}");
+            }
+            else
+            {
+                Debug.Log($"[Quest] Rozpoczęto etap {currentStageIndex + 1} w queście: {data.title}");
+            }
         }
     }
 }

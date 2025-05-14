@@ -71,11 +71,10 @@ namespace PLAYERTWO.ARPGProject
 
             UpdateProgress();
 
-            if (quest.data.isExclusive)
+            if (quest.data.questType != QuestType.Exclusive)
             {
                 exclusiveIcon.gameObject.SetActive(true);
 
-                // Sprawdź typ i przypisz sprite
                 if (quest.data.forAchiever) 
                     exclusiveIcon.sprite = playerTypeSprites[0];
                 else if (quest.data.forKiller) 

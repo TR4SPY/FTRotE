@@ -35,14 +35,15 @@ namespace AI_DDA.Assets.Scripts
 
         public enum DialogAction
         {
-            None, 
-            OpenQuests,
-            OpenShop,
-            OpenCrafting,
-            OpenBlacksmith,
-            ContinueDialog,
-            Exclusive,
-            SetSpecialCondition
+            None = 0, 
+            OpenQuests = 1,
+            OpenShop = 2,
+            OpenCrafting = 3,
+            OpenBlacksmith = 4,
+            ContinueDialog = 5,
+            Exclusive = 6,
+            OpenClassUpgrade = 7,
+            SetSpecialCondition = 8
         }
 
         public List<DialogPage> pages = new List<DialogPage>();
@@ -97,7 +98,7 @@ namespace AI_DDA.Assets.Scripts
             lastPathChoice = -1;
         }
 
-        public List<DialogOption> GetFilteredOptions(int pageIndex, string playerType)
+        public List<DialogOption> GetFilteredOptions(int pageIndex, string playerType, QuestGiver questGiver)
         {
             List<DialogOption> filteredOptions = new List<DialogOption>();
 
@@ -112,11 +113,35 @@ namespace AI_DDA.Assets.Scripts
                 if (option.isForExplorer && playerType != "Explorer") isAllowed = false;
                 if (option.isForKiller && playerType != "Killer") isAllowed = false;
 
+                if (option.action == DialogAction.OpenClassUpgrade)
+                {
+                    if (questGiver == null || questGiver.CurrentClassUpgradeQuest() == null)
+                    {
+                        Debug.LogWarning("[Dialog] Nie znaleziono QuestGivera.");
+                        isAllowed = false;
+                    }
+                    else
+                    {
+                        var upgradeQuest = questGiver.CurrentClassUpgradeQuest();
+                        if (upgradeQuest == null)
+                        {
+                            Debug.Log("[Dialog] Brak dostępnego Class Upgrade Questa.");
+                        }
+                        else
+                        {
+                            Debug.Log($"[Dialog] Znaleziono Class Upgrade Quest: {upgradeQuest.title}");
+                        }
+
+                        isAllowed = upgradeQuest != null;
+                    }
+                }
+
                 if (isAllowed)
                 {
                     filteredOptions.Add(option);
                     if (filteredOptions.Count >= 4) break;
                 }
+
             }
             return filteredOptions;
         }

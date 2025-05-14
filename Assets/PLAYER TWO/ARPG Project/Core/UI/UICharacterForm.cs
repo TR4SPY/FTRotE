@@ -226,20 +226,33 @@ namespace PLAYERTWO.ARPGProject
             m_audio.PlayUiEffect(showFormClip);
         }
         */
+        
         protected virtual void OnEnable()
         {
             characterClass.ClearOptions();
-            var classes = GameDatabase.instance.characters.Select(c => c.name);
-            List<string> options = GameDatabase.instance.characters.Select(c => c.name).ToList();
-            m_characterNames = Game.instance.characters.Select(c => c.name).ToArray();
-            characterClass.ClearOptions();
-            characterClass.AddOptions(classes.ToList());
-            characterName.text = "";
-            // Set the initial dropdown value to trigger prefab instantiation
-            if (options.Count > 0)
-                characterClass.value = 0;
 
-            HandleClassChange(0);  // Manually invoke to set up initial state
+            var allowedStartClasses = new[]
+            {
+                CharacterClassRestrictions.Knight,
+                CharacterClassRestrictions.Arcanist
+            };
+
+            var starterClasses = GameDatabase.instance.characters
+                .Where(c => ClassHierarchy.NameToBits.TryGetValue(c.name, out var classType) && allowedStartClasses.Contains(classType))
+                .ToList();
+
+            m_characterNames = Game.instance.characters.Select(c => c.name).ToArray();
+
+            characterClass.AddOptions(starterClasses.Select(c => c.name).ToList());
+
+            characterName.text = "";
+
+            if (starterClasses.Count > 0)
+            {
+                characterClass.value = 0;
+                HandleClassChange(0);
+            }
+
             createButton.interactable = false;
             StartCoroutine(SelectInputField());
             m_audio.PlayUiEffect(showFormClip);

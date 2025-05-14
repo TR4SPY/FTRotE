@@ -48,6 +48,19 @@ namespace PLAYERTWO.ARPGProject
 
         protected Entity m_entity;
 
+        public static EntityCamera Instance { get; private set; }
+
+        protected virtual void Awake()
+        {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            Instance = this;
+        }
+
         protected virtual void InitializeEntity()
         {
             if (Level.instance == null || Level.instance.player == null)
@@ -62,6 +75,11 @@ namespace PLAYERTWO.ARPGProject
             {
                 Debug.LogError("Failed to assign player to EntityCamera.");
             }
+        }
+
+        public void SetTarget(Entity entity)
+        {
+            m_entity = entity;
         }
 
         protected virtual void InitializeActions()
@@ -105,6 +123,7 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void HandleTransform()
         {
+            
             if (m_entity == null || m_entity.transform == null)
             {
                 Debug.LogError("Entity is null or its transform is null. Cannot update camera transform.");
