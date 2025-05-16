@@ -2,7 +2,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
+using UnityEngine.Rendering.Universal;
 using System.Linq;
+using Kamgam.UGUIWorldImage;
+using System.Collections;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -21,6 +24,10 @@ namespace PLAYERTWO.ARPGProject
     {
         [Tooltip("A reference to the Text component that represents the stack size.")]
         public Text stackText;
+        
+        private Vector2Int lastResolution;
+        private Vector3 frozenModelLocalPos;
+
 
         protected Image m_image;
         protected CanvasGroup m_group;
@@ -30,6 +37,8 @@ namespace PLAYERTWO.ARPGProject
         protected bool m_hovering;
         protected bool m_selected;
         protected InventoryCell m_lastInventoryPosition;
+
+        [SerializeField] private WorldImage worldImage;
 
         protected float m_lastClickTime;
 
@@ -105,15 +114,46 @@ namespace PLAYERTWO.ARPGProject
         /// Selects this GUI Item.
         /// </summary>
         public virtual void Select()
-        {
-            group.blocksRaycasts = false;
-            ((RectTransform)transform).SetAsLastSibling();
-        }
+{
+    group.blocksRaycasts = false;
+
+    // Zablokuj layout (ważne przy oderwaniu od slotu)
+    var layout = GetComponent<LayoutElement>();
+    if (layout != null)
+        layout.ignoreLayout = true;
+
+    var rt = (RectTransform)transform;
+    rt.SetAsLastSibling(); // daj na wierzch w canvasie
+    rt.localScale = Vector3.one;
+    rt.pivot = new Vector2(0.5f, 0.5f);
+    rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+    rt.sizeDelta = new Vector2(item.columns, item.rows) * Inventory.CellSize;
+}
+
 
         /// <summary>
         /// Deselects this GUI Item.
         /// </summary>
-        public virtual void Deselect() => group.blocksRaycasts = true;
+        public virtual void Deselect()
+        {
+            if (worldImage != null)
+                worldImage.transform.SetParent(transform, false);
+
+
+            group.blocksRaycasts = true;
+
+            var layout = GetComponent<LayoutElement>();
+            if (layout != null)
+                layout.ignoreLayout = false;
+
+            // ⚠️ Przywrócenie do slotu (jeśli GUI.cs tego nie robi)
+            var slot = GetComponentInParent<GUISlot>();
+            if (slot != null)
+                transform.SetParent(slot.transform, false);
+
+            StartCoroutine(FixCameraPositionAfterModelLoad());
+        }
+
 
         /// <summary>
         /// Returns true if its possible to stack a given item on this one.
@@ -144,9 +184,9 @@ namespace PLAYERTWO.ARPGProject
         {
             if (onMerchant)
             {
-        #if UNITY_ANDROID || UNITY_IOS
+#if UNITY_ANDROID || UNITY_IOS
                 HandleBuy();
-        #endif
+#endif
                 return;
             }
 
@@ -191,41 +231,41 @@ namespace PLAYERTWO.ARPGProject
         }
 
         protected virtual void HandleMoveToCraftman()
-{
-    var craftInventory = m_craftman.GetComponentInChildren<GUICraftmanInventory>();
-    var playerInventory = GUIWindowsManager.instance.GetInventory();
-
-    if (craftInventory == null || playerInventory == null)
-        return;
-
-    bool changed = false;
-
-    if (transform.IsChildOf(playerInventory.itemsContainer))
-    {
-        if (craftInventory.TryAutoInsert(this))
         {
-            playerInventory.TryRemove(this);
-            changed = true;
-        }
-    }
-    else if (transform.IsChildOf(craftInventory.itemsContainer))
-    {
-        if (playerInventory.TryAutoInsert(this))
-        {
-            craftInventory.TryRemove(this);
-            changed = true;
-        }
-    }
+            var craftInventory = m_craftman.GetComponentInChildren<GUICraftmanInventory>();
+            var playerInventory = GUIWindowsManager.instance.GetInventory();
 
-    // 🔁 Odśwież GUI Craftmana jeśli cokolwiek się zmieniło
-    if (changed)
-    {
-        var items = craftInventory.inventory.items.Keys.ToList();
+            if (craftInventory == null || playerInventory == null)
+                return;
 
-        // UWAGA: Nie ma GUICraftman.instance – użyj referencji do komponentu
-        m_craftman.GetComponent<GUICraftman>()?.UpdateCraftingPreview(items);
-    }
-}
+            bool changed = false;
+
+            if (transform.IsChildOf(playerInventory.itemsContainer))
+            {
+                if (craftInventory.TryAutoInsert(this))
+                {
+                    playerInventory.TryRemove(this);
+                    changed = true;
+                }
+            }
+            else if (transform.IsChildOf(craftInventory.itemsContainer))
+            {
+                if (playerInventory.TryAutoInsert(this))
+                {
+                    craftInventory.TryRemove(this);
+                    changed = true;
+                }
+            }
+
+            // 🔁 Odśwież GUI Craftmana jeśli cokolwiek się zmieniło
+            if (changed)
+            {
+                var items = craftInventory.inventory.items.Keys.ToList();
+
+                // UWAGA: Nie ma GUICraftman.instance – użyj referencji do komponentu
+                m_craftman.GetComponent<GUICraftman>()?.UpdateCraftingPreview(items);
+            }
+        }
 
 
 
@@ -409,24 +449,219 @@ namespace PLAYERTWO.ARPGProject
         }
 #endif
 
+        private IEnumerator WaitUntilActiveAndFixCamera()
+        {
+            Debug.Log($"[GUIItem] Czekam na aktywację {item?.data?.name}");
+            yield return new WaitUntil(() => gameObject.activeInHierarchy);
+            yield return null;
+
+            Debug.Log($"[GUIItem] GUIItem aktywny – uruchamiam FixCameraPosition dla {item?.data?.name}");
+            StartCoroutine(FixCameraPositionAfterModelLoad());
+        }
+
+
         /// <summary>
         /// Initializes the GUI Item with a given Item Instance.
         /// </summary>
         /// <param name="item">The Item Instance this GUI Item represents.</param>
         public virtual void Initialize(ItemInstance item)
         {
-            if (item == null) return;
+            if (item == null)
+            {
+                Debug.LogWarning("[GUIItem] Przekazany item == null");
+                return;
+            }
 
             this.item = item;
             this.item.onStackChanged += UpdateStackText;
 
-            image.sprite = item.data.image;
-            stackText.enabled = item.IsStackable();
-            ((RectTransform)transform).sizeDelta =
-                new Vector2(item.columns, item.rows) * Inventory.CellSize;
-            merchant = GetComponentInParent<GUIMerchant>();
+            if (worldImage == null)
+            {
+                worldImage = GetComponentInChildren<WorldImage>();
+                if (worldImage == null)
+                {
+                    Debug.LogError($"[GUIItem] Brak przypisanego WorldImage dla {item.data.name}! Upewnij się, że prefab GUIItem go zawiera.");
+                    return;
+                }
+            }
 
+            if (item.data.prefab != null)
+            {
+                var originalModel = Instantiate(item.data.prefab);
+                originalModel.transform.SetParent(worldImage.transform, false);
+                originalModel.transform.localPosition = Vector3.zero;
+                originalModel.transform.localRotation = Quaternion.identity;
+                originalModel.transform.localScale = Vector3.one;
+                originalModel.name = "Item_Original";
+
+                float scaleOverride = 0f;
+                Vector3 cameraOffset = Vector3.zero;
+                Vector3 cameraLookAt = Vector3.zero;
+
+                scaleOverride = item.data.previewScaleOverride;
+                cameraOffset = item.data.previewCameraOffset;
+                cameraLookAt = item.data.previewLookAtOffset;
+
+                worldImage.ResolutionWidth = item.data.previewResolutionWidth;
+                worldImage.ResolutionHeight = item.data.previewResolutionHeight;
+                worldImage.CameraFollowBoundsCenter = item.data.previewCameraFollowBoundsCenter;
+
+                int previewLayer = LayerMask.NameToLayer("Model_Preview");
+
+                var renderAnchor = new GameObject("RenderProxy_" + item.data.name);
+                renderAnchor.transform.position = GetPreviewPositionFor(item);
+                renderAnchor.layer = previewLayer;
+
+                var previewLight = new GameObject("PreviewLight");
+                previewLight.transform.SetParent(renderAnchor.transform, false);
+                previewLight.layer = previewLayer;
+
+                var light = previewLight.AddComponent<Light>();
+                light.type = LightType.Directional;
+                light.intensity = 1.2f;
+                light.color = Color.white;
+                light.transform.rotation = Quaternion.Euler(50, -30, 0);
+                light.cullingMask = 1 << previewLayer;
+                light.renderingLayerMask = 1 << previewLayer;
+                light.shadows = LightShadows.None;
+
+                var renderModel = Instantiate(item.data.prefab, renderAnchor.transform);
+                renderModel.transform.localPosition = Vector3.zero;
+                renderModel.transform.localRotation = Quaternion.Euler(item.data.previewRotationEuler);
+                renderModel.transform.localScale = (scaleOverride > 0)
+                    ? Vector3.one * scaleOverride
+                    : FitModelToSlot(renderModel, new Vector2Int(item.columns, item.rows));
+
+                renderModel.gameObject.layer = previewLayer;
+                foreach (var t in renderModel.GetComponentsInChildren<Transform>(true))
+                    t.gameObject.layer = previewLayer;
+
+                foreach (var renderer in renderModel.GetComponentsInChildren<Renderer>(true))
+                {
+                    renderer.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
+                    renderer.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
+                    renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                    renderer.receiveShadows = false;
+                    renderer.renderingLayerMask = (uint)(1 << previewLayer);
+                }
+
+                worldImage.AddWorldObject(renderModel.transform);
+                worldImage.CameraLookAtPosition = cameraLookAt;
+                worldImage.CameraOffset = cameraOffset;
+
+                var cam = worldImage.ObjectCamera;
+                if (cam != null && cam.Camera != null)
+                {
+                    cam.Camera.clearFlags = CameraClearFlags.SolidColor;
+                    cam.Camera.backgroundColor = Color.clear;
+                    cam.Camera.cullingMask = 1 << previewLayer;
+
+                    cam.Image.CameraUseBoundsToClip = true;
+                    cam.Image.CameraAutoUpdateBounds = false;
+                    cam.Image.CameraFollowBoundsCenter = true;
+                    cam.UpdateCameraClippingFromBounds();
+
+                    var camData = cam.Camera.GetUniversalAdditionalCameraData();
+                    camData.SetRenderer(1);
+                }
+
+                image.enabled = false;
+            }
+            else
+            {
+                image.sprite = item.data.image;
+                image.enabled = true;
+                Debug.LogWarning($"[GUIItem] Brak prefab w item.data: {item.data.name}");
+            }
+
+            stackText.enabled = item.IsStackable();
+            ((RectTransform)transform).sizeDelta = new Vector2(item.columns, item.rows) * Inventory.CellSize;
+
+            merchant = GetComponentInParent<GUIMerchant>();
             UpdateStackText();
+        }
+
+        private Vector3 GetPreviewPositionFor(ItemInstance item)
+        {
+            string safeName = item?.data?.name ?? "UnnamedItem";
+            int hash = Mathf.Abs(safeName.GetHashCode() % 1024);
+            int row = hash / 32;
+            int col = hash % 32;
+            float spacing = 3f;
+            Vector3 basePosition = new Vector3(1000f, 1000f, 0f);
+            return basePosition + new Vector3(col * spacing, row * spacing, 0f);
+        }
+
+        private IEnumerator FixCameraPositionAfterModelLoad()
+        {
+            const int maxTries = 30;
+            int tries = 0;
+            WorldObjectCamera cam = null;
+
+            while (tries < maxTries)
+            {
+                cam = worldImage.ObjectCamera;
+                if (cam != null && cam.Camera != null)
+                    break;
+
+                yield return null;
+                tries++;
+            }
+
+            if (cam == null || cam.Camera == null)
+            {
+                Debug.LogWarning($"[GUIItem] NIE znaleziono kamery dla: {item?.data?.name} po {tries} próbach");
+                yield break;
+            }
+
+            const int maxBoundsWait = 20;
+            int frame = 0;
+
+            while (frame < maxBoundsWait)
+            {
+                yield return new WaitForEndOfFrame();
+
+                var renderers = worldImage.GetComponentsInChildren<Renderer>();
+                bool rendererReady = renderers.Length > 0 && renderers.All(r => r.bounds.size.magnitude > 0.001f);
+
+                var bounds = worldImage.GetWorldObjectsBounds();
+
+                if (bounds.HasValue && bounds.Value.size.magnitude > 0.001f)
+                {
+                    cam.Image.CameraUseBoundsToClip = true;
+                    cam.Image.CameraAutoUpdateBounds = false;
+                    cam.Image.CameraFollowBoundsCenter = true;
+                    cam.UpdateCameraClippingFromBounds();
+                }
+                else
+                {
+                    Debug.LogWarning($"BOUNDS PUSTE dla {item?.data?.name} — kamera nie została ustawiona.");
+                }
+
+                frame++;
+            }
+
+            Debug.LogWarning($"[FixCamera] bounds NIE gotowe dla: {item?.data?.name}");
+        }
+        
+        private Vector3 FitModelToSlot(GameObject model, Vector2Int slotSize)
+        {
+            var renderers = model.GetComponentsInChildren<Renderer>();
+            if (renderers.Length == 0)
+                return Vector3.one;
+
+            Bounds bounds = renderers[0].bounds;
+            for (int i = 1; i < renderers.Length; i++)
+                bounds.Encapsulate(renderers[i].bounds);
+
+            float maxDim = Mathf.Max(bounds.size.x, bounds.size.y, bounds.size.z);
+            if (maxDim == 0f)
+                return Vector3.one;
+
+            float targetVisualSize = slotSize.magnitude * 0.5f;
+            float scale = targetVisualSize / maxDim;
+
+            return Vector3.one * scale;
         }
 
         protected virtual void OnDisable()
@@ -525,5 +760,59 @@ namespace PLAYERTWO.ARPGProject
                 Destroy(gameObject);
             }
         }
+
+        public void SetPreviewActive(bool state)
+        {
+            if (worldImage != null)
+                worldImage.enabled = state;
+        }
+
+        private void Update()
+        {
+            var currentResolution = new Vector2Int(Screen.width, Screen.height);
+
+            if (currentResolution != lastResolution)
+            {
+                lastResolution = currentResolution;
+                if (item?.data?.prefab != null && worldImage != null)
+                {
+                    Debug.Log($"[GUIItem] Zmiana rozdzielczości — wymuszam update dla {item.data.name}");
+                    StartCoroutine(FixCameraPositionAfterModelLoad());
+                }
+            }
+
+            if (GUI.instance.selected == this && worldImage != null)
+            {
+                // Zamroź pozycję ModelPreview
+                worldImage.transform.localPosition = Vector3.zero;
+                worldImage.transform.localRotation = Quaternion.identity;
+
+                // Zamroź pozycję modelu 3D
+                var model = worldImage.WorldObjects?.FirstOrDefault();
+                if (model != null)
+                {
+                    model.localPosition = frozenModelLocalPos;
+                    model.localRotation = Quaternion.Euler(item.data.previewRotationEuler);
+                }
+            }
+
+        }
+    
+        private int debugFrames = 3;
+
+private void LateUpdate()
+{
+    if (debugFrames > 0 && worldImage != null)
+    {
+        var cam = worldImage.ObjectCamera;
+        if (cam != null)
+        {
+            Debug.Log($"[GUIItem - Debug] frame {Time.frameCount}: Camera pos = {cam.transform.position}, GUIItem pos = {transform.position}");
+        }
+
+        debugFrames--;
+    }
+}
+
     }
 }

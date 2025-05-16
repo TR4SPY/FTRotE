@@ -18,6 +18,12 @@ MonoBehaviour:
   rarity: 0
   dropPosition: {x: 0, y: 0, z: 0}
   dropRotation: {x: -90, y: 0, z: 45}
+  previewLookAtOffset: {x: 0, y: 0, z: 0}
+  previewCameraOffset: {x: 0, y: 0, z: 0.6}
+  previewScaleOverride: 0
+  previewResolutionWidth: 64
+  previewResolutionHeight: 64
+  previewCameraFollowBoundsCenter: 1
   image: {fileID: -1140340108, guid: 710b421732f34109c9a3bf1149b786b1, type: 3}
   rows: 1
   columns: 1

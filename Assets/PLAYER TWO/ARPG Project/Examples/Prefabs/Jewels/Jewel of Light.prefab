@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1553534218236778081}
   - component: {fileID: 1553534218236778087}
+  - component: {fileID: 3507287503384022302}
   m_Layer: 0
   m_Name: Jewel of Light
   m_TagString: Untagged
@@ -25,14 +26,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1553534218236778084}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2366238871256099033}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &1553534218236778087
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -54,6 +55,24 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.075, y: 0.075, z: 0.075}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3507287503384022302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1553534218236778084}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8356ffd373e78a6a9b3a70ddff3b3de5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cameraLookAtOffset: {x: 0, y: 0, z: -0.28}
+  cameraOffset: {x: 0, y: 0, z: 1.75}
+  scaleOverride: 0
+  resolutionWidth: 32
+  resolutionHeight: 32
+  cameraFollowBoundsCenter: 1
 --- !u!1001 &2836186713658593074
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -88,19 +107,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e844e2ce52d7a32a892f7dec1e267793, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7071068
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e844e2ce52d7a32a892f7dec1e267793, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.7071068
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e844e2ce52d7a32a892f7dec1e267793, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e844e2ce52d7a32a892f7dec1e267793, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e844e2ce52d7a32a892f7dec1e267793, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

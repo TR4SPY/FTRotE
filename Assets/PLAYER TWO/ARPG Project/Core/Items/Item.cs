@@ -52,6 +52,18 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The rotation relative to world space to place the Item when dropping it.")]
         public Vector3 dropRotation = new Vector3(-90, 0, 45);
 
+        [Header("GUI Preview Settings")]
+        public Vector3 previewLookAtOffset = Vector3.zero;
+        public Vector3 previewCameraOffset = new Vector3(0, 0, -2f);
+        public Vector3 previewRotationEuler = Vector3.zero;
+
+        public float previewScaleOverride = 0f;
+
+        public Kamgam.UGUIWorldImage.RenderTextureSize previewResolutionWidth = Kamgam.UGUIWorldImage.RenderTextureSize._512;
+        public Kamgam.UGUIWorldImage.RenderTextureSize previewResolutionHeight = Kamgam.UGUIWorldImage.RenderTextureSize._512;
+
+        public bool previewCameraFollowBoundsCenter = true;
+
         [Header("Inventory Settings")]
         [Tooltip("The sprite that represents this Item on the Inventory.")]
         public Sprite image;

@@ -18,6 +18,12 @@ MonoBehaviour:
   rarity: 0
   dropPosition: {x: 0, y: 0, z: 0}
   dropRotation: {x: -90, y: 0, z: 45}
+  previewLookAtOffset: {x: 0, y: 0, z: 0}
+  previewCameraOffset: {x: 0, y: 0, z: 2.3}
+  previewScaleOverride: 0
+  previewResolutionWidth: 64
+  previewResolutionHeight: 256
+  previewCameraFollowBoundsCenter: 1
   image: {fileID: 3709195996203497302, guid: b54e5618bea88e046ab5466a204ddd45, type: 3}
   rows: 5
   columns: 1
@@ -38,6 +44,8 @@ MonoBehaviour:
   minMagicDamage: 0
   maxMagicDamage: 0
   attackSpeed: 3
+  skill: {fileID: 0}
+  skillSource: {fileID: 0}
   attackClips:
   - {fileID: 8300000, guid: 36ecab5f5149b374a87e11f76210452b, type: 3}
   - {fileID: 8300000, guid: 2f7b72774cf58c7448485ee1fc3b14a4, type: 3}
