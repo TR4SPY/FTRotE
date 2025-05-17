@@ -16,8 +16,8 @@ namespace PLAYERTWO.ARPGProject
         //[Tooltip("Transform location to instantiate the class prefab preview")]
         //public Transform previewTransform;  // This is the new Transform field
         [Tooltip("The maximum amount of letters in Characters name.")]
-        public GameObject maxCharactersWarning; // Obiekt "Max Characters" w scenie
-        public float yRotation = 0f; // Rotation around Y-axis in degrees
+        public GameObject maxCharactersWarning;
+        public float yRotation = 0f;
         private GameObject currentPreview;
 
 
@@ -39,7 +39,10 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The Audio Clip that plays when submitting the form.")]
         public AudioClip submitFormClip;
 
-        private Coroutine hideWarningCoroutine; // Referencja do korutyny, aby ją przerwać, jeśli to konieczne
+        private Coroutine hideWarningCoroutine;
+
+        protected List<Character> m_starterClasses;
+        protected CharacterInstance m_characterInstance;
 
 
         protected string[] m_characterNames;
@@ -51,10 +54,11 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         public virtual void Cancel()
         {
-            DestroyPreviewPrefab();  // Ensure cleanup on cancellation
             m_audio.PlayUiEffect(cancelFormClip);
+            CharacterPreview.instance.Clear(); 
             onCancel.Invoke();
         }
+
         /*
         protected virtual void HandleSubmit()
         {
@@ -68,40 +72,41 @@ namespace PLAYERTWO.ARPGProject
         */
 
         protected virtual void HandleSubmit()
-        {
-            if (Game.instance.characters.Count >= 5)
-            {
-                Debug.LogWarning("Cannot create more than 5 characters!");
-                return;
-            }
+{
+    if (Game.instance.characters.Count >= 5)
+    {
+        Debug.LogWarning("Cannot create more than 5 characters!");
+        return;
+    }
 
-            if (!ValidName(characterName.text))
-                return;
+    if (!ValidName(characterName.text))
+        return;
 
-            Game.instance.CreateCharacter(characterName.text, characterClass.value);
-            // Get selected character data from dropdown index
-            Character selectedCharacter = GameDatabase.instance.characters[characterClass.value];
+    var selectedCharacter = m_starterClasses[characterClass.value];
+    var classId = GameDatabase.instance.GetElementId(selectedCharacter);
 
-            if (currentPreview == null && selectedCharacter.classPrefab != null)
-            {
-                Quaternion rotation = Quaternion.Euler(0, yRotation, 0);
-                //currentPreview = Instantiate(selectedCharacter.classPrefab, previewTransform.position, rotation, previewTransform);
-            }
-                // Instantiate class prefab
-               /* if (selectedCharacter.classPrefab != null)
-                Instantiate(selectedCharacter.classPrefab);*/
+    Game.instance.CreateCharacter(characterName.text, classId);
 
-            m_audio.PlayUiEffect(submitFormClip);
-            DestroyPreviewPrefab();  // Ensure cleanup after submission
-            onSubmit.Invoke();
-            // After creation, update the UI
-            UICharacterSelection characterSelection = Object.FindFirstObjectByType<UICharacterSelection>();
-            if (characterSelection != null)
-            {
-                characterSelection.RefreshList();
-                characterSelection.SelectCharacter(Game.instance.characters.Count - 1);  // Assuming new character is at the end
-            }
-        }
+    if (currentPreview == null && selectedCharacter.classPrefab != null)
+    {
+        Quaternion rotation = Quaternion.Euler(0, yRotation, 0);
+        // currentPreview = Instantiate(selectedCharacter.classPrefab, previewTransform.position, rotation, previewTransform);
+    }
+
+    m_audio.PlayUiEffect(submitFormClip);
+
+    DestroyPreviewPrefab();
+
+    onSubmit.Invoke();
+
+    UICharacterSelection characterSelection = Object.FindFirstObjectByType<UICharacterSelection>();
+    if (characterSelection != null)
+    {
+        characterSelection.RefreshList();
+        characterSelection.SelectCharacter(Game.instance.characters.Count - 1);
+    }
+}
+
 
         protected virtual bool ValidName(string name) =>
     name.Length > 0 && name.Length <= 16 && !m_characterNames.Contains(name);
@@ -116,7 +121,7 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void Start()
         {
-            characterName.characterLimit = 16;// Ograniczenie nazwy postaci do 16 znaków
+            characterName.characterLimit = 16;
             //characterLimitInfo.text = "Max 16 characters."; 
 
             characterName.onValueChanged.AddListener(HandleNameInput);
@@ -135,7 +140,6 @@ namespace PLAYERTWO.ARPGProject
         }
         else
         {
-            // Jeśli długość jest mniejsza niż 16, ukryj ostrzeżenie natychmiast
             if (maxCharactersWarning.activeSelf)
             {
                 HideMaxCharactersWarningImmediately();
@@ -149,13 +153,11 @@ namespace PLAYERTWO.ARPGProject
             {
                 maxCharactersWarning.SetActive(true);
 
-                // Resetowanie timera, jeśli gracz nadal próbuje wpisywać więcej znaków
                 if (hideWarningCoroutine != null)
                 {
                     StopCoroutine(hideWarningCoroutine);
                 }
 
-                // Ustawienie ukrycia po 5 sekundach
                 hideWarningCoroutine = StartCoroutine(HideWarningAfterDelay(5f));
             }
         }
@@ -176,23 +178,19 @@ namespace PLAYERTWO.ARPGProject
             hideWarningCoroutine = null;
         }
 
-        private void HandleClassChange(int index)
+        protected virtual void HandleClassChange(int index)
         {
-            // Destroy existing preview to clean up old selections
-            if (currentPreview != null)
-                Destroy(currentPreview);
-
-            if (!isActiveAndEnabled) return;  // Ensure we're not instantiating when the form is inactive.
-
-            // Fetch the character data from the selected dropdown index
-            Character selectedCharacter = GameDatabase.instance.characters[index];
-            // Instantiate class prefab
-            if (selectedCharacter.classPrefab != null)
+            if (index < 0 || index >= m_starterClasses.Count)
             {
-                Quaternion rotation = Quaternion.Euler(0, yRotation, 0);
-                //currentPreview = Instantiate(selectedCharacter.classPrefab, previewTransform.position, rotation, previewTransform);
+                Debug.LogWarning($"[UICharacterForm] Invalid class index: {index}");
+                return;
             }
+
+            var selectedCharacter = m_starterClasses[index];
+            m_characterInstance = new CharacterInstance(selectedCharacter, "[PREVIEW]");
+            CharacterPreview.instance.Preview(m_characterInstance);
         }
+
 
 #if UNITY_STANDALONE || UNITY_WEBGL
         protected virtual void Update()
@@ -228,41 +226,36 @@ namespace PLAYERTWO.ARPGProject
         */
         
         protected virtual void OnEnable()
-        {
-            characterClass.ClearOptions();
+{
+    characterClass.ClearOptions();
 
-            var allowedStartClasses = new[]
-            {
-                CharacterClassRestrictions.Knight,
-                CharacterClassRestrictions.Arcanist
-            };
+    var allowedStartClasses = new[]
+    {
+        CharacterClassRestrictions.Knight,
+        CharacterClassRestrictions.Arcanist
+    };
 
-            var starterClasses = GameDatabase.instance.characters
-                .Where(c => ClassHierarchy.NameToBits.TryGetValue(c.name, out var classType) && allowedStartClasses.Contains(classType))
-                .ToList();
+    m_starterClasses = GameDatabase.instance.characters
+        .Where(c => ClassHierarchy.NameToBits.TryGetValue(c.name, out var classType) && allowedStartClasses.Contains(classType)).ToList();
 
-            m_characterNames = Game.instance.characters.Select(c => c.name).ToArray();
+    m_characterNames = Game.instance.characters.Select(c => c.name).ToArray();
 
-            characterClass.AddOptions(starterClasses.Select(c => c.name).ToList());
+    characterClass.AddOptions(m_starterClasses.Select(c => c.name).ToList());
 
-            characterName.text = "";
+    characterName.text = "";
+    createButton.interactable = false;
 
-            if (starterClasses.Count > 0)
-            {
-                characterClass.value = 0;
-                HandleClassChange(0);
-            }
+    characterClass.SetValueWithoutNotify(0);
+    HandleClassChange(0);
 
-            createButton.interactable = false;
-            StartCoroutine(SelectInputField());
-            m_audio.PlayUiEffect(showFormClip);
-        }
+    StartCoroutine(SelectInputField());
+    m_audio.PlayUiEffect(showFormClip);
+}
 
-        protected virtual void OnDisable()
-        {
-            DestroyPreviewPrefab();
-        }
-
+protected virtual void OnDisable()
+{
+    CharacterPreview.instance.Clear();
+}
 
     }
 }

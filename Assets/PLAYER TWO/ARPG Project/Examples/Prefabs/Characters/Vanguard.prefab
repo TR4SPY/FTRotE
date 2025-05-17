@@ -371,6 +371,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actions: {fileID: -944628639613478452, guid: 8d9b5d05542219a4292fd6f0cd014262, type: 3}
   skillActionBehavior: 0
+  destinationEffect: {fileID: 9056652892218667553, guid: 85f99914336577741a0b24d67dbf0ce3, type: 3}
 --- !u!114 &2957117560480157750
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -21,12 +21,17 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("How the skill action should behave when a skill is selected.")]
         public SkillActionBehavior skillActionBehavior = SkillActionBehavior.Equip;
 
+        [Tooltip("A particle system that plays when setting a destination.")]
+        public ParticleSystem destinationEffect;
+
         protected Entity m_entity;
         protected Transform m_target;
         protected Entity m_targetEntity;
         protected Highlighter m_highlighter;
         protected Interactive m_interactive;
         protected Camera m_camera;
+
+        protected ParticleSystem m_destinationEffect;
 
         protected bool m_holdMove;
         protected bool m_holdAttack;
@@ -67,6 +72,15 @@ namespace PLAYERTWO.ARPGProject
                 enabled = false;
                 m_target = null;
             });
+        }
+
+        protected virtual void InitializeDestinationEffect()
+        {
+            if (destinationEffect)
+            {
+                m_destinationEffect = Instantiate(destinationEffect);
+                m_destinationEffect.Stop();
+            }
         }
 
         public virtual bool MouseRaycast(
@@ -179,6 +193,7 @@ namespace PLAYERTWO.ARPGProject
                 }
 
                 m_holdMove = true;
+                ShowDestinationEffect(hit.point);
             }
 #endif
         }
@@ -413,6 +428,23 @@ namespace PLAYERTWO.ARPGProject
 #endif
         }
 
+        /// <summary>
+        /// Shows the destination effect at a given position.
+        /// </summary>
+        /// <param name="position">The position where the effect should be shown.</param>
+        protected virtual void ShowDestinationEffect(Vector3 position)
+        {
+            if (!m_destinationEffect)
+                return;
+
+            if (m_destinationEffect.isPlaying)
+                m_destinationEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
+            var effectPosition = position + Vector3.up * 0.1f;
+            m_destinationEffect.transform.position = effectPosition;
+            m_destinationEffect.Play();
+        }
+
         protected virtual void Start()
         {
             InitializeEntity();
@@ -420,6 +452,7 @@ namespace PLAYERTWO.ARPGProject
             InitializeActions();
             InitializeCallbacks();
             InitializeActionsCallbacks();
+            InitializeDestinationEffect();
         }
 
         protected virtual void Update()

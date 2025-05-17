@@ -16,13 +16,14 @@ GameObject:
   - component: {fileID: 4372661219983096063}
   - component: {fileID: 814931688225032756}
   - component: {fileID: 9020237722322553248}
+  - component: {fileID: 9044158870411782890}
   - component: {fileID: 8094813483888172538}
   - component: {fileID: 1325683686177692431}
   - component: {fileID: 797883123762515052}
   - component: {fileID: 8242363822416240650}
+  - component: {fileID: -5542759799957983449}
   - component: {fileID: 3636073427300767694}
   - component: {fileID: 2849440392154936866}
-  - component: {fileID: 9044158870411782890}
   m_Layer: 8
   m_Name: Dark Knight
   m_TagString: Entity/Enemy
@@ -91,6 +92,7 @@ MonoBehaviour:
       m_Calls: []
   isAgent: 0
   isPlayer: 0
+  nametag: {fileID: 0}
   targetTags: []
   moveSpeed: 3.5
   rotationSpeed: 720
@@ -151,6 +153,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdf08bfe4f66e9246b561590565cc2bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  baseStrength: 0
+  baseDexterity: 0
+  baseVitality: 0
+  baseEnergy: 0
+  wasBoosted: 0
   onLevelUp:
     m_PersistentCalls:
       m_Calls: []
@@ -200,6 +207,7 @@ MonoBehaviour:
   rightHandSlot: {fileID: 6546359680243056829}
   leftHandSlot: {fileID: 4606433502397618390}
   leftHandShieldSlot: {fileID: 363690636473129995}
+  wingsSlot: {fileID: 0}
   projectileOrigin: {fileID: 4980144038493723685}
   helmRenderer: {fileID: 0}
   chestRenderer: {fileID: 0}
@@ -292,6 +300,40 @@ MonoBehaviour:
   blockClips:
   - {fileID: 8300000, guid: a420a524dc0e4fd4f8bf3bd9a4808bc5, type: 3}
   stunClips: []
+  m_audioCooldown: 0.3
+  distanceLimit: 30
+--- !u!114 &9044158870411782890
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 273316549901078574}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84e967fe3e1d0e54ba508c68248e659b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onUpdatedSkills:
+    m_PersistentCalls:
+      m_Calls: []
+  onUpdatedEquippedSkills:
+    m_PersistentCalls:
+      m_Calls: []
+  onChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  onPerform:
+    m_PersistentCalls:
+      m_Calls: []
+  skills:
+  - {fileID: 11400000, guid: 25b593d88a6ff2d438a81f855b3180d2, type: 2}
+  autoEquipFirstSkill: 1
+  ignoreCoolDown: 0
+  hands: {fileID: 4980144038493723685}
+  skillGroundLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &8094813483888172538
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -356,6 +398,19 @@ MonoBehaviour:
       m_Calls: []
   maxIntensity: 1
   propertyName: _Emission
+--- !u!114 &-5542759799957983449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 273316549901078574}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da816aba718da171e872618f598ad9b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  offset: {x: 0, y: 50}
 --- !u!65 &3636073427300767694
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -402,38 +457,6 @@ CharacterController:
   m_SkinWidth: 0.025
   m_MinMoveDistance: 0
   m_Center: {x: 0, y: 1, z: 0}
---- !u!114 &9044158870411782890
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 273316549901078574}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 84e967fe3e1d0e54ba508c68248e659b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  onUpdatedSkills:
-    m_PersistentCalls:
-      m_Calls: []
-  onUpdatedEquippedSkills:
-    m_PersistentCalls:
-      m_Calls: []
-  onChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  onPerform:
-    m_PersistentCalls:
-      m_Calls: []
-  skills:
-  - {fileID: 11400000, guid: 25b593d88a6ff2d438a81f855b3180d2, type: 2}
-  autoEquipFirstSkill: 1
-  ignoreCoolDown: 0
-  hands: {fileID: 4980144038493723685}
-  skillGroundLayer:
-    serializedVersion: 2
-    m_Bits: 0
 --- !u!1 &1955841040487391871
 GameObject:
   m_ObjectHideFlags: 0

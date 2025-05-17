@@ -182,11 +182,19 @@ namespace PLAYERTWO.ARPGProject
 
         public string GetName()
         {
-            if (!ClassHierarchy.NameToBits.TryGetValue(Entity?.name?.Replace("(Clone)", "").Trim() ?? "", out var classType))
+            if (Entity == null)
+            {
+                Debug.LogWarning("[CharacterInstance] GetName() called on destroyed Entity.");
+                return "Unknown";
+            }
+
+            var cleanName = Entity.name?.Replace("(Clone)", "").Trim() ?? "";
+
+            if (!ClassHierarchy.NameToBits.TryGetValue(cleanName, out var classType))
                 return "Unknown";
 
             int tier = ClassHierarchy.GetTier(classType);
-            
+
             if (specialCondition == Affinity.None)
                 return classType.ToString();
 

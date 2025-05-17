@@ -651,6 +651,7 @@ GameObject:
   - component: {fileID: 4499801544754319665}
   - component: {fileID: 2315490694912111251}
   - component: {fileID: 8780835231791214877}
+  - component: {fileID: 2984082235326377953}
   - component: {fileID: 7294827465150902576}
   - component: {fileID: 778509572308063303}
   m_Layer: 8
@@ -722,6 +723,7 @@ MonoBehaviour:
       m_Calls: []
   isAgent: 0
   isPlayer: 0
+  nametag: {fileID: 0}
   targetTags: []
   moveSpeed: 2
   rotationSpeed: 720
@@ -782,6 +784,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdf08bfe4f66e9246b561590565cc2bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  baseStrength: 0
+  baseDexterity: 0
+  baseVitality: 0
+  baseEnergy: 0
+  wasBoosted: 0
   onLevelUp:
     m_PersistentCalls:
       m_Calls: []
@@ -863,6 +870,7 @@ MonoBehaviour:
   rightHandSlot: {fileID: 0}
   leftHandSlot: {fileID: 0}
   leftHandShieldSlot: {fileID: 0}
+  wingsSlot: {fileID: 0}
   projectileOrigin: {fileID: 0}
   helmRenderer: {fileID: 0}
   chestRenderer: {fileID: 0}
@@ -955,6 +963,8 @@ MonoBehaviour:
   blockClips:
   - {fileID: 8300000, guid: a420a524dc0e4fd4f8bf3bd9a4808bc5, type: 3}
   stunClips: []
+  m_audioCooldown: 0.3
+  distanceLimit: 30
 --- !u!114 &6684433646245436906
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1019,6 +1029,19 @@ MonoBehaviour:
       m_Calls: []
   maxIntensity: 1
   propertyName: _Emission
+--- !u!114 &2984082235326377953
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9137032837993464747}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da816aba718da171e872618f598ad9b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  offset: {x: 0, y: 50}
 --- !u!65 &7294827465150902576
 BoxCollider:
   m_ObjectHideFlags: 0

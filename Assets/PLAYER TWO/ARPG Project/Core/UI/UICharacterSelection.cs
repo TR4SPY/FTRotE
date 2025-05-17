@@ -55,10 +55,10 @@ namespace PLAYERTWO.ARPGProject
 
         [Space(15)]
         public UnityEvent<CharacterInstance> onCharacterSelected;
-        public Transform characterCenterPoint; // Punkt centralny półokręgu
-        public GameObject characterInfoUIPrefab; // Prefab UI dla informacji o postaci
-        float characterRadius = 5f; // Promień półokręgu
-        float characterAngleStep = 20f; // Kąt między postaciami
+        public Transform characterCenterPoint;
+        public GameObject characterInfoUIPrefab;
+        float characterRadius = 5f;
+        float characterAngleStep = 20f;
         private Transform cameraTransform;
         private List<GameObject> activeCharacterGUIs = new List<GameObject>();
         protected CanvasGroup m_charactersWindowGroup;
@@ -101,13 +101,28 @@ namespace PLAYERTWO.ARPGProject
                     SelectCharacter(nextToSelect);
             });
         }
+
         public virtual void ToggleCharacterCreation()
-        {
-            m_creatingCharacter = !m_creatingCharacter;
-            m_charactersWindowGroup.alpha = m_characterActionsGroup.alpha = m_creatingCharacter ? 0.5f : 1;
-            m_charactersWindowGroup.blocksRaycasts = m_characterActionsGroup.blocksRaycasts = !m_creatingCharacter;
-            characterForm.gameObject.SetActive(m_creatingCharacter);
-        }
+{
+    m_creatingCharacter = !m_creatingCharacter;
+
+    m_charactersWindowGroup.alpha =
+    m_characterActionsGroup.alpha  = m_creatingCharacter ? 0.5f : 1f;
+    m_charactersWindowGroup.blocksRaycasts =
+    m_characterActionsGroup.blocksRaycasts = !m_creatingCharacter;
+
+    characterForm.gameObject.SetActive(m_creatingCharacter);
+
+    SetCharacterCircleActive(!m_creatingCharacter);
+
+    if (!m_creatingCharacter)            // ← zamykamy formularz
+    {
+        CharacterPreview.instance.Clear();
+        RefreshCharacterDisplay();       // ★ odbuduj modele + NameTag-i
+    }
+}
+
+
         public virtual void StartGame()
         {
             if (m_currentCharacterId >= 0 && m_currentCharacterId < m_characters.Count)
@@ -115,7 +130,6 @@ namespace PLAYERTWO.ARPGProject
                 var character = m_characters[m_currentCharacterId].character;
 
                 GameSave.instance.LoadDifficultyForCharacter(character);
-                Debug.Log($"Difficulty loaded for character: {character.name}");
 
               //  GameSave.instance.LoadLogsForCharacter(character);
               //  Debug.Log($"Logs loaded for character: {character.name}");
@@ -124,6 +138,7 @@ namespace PLAYERTWO.ARPGProject
             characterActions.SetActive(false);
             Game.instance.StartGame(m_currentCharacterId);
         }
+
         private void ClearAttachmentPoints(Transform characterObject)
         {
             foreach (var attachmentPointName in new[] { "RightHand", "LeftHand", "Head", "Chest", "Pants", "Gloves", "Boots" })
@@ -146,6 +161,7 @@ namespace PLAYERTWO.ARPGProject
             UnityEditor.EditorApplication.isPlaying = false;
 #endif
         }
+
         private Transform FindAttachmentPoint(GameObject characterObject, string pointName)
         {
             Transform[] allChildren = characterObject.GetComponentsInChildren<Transform>(true);
@@ -309,64 +325,78 @@ namespace PLAYERTWO.ARPGProject
             }
         }
         private void DisplayCharacterInfo(GameObject characterObject, CharacterInstance characterInstance)
-        {
-            if (characterObject == null || characterInstance == null)
-            {
-                Debug.LogWarning("Character object or instance is null. Skipping display.");
-                return;
-            }
+{
+    if (characterObject == null || characterInstance == null)
+    {
+        Debug.LogWarning("Character object or instance is null. Skipping display.");
+        return;
+    }
 
-            if (characterInfoUIPrefab == null)
-            {
-                Debug.LogError("Brak prefab UI dla informacji o postaci!");
-                return;
-            }
+    if (characterInfoUIPrefab == null)
+    {
+        Debug.LogError("UI prefab for character info is missing!");
+        return;
+    }
 
-            var existingGUI = activeCharacterGUIs.FirstOrDefault(gui => 
-                gui != null && gui.GetComponent<GUICharacterInfo>()?.m_target == characterObject.transform);
+    // jeśli GUI dla tej postaci już istnieje – nie tworzymy kolejnego
+    var existingGUI = activeCharacterGUIs.FirstOrDefault(gui =>
+        gui != null && gui.GetComponent<GUICharacterInfo>()?.m_target == characterObject.transform);
 
-            if (existingGUI != null)
-            {
-                // Debug.Log($"GUI already exists for character {characterObject.name}. Skipping creation.");
-                return;
-            }
+    if (existingGUI != null)
+        return;
 
-            var uiInstance = Instantiate(characterInfoUIPrefab, Vector3.zero, Quaternion.identity);
+    /* --------------------------------------------------------------------
+     * 1️⃣  znajdź główny (root-owy) Canvas w trybie ScreenSpace-Overlay
+     * ------------------------------------------------------------------*/
+    var mainCanvas = FindObjectsOfType<Canvas>()
+                    .FirstOrDefault(c => c.isRootCanvas && c.renderMode == RenderMode.ScreenSpaceOverlay);
 
-            var mainCanvas = Object.FindFirstObjectByType<Canvas>();
-            if (mainCanvas == null)
-            {
-                Debug.LogError("Main Canvas not found! Ensure there is a Canvas in the scene.");
-                Destroy(uiInstance);
-                return;
-            }
+    if (mainCanvas == null)
+    {
+        Debug.LogError("Root Screen-Space Canvas not found! Add one to the scene.");
+        return;
+    }
 
-            uiInstance.transform.SetParent(mainCanvas.transform, false);
-            uiInstance.transform.SetAsFirstSibling();
-            uiInstance.transform.localScale = Vector3.one;
+    /* --------------------------------------------------------------------
+     * 2️⃣  zinstancjonuj prefab bezpośrednio pod tym Canvas-em
+     * ------------------------------------------------------------------*/
+    var uiInstance = Instantiate(characterInfoUIPrefab, mainCanvas.transform, false);
 
-            var guiCharacterInfo = uiInstance.GetComponent<GUICharacterInfo>();
-            if (guiCharacterInfo == null)
-            {
-                Debug.LogWarning("Prefab is missing GUICharacterInfo component. Destroying UI instance.");
-                Destroy(uiInstance);
-                return;
-            }
+    // jeśli prefab posiada własny Canvas, usuń go — nie jest potrzebny
+    var nestedCanvas = uiInstance.GetComponent<Canvas>();
+    if (nestedCanvas != null)
+        Destroy(nestedCanvas);
 
-            var playerName = characterInstance.name;
-            var classFullName = characterInstance.data.classPrefab.name;
-            var characterClass = classFullName.Replace(" Class", "");
-            var level = characterInstance.stats.currentLevel;
+    uiInstance.transform.SetAsFirstSibling();   // zachowaj porządek warstw
+    uiInstance.transform.localScale = Vector3.one;
 
-            guiCharacterInfo.SetCharacterInfo(
-                characterObject.transform,
-                $"{playerName}\n{characterClass}\nLevel {level}",
-                characterClass,
-                level
-            );
+    /* --------------------------------------------------------------------
+     * 3️⃣  wypełnij dane i zapisz referencję
+     * ------------------------------------------------------------------*/
+    var guiCharacterInfo = uiInstance.GetComponent<GUICharacterInfo>();
+    if (guiCharacterInfo == null)
+    {
+        Debug.LogWarning("GUICharacterInfo component missing on prefab. Destroying instance.");
+        Destroy(uiInstance);
+        return;
+    }
 
-            activeCharacterGUIs.Add(uiInstance);
-        }
+    var playerName    = characterInstance.name;
+    var classFullName = characterInstance.data.classPrefab.name;
+    var characterClass = classFullName.Replace(" Class", "");
+    var level         = characterInstance.stats.currentLevel;
+
+    guiCharacterInfo.SetCharacterInfo(
+        characterObject.transform,
+        $"{playerName}\n{characterClass}\nLevel {level}",
+        characterClass,
+        level
+    );
+
+    activeCharacterGUIs.Add(uiInstance);
+}
+
+
         private void RemoveCharacterGUI(GameObject characterObject)
         {
             var guiToRemove = activeCharacterGUIs.FirstOrDefault(gui => 
@@ -487,6 +517,23 @@ namespace PLAYERTWO.ARPGProject
 
             RefreshCharacterDisplay();
         }
+
+        private void SetCharacterCircleActive(bool value)
+{
+    foreach (Transform child in characterCenterPoint)
+        child.gameObject.SetActive(value);
+
+    foreach (var gui in activeCharacterGUIs)
+        if (gui)
+        {
+            gui.SetActive(value);
+            if (value)                           // ← właśnie pokazałeś
+                gui.GetComponent<GUICharacterInfo>()?
+                   .RefreshCameraAndPosition();  //    więc przelicz pozycję
+        }
+}
+
+
         protected virtual void Start()
         {
             if (Camera.main != null)

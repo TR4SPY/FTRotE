@@ -61,6 +61,22 @@ namespace PLAYERTWO.ARPGProject
             }
         }
 
+        protected virtual void OnEnable()
+{
+    RefreshCameraAndPosition();          // ← od razu po ponownym włączeniu
+}
+
+/// <summary>Łapie aktualną kamerę i ustawia pozycję etykiety.</summary>
+public void RefreshCameraAndPosition()
+{
+    m_camera = Camera.main;              // zawsze aktualna MainCamera
+    if (m_camera == null || m_target == null) return;
+
+    var pos = m_camera.WorldToScreenPoint(m_target.position + offset);
+    transform.position = pos;
+}
+
+
         private IEnumerator RetryInitializeCamera()
         {
             yield return new WaitForSeconds(0.1f); // Poczekaj 100 ms
