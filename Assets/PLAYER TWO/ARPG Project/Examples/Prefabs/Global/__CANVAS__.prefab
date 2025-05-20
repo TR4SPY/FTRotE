@@ -20710,6 +20710,7 @@ GameObject:
   - component: {fileID: 8917631533908419324}
   - component: {fileID: 9189309985161363396}
   - component: {fileID: 4035076575517691958}
+  - component: {fileID: 6650257431719622996}
   m_Layer: 5
   m_Name: Inventory Window
   m_TagString: Untagged
@@ -20850,6 +20851,18 @@ MonoBehaviour:
   mountSlot: {fileID: 384708089145053105}
   petSlot: {fileID: 1241698215480386506}
   charmSlot: {fileID: 6643308717291828018}
+--- !u!114 &6650257431719622996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1549345821722328280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e512db6f50895e15a05b32f5e3c4292, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1549345821756553121
 GameObject:
   m_ObjectHideFlags: 0

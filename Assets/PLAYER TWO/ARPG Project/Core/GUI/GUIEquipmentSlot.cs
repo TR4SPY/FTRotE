@@ -1,4 +1,10 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
+using System.Reflection;
+
+#if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
+using UnityEngine.InputSystem;
+#endif
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -8,15 +14,50 @@ namespace PLAYERTWO.ARPGProject
         [Header("Equipment Settings")]
         public ItemSlots slot;
 
-        protected Entity m_entity => Level.instance.player;
-        protected GUIWindowsManager m_windowsManager => GUIWindowsManager.instance;
-        protected GUIInventory m_inventory => m_windowsManager.GetInventory();
-        protected GUIBlacksmith m_blacksmith => m_windowsManager.blacksmith;
+        protected Entity m_entity             => Level.instance.player;
+        protected GUIWindowsManager m_windows => GUIWindowsManager.instance;
+        protected GUIInventory m_inventory    => m_windows.GetInventory();
+        protected GUIBlacksmith m_blacksmith  => m_windows.blacksmith;
+
+        private RectTransform   m_rect;
+        private GUIItemRotation m_cachedRot;
+        private static readonly FieldInfo s_itemRotationField =
+            typeof(GUIItem).GetField("itemRotation",
+                BindingFlags.NonPublic | BindingFlags.Instance);
+
+        protected override void Awake()
+        {
+            base.Awake();
+            m_rect = transform as RectTransform;
+        }
+
+        public override void Equip(GUIItem guiItem)
+        {
+            if (guiItem && (!base.item || m_inventory.TryAutoInsert(base.item)))
+            {
+                Unequip();
+                m_entity.items.TryEquip(guiItem.item, slot);
+                base.Equip(guiItem);
+
+                guiItem.SetPreviewActive(true);
+                m_cachedRot = null;
+            }
+        }
+
+        public override void Unequip()
+        {
+            if (!item) return;
+
+            m_entity.items.RemoveItem(slot);
+            base.Unequip();
+
+            if (m_tempItem)
+                m_tempItem.SetPreviewActive(true);           
+        }
 
         protected override void HandleRightClick()
         {
-            if (!item || !CanUnequip())
-                return;
+            if (!item || !CanUnequip()) return;
 
             if (m_blacksmith.isOpen && m_blacksmith.slot.CanEquip(item))
             {
@@ -30,39 +71,54 @@ namespace PLAYERTWO.ARPGProject
             }
         }
 
-        public override bool CanEquip(GUIItem item)
+        /*────────── UPDATE ─────────*/
+        protected override void Update()
         {
-            if (!item || (base.item && (!CanUnequip() || !m_inventory.CanAutoInsert(base.item))))
+            base.Update();
+
+            if (item == null) return;
+
+            var rot = GetItemRotation();
+            if (rot == null) return; 
+
+            Vector2 mousePos;
+#if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
+            if (Mouse.current == null) return;
+            mousePos = Mouse.current.position.ReadValue();
+#else
+            mousePos = Input.mousePosition;
+#endif
+            bool over = RectTransformUtility.RectangleContainsScreenPoint(
+                            m_rect, mousePos, null); 
+
+            rot.isHovered = over && !rot.isDragging; 
+        }
+
+        public override bool CanEquip(GUIItem guiItem)
+        {
+            if (!guiItem || (base.item && (!CanUnequip() || !m_inventory.CanAutoInsert(base.item))))
                 return false;
 
-            return m_entity.items.CanEquip(item.item, slot);
+            return m_entity.items.CanEquip(guiItem.item, slot);
         }
 
         public override bool CanUnequip()
         {
-            if (slot != ItemSlots.RightHand)
-                return true;
-
+            if (slot != ItemSlots.RightHand) return true;
             return !m_entity.items.IsUsingWeaponLeft();
         }
 
-        public override void Equip(GUIItem item)
+        private GUIItemRotation GetItemRotation()
         {
-            if (item && (!base.item || m_inventory.TryAutoInsert(base.item)))
-            {
-                Unequip();
-                m_entity.items.TryEquip(item.item, slot);
-                base.Equip(item);
-            }
-        }
+            if (m_cachedRot != null) return m_cachedRot;
 
-        public override void Unequip()
-        {
-            if (!item)
-                return;
+            m_cachedRot = item.GetComponent<GUIItemRotation>();
+            if (m_cachedRot != null) return m_cachedRot;
 
-            m_entity.items.RemoveItem(slot);
-            base.Unequip();
+            if (s_itemRotationField != null)
+                m_cachedRot = s_itemRotationField.GetValue(item) as GUIItemRotation;
+
+            return m_cachedRot;
         }
     }
 }

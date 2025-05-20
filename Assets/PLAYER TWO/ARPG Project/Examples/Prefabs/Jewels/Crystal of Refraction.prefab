@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1553534218236778081}
   - component: {fileID: 1553534218236778087}
-  - component: {fileID: 7569503855964070293}
   m_Layer: 0
   m_Name: Crystal of Refraction
   m_TagString: Untagged
@@ -55,24 +54,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.075, y: 0.075, z: 0.075}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &7569503855964070293
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1553534218236778084}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8356ffd373e78a6a9b3a70ddff3b3de5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cameraLookAtOffset: {x: 0, y: -0.05, z: -0.07}
-  cameraOffset: {x: 0, y: 0, z: 1.75}
-  scaleOverride: 0
-  resolutionWidth: 32
-  resolutionHeight: 32
-  cameraFollowBoundsCenter: 1
 --- !u!1001 &3771262387458597347
 PrefabInstance:
   m_ObjectHideFlags: 0

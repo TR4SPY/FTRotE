@@ -293,12 +293,17 @@ namespace PLAYERTWO.ARPGProject
 
         public GUIItem CreateGUIItem(ItemInstance item, RectTransform container = null)
         {
-            var parent = container ? container : transform;
+            var parent   = container ? container : transform;
             var instance = Instantiate(itemPrefab, parent);
+
             instance.Initialize(item);
+
+            bool inventoryOpen = GUIWindowsManager.instance.inventoryWindow.gameObject.activeInHierarchy;
+            instance.SetPreviewActive(inventoryOpen);
+
             return instance;
         }
-
+        
         protected virtual void LateUpdate()
         {
             HandleItemPosition();
@@ -307,5 +312,6 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void OnEnable() => actions.Enable();
         protected virtual void OnDisable() => actions.Disable();
+
     }
 }

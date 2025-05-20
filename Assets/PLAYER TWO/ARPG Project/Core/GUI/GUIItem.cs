@@ -9,6 +9,35 @@ using System.Collections;
 
 namespace PLAYERTWO.ARPGProject
 {
+    static class PreviewPositionPool
+    {
+        private static readonly Queue<int> freeIndices = new Queue<int>();
+        private static readonly HashSet<int> usedIndices = new HashSet<int>();
+
+        private const int MaxSlots = 1024;
+
+        static PreviewPositionPool()
+        {
+            for (int i = 0; i < MaxSlots; i++)
+                freeIndices.Enqueue(i);
+        }
+
+        public static int GetNext()
+        {
+            if (freeIndices.Count == 0)
+                return -1;
+            int index = freeIndices.Dequeue();
+            usedIndices.Add(index);
+            return index;
+        }
+
+        public static void Release(int index)
+        {
+            if (usedIndices.Remove(index))
+                freeIndices.Enqueue(index);
+        }
+    }
+
     [RequireComponent(typeof(RectTransform), typeof(Image), typeof(CanvasGroup))]
     [AddComponentMenu("PLAYER TWO/ARPG Project/GUI/GUI Item")]
     public class GUIItem : MonoBehaviour,
@@ -27,7 +56,9 @@ namespace PLAYERTWO.ARPGProject
         
         private Vector2Int lastResolution;
         private Vector3 frozenModelLocalPos;
-
+        private GUIItemRotation itemRotation;
+        private GameObject renderAnchorObject;
+        private int previewSlotIndex = -1;
 
         protected Image m_image;
         protected CanvasGroup m_group;
@@ -114,21 +145,23 @@ namespace PLAYERTWO.ARPGProject
         /// Selects this GUI Item.
         /// </summary>
         public virtual void Select()
-{
-    group.blocksRaycasts = false;
+        {
+            group.blocksRaycasts = false;
 
-    // Zablokuj layout (ważne przy oderwaniu od slotu)
-    var layout = GetComponent<LayoutElement>();
-    if (layout != null)
-        layout.ignoreLayout = true;
+            var layout = GetComponent<LayoutElement>();
+            if (layout != null)
+                layout.ignoreLayout = true;
 
-    var rt = (RectTransform)transform;
-    rt.SetAsLastSibling(); // daj na wierzch w canvasie
-    rt.localScale = Vector3.one;
-    rt.pivot = new Vector2(0.5f, 0.5f);
-    rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
-    rt.sizeDelta = new Vector2(item.columns, item.rows) * Inventory.CellSize;
-}
+            var rt = (RectTransform)transform;
+            rt.SetAsLastSibling();
+            rt.localScale = Vector3.one;
+            rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = new Vector2(item.columns, item.rows) * Inventory.CellSize;
+
+            if (itemRotation != null)
+                itemRotation.isDragging = true;
+        }
 
 
         /// <summary>
@@ -139,19 +172,20 @@ namespace PLAYERTWO.ARPGProject
             if (worldImage != null)
                 worldImage.transform.SetParent(transform, false);
 
-
             group.blocksRaycasts = true;
 
             var layout = GetComponent<LayoutElement>();
             if (layout != null)
                 layout.ignoreLayout = false;
 
-            // ⚠️ Przywrócenie do slotu (jeśli GUI.cs tego nie robi)
             var slot = GetComponentInParent<GUISlot>();
             if (slot != null)
                 transform.SetParent(slot.transform, false);
 
             StartCoroutine(FixCameraPositionAfterModelLoad());
+
+            if (itemRotation != null)
+                itemRotation.isDragging = false;
         }
 
 
@@ -256,13 +290,10 @@ namespace PLAYERTWO.ARPGProject
                     changed = true;
                 }
             }
-
-            // 🔁 Odśwież GUI Craftmana jeśli cokolwiek się zmieniło
             if (changed)
             {
                 var items = craftInventory.inventory.items.Keys.ToList();
 
-                // UWAGA: Nie ma GUICraftman.instance – użyj referencji do komponentu
                 m_craftman.GetComponent<GUICraftman>()?.UpdateCraftingPreview(items);
             }
         }
@@ -381,6 +412,8 @@ namespace PLAYERTWO.ARPGProject
         {
 #if UNITY_STANDALONE || UNITY_WEBGL
             m_hovering = true;
+            if (itemRotation != null)
+                itemRotation.isHovered = true;
 
             if (!GUI.instance.selected)
                 GUIItemInspector.instance.Show(this);
@@ -391,6 +424,9 @@ namespace PLAYERTWO.ARPGProject
         {
 #if UNITY_STANDALONE || UNITY_WEBGL
             m_hovering = false;
+            if (itemRotation != null)
+                itemRotation.isHovered = false;
+
             GUIItemInspector.instance.Hide();
 #endif
         }
@@ -508,7 +544,8 @@ namespace PLAYERTWO.ARPGProject
 
                 int previewLayer = LayerMask.NameToLayer("Model_Preview");
 
-                var renderAnchor = new GameObject("RenderProxy_" + item.data.name);
+                var renderAnchor = new GameObject("Render_" + item.GetHashCode());
+                renderAnchorObject = renderAnchor;
                 renderAnchor.transform.position = GetPreviewPositionFor(item);
                 renderAnchor.layer = previewLayer;
 
@@ -536,6 +573,10 @@ namespace PLAYERTWO.ARPGProject
                 foreach (var t in renderModel.GetComponentsInChildren<Transform>(true))
                     t.gameObject.layer = previewLayer;
 
+                var rotator = renderModel.AddComponent<GUIItemRotation>();
+                rotator.target = renderModel.transform;
+                itemRotation = rotator;
+
                 foreach (var renderer in renderModel.GetComponentsInChildren<Renderer>(true))
                 {
                     renderer.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
@@ -543,6 +584,15 @@ namespace PLAYERTWO.ARPGProject
                     renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
                     renderer.receiveShadows = false;
                     renderer.renderingLayerMask = (uint)(1 << previewLayer);
+                }
+
+                foreach (var oldObject in worldImage.WorldObjects.ToList())
+                {
+                    if (oldObject != null)
+                    {
+                        worldImage.RemoveWorldObject(oldObject);
+                        Destroy(oldObject.gameObject);
+                    }
                 }
 
                 worldImage.AddWorldObject(renderModel.transform);
@@ -579,18 +629,24 @@ namespace PLAYERTWO.ARPGProject
 
             merchant = GetComponentInParent<GUIMerchant>();
             UpdateStackText();
+
+            SetPreviewActive(false);
         }
+
+        private static int previewCounter = 0;
 
         private Vector3 GetPreviewPositionFor(ItemInstance item)
         {
-            string safeName = item?.data?.name ?? "UnnamedItem";
-            int hash = Mathf.Abs(safeName.GetHashCode() % 1024);
-            int row = hash / 32;
-            int col = hash % 32;
+            previewSlotIndex = PreviewPositionPool.GetNext();
+            if (previewSlotIndex < 0) previewSlotIndex = 0;
+
+            int row = previewSlotIndex / 32;
+            int col = previewSlotIndex % 32;
             float spacing = 3f;
             Vector3 basePosition = new Vector3(1000f, 1000f, 0f);
             return basePosition + new Vector3(col * spacing, row * spacing, 0f);
         }
+
 
         private IEnumerator FixCameraPositionAfterModelLoad()
         {
@@ -765,10 +821,29 @@ namespace PLAYERTWO.ARPGProject
         {
             if (worldImage != null)
                 worldImage.enabled = state;
+            if (worldImage == null) return;
+
+            worldImage.enabled = state;
+
+            var cam = worldImage.ObjectCamera?.Camera;
+            if (cam != null)
+                cam.enabled = state;
         }
 
         private void Update()
         {
+            if (worldImage != null)
+            {
+                var cam = worldImage.ObjectCamera?.Camera;
+                if (cam != null && cam.targetTexture == null && worldImage.RenderTexture != null)
+                {
+                    cam.targetTexture = worldImage.RenderTexture;
+            #if UNITY_EDITOR
+                    Debug.LogWarning($"[GUIItem] 🛠️ Naprawiam brakujący RenderTexture dla {item?.data?.name}");
+            #endif
+                }
+            }
+
             var currentResolution = new Vector2Int(Screen.width, Screen.height);
 
             if (currentResolution != lastResolution)
@@ -800,19 +875,36 @@ namespace PLAYERTWO.ARPGProject
     
         private int debugFrames = 3;
 
-private void LateUpdate()
-{
-    if (debugFrames > 0 && worldImage != null)
-    {
-        var cam = worldImage.ObjectCamera;
-        if (cam != null)
+        private void LateUpdate()
         {
-            Debug.Log($"[GUIItem - Debug] frame {Time.frameCount}: Camera pos = {cam.transform.position}, GUIItem pos = {transform.position}");
+            if (worldImage == null || item == null)
+                return;
+
+            var cam = worldImage.ObjectCamera?.Camera;
+
+            if (cam != null && cam.targetTexture == null && worldImage.RenderTexture != null)
+            {
+                cam.targetTexture = worldImage.RenderTexture;
+
+        #if UNITY_EDITOR
+                Debug.LogWarning($"[FixCam] LateUpdate naprawił brak RenderTexture dla: {item.data.name}");
+        #endif
+            }
+
+            if (debugFrames > 0)
+            {
+                debugFrames--;
+            }
         }
 
-        debugFrames--;
-    }
-}
+        protected virtual void OnDestroy()
+        {
+            if (previewSlotIndex >= 0)
+                PreviewPositionPool.Release(previewSlotIndex);
+
+            if (renderAnchorObject != null)
+                Destroy(renderAnchorObject);
+        }
 
     }
 }
