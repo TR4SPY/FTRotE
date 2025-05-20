@@ -138,6 +138,10 @@ namespace AI_DDA.Assets.Scripts
                 int oldMinDamage = enemy.stats.minDamage;
                 int oldMaxDamage = enemy.stats.maxDamage;
 
+                float oldHealth = enemy.stats.health;
+                int oldMaxHealth = enemy.stats.maxHealth;
+                int oldMaxMana = enemy.stats.maxMana;
+                int oldMana = enemy.stats.mana;
 
                 if (!enemy.stats.wasBoosted)
                 {
@@ -153,6 +157,12 @@ namespace AI_DDA.Assets.Scripts
                 enemy.stats.energy    = GetCurvedStat(enemy.stats.GetBaseEnergy(),    difficulty, 0.25f, 5.0f);
 
                 enemy.stats.Recalculate();
+
+                float healthPercent = oldMaxHealth > 0 ? oldHealth / (float)oldMaxHealth : 1f;
+                enemy.stats.health = Mathf.RoundToInt(healthPercent * enemy.stats.maxHealth);
+
+                float manaPercent = oldMaxMana > 0 ? oldMana / (float)oldMaxMana : 1f;
+                enemy.stats.mana = Mathf.RoundToInt(manaPercent * enemy.stats.maxMana);
 
                 int newMinDamage = enemy.stats.minDamage;
                 int newMaxDamage = enemy.stats.maxDamage;
@@ -221,6 +231,8 @@ namespace AI_DDA.Assets.Scripts
             enemy.stats.energy    = GetCurvedStat(enemy.stats.GetBaseEnergy(),    difficulty, 0.25f, 5.0f);
 
             enemy.stats.Recalculate();
+            enemy.stats.Revitalize();
+
             enemy.stats.wasBoosted = true;
 
             // Debug.Log($"[Diff-Manager] New enemy {enemy.name} got base stats with multipliers.");
