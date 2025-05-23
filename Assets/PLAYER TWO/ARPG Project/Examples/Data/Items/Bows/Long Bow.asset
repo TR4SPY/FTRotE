@@ -20,6 +20,7 @@ MonoBehaviour:
   dropRotation: {x: -90, y: 0, z: 45}
   previewLookAtOffset: {x: 0, y: 0, z: 0}
   previewCameraOffset: {x: 0, y: 0, z: 2}
+  previewRotationEuler: {x: 0, y: 0, z: 0}
   previewScaleOverride: 0
   previewResolutionWidth: 64
   previewResolutionHeight: 256
@@ -53,7 +54,7 @@ MonoBehaviour:
   nextComboDelay: 0.1
   type: 0
   projectile: {fileID: 2570460964239332381, guid: c2e8bee1261d8b14ba92790835224b0b, type: 3}
-  shotDistance: 25
+  shotDistance: 12
   magicResistance: 7
   handPosition: {x: 0, y: 0, z: 0}
   handRotation: {x: 90, y: 90, z: 90}

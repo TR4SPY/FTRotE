@@ -15,6 +15,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Toggle Minimap",
+                    "type": "Button",
+                    "id": "7facd0e7-57f8-41f3-afdc-fd0bae9f48a5",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Toggle Character",
                     "type": "Button",
                     "id": "e63801ad-e426-4901-984d-d993f8f049b6",
@@ -96,6 +105,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Toggle Skills",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8dc56a02-d9e8-42ef-9d0c-28f4f17daddc",
+                    "path": "<Keyboard>/m",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Toggle Minimap",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

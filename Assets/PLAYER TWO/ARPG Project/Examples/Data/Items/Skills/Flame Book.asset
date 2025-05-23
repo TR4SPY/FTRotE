@@ -18,9 +18,9 @@ MonoBehaviour:
   rarity: 0
   dropPosition: {x: 0, y: 0, z: 0}
   dropRotation: {x: -90, y: 0, z: 45}
-  previewLookAtOffset: {x: -0.1, y: 0, z: 0}
-  previewCameraOffset: {x: 0.5, y: 0, z: 1.5}
-  previewRotationEuler: {x: 0, y: 90, z: 0}
+  previewLookAtOffset: {x: -0.05, y: 0, z: 0}
+  previewCameraOffset: {x: 0.2, y: 0, z: 1.4}
+  previewRotationEuler: {x: 0, y: -90, z: 0}
   previewScaleOverride: 0
   previewResolutionWidth: 64
   previewResolutionHeight: 256

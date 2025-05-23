@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: 8f586378b4e144a9851e7b34d9b748ee
 timeCreated: 1484171803
-licenseType: Store
+licenseType: Pro
 NativeFormatImporter:
   userData: 
   assetBundleName: 
@@ -13,4 +13,4 @@ AssetOrigin:
   packageVersion: 1.0
   assetPath: Assets/PLAYER TWO/ARPG Project/Examples/TextMesh Pro/Resources/Fonts
     & Materials/LiberationSans SDF.asset
-  uploadId: 739111
+  uploadId: 739108

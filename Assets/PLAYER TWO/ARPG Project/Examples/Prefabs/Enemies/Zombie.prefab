@@ -258,16 +258,17 @@ MonoBehaviour:
   - Entity/Player
   - Entity/Summoned
   - Entity/AI_Agent
-  spotRadius: 5
+  spotRadius: 8
   viewAngle: 110
   viewDistance: 10
-  fleeRadius: 8
+  fleeRadius: 10
   useSkill: 0
   resetMoveDelay: 1
   attackCoolDown: 0.5
   addToAttackersList: 1
   limitSimultaneousAttackers: 1
   maxSimultaneousAttackers: 2
+  baseSkillUseChance: 0.4
   searchDamageSource: 1
   searchDamageSourceDelay: 0.3
   searchDamageSourceDuration: 5
@@ -353,6 +354,9 @@ MonoBehaviour:
   onDamage:
     m_PersistentCalls:
       m_Calls: []
+  onDamageEx:
+    m_PersistentCalls:
+      m_Calls: []
   onBlock:
     m_PersistentCalls:
       m_Calls: []
@@ -401,13 +405,13 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   skills:
-  - {fileID: 11400000, guid: c5d05af11151a654caafe5b06ed8a230, type: 2}
+  - {fileID: 11400000, guid: 8a1f708d247c2c1d3b5d75b21f6af462, type: 2}
   autoEquipFirstSkill: 1
   ignoreCoolDown: 0
   hands: {fileID: 8946844864039556367}
   skillGroundLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
 --- !u!114 &6431242009642949105
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -524,8 +528,6 @@ MonoBehaviour:
   blockClips:
   - {fileID: 8300000, guid: a420a524dc0e4fd4f8bf3bd9a4808bc5, type: 3}
   stunClips: []
-  m_audioCooldown: 0.3
-  distanceLimit: 30
 --- !u!114 &2730427722859469914
 MonoBehaviour:
   m_ObjectHideFlags: 0

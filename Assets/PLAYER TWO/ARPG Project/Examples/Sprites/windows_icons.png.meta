@@ -160,9 +160,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 32
-        width: 32
-        height: 32
+        y: 416
+        width: 84
+        height: 84
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -181,10 +181,10 @@ TextureImporter:
       name: windows_icons_1
       rect:
         serializedVersion: 2
-        x: 32
-        y: 32
-        width: 32
-        height: 32
+        x: 77
+        y: 416
+        width: 84
+        height: 84
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -203,10 +203,10 @@ TextureImporter:
       name: windows_icons_2
       rect:
         serializedVersion: 2
-        x: 64
-        y: 32
-        width: 32
-        height: 32
+        x: 163
+        y: 416
+        width: 84
+        height: 84
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -225,10 +225,10 @@ TextureImporter:
       name: windows_icons_3
       rect:
         serializedVersion: 2
-        x: 96
-        y: 32
-        width: 32
-        height: 32
+        x: 246
+        y: 416
+        width: 84
+        height: 84
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -247,10 +247,10 @@ TextureImporter:
       name: windows_icons_4
       rect:
         serializedVersion: 2
-        x: 128
-        y: 32
-        width: 32
-        height: 32
+        x: 332
+        y: 416
+        width: 84
+        height: 84
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -269,10 +269,10 @@ TextureImporter:
       name: windows_icons_5
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 32
-        height: 32
+        x: 416
+        y: 416
+        width: 84
+        height: 84
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -291,12 +291,12 @@ TextureImporter:
       name: windows_icons_6
       rect:
         serializedVersion: 2
-        x: 32
-        y: 0
-        width: 34
-        height: 32
+        x: 0
+        y: 331
+        width: 84
+        height: 84
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -305,6 +305,534 @@ TextureImporter:
       bones: []
       spriteID: f8237a60f5bf0ab8fa753e60de5d2126
       internalID: 1396227082
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: windows_icons_7
+      rect:
+        serializedVersion: 2
+        x: 79
+        y: 332
+        width: 84
+        height: 84
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f588dcc1c7f96bb88a614f6667e5f54c
+      internalID: -2017728455
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: windows_icons_8
+      rect:
+        serializedVersion: 2
+        x: 161
+        y: 333
+        width: 84
+        height: 84
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2d9b0a4b54d92db818d935d4336d1c37
+      internalID: -696417655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: windows_icons_9
+      rect:
+        serializedVersion: 2
+        x: 246
+        y: 335
+        width: 84
+        height: 84
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0bf9e12c30a093dd0bf335c07c00e517
+      internalID: -2008897156
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: windows_icons_10
+      rect:
+        serializedVersion: 2
+        x: 332
+        y: 334
+        width: 84
+        height: 84
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 342fb8743a187f252be98c7c476e1164
+      internalID: -832329606
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: windows_icons_11
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 334
+        width: 84
+        height: 84
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f1d101e57e57400bb965cb33ed4375af
+      internalID: 1207111597
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: windows_icons_12
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 249
+        width: 84
+        height: 84
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e6631742a44d947b6b440966e7d72252
+      internalID: 1631498924
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: windows_icons_13
+      rect:
+        serializedVersion: 2
+        x: 331
+        y: 247
+        width: 84
+        height: 84
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2fdfd4885338f517c9cce059e0a91f3a
+      internalID: 1591864621
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: windows_icons_14
+      rect:
+        serializedVersion: 2
+        x: 246
+        y: 247
+        width: 84
+        height: 84
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fe144b447642f79c8bd70fa2283bef50
+      internalID: 1062240094
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: windows_icons_15
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 245
+        width: 84
+        height: 84
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: be133a3e4ed6fc3d893df7a767d1dea8
+      internalID: -818346275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: windows_icons_16
+      rect:
+        serializedVersion: 2
+        x: 79
+        y: 245
+        width: 84
+        height: 84
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9a94b30770aa338da85405c5b55e4beb
+      internalID: -88913733
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: windows_icons_17
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 246
+        width: 84
+        height: 84
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 52588641d367e415b8118ef8093af669
+      internalID: -1819469589
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: windows_icons_18
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 164
+        width: 84
+        height: 84
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5dd5e76c9b423a4efa11c0b2db44490c
+      internalID: 1035121158
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: windows_icons_19
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 163
+        width: 84
+        height: 84
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f893034fc5d4b4903b2a7824237b4502
+      internalID: 24455058
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: windows_icons_20
+      rect:
+        serializedVersion: 2
+        x: 175
+        y: 179
+        width: 56
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6fe0dd55cb88fa600a624497d13ec2cf
+      internalID: 2098332975
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: windows_icons_21
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 140
+        width: 70
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0d8eb3143226bab3096368366350928f
+      internalID: -322831123
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: windows_icons_22
+      rect:
+        serializedVersion: 2
+        x: 374
+        y: 150
+        width: 115
+        height: 94
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b8f0ac66b03c0160fa14674522ef6c4e
+      internalID: -1451292675
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: windows_icons_23
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 96
+        width: 76
+        height: 58
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6630642deba8ec251b6c754b7b903b76
+      internalID: -1531889318
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: windows_icons_24
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 83
+        width: 84
+        height: 84
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 41b6c05817a91b3a8b0abd9a58afad65
+      internalID: 1053197872
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: windows_icons_25
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 85
+        width: 84
+        height: 84
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 18f6860bfe9052f9394af8be5f5600a6
+      internalID: 597217440
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: windows_icons_26
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 0
+        width: 68
+        height: 84
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 35b17e991f31a3e29938508b1e67341d
+      internalID: 1758823498
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: windows_icons_27
+      rect:
+        serializedVersion: 2
+        x: 79
+        y: 1
+        width: 84
+        height: 84
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 912dfd07862e48e8aa3ab0a14fa2530d
+      internalID: 828750835
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: windows_icons_28
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 2
+        width: 84
+        height: 84
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1f564fe55eb5ac7f584af90b8aa5489c
+      internalID: 1023476721
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: windows_icons_29
+      rect:
+        serializedVersion: 2
+        x: 258
+        y: 0
+        width: 82
+        height: 113
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 48572a4368512119da236ecd3c26c573
+      internalID: -1925605960
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: windows_icons_30
+      rect:
+        serializedVersion: 2
+        x: 377
+        y: 13
+        width: 115
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9ff35701456aac11a9f865cf9e0a8c82
+      internalID: -930859246
       vertices: []
       indices: 
       edges: []
@@ -325,11 +853,35 @@ TextureImporter:
     nameFileIdTable:
       windows_icons_0: -1160693426
       windows_icons_1: -1256031914
+      windows_icons_10: -832329606
+      windows_icons_11: 1207111597
+      windows_icons_12: 1631498924
+      windows_icons_13: 1591864621
+      windows_icons_14: 1062240094
+      windows_icons_15: -818346275
+      windows_icons_16: -88913733
+      windows_icons_17: -1819469589
+      windows_icons_18: 1035121158
+      windows_icons_19: 24455058
       windows_icons_2: 726992690
+      windows_icons_20: 2098332975
+      windows_icons_21: -322831123
+      windows_icons_22: -1451292675
+      windows_icons_23: -1531889318
+      windows_icons_24: 1053197872
+      windows_icons_25: 597217440
+      windows_icons_26: 1758823498
+      windows_icons_27: 828750835
+      windows_icons_28: 1023476721
+      windows_icons_29: -1925605960
       windows_icons_3: 585328822
+      windows_icons_30: -930859246
       windows_icons_4: 610925549
       windows_icons_5: 963781946
       windows_icons_6: 1396227082
+      windows_icons_7: -2017728455
+      windows_icons_8: -696417655
+      windows_icons_9: -2008897156
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

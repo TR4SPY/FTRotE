@@ -71,6 +71,9 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("A reference to the GUI Chat Window.")]
         public GUIChatWindow chatWindow;
 
+        [Tooltip("A reference to the Minimap HUD Window.")]
+        public GUIWindow minimapWindow;
+
         [Header("Audio Settings")]
         [Tooltip("The Audio Clip that plays when opening windows.")]
         public AudioClip openClip;

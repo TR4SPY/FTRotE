@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2751327120585453023}
   - component: {fileID: 7419070265077280162}
   - component: {fileID: 8254607512364404823}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Sparks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4902,7 +4902,7 @@ GameObject:
   - component: {fileID: 2024119438256456452}
   - component: {fileID: 9200717826491288351}
   - component: {fileID: 4198134470679303201}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Sword
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9793,7 +9793,7 @@ GameObject:
   - component: {fileID: 4373917365185464957}
   - component: {fileID: 7386034635651903729}
   - component: {fileID: 7089757475397720015}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Particle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14695,7 +14695,7 @@ GameObject:
   - component: {fileID: 4109317526816601526}
   - component: {fileID: 6001398503726729129}
   - component: {fileID: 8794574800095495587}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19674,7 +19674,7 @@ GameObject:
   - component: {fileID: 6155675421611018842}
   - component: {fileID: 1594723349350207830}
   - component: {fileID: 6776188401419461234}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Holy Sword
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -24607,7 +24607,7 @@ GameObject:
   - component: {fileID: 5842355994539081302}
   - component: {fileID: 5721755241409858695}
   - component: {fileID: 6894118281747514145}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Crack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -29534,7 +29534,7 @@ GameObject:
   - component: {fileID: 2179852152190982796}
   - component: {fileID: 8971698291558777072}
   - component: {fileID: 8761181579812515646}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Flash
   m_TagString: Untagged
   m_Icon: {fileID: 0}

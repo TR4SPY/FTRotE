@@ -90,6 +90,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 21f48639c9631939e9f274f156ac53b8, type: 2}
   - {fileID: 11400000, guid: 4009ebc4a3ac6a192913ce3c062cb2af, type: 2}
   - {fileID: 11400000, guid: 8d9c60c67dddcde4192cd503b184ba8e, type: 2}
+  - {fileID: 11400000, guid: 8a1f708d247c2c1d3b5d75b21f6af462, type: 2}
   quests:
   - {fileID: 11400000, guid: 6d71c4c0e355cc84a9b7ffa082860dd7, type: 2}
   - {fileID: 11400000, guid: 7a25f4387e11fbc4698fd47d7830d567, type: 2}

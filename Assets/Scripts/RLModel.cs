@@ -52,7 +52,7 @@ namespace AI_DDA.Assets.Scripts
         public void SetPlayerLogger(PlayerBehaviorLogger logger)
         {
             playerLogger = logger;
-            Debug.Log("[AI-DDA] PlayerBehaviorLogger assigned to RLModel.");
+            // Debug.Log("[AI-DDA] PlayerBehaviorLogger assigned to RLModel.");
         }
 
         public override void CollectObservations(VectorSensor sensor)
@@ -80,7 +80,7 @@ namespace AI_DDA.Assets.Scripts
 
             if (Time.time - lastLogTime >= logCooldown)
             {
-                Debug.Log($"[AI-DDA] MLP prediction: {currentDifficulty}, RL adjustment: {adjustedDifficulty}");
+                // Debug.Log($"[AI-DDA] MLP prediction: {currentDifficulty}, RL adjustment: {adjustedDifficulty}");
                 lastLogTime = Time.time;
             }
 
@@ -96,17 +96,20 @@ namespace AI_DDA.Assets.Scripts
 
         public float GetCurrentDifficulty()
         {
-            Debug.Log($"[AI-DDA] GetCurrentDifficulty() called, returning: {adjustedDifficulty}");
+            // Debug.Log($"[AI-DDA] GetCurrentDifficulty() called, returning: {adjustedDifficulty}");
             return adjustedDifficulty;
         }
 
         public void SetCurrentDifficulty(float value)
         {
-            currentDifficulty = Mathf.Clamp01(value);
+            currentDifficulty = Mathf.Clamp(value, 1f, 10f);
+            adjustedDifficulty = currentDifficulty;
         }
 
         public void AdjustDifficulty(float baseDifficulty)
         {
+            // Debug.Log($"[RL] tick base={baseDifficulty:F2} out={adjustedDifficulty:F2}");
+
             lastDecisionTime = Time.time;
             currentDifficulty = baseDifficulty;
             adjustedDifficulty = baseDifficulty;

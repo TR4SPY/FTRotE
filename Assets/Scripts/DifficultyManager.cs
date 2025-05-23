@@ -21,18 +21,24 @@ namespace AI_DDA.Assets.Scripts
         [SerializeField] private float dexterityMultiplier = 1.0f;
         [SerializeField] private float vitalityMultiplier  = 1.0f;
         [SerializeField] private float energyMultiplier    = 0.8f;
-        
+        [SerializeField] private float aggroRangeScale   = 0.15f;
+        [SerializeField] private float attackSpeedScale = 0.12f;
+        [SerializeField] private float comboCountScale = 0.25f;
+
         private float lastUpdateTime = 0f;
         private float minInterval = 2f;
         private float oldGlobalDifficulty = 5f;
 
-
-        public float StrengthMultiplier => strengthMultiplier;
-        public float DexterityMultiplier => dexterityMultiplier;
-        public float VitalityMultiplier => vitalityMultiplier;
-        public float EnergyMultiplier => energyMultiplier;
+        public float AggroMult              => 1f + (GetRawDifficulty() - 5f) * aggroRangeScale;
+        public float AttackSpeedMult        => 1f + (GetRawDifficulty() - 5f) * attackSpeedScale;
+        public float ComboMult              => 1f + (GetRawDifficulty() - 5f) * comboCountScale;
+        public float StrengthMultiplier     => strengthMultiplier;
+        public float DexterityMultiplier    => dexterityMultiplier;
+        public float VitalityMultiplier     => vitalityMultiplier;
+        public float EnergyMultiplier       => energyMultiplier;
 
         private Dictionary<Entity, float> lastDifficultyTextTimes = new();
+        private readonly Dictionary<int, int> enemyBaseCombos = new();
         private float textCooldown = 5f;
         private Dictionary<Entity, DifficultyText.MessageType> lastTextTypes = new();
 
@@ -72,30 +78,54 @@ namespace AI_DDA.Assets.Scripts
 
         public bool useAIDDA = true;
 
+        public event System.Action<float> OnDifficultyChanged;
+        private void FireDifficultyChanged(float newDiff) => OnDifficultyChanged?.Invoke(newDiff);
         public void SetDifficultyFromAI(float predictedDifficulty)
         {
-            if (!useAIDDA) return;
+            // ---------- CHECKPOINT 0 ----------
+            // Debug.Log($"[DM-CHK0]   → Start | pred = {predictedDifficulty:F2}");
 
-            if (playerLogger != null && (playerLogger.totalCombatTime < 30f || playerLogger.enemiesDefeated < 3))
+            if (isManualOverride)
             {
-                // Debug.Log("[Diff-Manager] Too little data, skipping AI difficulty update.");
+                // Debug.Log("[DM-CHK1]   → ManualOverride = TRUE  – wychodzę");
                 return;
             }
 
-            float smoothedDifficulty = Mathf.Lerp(oldGlobalDifficulty, predictedDifficulty, 0.2f);
-            // Debug.Log($"[Diff-Manager] Adjusting difficulty with LERP: Old={oldGlobalDifficulty:F2}, New={predictedDifficulty:F2}, Smoothed={smoothedDifficulty:F2}");
+            if (!useAIDDA)
+            {
+                // Debug.Log("[DM-CHK1b]  → useAIDDA = FALSE – wychodzę");
+                return;
+            }
 
-            oldGlobalDifficulty = smoothedDifficulty;
-            float delta = smoothedDifficulty - 5.0f;
+            if (playerLogger != null &&
+                (playerLogger.totalCombatTime < 30f || playerLogger.enemiesDefeated < 3))
+            {
+                // Debug.Log($"[DM-CHK2]   → Too few data (time={playerLogger.totalCombatTime:F1}s, kills={playerLogger.enemiesDefeated}) – wychodzę");
+                return;
+            }
 
-            CurrentStrengthMultiplier  = 1.0f + (delta * strengthMultiplier);
-            CurrentDexterityMultiplier = 1.0f + (delta * dexterityMultiplier);
-            CurrentVitalityMultiplier  = 1.0f + (delta * vitalityMultiplier);
-            CurrentEnergyMultiplier    = 1.0f + (delta * energyMultiplier);
+            if (Mathf.Abs(predictedDifficulty - oldGlobalDifficulty) < 0.05f)
+            {
+                // Debug.Log($"[DM-CHK3]   → Δ < 0.05  (old={oldGlobalDifficulty:F2}) – wychodzę");
+                return;
+            }
 
-            UpdateAllEnemyStats(oldGlobalDifficulty, smoothedDifficulty);
 
-            // (optional) Level.instance?.ApplyDifficultyToEntities();
+            float smoothed = Mathf.Lerp(oldGlobalDifficulty, predictedDifficulty, 0.20f);
+            // Debug.Log($"[DM-UPD]    lerp: {oldGlobalDifficulty:F2} → {predictedDifficulty:F2} = {smoothed:F2}");
+
+            oldGlobalDifficulty = smoothed; 
+            FireDifficultyChanged(smoothed);
+
+            float delta = smoothed - 5f;
+
+            CurrentStrengthMultiplier  = 1f + delta * strengthMultiplier;
+            CurrentDexterityMultiplier = 1f + delta * dexterityMultiplier;
+            CurrentVitalityMultiplier  = 1f + delta * vitalityMultiplier;
+            CurrentEnergyMultiplier    = 1f + delta * energyMultiplier;
+
+            //Debug.Log("[DM-CHK4]   → Idę do UpdateAllEnemyStats()");
+            UpdateAllEnemyStats(oldGlobalDifficulty, smoothed);
         }
 
         public void UpdateAllEnemyStats(float oldDiff, float newDiff)
@@ -120,6 +150,8 @@ namespace AI_DDA.Assets.Scripts
 
             foreach (var enemy in enemies)
             {
+                // Debug.Log($"[DM] update {enemy.name} boosted={enemy.stats.wasBoosted}");
+
                 if (enemy == null || enemy.isDead || enemy.stats == null)
                     continue;
 
@@ -128,6 +160,7 @@ namespace AI_DDA.Assets.Scripts
                 if (enemy.stats.isNewlySpawned)
                 {
                     enemy.stats.isNewlySpawned = false;
+                    ApplyCurrentDifficultyToNewEnemy(enemy);
                     continue;
                 }
 
@@ -145,7 +178,7 @@ namespace AI_DDA.Assets.Scripts
 
                 if (!enemy.stats.wasBoosted)
                 {
-                    Debug.LogWarning($"[Diff-Manager] {enemy.name} (ID={enemy.GetInstanceID()}) nie był boostowany – pomijam UpdateAllEnemyStats dla bezpieczeństwa.");
+                    ApplyCurrentDifficultyToNewEnemy(enemy);
                     continue;
                 }
 
@@ -157,6 +190,9 @@ namespace AI_DDA.Assets.Scripts
                 enemy.stats.energy    = GetCurvedStat(enemy.stats.GetBaseEnergy(),    difficulty, 0.25f, 5.0f);
 
                 enemy.stats.Recalculate();
+                ScaleEnemyCombos(enemy);
+
+                // Debug.Log($"[DM] {enemy.name} HP={enemy.stats.health} STR={enemy.stats.strength}");
 
                 float healthPercent = oldMaxHealth > 0 ? oldHealth / (float)oldMaxHealth : 1f;
                 enemy.stats.health = Mathf.RoundToInt(healthPercent * enemy.stats.maxHealth);
@@ -232,6 +268,7 @@ namespace AI_DDA.Assets.Scripts
 
             enemy.stats.Recalculate();
             enemy.stats.Revitalize();
+            ScaleEnemyCombos(enemy);
 
             enemy.stats.wasBoosted = true;
 
@@ -267,6 +304,7 @@ namespace AI_DDA.Assets.Scripts
 
         public void LoadDifficultyForCharacter(CharacterInstance character)
         {
+            if (isManualOverride) return;
             if (isDifficultyLoaded) return;
             if (character == null)
             {
@@ -285,6 +323,7 @@ namespace AI_DDA.Assets.Scripts
             {
                 // Debug.Log("[Diff-Manager] Not enough data on load – default difficulty set to 5.0");
                 oldGlobalDifficulty = 5.0f;
+                FireDifficultyChanged(oldGlobalDifficulty);
             }
             else
             {
@@ -297,12 +336,15 @@ namespace AI_DDA.Assets.Scripts
 
                // Debug.Log($"[Diff-Manager] Loaded difficulty prediction for character: {predicted}");
                 oldGlobalDifficulty = Mathf.Clamp(predicted, 3.0f, 10.0f);
+                FireDifficultyChanged(oldGlobalDifficulty);
             }
 
             CurrentDexterityMultiplier = 1.0f + (oldGlobalDifficulty * dexterityMultiplier);
             CurrentStrengthMultiplier  = 1.0f + (oldGlobalDifficulty * strengthMultiplier);
             CurrentVitalityMultiplier  = 1.0f + (oldGlobalDifficulty * vitalityMultiplier);
             CurrentEnergyMultiplier    = 1.0f + (oldGlobalDifficulty * energyMultiplier);
+
+            RLModel.Instance?.SetCurrentDifficulty(character.savedDifficulty);
 
             UpdateAllEnemyStats(oldGlobalDifficulty, oldGlobalDifficulty);
 
@@ -362,22 +404,80 @@ namespace AI_DDA.Assets.Scripts
 
         public float GetRawDifficulty() => oldGlobalDifficulty;
 
-        public int GetCurvedStat(int baseValue, float difficulty, float minFactor, float maxFactor)
+        /// <summary>
+        /// Skaluje bazową wartość statystyki zgodnie z poziomem trudności.
+        /// • difficulty   – zakładamy zakres 1-10 (środek = 5)  
+        /// • minFactor    – ile % bazowej wartości ma mieć wróg na bardzo niskim diff (1)  
+        /// • maxFactor    – maks. mnożnik statystyki przy diff = 9-10  
+        /// • width        – „szerokość” rampy (im większa, tym łagodniej rośnie)  
+        /// • curveExp     – krzywizna (1 = linia, 2 = bardziej S-curve)  
+        /// </summary>
+        public int GetCurvedStat(
+                int   baseValue,
+                float difficulty,
+                float minFactor = 0.50f,   // 50 % bazowej przy diff = 1
+                float maxFactor = 4.00f,   // 4× bazowej przy diff = 9-10
+                float pivot     = 5f,      // środek krzywej
+                float width     = 5f,      // im większa, tym łagodniejszy wzrost
+                float curveExp  = 1.3f)    // 1 = linia, 2 = mocna S-curve
         {
-            float t = (difficulty - 5f) / 4f; // [-1, +1] gdzie 5 = środek
-            float factor;
+            // 1) Normalizujemy diff do [-1, +1] z clampingiem
+            float t = Mathf.Clamp((difficulty - pivot) / width, -1f, 1f);
 
-            if (t < 0f)
-            {
-                factor = Mathf.Lerp(minFactor, 1.0f, 1.0f + t); 
-            }
-            else
-            {
-                factor = Mathf.Lerp(1.0f, maxFactor, t);
-            }
+            // 2) Nadajemy „krzywiznę” (|t| ^ curveExp) –- dzięki temu
+            //    początek i koniec skali rosną wolniej niż środek
+            float k = Mathf.Pow(Mathf.Abs(t), curveExp);
+
+            // 3) Lerp pomiędzy min→1   (dla t < 0)  lub  1→max (dla t ≥ 0)
+            float factor = t < 0f
+                ? Mathf.Lerp(minFactor, 1f, 1f - k)   // lewa połówka krzywej
+                : Mathf.Lerp(1f,        maxFactor, k); // prawa połówka
 
             return Mathf.RoundToInt(baseValue * factor);
         }
+
+        /// <summary>
+        /// Ustawia baseMaxCombos przeciwnika zgodnie z aktualnym ComboMult.
+        /// (Zapamiętuje jego pierwotną wartość, żeby skalowanie nie nakładało się wielokrotnie.)
+        /// </summary>
+        private void ScaleEnemyCombos(Entity enemy)
+        {
+            if (enemy == null || enemy.stats == null) return;
+
+            int id = enemy.GetInstanceID();
+
+            if (!enemyBaseCombos.TryGetValue(id, out int baseline))
+            {
+                baseline = enemy.stats.baseMaxCombos;
+                enemyBaseCombos[id] = baseline;
+            }
+
+            int target = Mathf.Max(1, Mathf.RoundToInt(baseline * ComboMult));
+
+            if (enemy.stats.baseMaxCombos != target)
+            {
+                enemy.stats.alwaysUseBaseComboStats = true;
+                enemy.stats.baseMaxCombos = target;
+                enemy.stats.Recalculate();
+            }
+        }
+
+        public void ResetDifficultyLoad() => isDifficultyLoaded = false;
+
+        public void ForceSetRawDifficulty(float newDiff)
+        {
+            oldGlobalDifficulty = Mathf.Clamp(newDiff, 1f, 10f);
+            FireDifficultyChanged(oldGlobalDifficulty);
+        }
+
+        public bool isManualOverride { get; private set; } = false;
+        public void ManualSetDifficulty(float val)
+        {
+            isManualOverride   = true;
+            oldGlobalDifficulty = Mathf.Clamp(val, 1f, 10f);
+            FireDifficultyChanged(oldGlobalDifficulty);
+        }
+        public void ClearManualOverride() => isManualOverride = false;
 
         private void Awake()
         {

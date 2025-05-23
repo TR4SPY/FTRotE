@@ -115,10 +115,10 @@ namespace PLAYERTWO.ARPGProject
 
     SetCharacterCircleActive(!m_creatingCharacter);
 
-    if (!m_creatingCharacter)            // ← zamykamy formularz
+    if (!m_creatingCharacter)           
     {
         CharacterPreview.instance.Clear();
-        RefreshCharacterDisplay();       // ★ odbuduj modele + NameTag-i
+        RefreshCharacterDisplay();     
     }
 }
 
@@ -283,18 +283,18 @@ namespace PLAYERTWO.ARPGProject
         {
             int count = characters.Count;
 
-            float totalAngle = angleStep * (count - 1); // Łączny zakres kątów
-            float startAngle = -totalAngle / 2f; // Początek łuku
+            float totalAngle = angleStep * (count - 1); 
+            float startAngle = -totalAngle / 2f;
 
             for (int i = 0; i < count; i++)
             {
-                float angle = startAngle + angleStep * i; // Kąt w stopniach
-                float radians = angle * Mathf.Deg2Rad; // Zamiana kąta na radiany
+                float angle = startAngle + angleStep * i; 
+                float radians = angle * Mathf.Deg2Rad;
 
                 Vector3 position = new Vector3(
                     centerPoint.position.x + radius * Mathf.Cos(radians),
                     centerPoint.position.y,
-                    centerPoint.position.z - radius * Mathf.Sin(radians) // Znak "-" odwraca kierunek
+                    centerPoint.position.z - radius * Mathf.Sin(radians)
                 );
 
                 var characterInstance = characters[i];
@@ -307,12 +307,12 @@ namespace PLAYERTWO.ARPGProject
                 if (characterInstance.data.classPrefab != null)
                 {
                     GameObject characterObject = Instantiate(characterInstance.data.classPrefab, position, Quaternion.identity);
-                    characterObject.transform.SetParent(centerPoint); // Przypisz jako dziecko do punktu centralnego
+                    characterObject.transform.SetParent(centerPoint);
 
                     characterObject.transform.localRotation = Quaternion.identity;
 
                     Vector3 directionToCamera = cameraTransform.position - characterObject.transform.position;
-                    directionToCamera.y = 0; // Ignoruj różnice w wysokości
+                    directionToCamera.y = 0;
                     characterObject.transform.rotation = Quaternion.LookRotation(directionToCamera);
 
                     // Obrót o 180 stopni (jeśli prefab jest zwrócony tyłem)
@@ -338,16 +338,12 @@ namespace PLAYERTWO.ARPGProject
         return;
     }
 
-    // jeśli GUI dla tej postaci już istnieje – nie tworzymy kolejnego
     var existingGUI = activeCharacterGUIs.FirstOrDefault(gui =>
         gui != null && gui.GetComponent<GUICharacterInfo>()?.m_target == characterObject.transform);
 
     if (existingGUI != null)
         return;
 
-    /* --------------------------------------------------------------------
-     * 1️⃣  znajdź główny (root-owy) Canvas w trybie ScreenSpace-Overlay
-     * ------------------------------------------------------------------*/
     var mainCanvas = FindObjectsOfType<Canvas>()
                     .FirstOrDefault(c => c.isRootCanvas && c.renderMode == RenderMode.ScreenSpaceOverlay);
 
@@ -357,22 +353,16 @@ namespace PLAYERTWO.ARPGProject
         return;
     }
 
-    /* --------------------------------------------------------------------
-     * 2️⃣  zinstancjonuj prefab bezpośrednio pod tym Canvas-em
-     * ------------------------------------------------------------------*/
     var uiInstance = Instantiate(characterInfoUIPrefab, mainCanvas.transform, false);
 
-    // jeśli prefab posiada własny Canvas, usuń go — nie jest potrzebny
     var nestedCanvas = uiInstance.GetComponent<Canvas>();
     if (nestedCanvas != null)
         Destroy(nestedCanvas);
 
-    uiInstance.transform.SetAsFirstSibling();   // zachowaj porządek warstw
+    uiInstance.transform.SetAsFirstSibling(); 
     uiInstance.transform.localScale = Vector3.one;
 
-    /* --------------------------------------------------------------------
-     * 3️⃣  wypełnij dane i zapisz referencję
-     * ------------------------------------------------------------------*/
+
     var guiCharacterInfo = uiInstance.GetComponent<GUICharacterInfo>();
     if (guiCharacterInfo == null)
     {

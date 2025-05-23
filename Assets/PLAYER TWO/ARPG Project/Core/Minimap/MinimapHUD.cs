@@ -28,100 +28,70 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("If true, the Minimap will also rotate with the target Y axis.")]
         public bool rotateWithTarget;
 
-        [Header("Region Display")]
-        public Text regionLabel;
-
-
-        protected readonly List<MinimapIcon> m_icons = new();
-
-        protected WaitForSeconds m_coroutineWait = new(1f / 30);
+        protected readonly List<MinimapIcon> m_icons = new List<MinimapIcon>();
+        protected WaitForSeconds m_coroutineWait = new WaitForSeconds(1f / 30f);
+        Coroutine m_iconRoutine;
 
         protected virtual void InitializeTarget()
         {
             if (target) return;
-
             target = Level.instance.player.transform;
         }
 
         protected virtual void UpdateRect()
         {
-            var position = Minimap.instance.WorldToMapPosition(target.position);
-            minimap.uvRect = new Rect(position.x, position.y, 1, 1);
+            Vector2 position = Minimap.instance.WorldToMapPosition(target.position);
+            minimap.uvRect = new Rect(position.x, position.y, 1f, 1f);
         }
 
         protected virtual void UpdateRotation()
         {
-            var eulerAngles = new Vector3(0, 0, rotationOffset);
-
+            float z = rotationOffset;
             if (rotateWithTarget)
-            {
-                eulerAngles.z = target.eulerAngles.y;
-            }
-
-            minimap.transform.eulerAngles = eulerAngles;
+                z = target.eulerAngles.y;
+            minimap.rectTransform.eulerAngles = new Vector3(0f, 0f, z);
         }
 
         protected virtual void UpdateIcons()
         {
+            Vector2 minimapSize = minimap.rectTransform.sizeDelta;
+            Vector3 scale = minimap.rectTransform.localScale;
+            Vector2 uvPosition = minimap.uvRect.position;
+
             foreach (var icon in m_icons)
             {
-                if (!icon || !icon.image.enabled) continue;
+                if (icon == null || !icon.image.enabled)
+                    continue;
 
-                var minimapSize = minimap.rectTransform.sizeDelta;
-                var minimapScale = minimap.rectTransform.localScale;
-                var minimapRectPosition = minimap.uvRect.position;
+                Vector2 localPos = Minimap.instance.WorldToMapPosition(icon.owner.position);
+                Vector3 iconEuler = new Vector3(0f, 0f, icon.rotationOffset);
 
-                var localPosition = Minimap.instance.WorldToMapPosition(icon.owner.position);
-                var iconEulerAngles = new Vector3(0, 0, icon.rotationOffset);
-                var offset = minimapRectPosition * minimapSize * minimapScale;
-
-                localPosition *= minimapSize * minimapScale;
+                Vector2 offset = uvPosition * minimapSize * (Vector2)scale;
+                localPos *= minimapSize * (Vector2)scale;
 
                 if (icon.rotateWithOwner)
                 {
-                    iconEulerAngles.z -= icon.owner.eulerAngles.y - rotationOffset;
-
+                    iconEuler.z -= icon.owner.eulerAngles.y - rotationOffset;
                     if (rotateWithTarget)
-                    {
-                        iconEulerAngles.z += container.eulerAngles.z - rotationOffset;
-                    }
+                        iconEuler.z += container.eulerAngles.z - rotationOffset;
                 }
 
-                icon.image.transform.localPosition = localPosition - offset;
-                icon.image.transform.eulerAngles = iconEulerAngles;
+                icon.image.transform.localPosition = localPos - offset;
+                icon.image.transform.eulerAngles = iconEuler;
             }
         }
 
-        protected virtual void UpdateRegionLabel()
-        {
-            if (regionLabel == null || target == null) return;
-
-            var zone = AI_DDA.Assets.Scripts.ZoneTrigger.GetCurrentRegion(target.position);
-            string zoneName = zone != null ? zone.zoneName : "Wilderness";
-
-            Vector3 pos = target.position;
-
-            int z = Mathf.RoundToInt(pos.z);
-            int x = Mathf.RoundToInt(pos.x);
-            int y = Mathf.RoundToInt(pos.y);
-
-            string ns = z >= 0 ? $"{z}N" : $"{-z}S";
-            string ew = x >= 0 ? $"{x}E" : $"{-x}W";
-
-            regionLabel.text = $"{zoneName} | ({ns}, {ew}, {y}m)";
-        }
-
         /// <summary>
-        /// Change the scale, zoom level, of the minimap texture.
+        /// Sets the zoom level of the minimap.
         /// </summary>
         public virtual void Rescale(float scale)
         {
-            scale = Mathf.Max(0, scale);
+            scale = Mathf.Max(0f, scale);
             minimap.rectTransform.localScale = Vector3.one * scale;
         }
 
         /// <summary>
-        /// Set a new texture to the minimap.
+        /// Changes the minimap texture.
         /// </summary>
         public virtual void SetTexture(Texture texture)
         {
@@ -129,12 +99,11 @@ namespace PLAYERTWO.ARPGProject
         }
 
         /// <summary>
-        /// Add a new Icon to the minimap renderer.
+        /// Adds an icon to the minimap.
         /// </summary>
         public virtual void AddIcon(MinimapIcon icon)
         {
             if (m_icons.Contains(icon)) return;
-
             icon.image.transform.SetParent(container, false);
             m_icons.Add(icon);
         }
@@ -153,16 +122,41 @@ namespace PLAYERTWO.ARPGProject
             InitializeTarget();
             SetTexture(Minimap.instance.minimapTexture);
             Rescale(initialZoom);
-            StartCoroutine(UpdateIconsRoutine());
+
+            m_iconRoutine = StartCoroutine(UpdateIconsRoutine());
+
+            var window = GUIWindowsManager.instance?.minimapWindow;
+            if (window != null)
+            {
+                window.onOpen.AddListener(() =>
+                {
+                    window.GetComponent<RectTransform>().SetAsFirstSibling();
+                });
+            }
         }
 
         protected virtual void LateUpdate()
         {
             UpdateRect();
             UpdateRotation();
-            UpdateRegionLabel();
         }
 
+        protected virtual void OnEnable()
+        {
+            if (m_iconRoutine != null)
+                StopCoroutine(m_iconRoutine);
+            m_iconRoutine = StartCoroutine(UpdateIconsRoutine());
+        }
+
+        protected virtual void OnDisable()
+        {
+            if (m_iconRoutine != null)
+                StopCoroutine(m_iconRoutine);
+        }
+
+        /// <summary>
+        /// Allows changing the follow target at runtime.
+        /// </summary>
         public void SetTarget(Entity entity)
         {
             if (entity == null) return;

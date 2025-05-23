@@ -36,6 +36,8 @@ namespace PLAYERTWO.ARPGProject
         public float strengthMultiplier = 1.0f;
         public float vitalityMultiplier = 1.0f;
         public float energyMultiplier = 1.0f;
+        public float savedDifficulty;
+        
         public float totalCombatTime;
         public float totalPlayTime = 0f; 
 
@@ -74,6 +76,8 @@ namespace PLAYERTWO.ARPGProject
             strengthMultiplier = character.GetMultiplier("Strength");
             vitalityMultiplier = character.GetMultiplier("Vitality");
             energyMultiplier = character.GetMultiplier("Energy");
+
+            savedDifficulty = character.savedDifficulty; 
 
             // Save logs
             playerDeaths = character.playerDeaths;

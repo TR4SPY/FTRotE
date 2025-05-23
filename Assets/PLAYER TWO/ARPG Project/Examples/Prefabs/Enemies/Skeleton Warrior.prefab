@@ -68,7 +68,7 @@ MonoBehaviour:
   - Entity/Player
   - Entity/Summoned
   - Entity/AI_Agent
-  spotRadius: 5
+  spotRadius: 7
   viewAngle: 110
   viewDistance: 10
   fleeRadius: 8
@@ -78,6 +78,7 @@ MonoBehaviour:
   addToAttackersList: 1
   limitSimultaneousAttackers: 1
   maxSimultaneousAttackers: 2
+  baseSkillUseChance: 0.4
   searchDamageSource: 1
   searchDamageSourceDelay: 0.3
   searchDamageSourceDuration: 5
@@ -161,6 +162,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   onDamage:
+    m_PersistentCalls:
+      m_Calls: []
+  onDamageEx:
     m_PersistentCalls:
       m_Calls: []
   onBlock:

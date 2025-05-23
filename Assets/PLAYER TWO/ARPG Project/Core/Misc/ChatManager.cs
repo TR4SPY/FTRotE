@@ -55,7 +55,8 @@ namespace PLAYERTWO.ARPGProject
                     "/dda export - Exports player data to CSV.",
                     "/dda force - Forces difficulty recalculation.",
                     "/dda type - Displays current player dynamic type.",
-                    "/dda diff [value] - Manually sets difficulty."
+                    "/dda diff [value] - Manually sets difficulty.",
+                    "/dda free - Give back control to the AI models."
                 }
             },
             { "achievements", new List<string> { "/achievements - Lists unlocked achievements." } },
@@ -313,124 +314,124 @@ namespace PLAYERTWO.ARPGProject
             switch (cmd)
             {
                 case "help":
-                {
-                    if (parts.Length >= 2)
                     {
-                        string command = parts[1].ToLower();
-
-                        if (helpMessages.TryGetValue(command, out var descriptions))
+                        if (parts.Length >= 2)
                         {
-                            var formattedDescriptions = descriptions.ConvertAll(desc =>
-                                StringUtils.StringWithColor(desc, GameColors.Gray)
-                            );
+                            string command = parts[1].ToLower();
 
-                            AddSystemMessageBatch(formattedDescriptions);
-                        }
-                        else
-                        {
-                            AddSystemMessage(StringUtils.StringWithColorAndStyle(
-                                $"No help available for command: /{command}",
-                                GameColors.Crimson,
-                                italic: true
-                            ));
-                        }
-                    }
-                    else
-                    {
-                        string message = StringUtils.StringWithColorAndStyle(
-                            "Available commands:\n" +
-                            "/money, /drop, /tp, /wp, /listwp, /whereami, /summon, /heal, /kill, /addexp, /lvlup, /godmode, /time, /weather, /dda, /quests, /zones, /achievements, /clear\n" +
-                            "Type /help [command] for more details.",
-                            GameColors.Gray,
-                            italic: true
-                        );
-
-                        AddSystemMessage(message);
-                    }
-                    break;
-                }
-
-                case "money":
-                {
-                    if (parts.Length < 2)
-                    {
-                        AddSystemMessage(StringUtils.StringWithColor("Usage: /money <amount> [unit]", GameColors.Gray));
-                        break;
-                    }
-
-                    int totalAmberlings = 0;
-
-                    for (int i = 1; i < parts.Length; i++)
-                    {
-                        string part = parts[i].Trim().ToLower();
-
-                        if (int.TryParse(part, out int value))
-                        {
-                            totalAmberlings += value;
-                            continue;
-                        }
-
-                        var matchShort = Regex.Match(part, @"^(\d+)([a-z]+)$");
-                        if (matchShort.Success)
-                        {
-                            int amount = int.Parse(matchShort.Groups[1].Value);
-                            string unit = matchShort.Groups[2].Value;
-
-                            CurrencyType? type = Currency.ParseUnit(unit);
-                            if (type.HasValue)
+                            if (helpMessages.TryGetValue(command, out var descriptions))
                             {
-                                totalAmberlings += Currency.ConvertToAmberlings(amount, type.Value);
+                                var formattedDescriptions = descriptions.ConvertAll(desc =>
+                                    StringUtils.StringWithColor(desc, GameColors.Gray)
+                                );
+
+                                AddSystemMessageBatch(formattedDescriptions);
                             }
                             else
                             {
-                                AddSystemMessage(StringUtils.StringWithColor($"Unknown currency unit: {unit}", GameColors.Crimson));
+                                AddSystemMessage(StringUtils.StringWithColorAndStyle(
+                                    $"No help available for command: /{command}",
+                                    GameColors.Crimson,
+                                    italic: true
+                                ));
+                            }
+                        }
+                        else
+                        {
+                            string message = StringUtils.StringWithColorAndStyle(
+                                "Available commands:\n" +
+                                "/money, /drop, /tp, /wp, /listwp, /whereami, /summon, /heal, /kill, /addexp, /lvlup, /godmode, /time, /weather, /dda, /quests, /zones, /achievements, /clear\n" +
+                                "Type /help [command] for more details.",
+                                GameColors.Gray,
+                                italic: true
+                            );
+
+                            AddSystemMessage(message);
+                        }
+                        break;
+                    }
+
+                case "money":
+                    {
+                        if (parts.Length < 2)
+                        {
+                            AddSystemMessage(StringUtils.StringWithColor("Usage: /money <amount> [unit]", GameColors.Gray));
+                            break;
+                        }
+
+                        int totalAmberlings = 0;
+
+                        for (int i = 1; i < parts.Length; i++)
+                        {
+                            string part = parts[i].Trim().ToLower();
+
+                            if (int.TryParse(part, out int value))
+                            {
+                                totalAmberlings += value;
+                                continue;
                             }
 
-                            continue;
+                            var matchShort = Regex.Match(part, @"^(\d+)([a-z]+)$");
+                            if (matchShort.Success)
+                            {
+                                int amount = int.Parse(matchShort.Groups[1].Value);
+                                string unit = matchShort.Groups[2].Value;
+
+                                CurrencyType? type = Currency.ParseUnit(unit);
+                                if (type.HasValue)
+                                {
+                                    totalAmberlings += Currency.ConvertToAmberlings(amount, type.Value);
+                                }
+                                else
+                                {
+                                    AddSystemMessage(StringUtils.StringWithColor($"Unknown currency unit: {unit}", GameColors.Crimson));
+                                }
+
+                                continue;
+                            }
+
+                            if (i + 1 < parts.Length && int.TryParse(part, out int val) && Currency.ParseUnit(parts[i + 1]) is CurrencyType unitType)
+                            {
+                                totalAmberlings += Currency.ConvertToAmberlings(val, unitType);
+                                i++;
+                                continue;
+                            }
+
+                            AddSystemMessage(StringUtils.StringWithColor($"Invalid input: {parts[i]}", GameColors.Crimson));
                         }
 
-                        if (i + 1 < parts.Length && int.TryParse(part, out int val) && Currency.ParseUnit(parts[i + 1]) is CurrencyType unitType)
+                        if (totalAmberlings > 0)
                         {
-                            totalAmberlings += Currency.ConvertToAmberlings(val, unitType);
-                            i++;
-                            continue;
+                            inventory.AddGold(totalAmberlings);
+                            string formatted = Currency.FormatCurrencyString(totalAmberlings);
+                            AddSystemMessage(StringUtils.StringWithColorAndStyle($"Get Rich Quick Scheme: {formatted} were given.", GameColors.Gold, bold: true));
+                        }
+                        else
+                        {
+                            AddSystemMessage(StringUtils.StringWithColor("No valid currency amount found.", GameColors.Gray));
                         }
 
-                        AddSystemMessage(StringUtils.StringWithColor($"Invalid input: {parts[i]}", GameColors.Crimson));
+                        break;
                     }
 
-                    if (totalAmberlings > 0)
-                    {
-                        inventory.AddGold(totalAmberlings);
-                        string formatted = Currency.FormatCurrencyString(totalAmberlings);
-                        AddSystemMessage(StringUtils.StringWithColorAndStyle($"Get Rich Quick Scheme: {formatted} were given.", GameColors.Gold, bold: true));
-                    }
-                    else
-                    {
-                        AddSystemMessage(StringUtils.StringWithColor("No valid currency amount found.", GameColors.Gray));
-                    }
-
-                    break;
-                }
-                
                 case "heal":
-                {
-                    var entity = character.Entity;
-
-                    if (entity != null && entity.stats != null)
                     {
-                        entity.stats.health = entity.stats.maxHealth;
-                        entity.stats.mana = entity.stats.maxMana;
+                        var entity = character.Entity;
 
-                        AddSystemMessage(StringUtils.StringWithColorAndStyle("You feel restored.", GameColors.Cyan));
-                    }
-                    else
-                    {
-                        AddSystemMessage(StringUtils.StringWithColor("Failed to heal: character entity not found.", GameColors.Crimson));
-                    }
+                        if (entity != null && entity.stats != null)
+                        {
+                            entity.stats.health = entity.stats.maxHealth;
+                            entity.stats.mana = entity.stats.maxMana;
 
-                    break;
-                }
+                            AddSystemMessage(StringUtils.StringWithColorAndStyle("You feel restored.", GameColors.Cyan));
+                        }
+                        else
+                        {
+                            AddSystemMessage(StringUtils.StringWithColor("Failed to heal: character entity not found.", GameColors.Crimson));
+                        }
+
+                        break;
+                    }
 
                 case "addexp":
                     {
@@ -455,41 +456,41 @@ namespace PLAYERTWO.ARPGProject
                     }
 
                 case "lvlup":
-                {
-                    var entity = character.Entity;
-                    if (entity != null)
                     {
-                        int amount = 1;
-                        if (parts.Length >= 2)
-                            int.TryParse(parts[1], out amount);
-
-                        int maxLevel = Game.instance.maxLevel;
-
-                        if (entity.stats.level >= maxLevel)
+                        var entity = character.Entity;
+                        if (entity != null)
                         {
-                            AddSystemMessage(StringUtils.StringWithColor("Already at max level!", GameColors.Crimson));
-                            break;
-                        }
+                            int amount = 1;
+                            if (parts.Length >= 2)
+                                int.TryParse(parts[1], out amount);
 
-                        int targetLevel = entity.stats.level + amount;
-                        if (targetLevel > maxLevel)
-                        {
-                            int allowedAmount = maxLevel - entity.stats.level;
-                            entity.stats.ForceLevelUp(allowedAmount);
-                            AddSystemMessage(StringUtils.StringWithColor($"Level capped at {maxLevel}. Gained {allowedAmount} level(s).", GameColors.Orange));
+                            int maxLevel = Game.instance.maxLevel;
+
+                            if (entity.stats.level >= maxLevel)
+                            {
+                                AddSystemMessage(StringUtils.StringWithColor("Already at max level!", GameColors.Crimson));
+                                break;
+                            }
+
+                            int targetLevel = entity.stats.level + amount;
+                            if (targetLevel > maxLevel)
+                            {
+                                int allowedAmount = maxLevel - entity.stats.level;
+                                entity.stats.ForceLevelUp(allowedAmount);
+                                AddSystemMessage(StringUtils.StringWithColor($"Level capped at {maxLevel}. Gained {allowedAmount} level(s).", GameColors.Orange));
+                            }
+                            else
+                            {
+                                entity.stats.ForceLevelUp(amount);
+                                AddSystemMessage(StringUtils.StringWithColor($"Leveled up by {amount}. Current level: {entity.stats.level}", GameColors.Orange));
+                            }
                         }
                         else
                         {
-                            entity.stats.ForceLevelUp(amount);
-                            AddSystemMessage(StringUtils.StringWithColor($"Leveled up by {amount}. Current level: {entity.stats.level}", GameColors.Orange));
+                            AddSystemMessage(StringUtils.StringWithColor("Entity not found.", GameColors.Crimson));
                         }
+                        break;
                     }
-                    else
-                    {
-                        AddSystemMessage(StringUtils.StringWithColor("Entity not found.", GameColors.Crimson));
-                    }
-                    break;
-                }
 
                 case "kill":
                     {
@@ -535,264 +536,264 @@ namespace PLAYERTWO.ARPGProject
                     break;
 
                 case "weather":
-                {
-                #if GAIA_2023_PRO
-                    if (parts.Length >= 2)
                     {
-                        var weather = ProceduralWorldsGlobalWeather.Instance;
-                        if (weather != null)
+#if GAIA_2023_PRO
+                        if (parts.Length >= 2)
                         {
-                            string weatherType = parts[1].ToLower();
-                            switch (weatherType)
+                            var weather = ProceduralWorldsGlobalWeather.Instance;
+                            if (weather != null)
                             {
-                                case "sun":
-                                    weather.StopRain();
-                                    weather.StopSnow();
-                                    AddSystemMessage(StringUtils.StringWithColor("Weather: Sunny", GameColors.Lime));
-                                    break;
-                                case "rain":
-                                    weather.PlayRain();
-                                    AddSystemMessage(StringUtils.StringWithColor("Weather: Rainy", GameColors.Cyan));
-                                    break;
-                                case "snow":
-                                    weather.PlaySnow();
-                                    AddSystemMessage(StringUtils.StringWithColor("Weather: Snowing", GameColors.Gray));
-                                    break;
-                                default:
-                                    AddSystemMessage(StringUtils.StringWithColor("Unknown weather type. Use sun, rain, or snow.", GameColors.Crimson));
-                                    break;
-                            }
-                        }
-                        else
-                        {
-                            AddSystemMessage(StringUtils.StringWithColor("Weather system not found.", GameColors.Crimson));
-                        }
-                    }
-                    else
-                    {
-                        AddSystemMessage(StringUtils.StringWithColor("Usage: /weather [sun|rain|snow]", GameColors.Gray));
-                    }
-                #else
-                    AddSystemMessage(StringUtils.StringWithColor("Weather system requires GAIA_2023_PRO define.", GameColors.Crimson));
-                #endif
-                    break;
-                }
-                
-                case "godmode":
-                {
-                    var entity = character.Entity;
-
-                    if (entity != null && entity.stats != null)
-                    {
-                        entity.stats.infiniteHealth = !entity.stats.infiniteHealth;
-                        entity.stats.infiniteMana = entity.stats.infiniteHealth;
-
-                        string state = entity.stats.infiniteHealth ? "ON" : "OFF";
-                        AddSystemMessage(StringUtils.StringWithColor($"Godmode: {state}", GameColors.Gold));
-                    }
-                    else
-                    {
-                        AddSystemMessage(StringUtils.StringWithColor("Godmode failed: stats not found.", GameColors.Crimson));
-                    }
-                    break;
-                }
-            
-                case "clear":
-                {
-                    var cw = GUIWindowsManager.instance?.chatWindow;
-
-                    messageHistory.Clear();
-                    cw?.ClearOverlayLog();
-
-                    string msg = StringUtils.StringWithColor("Chat history cleared.", GameColors.Gray);
-                    cw?.AddOverlayMessage(msg);
-
-                    if (cw?.overlayController != null)
-                    {
-                        cw.StartCoroutine(RemoveAfterDelay(msg, 5f));
-                    }
-
-                    break;
-                }
-
-                case "drop":
-                {
-                    int level = 0;
-                    int attributes = 0;
-                    int durabilityPercent = 100;
-                    int hasSkill = 0;
-                    int stackAmount = 1;
-
-                    if (parts.Length >= 3 &&
-                        int.TryParse(parts[1], out int group) &&
-                        int.TryParse(parts[2], out int idInGroup))
-                    {
-                        if (parts.Length >= 4) int.TryParse(parts[3], out level);
-                        if (parts.Length >= 5) int.TryParse(parts[4], out attributes);
-                        if (parts.Length >= 6) int.TryParse(parts[5], out durabilityPercent);
-                        if (parts.Length >= 7) int.TryParse(parts[6], out hasSkill);
-                        if (parts.Length >= 8) int.TryParse(parts[7], out stackAmount);
-
-                        stackAmount = Mathf.Max(1, stackAmount);
-
-                        int combinedID = int.Parse($"{group}{idInGroup}");
-
-                        var item = GameDatabase.instance.items
-                            .FirstOrDefault(i => i.id == combinedID);
-
-                        if (item == null)
-                        {
-                            AddSystemMessage(StringUtils.StringWithColor($"Item not found (Group {group}, ID {idInGroup})", GameColors.Crimson));
-                            break;
-                        }
-
-                        bool isStackable = item.canStack;
-
-                        for (int i = 0; i < (isStackable ? 1 : stackAmount); i++)
-                        {
-                            int actualStack = isStackable ? stackAmount : 1;
-
-                            var instance = new ItemInstance(item, false);
-                            instance.ForceStack(actualStack);
-
-                            level = Mathf.Clamp(level, 0, 25);
-                            for (int j = 0; j < level; j++)
-                                instance.UpgradeLevel();
-
-                            if (attributes > 0)
-                            {
-                                instance.GenerateAttributes();
-
-                                var method = typeof(ItemInstance).GetMethod(
-                                    "GenerateAdditionalAttributes",
-                                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic
-                                );
-
-                                method?.Invoke(instance, new object[] { attributes, attributes });
-                            }
-
-                            float percent = Mathf.Clamp01((float)durabilityPercent / 100f);
-                            var durabilityField = typeof(ItemInstance).GetField(
-                                "m_durability",
-                                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance
-                            );
-
-                            if (durabilityField != null && item is ItemEquippable eq)
-                            {
-                                int durabilityValue = Mathf.RoundToInt(eq.maxDurability * percent);
-                                durabilityField.SetValue(instance, durabilityValue);
-                            }
-
-                            if (hasSkill == 1)
-                            {
-                                if (item is ItemWeapon weapon && GameDatabase.instance.skills.Count > 0)
+                                string weatherType = parts[1].ToLower();
+                                switch (weatherType)
                                 {
-                                    weapon.skill = GameDatabase.instance.skills[0];
+                                    case "sun":
+                                        weather.StopRain();
+                                        weather.StopSnow();
+                                        AddSystemMessage(StringUtils.StringWithColor("Weather: Sunny", GameColors.Lime));
+                                        break;
+                                    case "rain":
+                                        weather.PlayRain();
+                                        AddSystemMessage(StringUtils.StringWithColor("Weather: Rainy", GameColors.Cyan));
+                                        break;
+                                    case "snow":
+                                        weather.PlaySnow();
+                                        AddSystemMessage(StringUtils.StringWithColor("Weather: Snowing", GameColors.Gray));
+                                        break;
+                                    default:
+                                        AddSystemMessage(StringUtils.StringWithColor("Unknown weather type. Use sun, rain, or snow.", GameColors.Crimson));
+                                        break;
                                 }
-                            }
-
-                            GUI.instance.DropItem(instance);
-                        }
-
-                        AddSystemMessage(StringUtils.StringWithColorAndStyle(
-                            $"Dropped {item.GetName()} (+{level}, {attributes} attr, {durabilityPercent}% durability, skill {hasSkill}, stack {stackAmount})",
-                            GameColors.Orange));
-                    }
-                    else
-                    {
-                        AddSystemMessage(StringUtils.StringWithColor(
-                            "Usage: /drop [group] [idInGroup] [level] [attributes] [durability%] [hasSkill] [stack]",
-                            GameColors.Gray));
-                    }
-                    break;
-                }
-
-                case "tp":
-                {
-                    if (parts.Length == 4)
-                    {
-                        bool TryParseCoordinate(string input, out float value)
-                        {
-                            input = input.Trim().ToUpperInvariant();
-
-                            if (input.EndsWith("N") || input.EndsWith("E") || input.EndsWith("M"))
-                            {
-                                return float.TryParse(input[..^1], out value);
-                            }
-
-                            if (input.EndsWith("S") || input.EndsWith("W"))
-                            {
-                                if (float.TryParse(input[..^1], out value))
-                                {
-                                    value = -Mathf.Abs(value);
-                                    return true;
-                                }
-                            }
-
-                            return float.TryParse(input, out value);
-                        }
-
-                        if (TryParseCoordinate(parts[1], out float z) &&
-                            TryParseCoordinate(parts[2], out float x) &&
-                            TryParseCoordinate(parts[3], out float y))
-                        {
-                            Vector3 targetPos = new Vector3(x, y, z);
-
-                            var player = Level.instance?.player;
-
-                            if (player == null)
-                            {
-                                Debug.LogError("[Teleport System] Player is null!");
-                                AddSystemMessage(StringUtils.StringWithColor("Teleport failed: Player not found.", GameColors.Crimson));
-                                break;
-                            }
-
-                            Vector3 before = player.transform.position;
-
-                            var cc = player.GetComponent<CharacterController>();
-                            if (cc != null)
-                            {
-                                cc.enabled = false;
-                                player.transform.position = targetPos;
-                                cc.enabled = true;
                             }
                             else
                             {
-                                var agent = player.GetComponent<UnityEngine.AI.NavMeshAgent>();
-                                if (agent != null)
-                                {
-                                    agent.Warp(targetPos);
-                                }
-                                else
-                                {
-                                    player.transform.position = targetPos;
-                                }
+                                AddSystemMessage(StringUtils.StringWithColor("Weather system not found.", GameColors.Crimson));
                             }
-
-                            Vector3 after = player.transform.position;
-
-                            var zone = AI_DDA.Assets.Scripts.ZoneTrigger.GetCurrentRegion(targetPos);
-                            string zoneName = zone != null ? zone.zoneName : "Unknown";
-
-                            string ns = z >= 0 ? $"{Mathf.RoundToInt(z)}N" : $"{-Mathf.RoundToInt(z)}S";
-                            string ew = x >= 0 ? $"{Mathf.RoundToInt(x)}E" : $"{-Mathf.RoundToInt(x)}W";
-                            string h = $"{Mathf.RoundToInt(y)}m";
-
-                            AddSystemMessage(StringUtils.StringWithColorAndStyle(
-                                $"Teleported to {zoneName} {ns}, {ew}, {h}", GameColors.LightBlue, italic: true));
                         }
                         else
                         {
-                            Debug.LogWarning("[Teleport System] Could not parse all coordinates.");
-                            AddSystemMessage(StringUtils.StringWithColor("Invalid coordinates. Try /tp 000 000 000 or /tp 000N 000E 000m", GameColors.Gray));
+                            AddSystemMessage(StringUtils.StringWithColor("Usage: /weather [sun|rain|snow]", GameColors.Gray));
                         }
+#else
+                    AddSystemMessage(StringUtils.StringWithColor("Weather system requires GAIA_2023_PRO define.", GameColors.Crimson));
+#endif
+                        break;
                     }
-                    else
+
+                case "godmode":
                     {
-                        AddSystemMessage(StringUtils.StringWithColor("Usage: /tp <Z> <X> <Y>", GameColors.Gray));
+                        var entity = character.Entity;
+
+                        if (entity != null && entity.stats != null)
+                        {
+                            entity.stats.infiniteHealth = !entity.stats.infiniteHealth;
+                            entity.stats.infiniteMana = entity.stats.infiniteHealth;
+
+                            string state = entity.stats.infiniteHealth ? "ON" : "OFF";
+                            AddSystemMessage(StringUtils.StringWithColor($"Godmode: {state}", GameColors.Gold));
+                        }
+                        else
+                        {
+                            AddSystemMessage(StringUtils.StringWithColor("Godmode failed: stats not found.", GameColors.Crimson));
+                        }
+                        break;
                     }
-                    break;
-                }
+
+                case "clear":
+                    {
+                        var cw = GUIWindowsManager.instance?.chatWindow;
+
+                        messageHistory.Clear();
+                        cw?.ClearOverlayLog();
+
+                        string msg = StringUtils.StringWithColor("Chat history cleared.", GameColors.Gray);
+                        cw?.AddOverlayMessage(msg);
+
+                        if (cw?.overlayController != null)
+                        {
+                            cw.StartCoroutine(RemoveAfterDelay(msg, 5f));
+                        }
+
+                        break;
+                    }
+
+                case "drop":
+                    {
+                        int level = 0;
+                        int attributes = 0;
+                        int durabilityPercent = 100;
+                        int hasSkill = 0;
+                        int stackAmount = 1;
+
+                        if (parts.Length >= 3 &&
+                            int.TryParse(parts[1], out int group) &&
+                            int.TryParse(parts[2], out int idInGroup))
+                        {
+                            if (parts.Length >= 4) int.TryParse(parts[3], out level);
+                            if (parts.Length >= 5) int.TryParse(parts[4], out attributes);
+                            if (parts.Length >= 6) int.TryParse(parts[5], out durabilityPercent);
+                            if (parts.Length >= 7) int.TryParse(parts[6], out hasSkill);
+                            if (parts.Length >= 8) int.TryParse(parts[7], out stackAmount);
+
+                            stackAmount = Mathf.Max(1, stackAmount);
+
+                            int combinedID = int.Parse($"{group}{idInGroup}");
+
+                            var item = GameDatabase.instance.items
+                                .FirstOrDefault(i => i.id == combinedID);
+
+                            if (item == null)
+                            {
+                                AddSystemMessage(StringUtils.StringWithColor($"Item not found (Group {group}, ID {idInGroup})", GameColors.Crimson));
+                                break;
+                            }
+
+                            bool isStackable = item.canStack;
+
+                            for (int i = 0; i < (isStackable ? 1 : stackAmount); i++)
+                            {
+                                int actualStack = isStackable ? stackAmount : 1;
+
+                                var instance = new ItemInstance(item, false);
+                                instance.ForceStack(actualStack);
+
+                                level = Mathf.Clamp(level, 0, 25);
+                                for (int j = 0; j < level; j++)
+                                    instance.UpgradeLevel();
+
+                                if (attributes > 0)
+                                {
+                                    instance.GenerateAttributes();
+
+                                    var method = typeof(ItemInstance).GetMethod(
+                                        "GenerateAdditionalAttributes",
+                                        System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic
+                                    );
+
+                                    method?.Invoke(instance, new object[] { attributes, attributes });
+                                }
+
+                                float percent = Mathf.Clamp01((float)durabilityPercent / 100f);
+                                var durabilityField = typeof(ItemInstance).GetField(
+                                    "m_durability",
+                                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance
+                                );
+
+                                if (durabilityField != null && item is ItemEquippable eq)
+                                {
+                                    int durabilityValue = Mathf.RoundToInt(eq.maxDurability * percent);
+                                    durabilityField.SetValue(instance, durabilityValue);
+                                }
+
+                                if (hasSkill == 1)
+                                {
+                                    if (item is ItemWeapon weapon && GameDatabase.instance.skills.Count > 0)
+                                    {
+                                        weapon.skill = GameDatabase.instance.skills[0];
+                                    }
+                                }
+
+                                GUI.instance.DropItem(instance);
+                            }
+
+                            AddSystemMessage(StringUtils.StringWithColorAndStyle(
+                                $"Dropped {item.GetName()} (+{level}, {attributes} attr, {durabilityPercent}% durability, skill {hasSkill}, stack {stackAmount})",
+                                GameColors.Orange));
+                        }
+                        else
+                        {
+                            AddSystemMessage(StringUtils.StringWithColor(
+                                "Usage: /drop [group] [idInGroup] [level] [attributes] [durability%] [hasSkill] [stack]",
+                                GameColors.Gray));
+                        }
+                        break;
+                    }
+
+                case "tp":
+                    {
+                        if (parts.Length == 4)
+                        {
+                            bool TryParseCoordinate(string input, out float value)
+                            {
+                                input = input.Trim().ToUpperInvariant();
+
+                                if (input.EndsWith("N") || input.EndsWith("E") || input.EndsWith("M"))
+                                {
+                                    return float.TryParse(input[..^1], out value);
+                                }
+
+                                if (input.EndsWith("S") || input.EndsWith("W"))
+                                {
+                                    if (float.TryParse(input[..^1], out value))
+                                    {
+                                        value = -Mathf.Abs(value);
+                                        return true;
+                                    }
+                                }
+
+                                return float.TryParse(input, out value);
+                            }
+
+                            if (TryParseCoordinate(parts[1], out float z) &&
+                                TryParseCoordinate(parts[2], out float x) &&
+                                TryParseCoordinate(parts[3], out float y))
+                            {
+                                Vector3 targetPos = new Vector3(x, y, z);
+
+                                var player = Level.instance?.player;
+
+                                if (player == null)
+                                {
+                                    Debug.LogError("[Teleport System] Player is null!");
+                                    AddSystemMessage(StringUtils.StringWithColor("Teleport failed: Player not found.", GameColors.Crimson));
+                                    break;
+                                }
+
+                                Vector3 before = player.transform.position;
+
+                                var cc = player.GetComponent<CharacterController>();
+                                if (cc != null)
+                                {
+                                    cc.enabled = false;
+                                    player.transform.position = targetPos;
+                                    cc.enabled = true;
+                                }
+                                else
+                                {
+                                    var agent = player.GetComponent<UnityEngine.AI.NavMeshAgent>();
+                                    if (agent != null)
+                                    {
+                                        agent.Warp(targetPos);
+                                    }
+                                    else
+                                    {
+                                        player.transform.position = targetPos;
+                                    }
+                                }
+
+                                Vector3 after = player.transform.position;
+
+                                var zone = AI_DDA.Assets.Scripts.ZoneTrigger.GetCurrentRegion(targetPos);
+                                string zoneName = zone != null ? zone.zoneName : "Unknown";
+
+                                string ns = z >= 0 ? $"{Mathf.RoundToInt(z)}N" : $"{-Mathf.RoundToInt(z)}S";
+                                string ew = x >= 0 ? $"{Mathf.RoundToInt(x)}E" : $"{-Mathf.RoundToInt(x)}W";
+                                string h = $"{Mathf.RoundToInt(y)}m";
+
+                                AddSystemMessage(StringUtils.StringWithColorAndStyle(
+                                    $"Teleported to {zoneName} {ns}, {ew}, {h}", GameColors.LightBlue, italic: true));
+                            }
+                            else
+                            {
+                                Debug.LogWarning("[Teleport System] Could not parse all coordinates.");
+                                AddSystemMessage(StringUtils.StringWithColor("Invalid coordinates. Try /tp 000 000 000 or /tp 000N 000E 000m", GameColors.Gray));
+                            }
+                        }
+                        else
+                        {
+                            AddSystemMessage(StringUtils.StringWithColor("Usage: /tp <Z> <X> <Y>", GameColors.Gray));
+                        }
+                        break;
+                    }
 
                 case "wp":
                     if (parts.Length == 2 && int.TryParse(parts[1], out int wpIndex))
@@ -816,20 +817,20 @@ namespace PLAYERTWO.ARPGProject
                     break;
 
 
-                    case "listwp":
-                        var waypoints = LevelWaypoints.instance.waypoints;
-                        var lines = new List<string>();
+                case "listwp":
+                    var waypoints = LevelWaypoints.instance.waypoints;
+                    var lines = new List<string>();
 
-                        AddSystemMessage(StringUtils.StringWithColor($"List of available waypoints:", GameColors.Cyan));
+                    AddSystemMessage(StringUtils.StringWithColor($"List of available waypoints:", GameColors.Cyan));
 
-                        for (int i = 0; i < waypoints.Count; i++)
-                        {
-                            var wp = waypoints[i];
-                            lines.Add(StringUtils.StringWithColor($"[{i}] - {wp.title}", GameColors.Gray));
-                        }
+                    for (int i = 0; i < waypoints.Count; i++)
+                    {
+                        var wp = waypoints[i];
+                        lines.Add(StringUtils.StringWithColor($"[{i}] - {wp.title}", GameColors.Gray));
+                    }
 
-                        AddSystemMessageBatch(lines);
-                        break;
+                    AddSystemMessageBatch(lines);
+                    break;
 
                 case "whereami":
                     {
@@ -843,9 +844,9 @@ namespace PLAYERTWO.ARPGProject
 
                         string ns = z >= 0 ? $"{z}N" : $"{-z}S";
                         string ew = x >= 0 ? $"{x}E" : $"{-x}W";
-                        string h  = $"{y}m";
+                        string h = $"{y}m";
 
-                        string formatted = 
+                        string formatted =
                             StringUtils.StringWithColor("You are at: ", GameColors.White) +
                             StringUtils.StringWithColor(zoneName, GameColors.Cyan) +
                             StringUtils.StringWithColor(" | (", GameColors.White) +
@@ -890,135 +891,140 @@ namespace PLAYERTWO.ARPGProject
                         break;
                     }
 
-                    case "achievements":
-                        {
-                            var pbLogger = PlayerBehaviorLogger.Instance;
+                case "achievements":
+                    {
+                        var pbLogger = PlayerBehaviorLogger.Instance;
 
-                            if (pbLogger != null && pbLogger.unlockedAchievements.Count > 0)
+                        if (pbLogger != null && pbLogger.unlockedAchievements.Count > 0)
+                        {
+                            AddSystemMessage(StringUtils.StringWithColor($"Unlocked Achievements ({pbLogger.unlockedAchievements.Count}):", GameColors.Cyan));
+                            foreach (var a in pbLogger.unlockedAchievements)
+                                AddSystemMessage(StringUtils.StringWithColor($"• {a}", GameColors.White));
+                        }
+                        else
+                        {
+                            AddSystemMessage(StringUtils.StringWithColor("No achievements unlocked yet.", GameColors.Gray));
+                        }
+                        break;
+                    }
+
+                case "quests":
+                    {
+                        var questData = Game.instance.currentCharacter?.quests;
+
+                        if (questData != null && questData.currentQuests != null)
+                        {
+                            var completed = questData.currentQuests
+                                .Where(q => q != null && q.completed)
+                                .ToList();
+
+                            if (completed.Count == 0)
                             {
-                                AddSystemMessage(StringUtils.StringWithColor($"Unlocked Achievements ({pbLogger.unlockedAchievements.Count}):", GameColors.Cyan));
-                                foreach (var a in pbLogger.unlockedAchievements)
-                                    AddSystemMessage(StringUtils.StringWithColor($"• {a}", GameColors.White));
+                                AddSystemMessage("No quests completed yet.");
                             }
                             else
                             {
-                                AddSystemMessage(StringUtils.StringWithColor("No achievements unlocked yet.", GameColors.Gray));
-                            }
-                            break;
-                        }
+                                string header = $"Completed Quests ({completed.Count}):";
+                                AddSystemMessage(StringUtils.StringWithColor(header, GameColors.Cyan));
 
-                    case "quests":
-                        {
-                            var questData = Game.instance.currentCharacter?.quests;
-
-                            if (questData != null && questData.currentQuests != null)
-                            {
-                                var completed = questData.currentQuests
-                                    .Where(q => q != null && q.completed)
-                                    .ToList();
-
-                                if (completed.Count == 0)
+                                foreach (var quest in completed)
                                 {
-                                    AddSystemMessage("No quests completed yet.");
-                                }
-                                else
-                                {
-                                    string header = $"Completed Quests ({completed.Count}):";
-                                    AddSystemMessage(StringUtils.StringWithColor(header, GameColors.Cyan));
-
-                                    foreach (var quest in completed)
-                                    {
-                                        AddSystemMessage($"✔ {quest.data.title}");
-                                    }
+                                    AddSystemMessage($"✔ {quest.data.title}");
                                 }
                             }
-                            else
-                            {
-                                AddSystemMessage(StringUtils.StringWithColor("Quest system not initialized.", GameColors.Crimson));
-                            }
-                            break;
                         }
-
-                    case "zones":
+                        else
                         {
-                            var zones = Game.instance.currentCharacter?.visitedZones;
-
-                            if (zones != null && zones.Count > 0)
-                            {
-                                AddSystemMessage(StringUtils.StringWithColor($"Discovered Zones ({zones.Count}):", GameColors.Cyan));
-                                foreach (var zone in zones)
-                                    AddSystemMessage($"• {zone}");
-                            }
-                            else
-                            {
-                                AddSystemMessage(StringUtils.StringWithColor("No zones discovered yet.", GameColors.Gray));
-                            }
-                            break;
+                            AddSystemMessage(StringUtils.StringWithColor("Quest system not initialized.", GameColors.Crimson));
                         }
+                        break;
+                    }
 
-                    case "dda":
+                case "zones":
+                    {
+                        var zones = Game.instance.currentCharacter?.visitedZones;
+
+                        if (zones != null && zones.Count > 0)
+                        {
+                            AddSystemMessage(StringUtils.StringWithColor($"Discovered Zones ({zones.Count}):", GameColors.Cyan));
+                            foreach (var zone in zones)
+                                AddSystemMessage($"• {zone}");
+                        }
+                        else
+                        {
+                            AddSystemMessage(StringUtils.StringWithColor("No zones discovered yet.", GameColors.Gray));
+                        }
+                        break;
+                    }
+
+                case "dda":
+                    {
                         if (parts.Length == 1)
                         {
-                            AddSystemMessage(StringUtils.StringWithColor("/dda [log/reset/export/force/type/diff]", GameColors.Gray));
+                            AddSystemMessage(StringUtils.StringWithColor(
+                                "/dda [log/reset/export/force/type/diff/free]", GameColors.Gray));
                             break;
                         }
+
+                        // ───────── Helpers ─────────
+                        string ColorLabel(string label) => StringUtils.StringWithColor($"  {label}: ", GameColors.Gold);
+                        string ColorValue(object value) => StringUtils.StringWithColor(value.ToString(), GameColors.White);
 
                         string sub = parts[1].ToLower();
                         var logger = PlayerBehaviorLogger.Instance;
                         var rlModel = RLModel.Instance;
                         var mlModel = AIModel.Instance;
+                        var diffMgr = DifficultyManager.Instance;
 
                         switch (sub)
                         {
                             case "log":
                                 {
-                                    if (logger != null)
+                                    if (logger == null)
                                     {
-                                        string playtimeFormatted = PlayerBehaviorLogger.FormatPlayTime(character.totalPlayTime);
-
-                                        float mlpPrediction = AIModel.Instance.PredictDifficulty(
-                                            logger.playerDeaths,
-                                            logger.enemiesDefeated,
-                                            logger.totalCombatTime,
-                                            logger.potionsUsed
-                                        );
-
-                                        float rlFinal = RLModel.Instance.GetCurrentDifficulty();
-
-                                        List<string> loglines = new()
-                                        {
-                                            StringUtils.StringWithColor("[AI-DDA]", GameColors.Cyan),
-                                            $"{ColorLabel("Play Time")}{ColorValue(playtimeFormatted)}",
-                                            $"{ColorLabel("Combat Time")}{ColorValue($"{logger.totalCombatTime:F1}s")}",
-                                            $"{ColorLabel("Player Deaths")}{ColorValue(logger.playerDeaths)}",
-                                            $"{ColorLabel("Enemies Defeated")}{ColorValue(logger.enemiesDefeated)}",
-                                            $"{ColorLabel("Potions Used")}{ColorValue(logger.potionsUsed)}",
-                                            $"{ColorLabel("Zones Discovered")}{ColorValue(logger.zonesDiscovered)}",
-                                            $"{ColorLabel("Quests Completed")}{ColorValue(logger.questsCompleted)}",
-                                            $"{ColorLabel("Achievements")}{ColorValue(logger.unlockedAchievements.Count)}",
-                                            $"{ColorLabel("Current Bartle's Type")}{ColorValue(logger.currentDynamicPlayerType.ToString())}",
-                                            $"{ColorLabel("MLP Predicted Difficulty")}{ColorValue($"{mlpPrediction:F2}")}",
-                                            $"{ColorLabel("RL Final Difficulty")}{ColorValue($"{rlFinal:F2}")}"
-                                        };
-
-                                        string joined = string.Join("\n", loglines);
-                                        AddSystemMessage(joined);
+                                        AddSystemMessage(StringUtils.StringWithColor(
+                                            "Logger not initialized.", GameColors.Crimson));
+                                        break;
                                     }
-                                    else
+
+                                    string playtime = PlayerBehaviorLogger.FormatPlayTime(character.totalPlayTime);
+
+                                    float mlpPrediction = mlModel.PredictDifficulty(
+                                        logger.playerDeaths,
+                                        logger.enemiesDefeated,
+                                        logger.totalCombatTime,
+                                        logger.potionsUsed);
+
+                                    float rlFinal = rlModel?.GetCurrentDifficulty() ?? 0f;
+
+                                    var ddalines = new List<string>
                                     {
-                                        AddSystemMessage(StringUtils.StringWithColor("Logger not initialized.", GameColors.Crimson));
-                                    }
+                                        StringUtils.StringWithColor("[AI-DDA]", GameColors.Cyan),
+
+                                        $"{ColorLabel("Play Time")}{ColorValue(playtime)}",
+                                        $"{ColorLabel("Combat Time")}{ColorValue($"{logger.totalCombatTime:F1}s")}",
+                                        $"{ColorLabel("Player Deaths")}{ColorValue(logger.playerDeaths)}",
+                                        $"{ColorLabel("Enemies Defeated")}{ColorValue(logger.enemiesDefeated)}",
+                                        $"{ColorLabel("Potions Used")}{ColorValue(logger.potionsUsed)}",
+                                        $"{ColorLabel("Zones Discovered")}{ColorValue(logger.zonesDiscovered)}",
+                                        $"{ColorLabel("Quests Completed")}{ColorValue(logger.questsCompleted)}",
+                                        $"{ColorLabel("Achievements")}{ColorValue(logger.unlockedAchievements.Count)}",
+                                        $"{ColorLabel("Current Bartle's Type")}{ColorValue(logger.currentDynamicPlayerType)}",
+                                        $"{ColorLabel("MLP Predicted Difficulty")}{ColorValue($"{mlpPrediction:F2}")}",
+                                        $"{ColorLabel("RL Final Difficulty")}{ColorValue($"{rlFinal:F2}")}",
+                                        $"{ColorLabel("Manual Override")}{ColorValue(diffMgr?.isManualOverride ?? false)}"
+                                    };
+
+                                    AddSystemMessage(string.Join("\n", ddalines));
                                     break;
-
-                                    string ColorLabel(string label) => StringUtils.StringWithColor($"  {label}: ", GameColors.Gold);
-                                    string ColorValue(object value) => StringUtils.StringWithColor(value.ToString(), GameColors.White);
                                 }
 
                             case "reset":
                                 if (logger != null)
                                 {
                                     logger.ResetData();
-                                    AddSystemMessage(StringUtils.StringWithColor("Player behavior stats reset.", GameColors.Orange));
+                                    AddSystemMessage(StringUtils.StringWithColor(
+                                        "Player behavior stats reset.", GameColors.Orange));
                                 }
                                 break;
 
@@ -1026,67 +1032,87 @@ namespace PLAYERTWO.ARPGProject
                                 if (logger != null)
                                 {
                                     logger.ExportPlayerData();
-                                    AddSystemMessage(StringUtils.StringWithColor("Exported player data to CSV.", GameColors.Lime));
+                                    AddSystemMessage(StringUtils.StringWithColor(
+                                        "Exported player data to CSV.", GameColors.Lime));
                                 }
                                 break;
 
                             case "force":
                                 {
-                                    var rl = RLModel.Instance;
-                                    if (rl == null)
+                                    if (rlModel == null)
                                     {
-                                        AddSystemMessage(StringUtils.StringWithColor("RLModel not initialized.", GameColors.Crimson));
+                                        AddSystemMessage(StringUtils.StringWithColor(
+                                            "RLModel not initialized.", GameColors.Crimson));
                                         break;
                                     }
 
-                                    float current = rl.GetCurrentDifficulty();
-                                    rl.AdjustDifficulty(current);
+                                    float cur = rlModel.GetCurrentDifficulty();
+                                    rlModel.AdjustDifficulty(cur);
 
-                                    AddSystemMessage(StringUtils.StringWithColorAndStyle($"[AI-DDA] Requested difficulty recalculation (base {current})", GameColors.LightBlue));
+                                    AddSystemMessage(StringUtils.StringWithColorAndStyle(
+                                        $"[AI-DDA] Requested difficulty recalculation (base {cur:F2})",
+                                        GameColors.LightBlue));
                                     break;
                                 }
 
                             case "type":
+                                if (logger != null)
                                 {
-                                    if (logger != null)
-                                    {
-                                        string message =
-                                            StringUtils.StringWithColor("Dynamic player Bartle's type: ", GameColors.White) +
-                                            StringUtils.StringWithColor(logger.currentDynamicPlayerType.ToString(), GameColors.Cyan);
-
-                                        AddSystemMessage(message);
-                                    }
-                                    else
-                                    {
-                                        AddSystemMessage(StringUtils.StringWithColor("Logger not initialized.", GameColors.Crimson));
-                                    }
-                                    break;
-                                }
-
-                            case "diff":
-                                if (parts.Length >= 3 && float.TryParse(parts[2], out float val))
-                                {
-                                    if (rlModel != null)
-                                    {
-                                        rlModel.SetCurrentDifficulty(val);
-                                        AddSystemMessage(StringUtils.StringWithColor($"Difficulty manually set to {val}", GameColors.Orange));
-                                    }
+                                    string msg =
+                                        StringUtils.StringWithColor("Dynamic player Bartle's type: ", GameColors.White) +
+                                        StringUtils.StringWithColor(logger.currentDynamicPlayerType.ToString(), GameColors.Cyan);
+                                    AddSystemMessage(msg);
                                 }
                                 else
                                 {
-                                    AddSystemMessage(StringUtils.StringWithColor("Usage: /dda diff [value]", GameColors.Gray));
+                                    AddSystemMessage(StringUtils.StringWithColor(
+                                        "Logger not initialized.", GameColors.Crimson));
+                                }
+                                break;
+
+                            case "diff":
+                                {
+                                    if (parts.Length < 3 || !float.TryParse(parts[2], out float val))
+                                    {
+                                        AddSystemMessage(StringUtils.StringWithColor(
+                                            "Usage: /dda diff [value]", GameColors.Gray));
+                                        break;
+                                    }
+
+                                    if (diffMgr == null || rlModel == null)
+                                    {
+                                        AddSystemMessage(StringUtils.StringWithColor(
+                                            "Difficulty system not initialized.", GameColors.Crimson));
+                                        break;
+                                    }
+
+                                    diffMgr.ManualSetDifficulty(val);
+                                    rlModel.SetCurrentDifficulty(val);
+
+                                    AddSystemMessage(StringUtils.StringWithColor(
+                                        $"[AI-DDA] Manual difficulty override = {val:F2}.  Use /dda free to release.",
+                                        GameColors.Orange));
+                                    break;
+                                }
+
+                            case "free":
+                                if (diffMgr != null)
+                                {
+                                    diffMgr.ClearManualOverride();
+                                    AddSystemMessage(StringUtils.StringWithColor(
+                                        "[AI-DDA] Manual override disabled – AI back in control.",
+                                        GameColors.LightBlue));
                                 }
                                 break;
 
                             default:
-                                AddSystemMessage(StringUtils.StringWithColor($"Unknown /dda command: {sub}", GameColors.Crimson));
+                                AddSystemMessage(StringUtils.StringWithColor(
+                                    $"Unknown /dda command: {sub}", GameColors.Crimson));
                                 break;
                         }
-                        break;
 
-                default:
-                    AddSystemMessage(StringUtils.StringWithColor($"Unknown command: /{cmd}", GameColors.Crimson));
-                    break;
+                        break;
+                    }
             }
         }
 

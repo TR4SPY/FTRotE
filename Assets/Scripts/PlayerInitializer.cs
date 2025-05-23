@@ -93,6 +93,13 @@ namespace AI_DDA.Assets.Scripts
                     if (currentCharacter != null)
                     {
                         gameSave.LoadLogsForCharacter(currentCharacter);
+                        if (gameSave != null && currentCharacter != null)
+                        {
+                            DifficultyManager.Instance?.ResetDifficultyLoad();
+
+                            gameSave.LoadLogsForCharacter(currentCharacter);
+                            gameSave.LoadDifficultyForCharacter(currentCharacter);
+                        }
                     }
                     else
                     {

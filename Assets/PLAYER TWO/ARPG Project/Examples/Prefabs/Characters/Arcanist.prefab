@@ -399,6 +399,9 @@ MonoBehaviour:
   onDamage:
     m_PersistentCalls:
       m_Calls: []
+  onDamageEx:
+    m_PersistentCalls:
+      m_Calls: []
   onBlock:
     m_PersistentCalls:
       m_Calls: []
@@ -521,7 +524,7 @@ MonoBehaviour:
   hands: {fileID: 2957117559850772991}
   skillGroundLayer:
     serializedVersion: 2
-    m_Bits: 129
+    m_Bits: 128
 --- !u!114 &2957117560480157746
 MonoBehaviour:
   m_ObjectHideFlags: 0

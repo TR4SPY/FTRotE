@@ -298,13 +298,14 @@ MonoBehaviour:
   spotRadius: 5
   viewAngle: 110
   viewDistance: 10
-  fleeRadius: 8
+  fleeRadius: 10
   useSkill: 1
   resetMoveDelay: 1
   attackCoolDown: 0.5
   addToAttackersList: 0
   limitSimultaneousAttackers: 0
   maxSimultaneousAttackers: 2
+  baseSkillUseChance: 0.4
   searchDamageSource: 1
   searchDamageSourceDelay: 0.3
   searchDamageSourceDuration: 5
@@ -388,6 +389,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   onDamage:
+    m_PersistentCalls:
+      m_Calls: []
+  onDamageEx:
     m_PersistentCalls:
       m_Calls: []
   onBlock:

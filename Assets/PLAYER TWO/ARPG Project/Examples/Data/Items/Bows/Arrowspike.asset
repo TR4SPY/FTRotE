@@ -20,6 +20,7 @@ MonoBehaviour:
   dropRotation: {x: -90, y: 0, z: 45}
   previewLookAtOffset: {x: 0, y: 0, z: 0}
   previewCameraOffset: {x: 0, y: 0, z: 1.4}
+  previewRotationEuler: {x: 0, y: 0, z: 0}
   previewScaleOverride: 0
   previewResolutionWidth: 64
   previewResolutionHeight: 256

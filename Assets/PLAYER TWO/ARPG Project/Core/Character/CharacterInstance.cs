@@ -38,6 +38,7 @@ namespace PLAYERTWO.ARPGProject
 
         public int savedHealth = -1;
         public int savedMana = -1;
+        public float savedDifficulty = 5f; 
         public int playerDeaths = 0;
         public int enemiesDefeated = 0;
         public float totalCombatTime = 0f;

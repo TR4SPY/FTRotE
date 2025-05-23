@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 714677181b4f39440a248d8ae62fba51, type: 3}
+  m_Name: Black Lightning
+  m_EditorClassIdentifier: 
+  icon: {fileID: 21300000, guid: bc66cf3c55d63ed46af8b1d82cf84e34, type: 3}
+  sound: {fileID: 0}
+  coolDown: 5
+  castObject: {fileID: 5627696518775099638, guid: a8b88babde300536794147b5b94b2c67, type: 3}
+  castingOrigin: 4
+  requireTarget: 1
+  faceInterestDirection: 1
+  useRegularAttackClip: 0
+  overrideClip: {fileID: 0}
+  useMana: 1
+  manaCost: 60
+  useBlood: 1
+  bloodCost: 10
+  useHealing: 0
+  healingAmount: 0
+  useMeleeHitbox: 0
+  minAttackDistance: 10
+  requiredWeapon: 0
+  damageMode: 1
+  minDamage: 1
+  maxDamage: 2
+  destroyOnHit: 0
+  particleDestroyOnCollision: 0
+  destroyOnFirstParticleCollision: 0
+  particleCollideOnce: 0

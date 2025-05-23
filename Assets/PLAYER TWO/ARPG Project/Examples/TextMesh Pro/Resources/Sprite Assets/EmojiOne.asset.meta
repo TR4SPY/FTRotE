@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: c41005c129ba4d66911b75229fd70b45
 timeCreated: 1480316912
-licenseType: Store
+licenseType: Pro
 NativeFormatImporter:
   userData: 
   assetBundleName: 
@@ -13,4 +13,4 @@ AssetOrigin:
   packageVersion: 1.0
   assetPath: Assets/PLAYER TWO/ARPG Project/Examples/TextMesh Pro/Resources/Sprite
     Assets/EmojiOne.asset
-  uploadId: 739111
+  uploadId: 739108

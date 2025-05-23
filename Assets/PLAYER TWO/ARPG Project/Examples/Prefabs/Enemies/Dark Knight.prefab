@@ -78,6 +78,9 @@ MonoBehaviour:
   onDamage:
     m_PersistentCalls:
       m_Calls: []
+  onDamageEx:
+    m_PersistentCalls:
+      m_Calls: []
   onBlock:
     m_PersistentCalls:
       m_Calls: []
@@ -118,16 +121,17 @@ MonoBehaviour:
   - Entity/Player
   - Entity/Summoned
   - Entity/AI_Agent
-  spotRadius: 10
-  viewAngle: 110
-  viewDistance: 10
-  fleeRadius: 8
+  spotRadius: 12
+  viewAngle: 180
+  viewDistance: 15
+  fleeRadius: 15
   useSkill: 0
   resetMoveDelay: 1
   attackCoolDown: 0.5
   addToAttackersList: 1
   limitSimultaneousAttackers: 1
   maxSimultaneousAttackers: 2
+  baseSkillUseChance: 0.4
   searchDamageSource: 1
   searchDamageSourceDelay: 0.3
   searchDamageSourceDuration: 5
@@ -179,7 +183,7 @@ MonoBehaviour:
   vitality: 47
   energy: 45
   alwaysUseBaseComboStats: 0
-  baseMaxCombos: 1
+  baseMaxCombos: 3
   baseTimeToStopCombo: 1
   baseNextComboDelay: 0.1
   canGainExperience: 0

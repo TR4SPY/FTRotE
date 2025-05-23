@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: 6e59c59b81ab47f9b6ec5781fa725d2c
 timeCreated: 1484171296
-licenseType: Store
+licenseType: Pro
 TextScriptImporter:
   userData: 
   assetBundleName: 
@@ -13,4 +13,4 @@ AssetOrigin:
   packageVersion: 1.0
   assetPath: Assets/PLAYER TWO/ARPG Project/Examples/TextMesh Pro/Fonts/LiberationSans
     - OFL.txt
-  uploadId: 739111
+  uploadId: 739108

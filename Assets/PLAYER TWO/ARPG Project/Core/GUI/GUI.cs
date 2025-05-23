@@ -49,6 +49,7 @@ namespace PLAYERTWO.ARPGProject
         public UnityEvent onToggleInventory;
         public UnityEvent onToggleQuestLog;
         public UnityEvent onToggleMenu;
+        public UnityEvent onToggleMinimap;
         public UnityEvent onToggleCollectiblesNames;
 
         protected InputAction m_toggleSkills;
@@ -58,6 +59,7 @@ namespace PLAYERTWO.ARPGProject
         protected InputAction m_toggleMenu;
         protected InputAction m_toggleMenuWebGL;
         protected InputAction m_dropItem;
+        protected InputAction m_toggleMinimap;
         protected InputAction m_toggleCollectiblesNames;
         protected GameAudio m_audio => GameAudio.instance;
 
@@ -84,6 +86,7 @@ namespace PLAYERTWO.ARPGProject
             m_toggleMenu = actions["Toggle Menu"];
             m_toggleMenuWebGL = actions["Toggle Menu (WebGL)"];
             m_dropItem = actions["Drop Item"];
+            m_toggleMinimap = actions["Toggle Minimap"];
             m_toggleCollectiblesNames = actions["Toggle Collectibles Names"];
         }
 
@@ -96,6 +99,8 @@ namespace PLAYERTWO.ARPGProject
 #if UNITY_WEBGL
             m_toggleMenuWebGL.performed += _ => onToggleMenu.Invoke();
 #else
+            m_toggleMinimap.performed += _ => onToggleMinimap.Invoke();
+
             m_toggleMenu.performed -= _ => HandleEscape();
             m_toggleMenu.performed += _ => HandleEscape();
 #endif
@@ -213,7 +218,7 @@ namespace PLAYERTWO.ARPGProject
 
         private IEnumerator AnimateDropItem(Transform itemTransform, Vector3 targetPosition)
         {
-            float animationDuration = 1f; // Duration of the animation
+            float animationDuration = 1f;
             float elapsedTime = 0f;
 
             Vector3 startPosition = itemTransform.position;
@@ -224,7 +229,6 @@ namespace PLAYERTWO.ARPGProject
                 elapsedTime += Time.deltaTime;
                 float t = elapsedTime / animationDuration;
 
-                // Quadratic bezier
                 Vector3 currentPos = Mathf.Pow(1 - t, 2) * startPosition
                                    + 2 * (1 - t) * t * controlPoint
                                    + Mathf.Pow(t, 2) * targetPosition;
@@ -233,7 +237,6 @@ namespace PLAYERTWO.ARPGProject
                 yield return null;
             }
 
-            // final
             itemTransform.position = targetPosition;
         }
 

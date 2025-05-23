@@ -511,10 +511,23 @@ namespace PLAYERTWO.ARPGProject
         {
             foreach (var item in m_items)
             {
-                if (item.Value == null) continue;
+                var itemInstance = item.Value;
+                if (itemInstance == null)
+                    continue;
 
-                if (Random.Range(0, 1f) < onDamageDecreaseChance)
-                    item.Value.ApplyDamage(onDamageDecreaseAmount);
+                if (Random.value < onDamageDecreaseChance)
+                {
+                    float magicResistance = entity.stats.magicResistance;
+                    float magicResistanceFactor = magicResistance / (magicResistance + 50f);
+
+                    int rawLoss = onDamageDecreaseAmount;
+                    int loss = Mathf.Max(
+                        1,
+                        Mathf.CeilToInt(rawLoss * (1f - magicResistanceFactor))
+                    );
+
+                    itemInstance.ApplyDamage(loss);
+                }
             }
         }
 

@@ -14,6 +14,7 @@ namespace PLAYERTWO.ARPGProject
         public UnityEvent<EntityAttackType> onPerformAttack;
         public UnityEvent onTargetSet;
         public UnityEvent<int, Vector3, bool> onDamage;
+        public UnityEvent<int, Vector3, bool, Entity> onDamageEx;
         public UnityEvent onBlock;
         public UnityEvent onStunned;
         public UnityEvent onDie;
@@ -493,15 +494,16 @@ namespace PLAYERTWO.ARPGProject
             if (Time.time > m_lastComboTime + stats.timeToStopCombo)
                 CancelCombo();
 
-            if (useSkill)
+            bool performed = false;
+
+            if (useSkill && !isAttacking && skills.CanUseSkill())
             {
-                if (!isAttacking && skills.CanUseSkill())
-                {
-                    skillDuration = m_animator.GetAttackAnimationLength();
-                    states.ChangeTo<UseSkillEntityState>();
-                }
+                skillDuration = m_animator.GetAttackAnimationLength();
+                states.ChangeTo<UseSkillEntityState>();
+                performed = true;
             }
-            else if (!isAttacking || CanPerformNextCombo())
+
+            if (!performed && (!isAttacking || CanPerformNextCombo()))
             {
                 m_lastAttackTime = Time.time;
                 attackDuration = m_animator.GetAttackAnimationLength();
@@ -712,6 +714,7 @@ namespace PLAYERTWO.ARPGProject
                 m_damageFrom.Add(other);
 
             onDamage?.Invoke(total, other.position, critical);
+            onDamageEx?.Invoke(total, other.position, critical, other); 
 
             if (stats.health == 0)
                 Die();
