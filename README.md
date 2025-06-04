@@ -1,3 +1,12 @@
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Tests-Passing-brightgreen?style=flat-square" alt="Tests" />
+  <img src="https://img.shields.io/badge/Version-0.60B%2B-informational?style=flat-square" alt="Version" />
+  <img src="https://img.shields.io/badge/Build-June%202025-lightgrey?style=flat-square" alt="Build" />
+  <img src="https://img.shields.io/badge/Unity-6000.0.25f1-blue?style=flat-square" alt="Unity" />
+  <img src="https://img.shields.io/badge/License-Restricted-red?style=flat-square" alt="License" />
+</p>
+
 # AI-DDA (Artificial Intelligence Dynamic Difficulty Adjustment)
 
 This project explores the integration of machine learning techniques, specifically through Unity ML-Agents and custom AI models, to dynamically adjust the difficulty in an RPG game environment. The system also incorporates player behavior modeling and psychological player profiling (Bartle's Player Types) as part of an academic research project at the Master's degree in Computer Science at University of Bath.
@@ -14,6 +23,7 @@ The primary goal of this project is to design and implement an AI system capable
 - Integrating player profiling based on Bartle's Player Types taxonomy.
 
 ### **Current Status**
+
 The project is built upon a heavily modified version of the **ARPG Project** asset and utilizes the **Gaia Pro 2023** terrain generation asset to create an immersive game environment. The prototype focuses on combining player behavioral analysis with AI-driven adaptive difficulty.
 
 #### ✔ **Completed**
