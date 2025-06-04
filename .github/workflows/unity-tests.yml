@@ -29,6 +29,12 @@ jobs:
         echo "version=$VERSION" >> $GITHUB_OUTPUT
         echo "$VERSION" > BuildVersion.txt
 
+    - name: Temporarily Patch Unity Version for CI
+      run: |
+        echo "Patching Unity version to fake 2022.3.20f1 for game-ci compatibility"
+        sed -i 's/^m_EditorVersion:.*/m_EditorVersion: 2022.3.20f1/' ProjectSettings/ProjectVersion.txt
+        sed -i 's/^m_EditorVersionWithRevision:.*/m_EditorVersionWithRevision: 2022.3.20f1 (CI_FAKE_REVISION)/' ProjectSettings/ProjectVersion.txt
+
     - name: Run Unity EditMode Tests
       uses: game-ci/unity-test-runner@v3
       with:
