@@ -25,11 +25,11 @@ jobs:
         echo "version=$VERSION" >> $GITHUB_OUTPUT
         echo "$VERSION" > BuildVersion.txt
 
-    - name: Run Unity Tests
+    - name: Run Unity EditMode Tests
       uses: game-ci/unity-test-runner@v3
       with:
         unityVersion: 2022.3.14f1
-        targetPlatform: StandaloneLinux64
+        customImage: unityci/editor:2022.3.14f1-base-0
         testMode: EditMode
 
     - name: Upload BuildVersion.txt
