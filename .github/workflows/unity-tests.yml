@@ -2,13 +2,17 @@ name: Unity Tests
 
 on:
   push:
-    branches: [ main, development ]
+    branches: [ development ]
   pull_request:
 
 jobs:
   test:
     name: Run Unity 6 Tests
     runs-on: ubuntu-latest
+
+    env:
+      UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+      UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
 
     steps:
     - name: Checkout repo
@@ -28,6 +32,7 @@ jobs:
     - name: Run Unity EditMode Tests
       uses: game-ci/unity-test-runner@v3
       with:
+        unityVersion: 6000.0.50f1
         customImage: unityci/editor:ubuntu-6000.0.50f1-linux-il2cpp-3.1.0
         testMode: EditMode
         coverageOptions: generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;dontClear
