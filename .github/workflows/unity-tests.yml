@@ -28,7 +28,7 @@ jobs:
     - name: Run Unity Tests (Unity 6 Linux Vulkan)
       uses: game-ci/unity-test-runner@v3
       with:
-        unityVersion: 6000.0.25f1
+        unityVersion: 2022.3.14f1
         testMode: EditMode
         customParameters: -nographics -batchmode -force-vulkan -logFile -
         githubToken: ${{ secrets.GITHUB_TOKEN }}
