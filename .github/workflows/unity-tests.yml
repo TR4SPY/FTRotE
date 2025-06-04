@@ -25,14 +25,24 @@ jobs:
         echo "version=$VERSION" >> $GITHUB_OUTPUT
         echo "$VERSION" > BuildVersion.txt
 
-    - name: Run Unity EditMode Tests (Unity 6000.0.50f1)
+    - name: Run Unity EditMode Tests
       uses: game-ci/unity-test-runner@v3
       with:
-        unityVersion: 6000.0.50f1
         customImage: unityci/editor:ubuntu-6000.0.50f1-linux-il2cpp-3.1.0
         testMode: EditMode
+        coverageOptions: generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;dontClear
+        artifactsPath: artifacts
+        checkName: Test Results
+        useHostNetwork: false
+        packageMode: false
 
-    - name: Upload BuildVersion.txt
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v4
+      with:
+        name: TestResults
+        path: artifacts
+
+    - name: Upload Build Version
       uses: actions/upload-artifact@v4
       with:
         name: BuildVersion
