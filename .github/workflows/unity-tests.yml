@@ -7,14 +7,14 @@ on:
 
 jobs:
   test:
-    name: Run Tests + Generate Build Version
+    name: Run Unity 6 Tests
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repo
       uses: actions/checkout@v3
 
-    - name: Count commits and generate version
+    - name: Generate Build Version
       id: version
       run: |
         COMMITS=$(git rev-list --count HEAD)
@@ -25,11 +25,11 @@ jobs:
         echo "version=$VERSION" >> $GITHUB_OUTPUT
         echo "$VERSION" > BuildVersion.txt
 
-    - name: Run Unity EditMode Tests
+    - name: Run Unity EditMode Tests (Unity 6000.0.50f1)
       uses: game-ci/unity-test-runner@v3
       with:
-        unityVersion: 2022.3.14f1
-        customImage: unityci/editor:2022.3.14f1-base-0
+        unityVersion: 6000.0.50f1
+        customImage: unityci/editor:ubuntu-6000.0.50f1-linux-il2cpp-3.1.0
         testMode: EditMode
 
     - name: Upload BuildVersion.txt
