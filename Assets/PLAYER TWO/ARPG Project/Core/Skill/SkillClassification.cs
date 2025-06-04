@@ -32,7 +32,7 @@ namespace PLAYERTWO.ARPGProject
         Fortification
     }
 
-    public enum Element
+    public enum MagicElement
     {
         None = 0,
         
@@ -42,7 +42,6 @@ namespace PLAYERTWO.ARPGProject
         Earth,
         Air,
         Lightning,
-        
         Shadow,
         Light,
         Arcane

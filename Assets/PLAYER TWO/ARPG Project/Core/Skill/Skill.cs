@@ -69,6 +69,9 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The role or purpose of this magic.")]
         public MagicType type;
 
+        [Tooltip("The element of this spell.")]
+        public MagicElement element;
+
         /// <summary>
         /// Returns true if this Skill is a attacking skill.
         /// </summary>
