@@ -42,3 +42,6 @@ Assets/Procedural Worlds/
 Assets/Gaia User Data
 Assets/IMPORTED
 Assets/IMPORTED.meta
+
+# Unity crash dumps
+mono_crash.mem.*.blob

@@ -90,16 +90,12 @@ namespace AI_DDA.Assets.Scripts
                 if (gameSave != null)
                 {
                     var currentCharacter = Game.instance?.currentCharacter;
-                    if (currentCharacter != null)
+                    if (gameSave != null && currentCharacter != null)
                     {
-                        gameSave.LoadLogsForCharacter(currentCharacter);
-                        if (gameSave != null && currentCharacter != null)
-                        {
-                            DifficultyManager.Instance?.ResetDifficultyLoad();
+                        DifficultyManager.Instance?.ResetDifficultyLoad();
 
-                            gameSave.LoadLogsForCharacter(currentCharacter);
-                            gameSave.LoadDifficultyForCharacter(currentCharacter);
-                        }
+                        gameSave.LoadLogsForCharacter(currentCharacter);
+                        gameSave.LoadDifficultyForCharacter(currentCharacter);
                     }
                     else
                     {

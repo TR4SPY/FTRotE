@@ -48,7 +48,7 @@ namespace AI_DDA.Assets.Scripts
         {
             if (worker == null)
             {
-                Debug.LogError("[AI-DDA] Worker has not been properly inicialized!");   //  DEBUG - MLP model worker has not been properly inicialized
+                Debug.LogError("[AI-DDA] Worker has not been properly initialized!");   //  DEBUG - MLP model worker has not been properly inicialized
                 return 5.0f;
             }
 

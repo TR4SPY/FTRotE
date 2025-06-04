@@ -81,24 +81,23 @@ namespace AI_DDA.Assets.Scripts
         }
 
         protected IEnumerator HideRoutine()
-{
-    m_group.interactable = false;
-    m_group.blocksRaycasts = false;
+        {
+            m_group.interactable = false;
+            m_group.blocksRaycasts = false;
 
-    for (float timer = 0; timer < hideDuration;)
-    {
-        timer += Time.deltaTime;
-        m_group.alpha = Mathf.Lerp(1, 0, timer / hideDuration);
-        yield return null;
-    }
+            for (float timer = 0; timer < hideDuration;)
+            {
+                timer += Time.deltaTime;
+                m_group.alpha = Mathf.Lerp(1, 0, timer / hideDuration);
+                yield return null;
+            }
 
-    m_group.alpha = 0;
+            m_group.alpha = 0;
 
-    yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(0.1f);
 
-    HUDManager.Instance.OnHUDHidden(this);
-}
-
+            HUDManager.Instance.OnHUDHidden(this);
+        }
 
         protected virtual void Start()
         {

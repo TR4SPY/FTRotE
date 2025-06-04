@@ -450,7 +450,7 @@ namespace AI_DDA.Assets.Scripts
 
             if (!File.Exists(filePath))
             {
-                File.WriteAllText(filePath, "playerDeaths,enemiesDefeated,totalCombatTime,enemiesAvoided,potionsUsed,zonesDiscovered,npcInteractions,waypointsDiscovered,achievementsUnlocked,currentDynamicPlayerType,difficultyMultiplier,difficultyLevel\n");
+                File.WriteAllText(filePath, "playerDeaths,enemiesDefeated,totalCombatTime,potionsUsed,zonesDiscovered,npcInteractions,waypointsDiscovered,achievementsUnlocked,currentDynamicPlayerType,difficultyMultiplier,difficultyLevel\n");
             }
 
             int currentDifficulty = DifficultyManager.Instance.GetCurrentDifficulty();

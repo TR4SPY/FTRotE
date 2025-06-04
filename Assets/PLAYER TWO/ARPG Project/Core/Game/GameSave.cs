@@ -166,6 +166,9 @@ namespace PLAYERTWO.ARPGProject
             DifficultyManager.Instance.CurrentEnergyMultiplier = character.GetMultiplier("Energy");
 
             DifficultyManager.Instance.ForceSetRawDifficulty(character.savedDifficulty);
+
+            // Ensure the RL model uses the loaded difficulty as its baseline
+            RLModel.Instance?.SetCurrentDifficulty(character.savedDifficulty);
                         
             /*
             Debug.Log($"Loaded Difficulty for {character.name}: " +
