@@ -1,0 +1,41 @@
+name: Unity Tests
+
+on:
+  push:
+    branches: [ main, development ]
+  pull_request:
+
+jobs:
+  test:
+    name: Run Tests + Generate Build Version
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Count commits and generate version
+      id: version
+      run: |
+        COMMITS=$(git rev-list --count HEAD)
+        MINOR=$((COMMITS % 100))
+        LETTER_INDEX=$((COMMITS / 100))
+        LETTER=$(echo {A..Z} | cut -d' ' -f $((LETTER_INDEX + 1)))
+        VERSION="0.$MINOR$LETTER"
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "$VERSION" > BuildVersion.txt
+
+    - name: Run Unity Tests (Unity 6 Linux Vulkan)
+      uses: game-ci/unity-test-runner@v3
+      with:
+        unityVersion: 6000.0.25f1
+        testMode: EditMode
+        customParameters: -nographics -batchmode -force-vulkan -logFile -
+        githubToken: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Upload BuildVersion.txt
+      uses: actions/upload-artifact@v3
+      with:
+        name: BuildVersion
+        path: BuildVersion.txt
+

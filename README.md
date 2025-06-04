@@ -77,6 +77,29 @@ The focus now shifts to final data analysis, optimization, and preparation for a
 
 ---
 
+## **Training the AI Models**
+
+Before training, install [Unity ML-Agents](https://github.com/Unity-Technologies/ml-agents) and ensure your Python environment meets the package requirements. The Unity project must also have the ML-Agents package enabled.
+
+Two example trainer configurations are provided:
+
+- `config/ppo/AI_TestAgent.yaml` – PPO setup for the prototype AI agent. **(Currently not used / used previously to test AI companion).**
+- `config/rlmodel.yaml` – parameters for the difficulty adjustment model.
+
+To launch training, run `mlagents-learn` with the desired configuration. The commands below assume you have a built training environment or run from the Unity Editor:
+
+```bash
+# Train the test agent
+mlagents-learn config/ppo/AI_TestAgent.yaml --run-id=AI_TestAgent --train
+
+# Train the reinforcement learning difficulty model
+mlagents-learn config/rlmodel.yaml --run-id=RLModel --train
+```
+
+Training results, including TensorBoard logs and the exported `.onnx` files, are written to the `results/<run-id>` directory. After completion, copy the generated ONNX models into `Assets/StreamingAssets/` so the game can load them at runtime.
+
+
+
 ## **In-Game Command Reference**
 
 | Command | Description |

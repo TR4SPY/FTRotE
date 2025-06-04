@@ -110,13 +110,24 @@ namespace AI_DDA.Assets.Scripts
         {
             // Debug.Log($"[RL] tick base={baseDifficulty:F2} out={adjustedDifficulty:F2}");
 
-            lastDecisionTime = Time.time;
             currentDifficulty = baseDifficulty;
             adjustedDifficulty = baseDifficulty;
 
-            RequestDecision();  
+            if (Time.time - lastDecisionTime > decisionInterval)
+            {
+                RequestDecision();
+                lastDecisionTime = Time.time;
+            }
 
             // return adjustedDifficulty;
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                Instance = null;
+            }
         }
     }
 }

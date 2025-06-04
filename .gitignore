@@ -45,3 +45,6 @@ Assets/IMPORTED.meta
 
 # Unity crash dumps
 mono_crash.mem.*.blob
+
+# BuildVersion & Tests
+BuildVersion.txt
