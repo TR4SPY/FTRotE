@@ -59,6 +59,16 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The amount of health points to increase.")]
         public int healingAmount;
 
+        [Header("Magic Classification")]
+        [Tooltip("The magical school this Skill belongs to.")]
+        public MagicSchool school;
+
+        [Tooltip("The form this magic takes, like projectile or area effect.")]
+        public MagicForm form;
+
+        [Tooltip("The role or purpose of this magic.")]
+        public MagicType type;
+
         /// <summary>
         /// Returns true if this Skill is a attacking skill.
         /// </summary>

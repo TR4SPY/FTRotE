@@ -559,6 +559,7 @@ MonoBehaviour:
   leftHandItem: {fileID: 0}
   onDamageDecreaseChance: 0.1
   onDamageDecreaseAmount: 1
+  skillDurabilityMultiplier: 0.1
 --- !u!114 &2957117560480157711
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -606,8 +607,8 @@ MonoBehaviour:
   blockClips:
   - {fileID: 8300000, guid: a420a524dc0e4fd4f8bf3bd9a4808bc5, type: 3}
   stunClips: []
-  m_audioCooldown: 0.3
-  distanceLimit: 30
+  audibleDistance: 8
+  targetSetCooldown: 1
 --- !u!114 &2957117560480157708
 MonoBehaviour:
   m_ObjectHideFlags: 0

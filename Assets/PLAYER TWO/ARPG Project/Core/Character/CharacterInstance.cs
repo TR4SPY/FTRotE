@@ -387,6 +387,8 @@ namespace PLAYERTWO.ARPGProject
             characterInstance.SetMultiplier("Vitality", serializer.vitalityMultiplier);
             characterInstance.SetMultiplier("Energy", serializer.energyMultiplier);
 
+            characterInstance.savedDifficulty = serializer.savedDifficulty;
+            
             return characterInstance;
         }
     }

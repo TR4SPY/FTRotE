@@ -17,6 +17,10 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("If true, the particle can collide only once with the another Game Object.")]
         public bool collideOnce;
 
+        [Tooltip("Minimum time in seconds before this skill can damage the same target again. Set to 0 for no limit.")]
+        public float hitCooldown = 0f;
+
+
         [HideInInspector]
         public bool destroyOnCollision = false;
 
@@ -32,6 +36,8 @@ namespace PLAYERTWO.ARPGProject
 
         protected List<GameObject> m_targets = new List<GameObject>();
         protected List<ParticleCollisionEvent> m_events = new List<ParticleCollisionEvent>();
+        protected Dictionary<GameObject, float> m_lastHitTime = new();
+
 
         protected virtual void InitializeCollider()
         {
@@ -54,20 +60,19 @@ namespace PLAYERTWO.ARPGProject
         /// <param name="entity">The Entity of the caster.</param>
         /// <param name="skill">The Skill data.</param>
         public virtual void SetSkills(Entity entity, Skill skill)
-{
-    m_entity = entity;
-    m_skill = skill;
+        {
+            m_entity = entity;
+            m_skill = skill;
 
-    if (skill is SkillAttack attack)
-    {
-        destroyOnCollision = attack.particleDestroyOnCollision;
-        destroyOnFirstParticleCollision = attack.destroyOnFirstParticleCollision;
-        collideOnce = attack.particleCollideOnce;
+            if (skill is SkillAttack attack)
+            {
+                destroyOnCollision = attack.particleDestroyOnCollision;
+                destroyOnFirstParticleCollision = attack.destroyOnFirstParticleCollision;
+                collideOnce = attack.particleCollideOnce;
 
-        Debug.Log($"[{name}] Skill set: destroyOnCollision={destroyOnCollision}, destroyOnFirstParticleCollision={destroyOnFirstParticleCollision}, collideOnce={collideOnce}");
-    }
-}
-
+                Debug.Log($"[{name}] Skill set: destroyOnCollision={destroyOnCollision}, destroyOnFirstParticleCollision={destroyOnFirstParticleCollision}, collideOnce={collideOnce}");
+            }
+        }
 
         protected virtual void Start()
         {
@@ -81,7 +86,11 @@ namespace PLAYERTWO.ARPGProject
             Destroy(gameObject);
         }
 
-        protected virtual void OnEnable() => m_targets.Clear();
+        protected virtual void OnEnable()
+        {
+            m_targets.Clear();
+            m_lastHitTime.Clear();
+        }
 
         protected virtual bool ValidCollision(GameObject other)
         {
@@ -92,6 +101,13 @@ namespace PLAYERTWO.ARPGProject
         protected virtual void HandleEntityAttack(GameObject other, int damage, bool critical)
         {
             if (!other.TryGetComponent(out m_target)) return;
+
+            if (!m_entity.CompareTag(GameTags.Player) && other.CompareTag(GameTags.Player) &&
+                other.TryGetComponent(out EntityItemManager items))
+            {
+                items.SetNextDurabilityMultiplier(items.skillDurabilityMultiplier);
+            }
+
             m_target.Damage(m_entity, damage, critical);
         }
 
@@ -111,13 +127,25 @@ namespace PLAYERTWO.ARPGProject
             HandleDestructibleAttack(other, damage);
         }
 
+        protected virtual bool CanHit(GameObject target)
+        {
+            return !m_lastHitTime.TryGetValue(target, out var last) || Time.time - last >= hitCooldown;
+        }
+
+        protected virtual void RegisterHit(GameObject target)
+        {
+            m_lastHitTime[target] = Time.time;
+        }
+
         protected virtual void OnTriggerStay(Collider other)
         {
             if (!ValidCollision(other.gameObject)) return;
+            if (!CanHit(other.gameObject)) return;
 
             m_targets.Add(other.gameObject);
             var damage = m_entity.stats.GetSkillDamage(m_skill, out var critical);
             HandleAttack(other.gameObject, damage, critical);
+            RegisterHit(other.gameObject);
 
             if (destroyOnFirstParticleCollision)
             {
@@ -127,7 +155,7 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void OnParticleCollision(GameObject other)
         {
-                Debug.Log($"[{name}] OnParticleCollision with {other.name}, destroyOnCollision={destroyOnCollision}, destroyOnFirstParticleCollision={destroyOnFirstParticleCollision}");
+            // Debug.Log($"[{name}] OnParticleCollision with {other.name}, destroyOnCollision={destroyOnCollision}, destroyOnFirstParticleCollision={destroyOnFirstParticleCollision}");
 
             if (!ValidCollision(other)) return;
 
@@ -137,11 +165,13 @@ namespace PLAYERTWO.ARPGProject
             for (int i = 0; i < collisions; i++)
             {
                 if (m_targets.Contains(other)) continue;
+                if (!CanHit(other)) continue;
 
                 var shouldDestroy = false;
 
                 HandleAttack(other, damage, critical);
                 m_targets.Add(other);
+                RegisterHit(other);
 
                 if (destroyOnFirstParticleCollision)
                 {

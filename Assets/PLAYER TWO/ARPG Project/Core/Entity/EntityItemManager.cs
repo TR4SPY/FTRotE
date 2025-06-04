@@ -65,6 +65,9 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The amount of durability points lost after receiving a damage.")]
         public int onDamageDecreaseAmount = 1;
 
+        [Tooltip("Multiplier applied to durability loss when damage is caused by a skill.")]
+        public float skillDurabilityMultiplier = 0.5f;
+
         protected GameObject m_rightHandObject;
         protected GameObject m_leftHandObject;
 
@@ -79,6 +82,8 @@ namespace PLAYERTWO.ARPGProject
         protected Dictionary<string, GameObject> m_entityPieces = new();
 
         protected List<ItemInstance> m_consumables = new();
+
+        protected float m_nextDurabilityMultiplier = 1f;
 
         protected Entity m_entity;
 
@@ -523,12 +528,19 @@ namespace PLAYERTWO.ARPGProject
                     int rawLoss = onDamageDecreaseAmount;
                     int loss = Mathf.Max(
                         1,
-                        Mathf.CeilToInt(rawLoss * (1f - magicResistanceFactor))
+                        Mathf.CeilToInt(rawLoss * (1f - magicResistanceFactor) * m_nextDurabilityMultiplier)
                     );
+
+                    m_nextDurabilityMultiplier = 1f;
 
                     itemInstance.ApplyDamage(loss);
                 }
             }
+        }
+
+        public virtual void SetNextDurabilityMultiplier(float multiplier)
+        {
+            m_nextDurabilityMultiplier = multiplier;
         }
 
         /// <summary>

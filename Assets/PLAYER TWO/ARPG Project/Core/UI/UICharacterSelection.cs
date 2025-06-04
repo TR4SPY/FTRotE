@@ -356,7 +356,7 @@ namespace PLAYERTWO.ARPGProject
                 return;
 
             var mainCanvas = Object.FindObjectsByType<Canvas>(
-                    FindObjectsInactive.Exclude,
+                    FindObjectsInactive.Include,
                     FindObjectsSortMode.None)
                 .FirstOrDefault(c => c.isRootCanvas &&
                                     c.renderMode == RenderMode.ScreenSpaceOverlay &&
@@ -375,8 +375,9 @@ namespace PLAYERTWO.ARPGProject
             if (nestedCanvas != null)
                 Destroy(nestedCanvas);
 
-            uiInstance.transform.SetAsFirstSibling(); 
+            uiInstance.transform.SetAsFirstSibling();
             uiInstance.transform.localScale = Vector3.one;
+            uiInstance.SetActive(true);
 
 
             var guiCharacterInfo = uiInstance.GetComponent<GUICharacterInfo>();

@@ -98,18 +98,26 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual bool HandleEntityAttack(Collider other)
         {
+
             if (GameTags.InTagList(other, m_targets) &&
                 other.TryGetComponent(out m_otherEntity) &&
                 !m_hitEntities.Contains(m_otherEntity))
             {
+                if (!m_entity.CompareTag(GameTags.Player) && other.CompareTag(GameTags.Player) &&
+                    other.TryGetComponent(out EntityItemManager items))
+                {
+                    items.SetNextDurabilityMultiplier(items.skillDurabilityMultiplier);
+                }
+
                 m_hitEntities.Add(m_otherEntity);
                 m_otherEntity.Damage(m_entity, m_damage, m_critical);
                 return true;
             }
 
-            return false;
-        }
 
+            return false;
+
+        }
         protected virtual bool HandleDestructibleAttack(Collider other)
         {
             if (
