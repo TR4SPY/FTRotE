@@ -382,6 +382,11 @@ namespace PLAYERTWO.ARPGProject
             return attributes != null ? attributes.magicResistance : 0;
         }
 
+        public int GetAdditionalElementalResistance(MagicElement element)
+        {
+            return attributes != null ? attributes.GetElementalResistance(element) : 0;
+        }
+
         /// <summary>
         /// Returns true if this weapon has magic damage.
         /// </summary>

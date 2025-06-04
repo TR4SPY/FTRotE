@@ -644,6 +644,19 @@ namespace PLAYERTWO.ARPGProject
             return total;
         }
         
+        public virtual int GetElementalResistance(MagicElement element)
+        {
+            int total = 0;
+
+            foreach (var item in m_items)
+            {
+                if (item.Value == null) continue;
+
+                total += item.Value.GetAdditionalElementalResistance(element);
+            }
+
+            return total;
+        }
 
         /// <summary>
         /// Returns the attack speed of the equipped weapons. If the Entity is equipping

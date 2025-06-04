@@ -114,8 +114,16 @@ namespace PLAYERTWO.ARPGProject
         /// Returns the maximum magic damage.
         /// </summary>
         public int maxMagicDamage { get; protected set; }
-
         public int magicResistance { get; protected set; }
+        public int fireResistance { get; protected set; }
+        public int waterResistance { get; protected set; }
+        public int iceResistance { get; protected set; }
+        public int earthResistance { get; protected set; }
+        public int airResistance { get; protected set; }
+        public int lightningResistance { get; protected set; }
+        public int shadowResistance { get; protected set; }
+        public int lightResistance { get; protected set; }
+        public int arcaneResistance { get; protected set; }
 
         /// <summary>
         /// Returns the maximum number of combos.
@@ -454,6 +462,14 @@ namespace PLAYERTWO.ARPGProject
                 return 0;
 
             return m_items.GetMagicResistance();
+        }
+
+        protected virtual int GetElementalResistance(MagicElement element)
+        {
+            if (m_items == null)
+                return 0;
+
+            return m_items.GetElementalResistance(element);
         }
 
         /// <summary>

@@ -29,6 +29,9 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The maximum damage this Skill can cause.")]
         public int maxDamage;
 
+        [Tooltip("Multiplier applied based on the skill's elemental type.")]
+        public float elementMultiplier = 1f;
+
         [Header("Projectile Settings")]
         [Tooltip("If true, projectile or particle cast by this skill is destroyed on hit/collision.")]
         public bool destroyOnHit = true;
@@ -54,7 +57,7 @@ namespace PLAYERTWO.ARPGProject
                 magicWeaponBonus = (caster.stats.minMagicDamage + caster.stats.maxMagicDamage) * 0.2f;
             }
 
-            float totalDamage = (baseDamage + energyScaling + magicWeaponBonus) * skillScaling;
+            float totalDamage = (baseDamage + energyScaling + magicWeaponBonus) * skillScaling * elementMultiplier;
             return Mathf.RoundToInt(totalDamage);
         }
     }

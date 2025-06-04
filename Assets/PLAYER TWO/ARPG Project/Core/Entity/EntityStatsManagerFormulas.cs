@@ -37,6 +37,11 @@ namespace PLAYERTWO.ARPGProject
             return (int)((level * 2) + GetMagicResistance() + m_additionalAttributes.magicResistance);
         }
 
+        protected virtual int CalculateElementResistance(MagicElement element)
+        {
+            return GetElementalResistance(element) + m_additionalAttributes.GetElementalResistance(element);
+        }
+
         /// <summary>
         /// Calculates the amount of experience points needed to reach the next level.
         /// </summary>

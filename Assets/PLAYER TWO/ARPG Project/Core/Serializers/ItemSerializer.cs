@@ -18,6 +18,15 @@ namespace PLAYERTWO.ARPGProject
             public int manaPercent;
             public int health;
             public int healthPercent;
+            public int fireResistance;
+            public int waterResistance;
+            public int iceResistance;
+            public int earthResistance;
+            public int airResistance;
+            public int lightningResistance;
+            public int shadowResistance;
+            public int lightResistance;
+            public int arcaneResistance;
         }
 
         public int itemId = -1;
@@ -68,6 +77,15 @@ namespace PLAYERTWO.ARPGProject
                 this.attributes.manaPercent = attributes.manaPercent;
                 this.attributes.health = attributes.health;
                 this.attributes.healthPercent = attributes.healthPercent;
+                this.attributes.fireResistance = attributes.fireResistance;
+                this.attributes.waterResistance = attributes.waterResistance;
+                this.attributes.iceResistance = attributes.iceResistance;
+                this.attributes.earthResistance = attributes.earthResistance;
+                this.attributes.airResistance = attributes.airResistance;
+                this.attributes.lightningResistance = attributes.lightningResistance;
+                this.attributes.shadowResistance = attributes.shadowResistance;
+                this.attributes.lightResistance = attributes.lightResistance;
+                this.attributes.arcaneResistance = attributes.arcaneResistance;
             }
         }
 
