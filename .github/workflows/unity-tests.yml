@@ -32,7 +32,6 @@ jobs:
     - name: Run Unity EditMode Tests
       uses: game-ci/unity-test-runner@v3
       with:
-        unityVersion: 6000.0.50f1
         customImage: unityci/editor:ubuntu-6000.0.50f1-linux-il2cpp-3.1.0
         testMode: EditMode
         coverageOptions: generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;dontClear
