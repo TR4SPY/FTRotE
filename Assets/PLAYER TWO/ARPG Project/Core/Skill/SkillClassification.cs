@@ -31,4 +31,20 @@ namespace PLAYERTWO.ARPGProject
         Alteration,
         Fortification
     }
+
+    public enum Element
+    {
+        None = 0,
+        
+        Fire,
+        Water,
+        Ice,
+        Earth,
+        Air,
+        Lightning,
+        
+        Shadow,
+        Light,
+        Arcane
+    }
 }
