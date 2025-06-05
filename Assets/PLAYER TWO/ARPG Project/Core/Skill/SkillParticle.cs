@@ -143,7 +143,7 @@ namespace PLAYERTWO.ARPGProject
             if (!CanHit(other.gameObject)) return;
 
             m_targets.Add(other.gameObject);
-            var damage = m_entity.stats.GetSkillDamage(m_skill, out var critical);
+            var damage = m_entity.stats.GetSkillDamage(m_skill, m_skill.element, out var critical);
             HandleAttack(other.gameObject, damage, critical);
             RegisterHit(other.gameObject);
 
@@ -160,7 +160,7 @@ namespace PLAYERTWO.ARPGProject
             if (!ValidCollision(other)) return;
 
             var collisions = m_particle.GetCollisionEvents(other, m_events);
-            var damage = m_entity.stats.GetSkillDamage(m_skill, out var critical);
+            var damage = m_entity.stats.GetSkillDamage(m_skill, m_skill.element, out var critical);
 
             for (int i = 0; i < collisions; i++)
             {

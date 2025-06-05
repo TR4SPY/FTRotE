@@ -161,7 +161,7 @@ namespace PLAYERTWO.ARPGProject
 
             if (IsAttack() && current.AsAttack().useMeleeHitbox)
             {
-                var skillDamage = m_entity.stats.GetSkillDamage(m_entity.skills.current, out var skillCritical);
+                var skillDamage = m_entity.stats.GetSkillDamage(m_entity.skills.current, m_entity.skills.current.element, out var skillCritical);
                 m_entity.hitbox.SetDamage(skillDamage, skillCritical);
                 m_entity.hitbox.Toggle();
             }

@@ -99,7 +99,7 @@ namespace PLAYERTWO.ARPGProject
             if (instance.TryGetComponent(out Projectile projectile))
             {
                 var skillAttack = caster.skills.current.AsAttack();
-                var damage = caster.stats.GetSkillDamage(skillAttack, out var critical);
+                var damage = caster.stats.GetSkillDamage(skillAttack, skillAttack.element, out var critical);
                 projectile.SetDamage(caster, skillAttack.GetDamage(caster), critical, caster.targetTags);
                 projectile.destroyOnHit = skillAttack.destroyOnHit;
             }

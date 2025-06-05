@@ -406,10 +406,10 @@ namespace PLAYERTWO.ARPGProject
         public virtual int GetSkillDamage(Skill skill, out bool critical) =>
            (int)(GetCriticalMultiplier(out critical) * GetSkillDamage(skill));
 */
-        public virtual int GetSkillDamage(Skill skill, out bool critical)
+        public virtual int GetSkillDamage(Skill skill, MagicElement element, out bool critical)
         {
-            int minDamage = GetSkillDamage(skill, out bool minCritical, true);
-            int maxDamage = GetSkillDamage(skill, out bool maxCritical, false);
+            int minDamage = GetSkillDamage(skill, element, out bool minCritical, true);
+            int maxDamage = GetSkillDamage(skill, element, out bool maxCritical, false);
 
             int finalDamage = UnityEngine.Random.Range(minDamage, maxDamage + 1);
 
@@ -476,7 +476,7 @@ namespace PLAYERTWO.ARPGProject
         /// Returns the magic damage points given a skill.
         /// </summary>
         /// <param name="skill">The skill you want to calculate magic damage from.</param>
-        public virtual int GetSkillDamage(Skill skill, out bool isCritical, bool calculateMin)
+        public virtual int GetSkillDamage(Skill skill, MagicElement element, out bool isCritical, bool calculateMin)
         {
             if (!skill || !skill.IsAttack())
             {
@@ -512,7 +512,14 @@ namespace PLAYERTWO.ARPGProject
                 damage = Mathf.RoundToInt(damage * Game.instance.criticalMultiplier);
             }
 
-            return damage;
+            var resistance = CalculateElementResistance(element);
+            var final = Mathf.Max(0, damage - resistance);
+            if (resistance > 0)
+            {
+                // Debug.Log($"[GetSkillDamage] Base:{damage} Resistance:{resistance} Final:{final} Element:{element}");
+            }
+
+            return final;
         }
 
         /// <summary>
