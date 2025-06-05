@@ -42,6 +42,15 @@ namespace PLAYERTWO.ARPGProject
             return GetElementalResistance(element) + m_additionalAttributes.GetElementalResistance(element);
         }
 
+        public int CalculateSkillBonusFromWeapon(Skill skill, bool isMax)
+        {
+            var weapon = GetCurrentWeapon();
+            if (weapon == null || skill == null) return 0;
+
+            return isMax ? weapon.maxMagicDamage : weapon.minMagicDamage;
+        }
+
+
         /// <summary>
         /// Calculates the amount of experience points needed to reach the next level.
         /// </summary>

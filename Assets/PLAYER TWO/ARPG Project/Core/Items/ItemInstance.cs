@@ -540,7 +540,13 @@ namespace PLAYERTWO.ARPGProject
 
                 int magicRes = GetArmor().magicResistance;
                 if (magicRes > 0)
-                    text += $"\nMagic Resistance: {magicRes}";
+                {
+                    int elementalRes = GetAdditionalElementalResistance(MagicElement);
+                    if (MagicElement != MagicElement.None && elementalRes > 0)
+                        text += $"\nMagic Resistance: {magicRes} (+{elementalRes} from {MagicElement})";
+                    else
+                        text += $"\nMagic Resistance: {magicRes}";
+                }
             }
             else if (IsShield())
             {
@@ -552,7 +558,13 @@ namespace PLAYERTWO.ARPGProject
 
                 int magicRes = GetShield().magicResistance;
                 if (magicRes > 0)
-                    text += $"\nMagic Resistance: {magicRes}";
+                {
+                    int elementalRes = GetAdditionalElementalResistance(MagicElement);
+                    if (MagicElement != MagicElement.None && elementalRes > 0)
+                        text += $"\nMagic Resistance: {magicRes} (+{elementalRes} from {MagicElement})";
+                    else
+                        text += $"\nMagic Resistance: {magicRes}";
+                }
             }
             else if (IsWeapon())
             {
@@ -571,7 +583,13 @@ namespace PLAYERTWO.ARPGProject
 
                 var magicDmg = GetMagicDamage();
                 if (magicDmg.min > 0 || magicDmg.max > 0)
-                    text += $"\nMagic Damage: {magicDmg.min} ~ {magicDmg.max}";
+                {
+                    int bonus = GetAdditionalElementalDamage(MagicElement);
+                    if (MagicElement != MagicElement.None && bonus > 0)
+                        text += $"\nMagic Damage: {magicDmg.min} ~ {magicDmg.max} (+{bonus} from {MagicElement})";
+                    else
+                        text += $"\nMagic Damage: {magicDmg.min} ~ {magicDmg.max}";
+                }
             }
 
             if (IsEquippable())

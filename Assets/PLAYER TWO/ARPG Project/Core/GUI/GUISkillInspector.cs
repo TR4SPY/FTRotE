@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -74,7 +75,7 @@ namespace PLAYERTWO.ARPGProject
             UpdateManaCost();
             UpdateBloodCost();
             UpdateDamage();
-            // UpdateMagicClassification();
+            UpdateMagicClassification();
             UpdateEffect();
         }
 
@@ -111,50 +112,75 @@ namespace PLAYERTWO.ARPGProject
         protected virtual void UpdateDamage()
         {
             bool isAttackSkill = m_skill.IsAttack();
-            
+
             baseDamage.gameObject.SetActive(isAttackSkill);
             currentDamage.gameObject.SetActive(isAttackSkill);
             damageMode.gameObject.SetActive(isAttackSkill);
 
-            if (isAttackSkill)
+            if (!isAttackSkill)
             {
-                var attackSkill = m_skill.AsAttack();
-                baseDamage.text = $"Base Damage: {attackSkill.minDamage} ~ {attackSkill.maxDamage}";
-
-                var entityStats = Game.instance.currentCharacter.Entity?.stats;
-                if (entityStats != null)
-                {
-                    int minCurrentDamage = entityStats.CalculateSkillDamage(m_skill, false);
-                    int maxCurrentDamage = entityStats.CalculateSkillDamage(m_skill, true);
-
-                    currentDamage.text = $"Current Damage: {minCurrentDamage} ~ {maxCurrentDamage}";
-                }
-                else
-                {
-                    currentDamage.text = "Current Damage: N/A";
-                }
-
-                damageMode.text = $"Damage Mode: {attackSkill.damageMode}";
-            }
-            else
-            {
-                baseDamage.text = "Base Damage: N/A";
-                currentDamage.text = "Current Damage: N/A";
+                baseDamage.text = "Base damage: N/A";
+                currentDamage.text = "Current damage: N/A";
                 damageMode.text = "Type: N/A";
+                return;
             }
+
+            var attackSkill = m_skill.AsAttack();
+            baseDamage.text = $"Base damage: {attackSkill.minDamage} ~ {attackSkill.maxDamage}";
+
+            var entityStats = Game.instance.currentCharacter.Entity?.stats;
+            if (entityStats == null)
+            {
+                currentDamage.text = "Current damage: N/A";
+                return;
+            }
+
+            int baseMin = attackSkill.minDamage;
+            int baseMax = attackSkill.maxDamage;
+
+            int bonusWeaponMin = entityStats.CalculateSkillBonusFromWeapon(attackSkill, false);
+            int bonusWeaponMax = entityStats.CalculateSkillBonusFromWeapon(attackSkill, true);
+
+            int elementBonus = m_skill.element != MagicElement.None
+                ? entityStats.GetElementalBonus(m_skill.element)
+                : 0;
+
+            int finalMin = baseMin + bonusWeaponMin + elementBonus;
+            int finalMax = baseMax + bonusWeaponMax + elementBonus;
+
+            int totalMin = baseMin + bonusWeaponMin;
+            int totalMax = baseMax + bonusWeaponMax;
+
+            var elementColor = GameColors.ElementColor(m_skill.element);
+            string colored = "";
+            var currentWeapon = entityStats.GetCurrentWeapon();
+
+            bool matchingElement =
+                m_skill.element != MagicElement.None &&
+                currentWeapon != null &&
+                currentWeapon.magicElement == m_skill.element;
+
+            if (matchingElement)
+            {
+                colored = " " + StringUtils.StringWithColor($"({finalMin} – {finalMax})", elementColor);
+            }
+
+            currentDamage.text = $"Current damage: {totalMin} – {totalMax}{colored}";
+            damageMode.text = $"Damage mode: {attackSkill.damageMode}";
         }
 
         protected virtual void UpdateMagicClassification()
         {
             if (!magicDescription) return;
 
-            var lines = new System.Collections.Generic.List<string>();
+            var school = m_skill.school != MagicSchool.None ? m_skill.school.ToString() : null;
+            var form = m_skill.form != MagicForm.None ? m_skill.form.ToString() : null;
+            var type = m_skill.type != MagicType.None ? m_skill.type.ToString() : null;
 
-            if (m_skill.element != MagicElement.None)
-                lines.Add("Element: " + StringUtils.StringWithColor(m_skill.element.ToString(), GameColors.ElementColor(m_skill.element)));
+            string classification = string.Join(" > ", new[] { school, form, type }.Where(x => !string.IsNullOrEmpty(x)));
 
-            magicDescription.gameObject.SetActive(lines.Count > 0);
-            magicDescription.text = string.Join("\n", lines);
+            magicDescription.gameObject.SetActive(!string.IsNullOrEmpty(classification));
+            magicDescription.text = classification;
         }
 
 

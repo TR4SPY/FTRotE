@@ -375,6 +375,8 @@ namespace PLAYERTWO.ARPGProject
             Recalculate();
         }
 
+        public ItemWeapon GetCurrentWeapon() => m_items?.GetWeapon();
+
         /// <summary>
         /// Gets the current health in a 0 to 1 range.
         /// </summary>
@@ -416,6 +418,22 @@ namespace PLAYERTWO.ARPGProject
             critical = minCritical || maxCritical;
             
             return finalDamage;
+        }
+
+        public int GetElementalBonus(MagicElement element)
+        {
+            if (element == MagicElement.None)
+                return 0;
+
+            var weapon = GetCurrentWeapon();
+
+            int weaponBonus = weapon != null && weapon.magicElement == element
+                ? weapon.minMagicDamage
+                : 0;
+
+            int passiveBonus = 0;
+
+            return weaponBonus + passiveBonus;
         }
 
         /// <summary>

@@ -515,46 +515,17 @@ namespace PLAYERTWO.ARPGProject
                 var skill = skillBook.skill;
 
                 if (skill.school != MagicSchool.None)
-                    lines.Add("School: " + StringUtils.StringWithColor($"{skill.school}", GameColors.White));
+                    lines.Add($"Magic School: {skill.school}");
 
                 if (skill.form != MagicForm.None)
-                    lines.Add("Form: " + StringUtils.StringWithColor($"{skill.form}", GameColors.White));
+                    lines.Add($"Form of Spell: {skill.form}");
 
                 if (skill.type != MagicType.None)
-                    lines.Add("Type: " + StringUtils.StringWithColor($"{skill.type}", GameColors.White));
+                    lines.Add($"Type of Spell: {skill.type}");
 
                 if (skill.element != MagicElement.None)
-                    lines.Add("Element: " + StringUtils.StringWithColor($"{skill.element}", GameColors.ElementColor(skill.element)));
+                    lines.Add($"Magic Element: {skill.element}");
             }
-
-            if (!(item.data is ItemSkill) && item.MagicElement != MagicElement.None)
-            {
-                lines.Add("Element: " + StringUtils.StringWithColor($"{item.MagicElement}", GameColors.ElementColor(item.MagicElement)));
-            }
-
-            if (!item.HasMagicDamage())
-            {
-                foreach (MagicElement el in System.Enum.GetValues(typeof(MagicElement)))
-                {
-                    if (el == MagicElement.None) continue;
-
-                    int dmg = item.GetAdditionalElementalDamage(el);
-                    if (dmg > 0)
-                        lines.Add($"{el} Damage: " + StringUtils.StringWithColor($"+{dmg}", GameColors.ElementColor(el)));
-                }
-            }
-
-            foreach (MagicElement el in System.Enum.GetValues(typeof(MagicElement)))
-            {
-                if (el == MagicElement.None) continue;
-
-                int res = item.GetAdditionalElementalResistance(el);
-                if (res > 0)
-                    lines.Add($"{el} Resistance: " + StringUtils.StringWithColor($"+{res}", GameColors.ElementColor(el)));
-            }
-
-            if (item.GetAdditionalMagicResistance() > 0)
-                lines.Add("Magic Resistance: " + StringUtils.StringWithColor($"+{item.GetAdditionalMagicResistance()}", GameColors.White));
 
             return string.Join("\n", lines);
         }
