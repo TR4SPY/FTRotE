@@ -51,7 +51,7 @@ namespace PLAYERTWO.ARPGProject
             }
             else
             {
-                nameColor = GameColors.GetItemRarityColor(item.data.rarity);
+                nameColor = GameColors.RarityColor(item.data.rarity);
             }
         }
 

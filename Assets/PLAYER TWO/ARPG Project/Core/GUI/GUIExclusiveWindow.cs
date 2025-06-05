@@ -158,8 +158,8 @@ namespace PLAYERTWO.ARPGProject
             int finalExp = quest.GetTotalExperience();
             int finalGold = quest.GetTotalCoins();
 
-            Color expColor = GameColors.GetMultiplierColor((float)finalExp / (quest.experience != 0 ? quest.experience : 1));
-            Color goldColor = GameColors.GetMultiplierColor((float)finalGold / (quest.coins != 0 ? quest.coins : 1));
+            Color expColor = GameColors.MultiplierColor((float)finalExp / (quest.experience != 0 ? quest.experience : 1));
+            Color goldColor = GameColors.MultiplierColor((float)finalGold / (quest.coins != 0 ? quest.coins : 1));
 
             string expDisplay = finalExp > 0 ? $"{StringUtils.StringWithColor(finalExp.ToString(), expColor)} Experience\n" : "";
             string goldDisplay = finalGold > 0 ? $"{StringUtils.StringWithColor(finalGold.ToString(), goldColor)} Coins\n" : "";

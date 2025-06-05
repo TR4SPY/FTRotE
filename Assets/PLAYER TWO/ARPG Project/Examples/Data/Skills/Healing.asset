@@ -23,5 +23,11 @@ MonoBehaviour:
   overrideClip: {fileID: 0}
   useMana: 1
   manaCost: 30
+  useBlood: 0
+  bloodCost: 0
   useHealing: 1
   healingAmount: 100
+  school: 7
+  form: 2
+  type: 4
+  element: 8

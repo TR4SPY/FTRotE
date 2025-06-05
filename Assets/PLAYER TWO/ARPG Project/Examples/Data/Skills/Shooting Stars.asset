@@ -27,11 +27,18 @@ MonoBehaviour:
   bloodCost: 0
   useHealing: 0
   healingAmount: 0
+  school: 3
+  form: 2
+  type: 1
+  element: 9
   useMeleeHitbox: 0
   minAttackDistance: 12
   requiredWeapon: 0
   damageMode: 1
   minDamage: 8
   maxDamage: 15
+  elementMultiplier: 1
   destroyOnHit: 0
   particleDestroyOnCollision: 0
+  destroyOnFirstParticleCollision: 0
+  particleCollideOnce: 0

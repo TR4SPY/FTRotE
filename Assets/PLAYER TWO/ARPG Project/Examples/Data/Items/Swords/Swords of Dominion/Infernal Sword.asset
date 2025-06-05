@@ -42,8 +42,9 @@ MonoBehaviour:
   requiredDexterity: 40
   minDamage: 22
   maxDamage: 32
-  minMagicDamage: 0
-  maxMagicDamage: 0
+  minMagicDamage: 10
+  maxMagicDamage: 12
+  magicElement: 1
   attackSpeed: 15
   skill: {fileID: 0}
   skillSource: {fileID: 0}
@@ -59,4 +60,4 @@ MonoBehaviour:
   rightHandRotation: {x: -90, y: 90, z: 90}
   leftHandPosition: {x: 0, y: 0, z: 0}
   leftHandRotation: {x: 90, y: 90, z: 90}
-  magicResistance: 0
+  magicResistance: 5

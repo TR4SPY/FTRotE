@@ -37,7 +37,7 @@ namespace PLAYERTWO.ARPGProject
         /// <summary>
         /// Zwraca kolor mnożnika (zielony dla bonusu, czerwony dla kary, niebieski dla neutralnego).
         /// </summary>
-        public static Color GetMultiplierColor(float multiplier)
+        public static Color MultiplierColor(float multiplier)
         {
             if (multiplier > 1f) return Green;
             if (multiplier < 1f) return LightRed;
@@ -47,7 +47,7 @@ namespace PLAYERTWO.ARPGProject
         /// <summary>
         /// Zwraca kolor na podstawie rzadkości przedmiotu.
         /// </summary>
-        public static Color GetItemRarityColor(Item.Rarity rarity)
+        public static Color RarityColor(Item.Rarity rarity)
         {
             switch (rarity)
             {
@@ -58,6 +58,20 @@ namespace PLAYERTWO.ARPGProject
                 case Item.Rarity.Legendary: return Emerald;
                 default: return Color.white;
             }
+        }
+
+        public static Color ElementColor(MagicElement element)
+        {
+            return element switch
+            {
+                MagicElement.Fire => Orange,
+                MagicElement.Ice => Cyan,
+                MagicElement.Lightning => NeonYellow,
+                MagicElement.Shadow => Purple,
+                MagicElement.Light => Gold,
+                MagicElement.Arcane => LightBlue,
+                _ => White
+            };
         }
     }
 }

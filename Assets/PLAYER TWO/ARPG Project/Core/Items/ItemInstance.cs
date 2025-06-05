@@ -372,6 +372,22 @@ namespace PLAYERTWO.ARPGProject
             return 0;
         }
 
+        public int GetAdditionalElementalDamage(MagicElement element)
+        {
+            if (data is ItemWeapon weapon && weapon.magicElement == element)
+                return weapon.minMagicDamage;
+
+            return 0;
+        }
+
+        public MagicElement MagicElement => data is ItemSkill skill && skill.skill != null ? skill.skill.element : data is ItemWeapon weapon ? weapon.magicElement : MagicElement.None;
+
+        public MagicSchool MagicSchool => data is ItemSkill skill && skill.skill != null ? skill.skill.school : MagicSchool.None;
+
+        public MagicForm MagicForm => data is ItemSkill skill && skill.skill != null ? skill.skill.form : MagicForm.None;
+
+        public MagicType MagicType => data is ItemSkill skill && skill.skill != null ? skill.skill.type : MagicType.None;
+
         public float GetMagicDamageMultiplier()
         {
             return attributes != null ? attributes.magicDamagePercent / 100f : 1f;

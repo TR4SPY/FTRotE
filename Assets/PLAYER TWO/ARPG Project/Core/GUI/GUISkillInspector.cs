@@ -26,6 +26,10 @@ namespace PLAYERTWO.ARPGProject
 
         [Tooltip("A reference to the Text component used as the Skill effect description.")]
         public Text effectDescription;
+        
+        [Tooltip("A reference to the Text component used for magic classification.")]
+        public Text magicDescription;
+
 
         protected bool m_visible = true;
 
@@ -70,10 +74,23 @@ namespace PLAYERTWO.ARPGProject
             UpdateManaCost();
             UpdateBloodCost();
             UpdateDamage();
+            // UpdateMagicClassification();
             UpdateEffect();
         }
 
-        protected virtual void UpdateSkillName() => skillName.text = m_skill.name;
+        // protected virtual void UpdateSkillName() => skillName.text = m_skill.name;
+        protected virtual void UpdateSkillName()
+        {
+            if (m_skill.element != MagicElement.None)
+            {
+                var color = GameColors.ElementColor(m_skill.element);
+                skillName.text = StringUtils.StringWithColor(m_skill.name, color);
+            }
+            else
+            {
+                skillName.text = m_skill.name;
+            }
+        }
 
         protected virtual void UpdateManaCost()
         {
@@ -126,6 +143,20 @@ namespace PLAYERTWO.ARPGProject
                 damageMode.text = "Type: N/A";
             }
         }
+
+        protected virtual void UpdateMagicClassification()
+        {
+            if (!magicDescription) return;
+
+            var lines = new System.Collections.Generic.List<string>();
+
+            if (m_skill.element != MagicElement.None)
+                lines.Add("Element: " + StringUtils.StringWithColor(m_skill.element.ToString(), GameColors.ElementColor(m_skill.element)));
+
+            magicDescription.gameObject.SetActive(lines.Count > 0);
+            magicDescription.text = string.Join("\n", lines);
+        }
+
 
         protected virtual void UpdateEffect()
         {

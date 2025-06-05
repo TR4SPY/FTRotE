@@ -354,7 +354,7 @@ namespace PLAYERTWO.ARPGProject
                         }
                         else
                         {
-                            itemColor = GameColors.GetItemRarityColor(item.data.rarity);
+                            itemColor = GameColors.RarityColor(item.data.rarity);
                         }
 
                         string itemName = StringUtils.StringWithColor($"[{item.data.name}]", itemColor);

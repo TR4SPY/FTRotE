@@ -17,6 +17,9 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The base maximum magic damage of this Item.")]
         public int maxMagicDamage;
 
+        [Tooltip("Elemental type of the weapon's magic damage.")]
+        public MagicElement magicElement = MagicElement.None;
+
         [Tooltip("The base attack speed of this Item.")]
         public int attackSpeed;
 

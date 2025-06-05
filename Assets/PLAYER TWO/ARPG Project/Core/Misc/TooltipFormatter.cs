@@ -10,7 +10,7 @@ namespace PLAYERTWO.ARPGProject
             if (baseValue == 0 && finalValue == 0)
                 return "";
 
-            Color bonusColor = GameColors.GetMultiplierColor(multiplier);
+            Color bonusColor = GameColors.MultiplierColor(multiplier);
 
             string changeText = multiplier != 1f
                 ? $"{StringUtils.StringWithColor(FormatMultiplierText(multiplier), bonusColor)}"
@@ -81,7 +81,7 @@ namespace PLAYERTWO.ARPGProject
 
         public static string FormatColoredMultiplier(float multiplier)
         {
-            Color bonusColor = GameColors.GetMultiplierColor(multiplier);
+            Color bonusColor = GameColors.MultiplierColor(multiplier);
             return StringUtils.StringWithColor(FormatMultiplierText(multiplier), bonusColor);
         }
 
@@ -111,7 +111,7 @@ namespace PLAYERTWO.ARPGProject
             {
                 if (item.data)
                 {
-                    Color rarityColor = GameColors.GetItemRarityColor(item.data.rarity);
+                    Color rarityColor = GameColors.RarityColor(item.data.rarity);
                     string itemName = StringUtils.StringWithColor($"[{item.data.name}]", rarityColor);
                     string attributes = item.attributes > 0 ? $" (+{item.attributes} Attributes)" : "";
 

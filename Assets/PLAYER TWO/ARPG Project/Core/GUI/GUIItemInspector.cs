@@ -268,7 +268,7 @@ namespace PLAYERTWO.ARPGProject
             }
             else
             {
-                var rarityColor = GameColors.GetItemRarityColor(m_item.data.rarity);
+                var rarityColor = GameColors.RarityColor(m_item.data.rarity);
                 formattedName = StringUtils.StringWithColorAndStyle(name, rarityColor, bold: isBold);
             }
 
@@ -282,6 +282,9 @@ namespace PLAYERTWO.ARPGProject
             if (attributesContainer.activeSelf)
             {
                 attributesText.text = m_item.Inspect(m_entity.stats, attentionColor, invalidColor, specialColor, questItemColor);
+                var magicDesc = GetMagicDescription(m_item);
+                if (!string.IsNullOrWhiteSpace(magicDesc))
+                    attributesText.text += "\n\n" + magicDesc;
             }
         }
 
@@ -366,7 +369,6 @@ namespace PLAYERTWO.ARPGProject
                 return;
             }
 
-            // Jeśli Is Skill Enabled = false → całkowicie ukrywamy wszystko
             if (!m_item.isSkillEnabled)
             {
                 if (itemSkill != null)
@@ -502,6 +504,59 @@ namespace PLAYERTWO.ARPGProject
             {
                 classRestrictionsText.text = result;
             }
+        }
+
+        private string GetMagicDescription(ItemInstance item)
+        {
+            var lines = new List<string>();
+
+            if (item.data is ItemSkill skillBook && skillBook.skill != null)
+            {
+                var skill = skillBook.skill;
+
+                if (skill.school != MagicSchool.None)
+                    lines.Add("School: " + StringUtils.StringWithColor($"{skill.school}", GameColors.White));
+
+                if (skill.form != MagicForm.None)
+                    lines.Add("Form: " + StringUtils.StringWithColor($"{skill.form}", GameColors.White));
+
+                if (skill.type != MagicType.None)
+                    lines.Add("Type: " + StringUtils.StringWithColor($"{skill.type}", GameColors.White));
+
+                if (skill.element != MagicElement.None)
+                    lines.Add("Element: " + StringUtils.StringWithColor($"{skill.element}", GameColors.ElementColor(skill.element)));
+            }
+
+            if (!(item.data is ItemSkill) && item.MagicElement != MagicElement.None)
+            {
+                lines.Add("Element: " + StringUtils.StringWithColor($"{item.MagicElement}", GameColors.ElementColor(item.MagicElement)));
+            }
+
+            if (!item.HasMagicDamage())
+            {
+                foreach (MagicElement el in System.Enum.GetValues(typeof(MagicElement)))
+                {
+                    if (el == MagicElement.None) continue;
+
+                    int dmg = item.GetAdditionalElementalDamage(el);
+                    if (dmg > 0)
+                        lines.Add($"{el} Damage: " + StringUtils.StringWithColor($"+{dmg}", GameColors.ElementColor(el)));
+                }
+            }
+
+            foreach (MagicElement el in System.Enum.GetValues(typeof(MagicElement)))
+            {
+                if (el == MagicElement.None) continue;
+
+                int res = item.GetAdditionalElementalResistance(el);
+                if (res > 0)
+                    lines.Add($"{el} Resistance: " + StringUtils.StringWithColor($"+{res}", GameColors.ElementColor(el)));
+            }
+
+            if (item.GetAdditionalMagicResistance() > 0)
+                lines.Add("Magic Resistance: " + StringUtils.StringWithColor($"+{item.GetAdditionalMagicResistance()}", GameColors.White));
+
+            return string.Join("\n", lines);
         }
 
         protected virtual void UpdateAdditionalAttributes()

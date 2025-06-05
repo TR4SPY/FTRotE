@@ -23,11 +23,22 @@ MonoBehaviour:
   overrideClip: {fileID: 0}
   useMana: 1
   manaCost: 15
+  useBlood: 0
+  bloodCost: 0
   useHealing: 0
   healingAmount: 0
+  school: 8
+  form: 2
+  type: 3
+  element: 1
   useMeleeHitbox: 0
   minAttackDistance: 10
   requiredWeapon: 0
   damageMode: 1
   minDamage: 4
   maxDamage: 8
+  elementMultiplier: 1
+  destroyOnHit: 1
+  particleDestroyOnCollision: 1
+  destroyOnFirstParticleCollision: 0
+  particleCollideOnce: 0

@@ -27,6 +27,10 @@ MonoBehaviour:
   bloodCost: 0
   useHealing: 0
   healingAmount: 0
+  school: 4
+  form: 2
+  type: 2
+  element: 7
   entitiesPrefabs:
   - {fileID: 536741433349615226, guid: 72f511ae82346fb4492d1fbdfe67302a, type: 3}
   - {fileID: 536741433349615226, guid: 72f511ae82346fb4492d1fbdfe67302a, type: 3}
@@ -34,3 +38,5 @@ MonoBehaviour:
   - {fileID: 536741433349615226, guid: 72f511ae82346fb4492d1fbdfe67302a, type: 3}
   - {fileID: 536741433349615226, guid: 72f511ae82346fb4492d1fbdfe67302a, type: 3}
   distanceFromLeader: 2
+  maxDistanceFromLeader: 15
+  teleportCooldown: 5
