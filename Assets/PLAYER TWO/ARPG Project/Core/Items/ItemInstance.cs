@@ -698,8 +698,9 @@ namespace PLAYERTWO.ARPGProject
 
             var item = GameDatabase.instance.FindElementById<Item>(serializer.itemId);
             var attributes = ItemAttributes.CreateFromSerializer(serializer.attributes);
+            var elements = ItemElements.CreateFromSerializer(serializer.elements);
 
-            var instance = new ItemInstance(item, attributes, serializer.durability, serializer.stack);
+            var instance = new ItemInstance(item, attributes, serializer.durability, serializer.stack, elements);
             instance.SetItemLevel(serializer.itemLevel);
             instance.isSkillEnabled = serializer.skillEnabled;
 

@@ -89,7 +89,6 @@ namespace PLAYERTWO.ARPGProject
             return string.Join("\n", list);
         }
 
-
         public int GetResistance(MagicElement element)
         {
             return element switch
@@ -104,6 +103,24 @@ namespace PLAYERTWO.ARPGProject
                 MagicElement.Light => lightResistance,
                 MagicElement.Arcane => arcaneResistance,
                 _ => 0
+            };
+        }
+
+        public static ItemElements CreateFromSerializer(ItemSerializer.Elements elements)
+        {
+            if (elements == null) return new ItemElements();
+
+            return new ItemElements()
+            {
+                fireResistance = elements.fireResistance,
+                waterResistance = elements.waterResistance,
+                iceResistance = elements.iceResistance,
+                earthResistance = elements.earthResistance,
+                airResistance = elements.airResistance,
+                lightningResistance = elements.lightningResistance,
+                shadowResistance = elements.shadowResistance,
+                lightResistance = elements.lightResistance,
+                arcaneResistance = elements.arcaneResistance
             };
         }
     }

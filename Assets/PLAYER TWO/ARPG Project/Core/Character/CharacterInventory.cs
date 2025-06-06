@@ -54,8 +54,9 @@ namespace PLAYERTWO.ARPGProject
             {
                 var data = GameDatabase.instance.FindElementById<Item>(item.item.itemId);
                 var attributes = CharacterItemAttributes.CreateFromSerializer(item.item.attributes);
+                var elements = ItemElements.CreateFromSerializer(item.item.elements);
 
-                var cItem = new CharacterItem(data, attributes, item.item.durability, item.item.stack);
+                var cItem = new CharacterItem(data, attributes, item.item.durability, item.item.stack, elements);
                 cItem.itemLevel = item.item.itemLevel;
                 cItem.skillEnabled = item.item.skillEnabled;
 

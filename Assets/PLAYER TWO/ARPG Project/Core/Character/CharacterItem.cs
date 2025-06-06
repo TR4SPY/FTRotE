@@ -8,6 +8,7 @@ namespace PLAYERTWO.ARPGProject
         public Item data;
         public int stack;
         public CharacterItemAttributes attributes;
+        public ItemElements elements;
 
         [HideInInspector]
         public int durability;
@@ -16,12 +17,15 @@ namespace PLAYERTWO.ARPGProject
         public bool skillEnabled;
 
 
+        
         public CharacterItem(Item data,
         CharacterItemAttributes attributes,
-        int durability, int stack)
+        int durability, int stack,
+        ItemElements elements = null)
         {
             this.data = data;
             this.attributes = attributes;
+            this.elements = elements ?? new ItemElements();
             this.durability = durability;
 
             if (data != null && !data.canStack && stack < 1)
@@ -57,7 +61,7 @@ namespace PLAYERTWO.ARPGProject
             if (withDefaultDurability)
             {
                 var durability = data is ItemEquippable ? (data as ItemEquippable).maxDurability : 0;
-                return new ItemInstance(data, a, durability, stack);
+                return new ItemInstance(data, a, durability, stack, elements);
             }
 
             int finalStack = stack;
@@ -66,7 +70,7 @@ namespace PLAYERTWO.ARPGProject
             else
                 finalStack = 1;
 
-            var instance = new ItemInstance(data, a, durability, finalStack);
+            var instance = new ItemInstance(data, a, durability, finalStack, elements);
             instance.SetItemLevel(itemLevel);
             instance.isSkillEnabled = this.skillEnabled;
 
@@ -77,7 +81,8 @@ namespace PLAYERTWO.ARPGProject
         {
             var data = GameDatabase.instance.FindElementById<Item>(serializer.itemId);
             var attributes = CharacterItemAttributes.CreateFromSerializer(serializer.attributes);
-            var characterItem = new CharacterItem(data, attributes, serializer.durability, serializer.stack);
+            var elements = ItemElements.CreateFromSerializer(serializer.elements);
+            var characterItem = new CharacterItem(data, attributes, serializer.durability, serializer.stack, elements);
             characterItem.itemLevel = serializer.itemLevel;
             characterItem.skillEnabled = serializer.skillEnabled;
 
