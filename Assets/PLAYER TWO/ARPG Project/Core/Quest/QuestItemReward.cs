@@ -11,6 +11,9 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The amount of additional attributes the Item will have.")]
         public int attributes;
 
+        [Tooltip("The amount of elemental resistances the Item will have.")]
+        public int elements;
+
         [Tooltip("The number of items to reward.")]
         public int amount = 1;
 
@@ -19,10 +22,16 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         public ItemInstance CreateItemInstance()
         {
-            if (attributes > 0)
-                return new ItemInstance(data, true, attributes, attributes);
+            if (attributes > 0 || elements > 0)
+                return new ItemInstance(
+                    data,
+                    attributes > 0,
+                    elements > 0,
+                    attributes, attributes,
+                    elements, elements
+                );
 
-            return new ItemInstance(data, false);
+            return new ItemInstance(data, false, false);
         }
     }
 }

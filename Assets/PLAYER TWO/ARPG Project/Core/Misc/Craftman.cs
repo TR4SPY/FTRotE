@@ -12,6 +12,7 @@ namespace PLAYERTWO.ARPGProject
         {
             public Item data;
             public int attributes;
+            public int elements;
         }
 
         [System.Serializable]
@@ -41,7 +42,7 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void InitializeInventory()
         {
-           // Debug.Log("[Craftman] InitializeInventory()");
+            // Debug.Log("[Craftman] InitializeInventory()");
             inventories = new Dictionary<string, Inventory>();
 
             if (section.items != null)
@@ -57,12 +58,12 @@ namespace PLAYERTWO.ARPGProject
                         continue;
                     }
 
-                   // Debug.Log($"[Craftman] Adding item: {item.data.name}, Attributes: {item.attributes}");
+                    // Debug.Log($"[Craftman] Adding item: {item.data.name}, Attributes: {item.attributes}");
 
                     if (item.attributes > 0)
-                        inventory.TryAddItem(new ItemInstance(item.data, true, item.attributes, item.attributes));
+                        inventory.TryAddItem(new ItemInstance(item.data, true, true, item.attributes, item.attributes, item.elements, item.elements));
                     else
-                        inventory.TryAddItem(new ItemInstance(item.data, false));
+                        inventory.TryAddItem(new ItemInstance(item.data, false, true, 0, 0, item.elements, item.elements));
                 }
             }
             else

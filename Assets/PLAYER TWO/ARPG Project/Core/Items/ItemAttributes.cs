@@ -12,15 +12,6 @@ namespace PLAYERTWO.ARPGProject
         public int magicDamage;
         public int magicDamagePercent;
         public int magicResistance;
-        public int fireResistance;
-        public int waterResistance;
-        public int iceResistance;
-        public int earthResistance;
-        public int airResistance;
-        public int lightningResistance;
-        public int shadowResistance;
-        public int lightResistance;
-        public int arcaneResistance;
         public int attackSpeed;
         public int critical;
         public int defense;
@@ -90,22 +81,6 @@ namespace PLAYERTWO.ARPGProject
         public virtual float GetDefenseMultiplier() => defensePercent / 100f;
         public virtual float GetManaMultiplier() => manaPercent / 100f;
         public virtual float GetHealthMultiplier() => healthPercent / 100f;
-        public int GetElementalResistance(MagicElement element)
-        {
-            return element switch
-            {
-                MagicElement.Fire => fireResistance,
-                MagicElement.Water => waterResistance,
-                MagicElement.Ice => iceResistance,
-                MagicElement.Earth => earthResistance,
-                MagicElement.Air => airResistance,
-                MagicElement.Lightning => lightningResistance,
-                MagicElement.Shadow => shadowResistance,
-                MagicElement.Light => lightResistance,
-                MagicElement.Arcane => arcaneResistance,
-                _ => 0,
-            };
-        }
 
         public virtual int GetAttributesCount()
         {
@@ -163,15 +138,6 @@ namespace PLAYERTWO.ARPGProject
                 magicDamage = this.magicDamage,
                 magicDamagePercent = this.magicDamagePercent,
                 magicResistance = this.magicResistance,
-                fireResistance = this.fireResistance,
-                waterResistance = this.waterResistance,
-                iceResistance = this.iceResistance,
-                earthResistance = this.earthResistance,
-                airResistance = this.airResistance,
-                lightningResistance = this.lightningResistance,
-                shadowResistance = this.shadowResistance,
-                lightResistance = this.lightResistance,
-                arcaneResistance = this.arcaneResistance,
                 attackSpeed = this.attackSpeed,
                 critical = this.critical,
                 defense = this.defense,
@@ -224,15 +190,6 @@ namespace PLAYERTWO.ARPGProject
                 manaPercent = attributes.manaPercent,
                 health = attributes.health,
                 healthPercent = attributes.healthPercent,
-                fireResistance = attributes.fireResistance,
-                waterResistance = attributes.waterResistance,
-                iceResistance = attributes.iceResistance,
-                earthResistance = attributes.earthResistance,
-                airResistance = attributes.airResistance,
-                lightningResistance = attributes.lightningResistance,
-                shadowResistance = attributes.shadowResistance,
-                lightResistance = attributes.lightResistance,
-                arcaneResistance = attributes.arcaneResistance,
             };
         }
     }

@@ -87,8 +87,11 @@ namespace PLAYERTWO.ARPGProject
             var item = new ItemInstance(
                 stats.items[index],
                 stats.generateAttributes,
+                stats.generateElements,
                 stats.minAttributes,
-                stats.maxAttributes
+                stats.maxAttributes,
+                stats.minElements,
+                stats.maxElements
             );
 
             /*  SANITY CHECK - item dropping with stack = 0 instead of = 1.

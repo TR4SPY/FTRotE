@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -14,6 +15,9 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("References the parent of the general attributes text.")]
         public GameObject attributesContainer;
 
+        [Tooltip("References the parent of the general elements text.")]
+        public GameObject elementsContainer;
+
         [Tooltip("References the parent of the additional attributes text.")]
         public GameObject additionalAttributesContainer;
 
@@ -21,15 +25,16 @@ namespace PLAYERTWO.ARPGProject
         public GameObject potionDescriptionContainer;
 
         [Header("Price Tag (dynamic)")]
-        public Transform priceContainer;         // <-- obiekt typu "Price" w hierarchii (zawiera 'Title' itd.)
-        public GameObject priceTagPrefab;       // <-- prefab: (Name: Text, Icon: Image)
-        public Sprite solmireIcon;              // <-- ikony walut
+        public Transform priceContainer;
+        public GameObject priceTagPrefab;
+        public Sprite solmireIcon;
         public Sprite lunarisIcon;
         public Sprite amberlingsIcon;
 
         [Header("Texts")]
        // [Tooltip("A reference to the Text component that represents the Item's price.")]
        // public Text itemPriceText;
+
 
         [Tooltip("A reference to the Text component that represents the Item's name.")]
         public Text itemName;
@@ -38,7 +43,11 @@ namespace PLAYERTWO.ARPGProject
         public Text potionDescription;
 
         [Tooltip("References the Text component displaying the Item's general attributes.")]
-        public Text attributesText;
+        // public Text attributesText;
+        public TextMeshProUGUI attributesText;
+
+        [Tooltip("References the Text component displaying the Item's elements.")]
+        public TMPro.TextMeshProUGUI elementsText;
 
         [Tooltip("References the Text component displaying the Item's additional attributes.")]
         public Text additionalAttributesText;
@@ -148,6 +157,7 @@ namespace PLAYERTWO.ARPGProject
             UpdatePotionDescription();
             UpdateAttributes();
             UpdateAdditionalAttributes();
+            UpdateElementalAttributes();
             UpdateSkillInstruction();
             UpdateItemDescription(); 
             UpdateWeaponSkill();
@@ -532,16 +542,30 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void UpdateAdditionalAttributes()
         {
-            var text = m_item.attributes?.Inspect();
-
-            if (text == null || text.Length == 0)
+            if (m_item.attributes != null)
+            {
+                string attrText = m_item.attributes.Inspect();
+                additionalAttributesText.text = attrText;
+                additionalAttributesContainer.SetActive(!string.IsNullOrWhiteSpace(attrText));
+            }
+            else
             {
                 additionalAttributesContainer.SetActive(false);
-                return;
             }
+        }
 
-            additionalAttributesContainer.SetActive(true);
-            additionalAttributesText.text = text;
+        protected virtual void UpdateElementalAttributes()
+        {
+            if (m_item.elements != null)
+            {
+                string elemText = m_item.elements.Inspect();
+                elementsText.text = elemText;
+                elementsContainer.SetActive(!string.IsNullOrWhiteSpace(elemText));
+            }
+            else
+            {
+                elementsContainer.SetActive(false);
+            }
         }
 
         protected virtual void UpdateSkillInstruction()

@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
+using TMPro;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -20,7 +21,8 @@ namespace PLAYERTWO.ARPGProject
         public Text baseDamage;
 
         [Tooltip("A reference to the Text component used as the Skill current damage.")]
-        public Text currentDamage;
+        // public Text currentDamage;
+        public TextMeshProUGUI currentDamage;
 
         [Tooltip("A reference to the Text component used as the Skill damage mode.")]
         public Text damageMode;
@@ -151,7 +153,6 @@ namespace PLAYERTWO.ARPGProject
             int totalMin = baseMin + bonusWeaponMin;
             int totalMax = baseMax + bonusWeaponMax;
 
-            var elementColor = GameColors.ElementColor(m_skill.element);
             string colored = "";
             var currentWeapon = entityStats.GetCurrentWeapon();
 
@@ -162,7 +163,10 @@ namespace PLAYERTWO.ARPGProject
 
             if (matchingElement)
             {
-                colored = " " + StringUtils.StringWithColor($"({finalMin} – {finalMax})", elementColor);
+                var elementColor = GameColors.ElementColor(m_skill.element);
+                string bonusText = StringUtils.StringWithColor($"+{elementBonus}", elementColor);
+                string icon = $"<sprite name=\"{StringUtils.GetTMPElementSpriteName(m_skill.element)}\" tint>";
+                colored = $" {bonusText} {icon}";
             }
 
             currentDamage.text = $"Current damage: {totalMin} – {totalMax}{colored}";
@@ -182,7 +186,6 @@ namespace PLAYERTWO.ARPGProject
             magicDescription.gameObject.SetActive(!string.IsNullOrEmpty(classification));
             magicDescription.text = classification;
         }
-
 
         protected virtual void UpdateEffect()
         {

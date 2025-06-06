@@ -42,8 +42,9 @@ MonoBehaviour:
   requiredDexterity: 25
   minDamage: 15
   maxDamage: 25
-  minMagicDamage: 0
-  maxMagicDamage: 0
+  minMagicDamage: 2
+  maxMagicDamage: 5
+  magicElement: 7
   attackSpeed: 13
   skill: {fileID: 0}
   skillSource: {fileID: 0}

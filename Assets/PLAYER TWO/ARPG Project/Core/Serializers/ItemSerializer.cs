@@ -18,6 +18,11 @@ namespace PLAYERTWO.ARPGProject
             public int manaPercent;
             public int health;
             public int healthPercent;
+        }
+
+        [System.Serializable]
+        public class Elements
+        {
             public int fireResistance;
             public int waterResistance;
             public int iceResistance;
@@ -35,6 +40,7 @@ namespace PLAYERTWO.ARPGProject
         public int itemLevel = 0;
         public bool skillEnabled = false;
         public Attributes attributes;
+        public Elements elements;
 
         public ItemSerializer() { }
 
@@ -62,30 +68,37 @@ namespace PLAYERTWO.ARPGProject
             this.itemLevel = item.itemLevel;
             this.skillEnabled = item.isSkillEnabled;
             this.attributes = new Attributes();
+            this.elements = new Elements();
 
             if (item.ContainAttributes())
             {
-                var attributes = item.attributes;
+                var a = item.attributes;
 
-                this.attributes.damage = attributes.damage;
-                this.attributes.damagePercent = attributes.damagePercent;
-                this.attributes.attackSpeed = attributes.attackSpeed;
-                this.attributes.critical = attributes.critical;
-                this.attributes.defense = attributes.defense;
-                this.attributes.defensePercent = attributes.defensePercent;
-                this.attributes.mana = attributes.mana;
-                this.attributes.manaPercent = attributes.manaPercent;
-                this.attributes.health = attributes.health;
-                this.attributes.healthPercent = attributes.healthPercent;
-                this.attributes.fireResistance = attributes.fireResistance;
-                this.attributes.waterResistance = attributes.waterResistance;
-                this.attributes.iceResistance = attributes.iceResistance;
-                this.attributes.earthResistance = attributes.earthResistance;
-                this.attributes.airResistance = attributes.airResistance;
-                this.attributes.lightningResistance = attributes.lightningResistance;
-                this.attributes.shadowResistance = attributes.shadowResistance;
-                this.attributes.lightResistance = attributes.lightResistance;
-                this.attributes.arcaneResistance = attributes.arcaneResistance;
+                this.attributes.damage = a.damage;
+                this.attributes.damagePercent = a.damagePercent;
+                this.attributes.attackSpeed = a.attackSpeed;
+                this.attributes.critical = a.critical;
+                this.attributes.defense = a.defense;
+                this.attributes.defensePercent = a.defensePercent;
+                this.attributes.mana = a.mana;
+                this.attributes.manaPercent = a.manaPercent;
+                this.attributes.health = a.health;
+                this.attributes.healthPercent = a.healthPercent;
+            }
+
+            if (item.elements != null)
+            {
+                var e = item.elements;
+
+                this.elements.fireResistance = e.fireResistance;
+                this.elements.waterResistance = e.waterResistance;
+                this.elements.iceResistance = e.iceResistance;
+                this.elements.earthResistance = e.earthResistance;
+                this.elements.airResistance = e.airResistance;
+                this.elements.lightningResistance = e.lightningResistance;
+                this.elements.shadowResistance = e.shadowResistance;
+                this.elements.lightResistance = e.lightResistance;
+                this.elements.arcaneResistance = e.arcaneResistance;
             }
         }
 

@@ -33,6 +33,16 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The maximum amount of attributes.")]
         public int maxAttributes;
 
+        [Header("Elemental Attribute Settings")]
+        [Tooltip("If true, the Loot System will generate elemental resistances (ItemElements) for the items looted.")]
+        public bool generateElements = true;
+
+        [Tooltip("The minimum amount of elemental attributes (e.g., fireResistance, iceResistance).")]
+        public int minElements;
+
+        [Tooltip("The maximum amount of elemental attributes.")]
+        public int maxElements;
+
         [Header("Upgrade Level Settings")]
         [Tooltip("Minimum upgrade level for dropped equippable items.")]
         [Range(0, 25)]

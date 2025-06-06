@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace PLAYERTWO.ARPGProject
@@ -29,6 +30,7 @@ namespace PLAYERTWO.ARPGProject
         /// The additional attributes of this Item Instance.
         /// </summary>
         public ItemAttributes attributes;
+        public ItemElements elements = new ItemElements();
 
         public int itemLevel { get; private set; } = 0;
         public bool isSkillEnabled = false;
@@ -76,8 +78,7 @@ namespace PLAYERTWO.ARPGProject
 
         public GameObject ModelPrefab => data.prefab;
         
-        public ItemInstance(Item data, bool generateAttributes = true,
-    int minAttributes = 0, int maxAttributes = 0)
+        public ItemInstance(Item data, bool generateAttributes = true, bool generateElements = true, int minAttributes = 0, int maxAttributes = 0, int minElements = 0, int maxElements = 0)
         {
             this.data = data;
             this.m_stack = 1;
@@ -86,20 +87,27 @@ namespace PLAYERTWO.ARPGProject
 
             if (generateAttributes)
                 GenerateAdditionalAttributes(minAttributes, maxAttributes);
+
+            if (generateElements)
+                GenerateAdditionalElements(minElements, maxElements);
         }
 
-        public ItemInstance(Item data, ItemAttributes attributes)
+        public ItemInstance(Item data, ItemAttributes attributes, ItemElements elements = null)
         {
             this.data = data;
             this.attributes = attributes;
+            this.elements = elements ?? new ItemElements();
 
             if (IsEquippable())
                 durability = GetEquippable().maxDurability;
 
-            m_stack = 1; 
+            m_stack = 1;
         }
 
-        public ItemInstance(Item data, int durability, int stack, bool generateAttributes = true)
+        public ItemInstance(Item data, int durability, int stack,
+            bool generateAttributes = true, bool generateElements = true,
+            int minAttributes = 0, int maxAttributes = 0,
+            int minElements = 0, int maxElements = 0)
         {
             this.data = data;
             this.durability = durability;
@@ -114,14 +122,18 @@ namespace PLAYERTWO.ARPGProject
             }
 
             if (generateAttributes)
-                GenerateAdditionalAttributes();
+                GenerateAdditionalAttributes(minAttributes, maxAttributes);
+
+            if (generateElements)
+                GenerateAdditionalElements(minElements, maxElements);
         }
 
-
-        public ItemInstance(Item data, ItemAttributes attributes, int durability, int stack)
+        public ItemInstance(Item data, ItemAttributes attributes, int durability, int stack,
+            ItemElements elements = null)
         {
             this.data = data;
             this.attributes = attributes;
+            this.elements = elements ?? new ItemElements();
             this.durability = durability;
 
             if (data != null)
@@ -299,6 +311,8 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         public virtual bool ContainAttributes() => IsEquippable() && attributes != null;
 
+        public virtual bool ContainElements() => IsEquippable() && elements != null;
+
         /// <summary>
         /// Returns true if it's allowed to read the additional attributes from this Item Instance.
         /// </summary>
@@ -400,7 +414,7 @@ namespace PLAYERTWO.ARPGProject
 
         public int GetAdditionalElementalResistance(MagicElement element)
         {
-            return attributes != null ? attributes.GetElementalResistance(element) : 0;
+            return elements != null ? elements.GetResistance(element) : 0;
         }
 
         /// <summary>
@@ -473,6 +487,15 @@ namespace PLAYERTWO.ARPGProject
                 attributes = new ArmorAttributes(minAttributes, maxAttributes);
         }
 
+        protected virtual void GenerateAdditionalElements(int minElements = 0, int maxElements = 0)
+        {
+            if (!IsEquippable()) return;
+
+            if (IsArmor() || IsShield()) // lub też: if (data.HasElementalResistances)
+                elements = new ItemElements(minElements, maxElements);
+        }
+
+
         public void RerollAttributes()
         {
             GenerateAdditionalAttributes(1, 3);
@@ -543,9 +566,16 @@ namespace PLAYERTWO.ARPGProject
                 {
                     int elementalRes = GetAdditionalElementalResistance(MagicElement);
                     if (MagicElement != MagicElement.None && elementalRes > 0)
-                        text += $"\nMagic Resistance: {magicRes} (+{elementalRes} from {MagicElement})";
+                    {
+                        string sprite = StringUtils.GetTMPElementSpriteName(MagicElement);
+                        string icon = $"<sprite name=\"{sprite}\" tint>";
+                        string bonus = StringUtils.StringWithColor($"+{elementalRes}", GameColors.ElementColor(MagicElement));
+                        text += $"\nMagic Resistance: {magicRes} ({bonus} {icon})";
+                    }
                     else
+                    {
                         text += $"\nMagic Resistance: {magicRes}";
+                    }
                 }
             }
             else if (IsShield())
@@ -561,9 +591,16 @@ namespace PLAYERTWO.ARPGProject
                 {
                     int elementalRes = GetAdditionalElementalResistance(MagicElement);
                     if (MagicElement != MagicElement.None && elementalRes > 0)
-                        text += $"\nMagic Resistance: {magicRes} (+{elementalRes} from {MagicElement})";
+                    {
+                        string sprite = StringUtils.GetTMPElementSpriteName(MagicElement);
+                        string icon = $"<sprite name=\"{sprite}\" tint>";  
+                        string bonus = StringUtils.StringWithColor($"+{elementalRes}", GameColors.ElementColor(MagicElement));
+                        text += $"\nMagic Resistance: {magicRes} ({bonus} {icon})";
+                    }
                     else
+                    {
                         text += $"\nMagic Resistance: {magicRes}";
+                    }
                 }
             }
             else if (IsWeapon())
@@ -578,18 +615,25 @@ namespace PLAYERTWO.ARPGProject
                 var dmg = GetDamage();
                 text += $"Damage: {dmg.min} ~ {dmg.max}";
 
-                int atkSpeed = GetWeapon().attackSpeed;
-                text += $"\nAttack Speed: {atkSpeed}";
-
                 var magicDmg = GetMagicDamage();
                 if (magicDmg.min > 0 || magicDmg.max > 0)
                 {
                     int bonus = GetAdditionalElementalDamage(MagicElement);
                     if (MagicElement != MagicElement.None && bonus > 0)
-                        text += $"\nMagic Damage: {magicDmg.min} ~ {magicDmg.max} (+{bonus} from {MagicElement})";
+                    {
+                        string sprite = StringUtils.GetTMPElementSpriteName(MagicElement);
+                        string icon = $"<sprite name=\"{sprite}\" tint>";
+                        string bonusText = StringUtils.StringWithColor($"+{bonus}", GameColors.ElementColor(MagicElement));
+                        text += $"\nMagic Damage: {magicDmg.min} ~ {magicDmg.max} ({bonusText} {icon})";
+                    }
                     else
+                    {
                         text += $"\nMagic Damage: {magicDmg.min} ~ {magicDmg.max}";
+                    }
                 }
+
+                int atkSpeed = GetWeapon().attackSpeed;
+                text += $"\nAttack Speed: {atkSpeed}";
             }
 
             if (IsEquippable())
@@ -623,19 +667,13 @@ namespace PLAYERTWO.ARPGProject
             if (data != null)
             {
                 if (data.isQuestSpecific && data is not ItemJewel)
-                {
                     text += $"\n{StringUtils.StringWithColorAndStyle("\nThis is a Quest Item", quest, bold: true)}";
-                }
 
                 if (data.cannotBeDropped)
-                {
                     text += $"\n{StringUtils.StringWithColor("Cannot be dropped", error)}";
-                }
 
                 if (data.cannotBeSold)
-                {
                     text += $"\n{StringUtils.StringWithColor("Cannot be sold", error)}";
-                }
             }
 
             return text;

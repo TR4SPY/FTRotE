@@ -52,6 +52,23 @@ using UnityEngine;
             return result;
         }
 
+        public static string GetTMPElementSpriteName(MagicElement element)
+        {
+            return element switch
+            {
+                MagicElement.Fire => "magic_element_fire",
+                MagicElement.Ice => "magic_element_ice",
+                MagicElement.Water => "magic_element_water",
+                MagicElement.Earth => "magic_element_earth",
+                MagicElement.Air => "magic_element_air",
+                MagicElement.Lightning => "magic_element_lightning",
+                MagicElement.Shadow => "magic_element_shadow",
+                MagicElement.Light => "magic_element_light",
+                MagicElement.Arcane => "magic_element_arcane",
+                _ => ""
+            };
+        }
+
         /// <summary>
         /// Applies multiple styles to a string.
         /// </summary>
