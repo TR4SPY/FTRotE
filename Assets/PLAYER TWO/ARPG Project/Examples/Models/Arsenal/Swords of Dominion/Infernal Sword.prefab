@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 8156985869077258110}
   - component: {fileID: 5088140670933405915}
   - component: {fileID: 7023438052817429521}
-  - component: {fileID: 1623569955240891508}
   m_Layer: 0
   m_Name: Infernal Sword
   m_TagString: Untagged
@@ -88,24 +87,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &1623569955240891508
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8825014312839628228}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8356ffd373e78a6a9b3a70ddff3b3de5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cameraLookAtOffset: {x: 0, y: 0, z: 0}
-  cameraOffset: {x: 0, y: 0, z: 1}
-  scaleOverride: 0
-  resolutionWidth: 32
-  resolutionHeight: 128
-  cameraFollowBoundsCenter: 1
 --- !u!1001 &5686908862699515824
 PrefabInstance:
   m_ObjectHideFlags: 0

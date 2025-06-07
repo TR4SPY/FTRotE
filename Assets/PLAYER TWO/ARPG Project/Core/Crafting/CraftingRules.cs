@@ -553,4 +553,172 @@ namespace PLAYERTWO.ARPGProject
             return $"Effect: {eq.GetName()} gains bonus XP (TODO)";
         }
     }
+    public class ElementStoneRule : CraftingRules
+    {
+        protected readonly MagicElement element;
+        protected readonly string stoneName;
+
+        public ElementStoneRule(MagicElement element, string stoneName)
+        {
+            this.element = element;
+            this.stoneName = stoneName;
+        }
+
+        public override bool Matches(List<ItemInstance> items)
+        {
+            var eq = items.FirstOrDefault(i => i.IsEquippable());
+            var stone = items.FirstOrDefault(i => i.data.name == stoneName);
+            return eq != null && stone != null;
+        }
+
+        public override ItemInstance Craft(List<ItemInstance> items)
+        {
+            var eq = items.FirstOrDefault(i => i.IsEquippable());
+            var stone = items.FirstOrDefault(i => i.data.name == stoneName && i.stack > 0);
+            if (eq == null || stone == null) return null;
+
+            var newItem = new ItemInstance(eq.data, eq.attributes?.Clone(), eq.elements?.Clone());
+            newItem.SetItemLevel(eq.itemLevel);
+            newItem.isSkillEnabled = eq.isSkillEnabled;
+            if (newItem.elements == null)
+                newItem.elements = new ItemElements();
+
+            newItem.elements.ModifyResistance(element, 2);
+
+            return newItem;
+        }
+
+        public override void OnFail(ItemInstance item)
+        {
+            item?.elements?.ModifyResistance(element, -2);
+        }
+
+        public override void ConsumeUsedItems(List<ItemInstance> originalItems, List<ItemInstance> usedItems)
+        {
+            var eq = originalItems.FirstOrDefault(i => i.IsEquippable());
+            if (eq != null)
+                originalItems.Remove(eq);
+
+            var stone = originalItems.FirstOrDefault(i => i.data.name == stoneName);
+            if (stone != null)
+            {
+                if (stone.stack > 1)
+                    stone.stack--;
+                else
+                    originalItems.Remove(stone);
+            }
+        }
+
+        public override string GetPreview(List<ItemInstance> items)
+        {
+            var eq = items.FirstOrDefault(i => i.IsEquippable());
+            if (eq == null) return "";
+            int current = eq.elements?.GetResistance(element) ?? 0;
+            int next = Mathf.Clamp(current + 2, 0, 12);
+            return $"Imbue: {eq.GetName()} {element} Res {current} → {next}";
+        }
+    }
+
+    public class FireStoneRule : ElementStoneRule
+    {
+        public FireStoneRule() : base(MagicElement.Fire, "Fire Stone") { }
+    }
+
+    public class WaterStoneRule : ElementStoneRule
+    {
+        public WaterStoneRule() : base(MagicElement.Water, "Water Stone") { }
+    }
+
+    public class IceStoneRule : ElementStoneRule
+    {
+        public IceStoneRule() : base(MagicElement.Ice, "Ice Stone") { }
+    }
+
+    public class EarthStoneRule : ElementStoneRule
+    {
+        public EarthStoneRule() : base(MagicElement.Earth, "Earth Stone") { }
+    }
+
+    public class AirStoneRule : ElementStoneRule
+    {
+        public AirStoneRule() : base(MagicElement.Air, "Air Stone") { }
+    }
+
+    public class LightningStoneRule : ElementStoneRule
+    {
+        public LightningStoneRule() : base(MagicElement.Lightning, "Lightning Stone") { }
+    }
+
+    public class ShadowStoneRule : ElementStoneRule
+    {
+        public ShadowStoneRule() : base(MagicElement.Shadow, "Shadow Stone") { }
+    }
+
+    public class StoneOfLightRule : ElementStoneRule
+    {
+        public StoneOfLightRule() : base(MagicElement.Light, "Stone of Light") { }
+    }
+
+    public class ArcaneStoneRule : ElementStoneRule
+    {
+        public ArcaneStoneRule() : base(MagicElement.Arcane, "Arcane Stone") { }
+    }
+
+    public class StoneOfElementsRule : CraftingRules
+    {
+        private readonly string[] requiredStones = new[]
+        {
+            "Fire Stone",
+            "Water Stone",
+            "Ice Stone",
+            "Earth Stone",
+            "Air Stone",
+            "Lightning Stone",
+            "Shadow Stone",
+            "Stone of Light",
+            "Arcane Stone"
+        };
+
+        public override bool Matches(List<ItemInstance> items)
+        {
+            foreach (var s in requiredStones)
+            {
+                if (items.Where(i => i.data.name == s).Sum(i => i.stack) < 1)
+                    return false;
+            }
+            return true;
+        }
+
+        public override ItemInstance Craft(List<ItemInstance> items)
+        {
+            var stoneData = GameDatabase.instance.items.FirstOrDefault(i => i.name == "Stone of Elements");
+            if (stoneData == null) return null;
+            return new ItemInstance(stoneData, false);
+        }
+
+        public override void OnFail(ItemInstance item)
+        {
+            // no item to modify
+        }
+
+        public override void ConsumeUsedItems(List<ItemInstance> originalItems, List<ItemInstance> usedItems)
+        {
+            foreach (var s in requiredStones)
+            {
+                var stone = originalItems.FirstOrDefault(i => i.data.name == s);
+                if (stone != null)
+                {
+                    if (stone.stack > 1)
+                        stone.stack--;
+                    else
+                        originalItems.Remove(stone);
+                }
+            }
+        }
+
+        public override string GetPreview(List<ItemInstance> items)
+        {
+            return "Combine stones into Stone of Elements";
+        }
+    }
 }

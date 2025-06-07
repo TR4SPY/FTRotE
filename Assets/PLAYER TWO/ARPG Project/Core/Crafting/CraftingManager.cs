@@ -19,7 +19,17 @@ namespace PLAYERTWO.ARPGProject
                 new CrystalOfRefractionRule(),
                 new DuskCrystalRule(),
                 new HeartlyCrystalRule(),
-                new JewelOfVerdancyRule()
+                new JewelOfVerdancyRule(),
+                new FireStoneRule(),
+                new WaterStoneRule(),
+                new IceStoneRule(),
+                new EarthStoneRule(),
+                new AirStoneRule(),
+                new LightningStoneRule(),
+                new ShadowStoneRule(),
+                new StoneOfLightRule(),
+                new ArcaneStoneRule(),
+                new StoneOfElementsRule()
             };
         }
 
@@ -208,6 +218,7 @@ namespace PLAYERTWO.ARPGProject
 
             return score;
         }
+        
         public float GetRuleScore(CraftingRules rule, List<ItemInstance> input)
         {
             if (!rule.Matches(input))
@@ -219,6 +230,7 @@ namespace PLAYERTWO.ARPGProject
 
             return Mathf.Clamp01(jewelCount / 3f);
         }
+
         public bool ShouldUseCustomRules(List<ItemInstance> inputItems)
         {
             var jewelTypes = inputItems
@@ -227,8 +239,18 @@ namespace PLAYERTWO.ARPGProject
                 .Distinct()
                 .ToList();
 
-            return jewelTypes.Count <= 1;
+            if (jewelTypes.Count <= 1)
+                return true;
+
+            foreach (var rule in customRules)
+            {
+                if (rule is StoneOfElementsRule && rule.Matches(inputItems))
+                    return true;
+            }
+
+            return false;
         }
+
         public bool Matches(CraftingRecipe recipe, List<ItemInstance> input)
         {
             var inputDict = new Dictionary<Item, int>();

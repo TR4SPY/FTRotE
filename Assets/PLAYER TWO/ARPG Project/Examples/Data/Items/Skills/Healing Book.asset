@@ -13,17 +13,17 @@ MonoBehaviour:
   m_Name: Healing Book
   m_EditorClassIdentifier: 
   id: 57
-  prefab: {fileID: 919132149155446097, guid: 8e05b85b3ef84724284bff019d53f2bb, type: 3}
+  prefab: {fileID: 2683950827452182846, guid: 0179840724097e4c184def65d6e9bed5, type: 3}
   price: 6000
   rarity: 0
   dropPosition: {x: 0, y: 0, z: 0}
   dropRotation: {x: -90, y: 0, z: 45}
-  previewLookAtOffset: {x: -0.05, y: 0, z: 0}
-  previewCameraOffset: {x: 0.2, y: 0, z: 1.4}
-  previewRotationEuler: {x: 0, y: -90, z: 0}
+  previewLookAtOffset: {x: 0, y: 0, z: 0}
+  previewCameraOffset: {x: 0, y: 0, z: 1.4}
+  previewRotationEuler: {x: 0, y: 90, z: 0}
   previewScaleOverride: 0
   previewResolutionWidth: 64
-  previewResolutionHeight: 256
+  previewResolutionHeight: 128
   previewCameraFollowBoundsCenter: 1
   image: {fileID: 21300000, guid: 0d0456bf396b3064caf5a44c6d183071, type: 3}
   rows: 2

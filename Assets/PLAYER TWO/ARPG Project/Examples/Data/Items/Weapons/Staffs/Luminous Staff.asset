@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcbc84c22772fe449a1319589dfd46cd, type: 3}
+  m_Name: Luminous Staff
+  m_EditorClassIdentifier: 
+  id: 32
+  prefab: {fileID: 1788534135721421767, guid: 69703eab27ace3ba7a1eeca06b3d94c9, type: 3}
+  price: 500
+  rarity: 0
+  dropPosition: {x: 0, y: 0, z: 0}
+  dropRotation: {x: -90, y: 0, z: 45}
+  previewLookAtOffset: {x: 0, y: 0, z: 0}
+  previewCameraOffset: {x: 0, y: 0, z: 1.9}
+  previewRotationEuler: {x: 0, y: 0, z: 0}
+  previewScaleOverride: 0
+  previewResolutionWidth: 128
+  previewResolutionHeight: 512
+  previewCameraFollowBoundsCenter: 1
+  image: {fileID: -4246401400774174139, guid: b54e5618bea88e046ab5466a204ddd45, type: 3}
+  rows: 4
+  columns: 1
+  canStack: 0
+  stackCapacity: 0
+  isQuestSpecific: 0
+  cannotBeDropped: 0
+  cannotBeSold: 0
+  allowedClasses: 56
+  group: 3
+  maxDurability: 45
+  maxUpgradeLevel: 25
+  requiredLevel: 1
+  requiredStrength: 10
+  requiredDexterity: 10
+  minDamage: 1
+  maxDamage: 3
+  minMagicDamage: 7
+  maxMagicDamage: 12
+  magicElement: 8
+  attackSpeed: 10
+  skill: {fileID: 0}
+  skillSource: {fileID: 0}
+  attackClips:
+  - {fileID: 8300000, guid: aa3151bff5ceab4449196fc78f916dc1, type: 3}
+  - {fileID: 8300000, guid: 5ff94522a8297af488276fa868ce11a7, type: 3}
+  - {fileID: 8300000, guid: 23b159e9b28253c4c8ade0811feef6e7, type: 3}
+  maxCombos: 3
+  timeToStopCombo: 1
+  nextComboDelay: 0.1
+  type: 0
+  rightHandPosition: {x: 0, y: 0, z: 0}
+  rightHandRotation: {x: -90, y: 90, z: 90}
+  leftHandPosition: {x: 0, y: 0, z: 0}
+  leftHandRotation: {x: 90, y: 90, z: 90}
+  magicResistance: 9

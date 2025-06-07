@@ -38,6 +38,24 @@ namespace PLAYERTWO.ARPGProject
         }
 
         public ItemElements() { }
+        
+        public int GetMaxResistanceValue() => m_points.Max();
+
+        public ItemElements Clone()
+        {
+            return new ItemElements()
+            {
+                fireResistance = fireResistance,
+                waterResistance = waterResistance,
+                iceResistance = iceResistance,
+                earthResistance = earthResistance,
+                airResistance = airResistance,
+                lightningResistance = lightningResistance,
+                shadowResistance = shadowResistance,
+                lightResistance = lightResistance,
+                arcaneResistance = arcaneResistance
+            };
+        }
 
         protected FieldInfo[] GetElementalFields()
         {
@@ -104,6 +122,29 @@ namespace PLAYERTWO.ARPGProject
                 MagicElement.Arcane => arcaneResistance,
                 _ => 0
             };
+        }
+
+        public void SetResistance(MagicElement element, int value)
+        {
+            switch (element)
+            {
+                case MagicElement.Fire: fireResistance = value; break;
+                case MagicElement.Water: waterResistance = value; break;
+                case MagicElement.Ice: iceResistance = value; break;
+                case MagicElement.Earth: earthResistance = value; break;
+                case MagicElement.Air: airResistance = value; break;
+                case MagicElement.Lightning: lightningResistance = value; break;
+                case MagicElement.Shadow: shadowResistance = value; break;
+                case MagicElement.Light: lightResistance = value; break;
+                case MagicElement.Arcane: arcaneResistance = value; break;
+            }
+        }
+
+        public void ModifyResistance(MagicElement element, int amount)
+        {
+            int current = GetResistance(element);
+            int max = GetMaxResistanceValue();
+            SetResistance(element, Mathf.Clamp(current + amount, 0, max));
         }
 
         public static ItemElements CreateFromSerializer(ItemSerializer.Elements elements)
