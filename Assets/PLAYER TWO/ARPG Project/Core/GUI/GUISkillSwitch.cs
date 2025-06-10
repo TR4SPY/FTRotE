@@ -13,52 +13,61 @@ public class GUISkillSwitch : MonoBehaviour
     [Tooltip("Current Skill set text")]
     public Text SkillSwitchText;
 
-    // Referencja do wygenerowanej klasy z pliku .inputactions
-    private EntityControls controls;
-
-    // Flaga, który panel jest wyświetlony
+    private InputActionMap gameplayMap;
+    private readonly InputAction[] skillActions = new InputAction[8];
+    private readonly System.Action<InputAction.CallbackContext>[] skillCallbacks = new System.Action<InputAction.CallbackContext>[8];
     private bool showingFirstSet = true;
 
     private void Awake()
     {
-        // Inicjalizujemy akcje
-        controls = new EntityControls();
+        gameplayMap = Game.instance.gameplayActions?.FindActionMap("Gameplay");
+
+        if (gameplayMap == null)
+        {
+            Debug.LogError("[GUISkillSwitch] Gameplay input action map not found.");
+            return;
+        }
+
+        for (int i = 0; i < 8; i++)
+        {
+            var action = gameplayMap.FindAction($"Select Skill {i}");
+            if (action != null)
+            {
+                skillActions[i] = action;
+                int index = i;
+                skillCallbacks[i] = ctx => OnSkillPressed(index);
+            }
+            else
+            {
+                Debug.LogWarning($"[GUISkillSwitch] Action 'Select Skill {i}' not found in Gameplay map.");
+            }
+        }
     }
 
     private void OnEnable()
     {
-        // Uruchamiamy mapę "Gameplay" (nazwa musi się zgadzać z Twoim plikiem)
-        controls.Gameplay.Enable();
+        gameplayMap?.Enable();
 
-        // Subskrypcja pod akcje "Select Skill X"
-        controls.Gameplay.SelectSkill0.performed += ctx => OnSkillPressed(0);
-        controls.Gameplay.SelectSkill1.performed += ctx => OnSkillPressed(1);
-        controls.Gameplay.SelectSkill2.performed += ctx => OnSkillPressed(2);
-        controls.Gameplay.SelectSkill3.performed += ctx => OnSkillPressed(3);
-        controls.Gameplay.SelectSkill4.performed += ctx => OnSkillPressed(4);
-        controls.Gameplay.SelectSkill5.performed += ctx => OnSkillPressed(5);
-        controls.Gameplay.SelectSkill6.performed += ctx => OnSkillPressed(6);
-        controls.Gameplay.SelectSkill7.performed += ctx => OnSkillPressed(7);
+        for (int i = 0; i < 8; i++)
+        {
+            if (skillActions[i] != null && skillCallbacks[i] != null)
+                skillActions[i].performed += skillCallbacks[i];
+        }
     }
 
     private void OnDisable()
     {
-        // Dobrze jest odsubskrybować, żeby uniknąć „wycieków” eventów
-        controls.Gameplay.SelectSkill0.performed -= ctx => OnSkillPressed(0);
-        controls.Gameplay.SelectSkill1.performed -= ctx => OnSkillPressed(1);
-        controls.Gameplay.SelectSkill2.performed -= ctx => OnSkillPressed(2);
-        controls.Gameplay.SelectSkill3.performed -= ctx => OnSkillPressed(3);
-        controls.Gameplay.SelectSkill4.performed -= ctx => OnSkillPressed(4);
-        controls.Gameplay.SelectSkill5.performed -= ctx => OnSkillPressed(5);
-        controls.Gameplay.SelectSkill6.performed -= ctx => OnSkillPressed(6);
-        controls.Gameplay.SelectSkill7.performed -= ctx => OnSkillPressed(7);
+        for (int i = 0; i < 8; i++)
+        {
+            if (skillActions[i] != null && skillCallbacks[i] != null)
+                skillActions[i].performed -= skillCallbacks[i];
+        }
 
-        controls.Gameplay.Disable();
+        gameplayMap?.Disable();
     }
 
     private void Start()
     {
-        // Na starcie włączamy panel 1–4, wyłączamy 5–8
         ShowFirstSet();
     }
 
@@ -67,8 +76,6 @@ public class GUISkillSwitch : MonoBehaviour
     /// </summary>
     private void OnSkillPressed(int skillIndex)
     {
-        // 0..3 → klawisze 1..4
-        // 4..7 → klawisze 5..8
         if (skillIndex <= 3 && !showingFirstSet)
         {
             ShowFirstSet();
@@ -78,19 +85,13 @@ public class GUISkillSwitch : MonoBehaviour
             ShowSecondSet();
         }
 
-        // Tu wywołaj wybór skilla w systemie
-        // Zakładam, że m_entity.skills.equipped[skillIndex] jest skillami 1..8
         SelectSkill(skillIndex);
     }
 
     private void SelectSkill(int index)
     {
-        // Tutaj wywołujesz logikę wybierania skilla,
-        // np. w oparciu o GUIEntity (jak w Twoich plikach).
-        // Najczęściej: 
         if (GUIEntity.instance && GUIEntity.instance.m_entity)
         {
-            // Wywołaj ChangeTo() na skillu z equpped o danym indeksie
             var skills = GUIEntity.instance.m_entity.skills;
             if (index < skills.equipped.Count && skills.equipped[index] != null)
             {

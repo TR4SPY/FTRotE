@@ -32,6 +32,7 @@ namespace PLAYERTWO.ARPGProject
         private readonly Dictionary<string, Texture2D> m_cache = new();
         private string m_selectedFile;
         private Sprite m_selectedSprite;
+        private Sprite m_defaultPreviewSprite;
 
         protected Guildmaster m_guildmaster;
 
@@ -42,6 +43,9 @@ namespace PLAYERTWO.ARPGProject
         protected override void Start()
         {
             base.Start();
+
+            if (crestPreview)
+                m_defaultPreviewSprite = crestPreview.sprite;
 
             gameplayMap = Game.instance.gameplayActions?.FindActionMap("Gameplay");
             guiMap = Game.instance.guiActions?.FindActionMap("GUI");
@@ -65,6 +69,12 @@ namespace PLAYERTWO.ARPGProject
 
             if (resetButton) resetButton.onClick.AddListener(ResetSelection);
             if (acceptButton) acceptButton.onClick.AddListener(Accept);
+
+            if (crestPreview)
+            {
+                crestPreview.type = Image.Type.Simple;
+                crestPreview.preserveAspect = true;
+            }
 
             OnFileToggleChanged(fileToggle?.isOn ?? true);
             OnScrollToggleChanged(scrollToggle?.isOn ?? false);
@@ -189,7 +199,12 @@ namespace PLAYERTWO.ARPGProject
             if (tex != null)
             {
                 tex = ResizeTexture(tex, 256, 256);
-                crestPreview.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
+                
+                if (crestPreview)
+                {
+                    crestPreview.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
+                    crestPreview.preserveAspect = true;
+                }
             }
             else
             {
@@ -202,7 +217,11 @@ namespace PLAYERTWO.ARPGProject
         {
             m_selectedSprite = sprite;
             m_selectedFile = null;
-            if (crestPreview) crestPreview.sprite = sprite;
+            if (crestPreview)
+            {
+                crestPreview.sprite = sprite;
+                crestPreview.preserveAspect = true;
+            }
             UpdateAcceptButton();
         }
 
@@ -245,7 +264,8 @@ namespace PLAYERTWO.ARPGProject
         private void ResetSelection()
         {
             if (guildNameInput) guildNameInput.text = string.Empty;
-            if (crestPreview) crestPreview.sprite = null;
+            if (crestPreview) crestPreview.sprite = m_defaultPreviewSprite;
+
             m_selectedFile = null;
             m_selectedSprite = null;
             UpdateAcceptButton();
