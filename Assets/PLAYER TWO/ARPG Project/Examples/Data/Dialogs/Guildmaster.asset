@@ -27,9 +27,9 @@ MonoBehaviour:
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 0
-      action: 3
+      action: 9
       nextPageIndex: 0
       specialConditionToSet: 0
     showOnce: 0
     isSpecial: 0
-  dialogTitle: Kaelen - Craftman
+  dialogTitle: Guildmaster

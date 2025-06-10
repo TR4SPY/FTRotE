@@ -3,6 +3,7 @@ using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -17,7 +18,9 @@ namespace PLAYERTWO.ARPGProject
         public Toggle scrollToggle;
 
         [Header("Crest List")]
-        public RectTransform crestListContainer; // "Crest Choice Selection"
+        public RectTransform crestListContainer;
+        public RectTransform fileListContainer;
+        public RectTransform scrollListContainer;
         public GameObject fileEntryPrefab;
         public GameObject scrollEntryPrefab;
 
@@ -32,10 +35,24 @@ namespace PLAYERTWO.ARPGProject
 
         protected Guildmaster m_guildmaster;
 
+        private InputActionMap gameplayMap;
+        private InputActionMap guiMap;
+        private bool wasFocusedLastFrame;
 
         protected override void Start()
         {
             base.Start();
+
+            gameplayMap = Game.instance.gameplayActions?.FindActionMap("Gameplay");
+            guiMap = Game.instance.guiActions?.FindActionMap("GUI");
+
+            if (gameplayMap == null)
+                Debug.LogError("[GUIGuildmaster] Gameplay input action map not found.");
+
+            if (guiMap == null)
+                Debug.LogError("[GUIGuildmaster] GUI input action map not found.");
+
+            wasFocusedLastFrame = false;
 
             if (guildNameInput)
             {
@@ -49,29 +66,30 @@ namespace PLAYERTWO.ARPGProject
             if (resetButton) resetButton.onClick.AddListener(ResetSelection);
             if (acceptButton) acceptButton.onClick.AddListener(Accept);
 
-            // Inicjalny stan
             OnFileToggleChanged(fileToggle?.isOn ?? true);
+            OnScrollToggleChanged(scrollToggle?.isOn ?? false);
             UpdateAcceptButton();
         }
 
         private RectTransform GetActiveListContainer()
         {
-            foreach (Transform child in crestListContainer)
-            {
-                if (child.gameObject.activeSelf)
-                    return child as RectTransform;
-            }
-            return null;
+            return fileToggle != null && fileToggle.isOn ? fileListContainer : scrollListContainer;
         }
 
         private void OnFileToggleChanged(bool isOn)
         {
+            if (fileListContainer)
+                fileListContainer.gameObject.SetActive(isOn);
+
             if (isOn)
                 PopulateCrestFileList();
         }
 
         private void OnScrollToggleChanged(bool isOn)
         {
+            if (scrollListContainer)
+                scrollListContainer.gameObject.SetActive(isOn);
+
             if (isOn)
                 PopulateScrollList();
         }
@@ -257,9 +275,33 @@ namespace PLAYERTWO.ARPGProject
             Hide();
         }
 
+        private void Update()
+        {
+            bool isFocused = guildNameInput != null && guildNameInput.isFocused;
+
+            if (isFocused && !wasFocusedLastFrame)
+            {
+                gameplayMap?.Disable();
+                guiMap?.Disable();
+            }
+            else if (!isFocused && wasFocusedLastFrame)
+            {
+                gameplayMap?.Enable();
+                guiMap?.Enable();
+            }
+
+            wasFocusedLastFrame = isFocused;
+        }
+
         public virtual void SetGuildmaster(Guildmaster guildmaster)
         {
             m_guildmaster = guildmaster;
+        }
+        
+        private void OnDisable()
+        {
+            gameplayMap?.Enable();
+            guiMap?.Enable();
         }
     }
 }
