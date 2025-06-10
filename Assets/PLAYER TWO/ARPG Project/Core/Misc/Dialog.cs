@@ -43,7 +43,8 @@ namespace AI_DDA.Assets.Scripts
             ContinueDialog = 5,
             Exclusive = 6,
             OpenClassUpgrade = 7,
-            SetSpecialCondition = 8
+            SetSpecialCondition = 8,
+            OpenGuildmaster = 9
         }
 
         public List<DialogPage> pages = new List<DialogPage>();

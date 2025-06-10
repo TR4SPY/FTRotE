@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 771f6ee7f348f39b18544bf344247ed9, type: 3}
+  m_Name: Guildmaster
+  m_EditorClassIdentifier: 
+  pages:
+  - dialogText: "So\u2026 you\u2019ve brought me junk and hope. That\u2019s a dangerous
+      mix.\n\nI\u2019m Kaelen. They call me Craftman, though what I do borders more
+      on alchemy than carpentry. If it can be reforged, infused, socketed, or shattered
+      \u2014 I know how. But nothing comes without risk. Or cost. Some say I\u2019m
+      the last true craftsman in Ashenvale... Maybe even in all of Eldoria. If that\u2019s
+      true, then you better pray I stay alive.\n\nPlace your item. Choose your gem.
+      \nSay your prayers. Then let\u2019s see if fate is on your side today."
+    specialCondition: 
+    options:
+    - optionText: "I\u2019ll take my chances."
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 3
+      nextPageIndex: 0
+      specialConditionToSet: 0
+    showOnce: 0
+    isSpecial: 0
+  dialogTitle: Kaelen - Craftman

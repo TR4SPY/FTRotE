@@ -163,6 +163,10 @@ namespace AI_DDA.Assets.Scripts
                     ContinueDialog(option.nextPageIndex);
                     break;
 
+                case Dialog.DialogAction.OpenGuildmaster:
+                    OpenGuildmasterWindow();
+                    break;
+
                 default:
                     Close();
                     break;
@@ -252,6 +256,17 @@ namespace AI_DDA.Assets.Scripts
             craftman.OpenCraftingService();
         }
 
+        private void OpenGuildmasterWindow()
+        {
+            if (!(currentNPC is Guildmaster guildmaster))
+            {
+                Debug.LogError("[AI-DDA] Błąd: currentNPC nie jest Guildmasterem!");
+                return;
+            }
+
+            guildmaster.OpenGuildmasterService();
+        }
+
         private void OpenBlacksmithWindow()
         {
             if (!(currentNPC is Blacksmith blacksmith))
@@ -262,6 +277,7 @@ namespace AI_DDA.Assets.Scripts
             
             blacksmith.OpenBlackSmithService(player);
         }
+
         public void OpenExclusiveWindow()
         {
             var questGiver = currentNPC.GetComponent<QuestGiver>();

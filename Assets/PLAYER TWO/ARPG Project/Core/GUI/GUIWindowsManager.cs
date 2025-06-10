@@ -73,6 +73,8 @@ namespace PLAYERTWO.ARPGProject
 
         [Tooltip("A reference to the Minimap HUD Window.")]
         public GUIWindow minimapWindow;
+        [Tooltip("A reference to the GUI Guildmaster.")]
+        public GUIWindow guildmasterWindow;
 
         [Header("Audio Settings")]
         [Tooltip("The Audio Clip that plays when opening windows.")]
@@ -137,6 +139,11 @@ namespace PLAYERTWO.ARPGProject
         {
             if (!craftmanWindow) return null;
             return craftmanWindow.GetComponent<GUICraftman>();
+        }
+
+        public GUIGuildmaster GetGuildmaster()
+        {
+            return guildmasterWindow.GetComponent<GUIGuildmaster>();
         }
 
         public GUIInformation GetInformation()
