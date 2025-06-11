@@ -5,22 +5,32 @@ namespace PLAYERTWO.ARPGProject
     [AddComponentMenu("PLAYER TWO/ARPG Project/Game/Guild Manager")]
     public class GuildManager : Singleton<GuildManager>
     {
-        public string currentGuildName;
-        public Sprite currentGuildCrest;
-
         public static void CreateGuild(string name, Sprite crest)
         {
-            if (instance != null)
-                instance.CreateInternal(name, crest);
+            instance?.CreateInternal(name, crest);
+        }
+
+        public static string GetCurrentGuildName()
+        {
+            return Game.instance?.currentCharacter?.guildName;
+        }
+
+        public static Sprite GetCurrentGuildCrest()
+        {
+            return Game.instance?.currentCharacter?.GetGuildCrest();
         }
 
         protected virtual void CreateInternal(string name, Sprite crest)
         {
-            currentGuildName = name;
-            currentGuildCrest = crest;
-
-            if (Game.instance?.currentCharacter != null)
-                Game.instance.currentCharacter.guildName = name;
+            var character = Game.instance?.currentCharacter;
+            if (character != null)
+            {
+                character.SetGuild(name, crest);
+                if (character.Entity?.nametag != null)
+                {
+                    character.Entity.nametag.SetNametag(character.name, character.stats.currentLevel, name, character.GetName());
+                }
+            }
 
             Debug.Log($"Guild created: {name}");
         }

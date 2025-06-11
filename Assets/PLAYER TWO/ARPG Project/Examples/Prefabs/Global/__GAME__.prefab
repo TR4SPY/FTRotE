@@ -97,6 +97,7 @@ GameObject:
   - component: {fileID: 105099512331301389}
   - component: {fileID: 7952096078989433651}
   - component: {fileID: 2549783833396777464}
+  - component: {fileID: 9166076969468311500}
   m_Layer: 0
   m_Name: __GAME__
   m_TagString: Untagged
@@ -282,6 +283,9 @@ MonoBehaviour:
   dexterityMultiplier: 0.2
   vitalityMultiplier: 0.2
   energyMultiplier: 0.1
+  aggroRangeScale: 0.15
+  attackSpeedScale: 0.12
+  comboCountScale: 0.25
   playerLogger: {fileID: 0}
   useAIDDA: 1
 --- !u!114 &7952096078989433651
@@ -307,6 +311,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 417f54619dbc30d399efa82f26c17d9f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &9166076969468311500
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2175000572608817883}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2e9965163931b9888437eeaf8398d76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &2499290984610492485

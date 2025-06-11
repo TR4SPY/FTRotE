@@ -50,9 +50,14 @@ namespace PLAYERTWO.ARPGProject
         public int waypointsDiscovered = 0;
         public int achievementsUnlocked = 0;
         public bool questionnaireCompleted = false;
+
         public string playerType = "Undefined";
         public string currentDynamicPlayerType = "Unknown";
+
         public string guildName = "";
+        public string guildCrestData = "";
+        [System.NonSerialized] public Sprite guildCrest;
+
         public float totalPlayTime = 0f;
         protected Entity m_entity;
         public Entity Entity => m_entity;
@@ -386,10 +391,55 @@ namespace PLAYERTWO.ARPGProject
             characterInstance.SetMultiplier("Strength", serializer.strengthMultiplier);
             characterInstance.SetMultiplier("Vitality", serializer.vitalityMultiplier);
             characterInstance.SetMultiplier("Energy", serializer.energyMultiplier);
-
             characterInstance.savedDifficulty = serializer.savedDifficulty;
-            
+            characterInstance.guildName = serializer.guildName;
+            characterInstance.guildCrestData = serializer.guildCrestData;
+            characterInstance.guildCrest = DecodeSprite(serializer.guildCrestData);
+
             return characterInstance;
+        }
+
+        public void SetGuild(string name, Sprite crest)
+        {
+            guildName = name;
+            guildCrest = crest;
+            guildCrestData = EncodeSprite(crest);
+        }
+
+        public Sprite GetGuildCrest()
+        {
+            if (guildCrest == null && !string.IsNullOrEmpty(guildCrestData))
+                guildCrest = DecodeSprite(guildCrestData);
+            return guildCrest;
+        }
+
+        private static string EncodeSprite(Sprite sprite)
+        {
+            if (sprite == null || sprite.texture == null)
+                return string.Empty;
+            try
+            {
+                return System.Convert.ToBase64String(sprite.texture.EncodeToPNG());
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
+
+        private static Sprite DecodeSprite(string data)
+        {
+            if (string.IsNullOrEmpty(data))
+                return null;
+            try
+            {
+                var bytes = System.Convert.FromBase64String(data);
+                var tex = new Texture2D(2, 2);
+                if (tex.LoadImage(bytes))
+                    return Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
+            }
+            catch { }
+            return null;
         }
     }
 }

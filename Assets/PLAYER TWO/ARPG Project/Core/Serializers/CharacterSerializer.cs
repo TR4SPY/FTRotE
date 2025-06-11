@@ -52,8 +52,11 @@ namespace PLAYERTWO.ARPGProject
         public int npcInteractions;
         public int questsCompleted;
         public int waypointsDiscovered = 0;
-        
+
         public bool questionnaireCompleted = false;
+
+        public string guildName;
+        public string guildCrestData;
 
         public CharacterSerializer(CharacterInstance character)
         {
@@ -94,6 +97,9 @@ namespace PLAYERTWO.ARPGProject
 
             questionnaireCompleted = character.questionnaireCompleted;
             specialCondition = character.specialCondition.ToString();
+
+            guildName = character.guildName;
+            guildCrestData = character.guildCrestData;
 
             unlockedAchievements = character.unlockedAchievements != null ? new List<string>(character.unlockedAchievements) : new List<string>();
             achievementsUnlocked = unlockedAchievements.Count;
