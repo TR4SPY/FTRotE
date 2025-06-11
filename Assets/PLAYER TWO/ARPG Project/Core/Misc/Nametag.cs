@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -8,7 +9,7 @@ namespace PLAYERTWO.ARPGProject
     {
         [Header("References")]
         public Text characterText;
-        public Text guildText;
+        public TMP_Text guildText;
         public Text classText;
 
         public Transform target;
@@ -40,6 +41,14 @@ namespace PLAYERTWO.ARPGProject
             {
                 guildText.gameObject.SetActive(true);
                 string guildFormatted = $"< {guild} >";
+
+                var crest = GuildManager.instance?.currentGuildCrest;
+                if (crest != null)
+                {
+                    string spriteName = crest.name;
+                    guildFormatted = $"<sprite name=\"{spriteName}\" tint> {guildFormatted}";
+                }
+
                 guildText.text = StringUtils.StringWithColorAndStyle(guildFormatted, GameColors.White, bold: true);
             }
             else
