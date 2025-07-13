@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using System.Collections.Generic;
+using TMPro;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -57,6 +58,7 @@ namespace PLAYERTWO.ARPGProject
         public string guildName = "";
         public string guildCrestData = "";
         [System.NonSerialized] public Sprite guildCrest;
+        [System.NonSerialized] public TMP_SpriteAsset guildCrestTMPAsset;
 
         public float totalPlayTime = 0f;
         protected Entity m_entity;
@@ -399,11 +401,12 @@ namespace PLAYERTWO.ARPGProject
             return characterInstance;
         }
 
-        public void SetGuild(string name, Sprite crest)
+        public void SetGuild(string name, Sprite crest, TMP_SpriteAsset crestAsset = null)
         {
             guildName = name;
             guildCrest = crest;
             guildCrestData = EncodeSprite(crest);
+            guildCrestTMPAsset = crestAsset ?? CreateTMPAssetFromSprite(crest);
         }
 
         public Sprite GetGuildCrest()
@@ -413,8 +416,35 @@ namespace PLAYERTWO.ARPGProject
             return guildCrest;
         }
 
+        public TMP_SpriteAsset GetTMPGuildCrestAsset()
+        {
+            if (guildCrestTMPAsset == null)
+                guildCrestTMPAsset = CreateTMPAssetFromSprite(GetGuildCrest());
+            return guildCrestTMPAsset;
+        }
+
+        private static TMP_SpriteAsset CreateTMPAssetFromSprite(Sprite sprite)
+        {
+            if (sprite == null) return null;
+
+            var asset = ScriptableObject.CreateInstance<TMP_SpriteAsset>();
+            asset.name = $"GuildTMPAsset_{sprite.name}";
+
+            var spriteInfo = new TMP_Sprite
+            {
+                name = sprite.name,
+                sprite = sprite,
+                unicode = 0xE000
+            };
+
+            asset.spriteInfoList = new System.Collections.Generic.List<TMP_Sprite> { spriteInfo };
+            asset.UpdateLookupTables();
+            return asset;
+        }
+
         private static string EncodeSprite(Sprite sprite)
         {
+
             if (sprite == null || sprite.texture == null)
                 return string.Empty;
             try

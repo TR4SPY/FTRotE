@@ -8,7 +8,7 @@ namespace PLAYERTWO.ARPGProject
     {
         public static void CreateGuild(string name, Sprite crest, TMP_SpriteAsset crestAsset)
         {
-            instance?.CreateInternal(name, crest);
+            instance?.CreateInternal(name, crest, crestAsset);
         }
 
         public static string GetCurrentGuildName()
@@ -21,12 +21,12 @@ namespace PLAYERTWO.ARPGProject
             return Game.instance?.currentCharacter?.GetGuildCrest();
         }
 
-        protected virtual void CreateInternal(string name, Sprite crest)
+        protected virtual void CreateInternal(string name, Sprite crest, TMP_SpriteAsset crestAsset)
         {
             var character = Game.instance?.currentCharacter;
             if (character != null)
             {
-                character.SetGuild(name, crest);
+                character.SetGuild(name, crest, crestAsset);
                 if (character.Entity?.nametag != null)
                 {
                     character.Entity.nametag.SetNametag(character.name, character.stats.currentLevel, name, character.GetName());

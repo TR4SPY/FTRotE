@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -9,9 +8,9 @@ namespace PLAYERTWO.ARPGProject
     {
         [Header("References")]
         public Text characterText;
-        public TMP_Text guildText;
+        public Text guildText;
         public Text classText;
-        private TMP_SpriteAsset m_guildSpriteAsset;
+        public Image guildCrestImage;
 
         public Transform target;
 
@@ -34,14 +33,6 @@ namespace PLAYERTWO.ARPGProject
             }
         }
 
-        public void SetTMPGuildSpriteAsset(TMP_SpriteAsset asset)
-        {
-            m_guildSpriteAsset = asset;
-
-            if (guildText != null && asset != null)
-                guildText.spriteAsset = asset;
-        }
-
         public void SetNametag(string playerName, int level, string guild = "", string className = "")
         {
             characterText.text = StringUtils.StringWithColorAndStyle($"{playerName} (Lv.{level})", GameColors.White, bold: true);
@@ -49,20 +40,29 @@ namespace PLAYERTWO.ARPGProject
             if (!string.IsNullOrEmpty(guild))
             {
                 guildText.gameObject.SetActive(true);
-                string guildFormatted = $"< {guild} >";
+                guildText.text = StringUtils.StringWithColorAndStyle($"< {guild} >", GameColors.White, bold: true);
 
                 var crest = GuildManager.GetCurrentGuildCrest();
-                if (crest != null)
+                if (crest != null && guildCrestImage != null)
                 {
-                    string spriteName = crest.name;
-                    guildFormatted = $"<sprite name=\"{spriteName}\" tint> {guildFormatted}";
-                }
+                    guildCrestImage.sprite = crest;
+                    guildCrestImage.gameObject.SetActive(true);
 
-                guildText.text = StringUtils.StringWithColorAndStyle(guildFormatted, GameColors.White, bold: true);
+                    var layoutRoot = guildCrestImage.transform.parent as RectTransform;
+                    if (layoutRoot != null)
+                        LayoutRebuilder.ForceRebuildLayoutImmediate(layoutRoot);
+                }
+                else if (guildCrestImage != null)
+                {
+                    guildCrestImage.gameObject.SetActive(false);
+                }
             }
             else
             {
                 guildText.gameObject.SetActive(false);
+                if (guildCrestImage != null)
+                    guildCrestImage.gameObject.SetActive(false);
+
             }
 
             if (!string.IsNullOrEmpty(className))
