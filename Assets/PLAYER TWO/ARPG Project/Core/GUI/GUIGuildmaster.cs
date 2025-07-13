@@ -291,7 +291,10 @@ namespace PLAYERTWO.ARPGProject
                     crest = Sprite.Create(ResizeTexture(tex, 256, 256), new Rect(0, 0, 256, 256), new Vector2(0.5f, 0.5f));
             }
 
-            GuildManager.CreateGuild(guildNameInput.text.Trim(), crest);
+            string guildName = guildNameInput.text.Trim();
+            TMP_SpriteAsset crestAsset = CreateTMPAssetFromSprite(crest);
+
+            GuildManager.CreateGuild(guildName, crest, crestAsset);
             Hide();
         }
 
@@ -322,6 +325,25 @@ namespace PLAYERTWO.ARPGProject
         {
             gameplayMap?.Enable();
             guiMap?.Enable();
+        }
+
+        private static TMP_SpriteAsset CreateTMPAssetFromSprite(Sprite sprite)
+        {
+            if (sprite == null) return null;
+
+            var asset = ScriptableObject.CreateInstance<TMP_SpriteAsset>();
+            asset.name = $"GuildTMPAsset_{sprite.name}";
+
+            var spriteInfo = new TMP_Sprite
+            {
+                name = sprite.name,
+                sprite = sprite,
+                unicode = 0xE000
+            };
+
+            asset.spriteInfoList = new System.Collections.Generic.List<TMP_Sprite> { spriteInfo };
+            asset.UpdateLookupTables();
+            return asset;
         }
     }
 }

@@ -11,6 +11,7 @@ namespace PLAYERTWO.ARPGProject
         public Text characterText;
         public TMP_Text guildText;
         public Text classText;
+        private TMP_SpriteAsset m_guildSpriteAsset;
 
         public Transform target;
 
@@ -31,6 +32,14 @@ namespace PLAYERTWO.ARPGProject
                     transform.localScale = Vector3.one * scaleFactor;
                 }
             }
+        }
+
+        public void SetTMPGuildSpriteAsset(TMP_SpriteAsset asset)
+        {
+            m_guildSpriteAsset = asset;
+
+            if (guildText != null && asset != null)
+                guildText.spriteAsset = asset;
         }
 
         public void SetNametag(string playerName, int level, string guild = "", string className = "")

@@ -1,11 +1,12 @@
 using UnityEngine;
+using TMPro;
 
 namespace PLAYERTWO.ARPGProject
 {
     [AddComponentMenu("PLAYER TWO/ARPG Project/Game/Guild Manager")]
     public class GuildManager : Singleton<GuildManager>
     {
-        public static void CreateGuild(string name, Sprite crest)
+        public static void CreateGuild(string name, Sprite crest, TMP_SpriteAsset crestAsset)
         {
             instance?.CreateInternal(name, crest);
         }
