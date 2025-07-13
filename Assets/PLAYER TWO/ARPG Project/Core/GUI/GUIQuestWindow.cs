@@ -72,6 +72,11 @@ namespace PLAYERTWO.ARPGProject
 
         protected GUIWindow m_window;
 
+        // Indicates if this window was opened from the Quest Log rather than from
+        // directly interacting with a Quest Giver NPC. Used to determine when the
+        // Complete button should be displayed.
+        protected bool openedFromLog = false;
+
         /// <summary>
         /// Returns the GUI Window component associated to this GUI Quest Window.
         /// </summary>
@@ -140,6 +145,17 @@ namespace PLAYERTWO.ARPGProject
             this.quest = quest;
             window.Show();
             UpdateTexts();
+            UpdateButtons();
+        }
+
+        /// <summary>
+        /// Sets the current Quest when opened from the Quest Log window.
+        /// </summary>
+        /// <param name="quest">The Quest you want to set.</param>
+        public void SetQuestFromLog(Quest quest)
+        {
+            openedFromLog = true;
+            SetQuest(quest);
         }
 
         public void CompleteQuest()
@@ -456,42 +472,60 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void UpdateButtons()
         {
-        if (!quest)
-            return;
+            if (!quest)
+                return;
 
-        // If the completeText field isn't assigned, warn and fallback to default cancel logic
-        if (completeText == null)
-        {
-            Debug.LogWarning("You need to assign a UI Text (Legacy) to the Complete Text field", this);
-            bool isLogFallback = Game.instance.quests.ContainsQuest(quest);
-            logActions.SetActive(isLogFallback);
-            giverActions.SetActive(!isLogFallback);
-            cancel.gameObject.SetActive(true);
-            cancel.interactable = Game.instance.quests.TryGetQuest(quest, out var questInstance) && !questInstance.completed;
-            return;
-        }
-
-            var isLog = Game.instance.quests.ContainsQuest(quest);
-            logActions.SetActive(isLog);
-            giverActions.SetActive(!isLog);
-            
-            // Check if this quest instance is completed
-            bool isComplete = false;
-            if (Game.instance.quests.TryGetQuest(quest, out var instance))
-            isComplete = instance.completed;
-            if (isComplete)
+            // If the completeText field isn't assigned, warn and fallback to default cancel logic
+            if (completeText == null)
             {
-                // Hide the cancel button and show completion text
+                Debug.LogWarning("You need to assign a UI Text (Legacy) to the Complete Text field", this);
+                bool isLogFallback = openedFromLog;
+                logActions.SetActive(isLogFallback);
+                giverActions.SetActive(!isLogFallback);
+                cancel.gameObject.SetActive(true);
+                cancel.interactable = Game.instance.quests.TryGetQuest(quest, out var questInstance) && !questInstance.completed;
+                complete.gameObject.SetActive(false);
+                return;
+            }
+
+            logActions.SetActive(openedFromLog);
+            giverActions.SetActive(!openedFromLog);
+
+            bool isAccepted = Game.instance.quests.TryGetQuest(quest, out var instance);
+            bool isCompleted = isAccepted && instance.completed;
+            bool readyForCompletion = false;
+
+            if (isAccepted)
+            {
+                int finalTarget = instance.GetFinalTargetProgress();
+                readyForCompletion = instance.progress >= finalTarget && !instance.completed;
+            }
+
+            // Cancel button
+            cancel.gameObject.SetActive(isAccepted && !isCompleted);
+            cancel.interactable = isAccepted && !isCompleted;
+
+            // Complete button
+            bool showComplete = false;
+            if (readyForCompletion)
+            {
+                if (!openedFromLog)
+                    showComplete = true;
+                else if (quest.allowLogCompletion)
+                    showComplete = true;
+            }
+            complete.gameObject.SetActive(showComplete);
+
+            // Completion text
+            if (isCompleted)
+            {
                 completeText.gameObject.SetActive(true);
                 cancel.gameObject.SetActive(false);
                 completeText.text = "This Quest is Complete";
             }
             else
             {
-                // Show the cancel button, hide completion text, and set interactable
                 completeText.gameObject.SetActive(false);
-                cancel.gameObject.SetActive(true);
-                cancel.interactable = Game.instance.quests.TryGetQuest(quest, out var questInstance) && !questInstance.completed;
             }
         }
 

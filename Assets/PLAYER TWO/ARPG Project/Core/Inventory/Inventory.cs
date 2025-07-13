@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -301,19 +302,20 @@ namespace PLAYERTWO.ARPGProject
             onInventoryCleared?.Invoke();
         }
 
-        /// <summary>
-        /// Sorts the Inventory items based on their size (rows * columns).
+               /// <summary>
+        /// Sorts the Inventory items by group and name to produce a
+        /// deterministic order. Larger items within a group are placed first to
+        /// maximise available space.
         /// </summary>
         public virtual void Sort()
         {
-            var sortedItems = new List<ItemInstance>(items.Keys);
-            sortedItems.Sort(
-                (a, b) =>
-                {
-                    var areaComparison = (b.rows * b.columns).CompareTo(a.rows * a.columns);
-                    return areaComparison != 0 ? areaComparison : b.rows.CompareTo(a.rows);
-                }
-            );
+            var sortedItems = items.Keys
+                .OrderBy(i => i.data.group)
+                .ThenByDescending(i => i.rows * i.columns)
+                .ThenBy(i => i.data.name)
+                .ThenBy(i => i.data.id)
+                .ToList();
+
             Clear();
 
             foreach (var item in sortedItems)

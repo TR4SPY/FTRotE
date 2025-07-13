@@ -635,30 +635,115 @@ namespace PLAYERTWO.ARPGProject
             return null;
         }
 
-        protected virtual string FormatDelta(float value)
+               protected virtual string FormatDelta(float value)
         {
             if (Mathf.Approximately(value, 0))
                 return "0";
 
-            var color = value > 0 ? GameColors.LightBlue : GameColors.LightRed;
+            var color = value > 0 ? GameColors.Green : GameColors.LightRed;
             var sign = value > 0 ? "+" : string.Empty;
             return StringUtils.StringWithColor($"{sign}{value}", color);
         }
 
-        protected virtual string BuildComparisonText(ItemInstance equipped)
+        protected virtual bool IsOneHandWeapon(ItemInstance item)
         {
-            if (equipped == null)
+            if (item == null || !item.IsWeapon())
+                return false;
+
+            if (item.data is ItemBlade blade)
+                return blade.IsOneHanded();
+
+            return item.data is not ItemBow; // treat bows as two handed
+        }
+
+        protected virtual bool IsTwoHandWeapon(ItemInstance item)
+        {
+            if (item == null || !item.IsWeapon())
+                return false;
+
+            if (item.data is ItemBlade blade)
+                return blade.IsTwoHanded();
+
+            return item.data is ItemBow; // bows considered two handed
+        }
+
+        protected virtual string CompareSkill(Skill newSkill, Skill equippedSkill)
+        {
+            if (newSkill == null && equippedSkill == null)
                 return string.Empty;
 
-            var text = string.Empty;
+            if (newSkill != null && equippedSkill != null)
+            {
+                var newText = StringUtils.StringWithColor(newSkill.name, GameColors.Green);
+                var oldText = StringUtils.StringWithColor(equippedSkill.name, GameColors.LightRed);
+                return $"Skill: {newText} vs {oldText}";
+            }
+
+            if (newSkill != null)
+                return $"Skill: {StringUtils.StringWithColor(newSkill.name, GameColors.Green)}";
+
+            return $"Skill: {StringUtils.StringWithColor(equippedSkill.name, GameColors.LightRed)}";
+        }
+
+        protected virtual void AddIfDifferent(List<string> list, string label, int delta)
+        {
+            if (delta != 0)
+                list.Add($"{label}: {FormatDelta(delta)}");
+        }
+
+        protected virtual void AddIfDifferent(List<string> list, string label, float delta)
+        {
+            if (!Mathf.Approximately(delta, 0))
+                list.Add($"{label}: {FormatDelta(delta)}");
+        }
+
+        protected virtual string BuildComparisonTextSingle(ItemInstance equipped)
+        {
+            if (equipped == null)
+                return StringUtils.StringWithColor("There is no item to compare with", GameColors.Gray);
+
+            var lines = new List<string>();
 
             if (m_item.IsWeapon() && equipped.IsWeapon())
             {
                 var min = m_item.GetWeapon().minDamage - equipped.GetWeapon().minDamage;
                 var max = m_item.GetWeapon().maxDamage - equipped.GetWeapon().maxDamage;
-                text += $"Damage: {FormatDelta(min)} ~ {FormatDelta(max)}";
+                if (min != 0 || max != 0)
+                    lines.Add($"Damage: {FormatDelta(min)} ~ {FormatDelta(max)}");
+
                 var atk = m_item.GetWeapon().attackSpeed - equipped.GetWeapon().attackSpeed;
-                text += $"\nAttack Speed: {FormatDelta(atk)}";
+                AddIfDifferent(lines, "Attack Speed", atk);
+
+                var mMin = m_item.GetWeapon().minMagicDamage - equipped.GetWeapon().minMagicDamage;
+                var mMax = m_item.GetWeapon().maxMagicDamage - equipped.GetWeapon().maxMagicDamage;
+                if (mMin != 0 || mMax != 0)
+                    lines.Add($"Magic Damage: {FormatDelta(mMin)} ~ {FormatDelta(mMax)}");
+
+                if (m_item.GetWeapon().magicElement != equipped.GetWeapon().magicElement)
+                {
+                    var left = StringUtils.StringWithColor(m_item.GetWeapon().magicElement.ToString(), GameColors.Green);
+                    var right = StringUtils.StringWithColor(equipped.GetWeapon().magicElement.ToString(), GameColors.LightRed);
+                    lines.Add($"Magic Element: {left} vs {right}");
+                }
+
+                var skillLine = CompareSkill(m_item.GetWeapon().skill, equipped.GetWeapon().skill);
+                if (!string.IsNullOrEmpty(skillLine))
+                    lines.Add(skillLine);
+
+                int newRes = m_item.GetAdditionalMagicResistance();
+                int eqRes = equipped.GetAdditionalMagicResistance();
+
+                if (m_item.data is ItemBlade nb)
+                    newRes += nb.magicResistance;
+                if (m_item.data is ItemBow nbw)
+                    newRes += nbw.magicResistance;
+
+                if (equipped.data is ItemBlade eb)
+                    eqRes += eb.magicResistance;
+                if (equipped.data is ItemBow ebw)
+                    eqRes += ebw.magicResistance;
+
+                AddIfDifferent(lines, "Magic Resistance", newRes - eqRes);
             }
             else if ((m_item.IsArmor() || m_item.IsShield()) && (equipped.IsArmor() || equipped.IsShield()))
             {
@@ -674,7 +759,22 @@ namespace PLAYERTWO.ARPGProject
                 if (equipped.IsShield())
                     eqDef += equipped.GetShield().defense;
 
-                text += $"Defense: {FormatDelta(def - eqDef)}";
+                AddIfDifferent(lines, "Defense", def - eqDef);
+
+                int newRes = m_item.GetAdditionalMagicResistance();
+                int eqRes = equipped.GetAdditionalMagicResistance();
+
+                if (m_item.IsArmor())
+                    newRes += m_item.GetArmor().magicResistance;
+                if (m_item.IsShield())
+                    newRes += m_item.GetShield().magicResistance;
+
+                if (equipped.IsArmor())
+                    eqRes += equipped.GetArmor().magicResistance;
+                if (equipped.IsShield())
+                    eqRes += equipped.GetShield().magicResistance;
+
+                AddIfDifferent(lines, "Magic Resistance", newRes - eqRes);
             }
 
             int health = m_item.GetAdditionalHealth() - equipped.GetAdditionalHealth();
@@ -682,19 +782,181 @@ namespace PLAYERTWO.ARPGProject
             int damage = m_item.GetAdditionalDamage() - equipped.GetAdditionalDamage();
             int speed = m_item.GetAttackSpeed() - equipped.GetAttackSpeed();
             int defense = m_item.GetAdditionalDefense() - equipped.GetAdditionalDefense();
+            int magicDamage = m_item.GetAdditionalMagicDamage() - equipped.GetAdditionalMagicDamage();
 
-            if (damage != 0)
-                text += $"\nAdditional Damage: {FormatDelta(damage)}";
-            if (speed != 0)
-                text += $"\nAdditional Attack Speed: {FormatDelta(speed)}";
-            if (defense != 0)
-                text += $"\nAdditional Defense: {FormatDelta(defense)}";
-            if (mana != 0)
-                text += $"\nAdditional Mana: {FormatDelta(mana)}";
-            if (health != 0)
-                text += $"\nAdditional Health: {FormatDelta(health)}";
+            AddIfDifferent(lines, "Additional Damage", damage);
+            AddIfDifferent(lines, "Additional Attack Speed", speed);
+            AddIfDifferent(lines, "Additional Defense", defense);
+            AddIfDifferent(lines, "Additional Mana", mana);
+            AddIfDifferent(lines, "Additional Health", health);
+            AddIfDifferent(lines, "Additional Magic Damage", magicDamage);
 
-            return text;
+            foreach (MagicElement element in System.Enum.GetValues(typeof(MagicElement)))
+            {
+                if (element == MagicElement.None)
+                    continue;
+
+                int delta = m_item.GetAdditionalElementalResistance(element) - equipped.GetAdditionalElementalResistance(element);
+                if (delta != 0)
+                    lines.Add($"{element} Resistance: {FormatDelta(delta)}");
+            }
+
+            if (lines.Count == 0)
+                return StringUtils.StringWithColor("Both items are the same", GameColors.Gray);
+
+            return string.Join("\n", lines);
+        }
+
+        protected virtual string BuildComparisonText(ItemInstance equipped)
+        {
+            return BuildComparisonTextSingle(equipped);
+        }
+
+        protected virtual string BuildComparisonTextAggregated(ItemInstance left, ItemInstance right)
+        {
+            if ((left == null || !left.IsWeapon()) && (right == null || !right.IsWeapon()))
+                return StringUtils.StringWithColor("There is no item to compare with", GameColors.Gray);
+
+            var lines = new List<string>();
+
+            int eqMin = 0, eqMax = 0, eqAtk = 0, eqMagMin = 0, eqMagMax = 0, eqRes = 0;
+            int eqAddDamage = 0, eqAddSpeed = 0, eqAddDef = 0, eqAddMana = 0, eqAddHealth = 0, eqAddMagic = 0, eqAddMagicRes = 0;
+            Dictionary<MagicElement, int> eqElemRes = new();
+            Skill eqSkillLeft = (left?.data as ItemWeapon)?.skill;
+            Skill eqSkillRight = (right?.data as ItemWeapon)?.skill;
+            List<MagicElement> eqElements = new();
+
+            void Accumulate(ItemInstance item)
+            {
+                if (item == null) return;
+
+                if (item.IsWeapon())
+                {
+                    var w = item.GetWeapon();
+                    eqMin += w.minDamage;
+                    eqMax += w.maxDamage;
+                    eqAtk += w.attackSpeed;
+                    eqMagMin += w.minMagicDamage;
+                    eqMagMax += w.maxMagicDamage;
+                    if (item.data is ItemBlade b) eqRes += b.magicResistance;
+                    if (item.data is ItemBow bw) eqRes += bw.magicResistance;
+                    if (w.magicElement != MagicElement.None) eqElements.Add(w.magicElement);
+                }
+
+                if (item.IsArmor())
+                    eqRes += item.GetArmor().magicResistance;
+
+                if (item.IsShield())
+                    eqRes += item.GetShield().magicResistance;
+
+                eqAddDamage += item.GetAdditionalDamage();
+                eqAddSpeed += item.GetAttackSpeed();
+                eqAddDef += item.GetAdditionalDefense();
+                eqAddMana += item.GetAdditionalMana();
+                eqAddHealth += item.GetAdditionalHealth();
+                eqAddMagic += item.GetAdditionalMagicDamage();
+                eqAddMagicRes += item.GetAdditionalMagicResistance();
+
+                foreach (MagicElement element in System.Enum.GetValues(typeof(MagicElement)))
+                {
+                    if (element == MagicElement.None) continue;
+                    int val = item.GetAdditionalElementalResistance(element);
+                    if (val == 0) continue;
+                    eqElemRes[element] = eqElemRes.ContainsKey(element) ? eqElemRes[element] + val : val;
+                }
+            }
+
+            Accumulate(left);
+            Accumulate(right);
+
+            if (m_item.IsWeapon())
+            {
+                var w = m_item.GetWeapon();
+                int dMin = w.minDamage - eqMin;
+                int dMax = w.maxDamage - eqMax;
+                if (dMin != 0 || dMax != 0)
+                    lines.Add($"Damage: {FormatDelta(dMin)} ~ {FormatDelta(dMax)}");
+
+                AddIfDifferent(lines, "Attack Speed", w.attackSpeed - eqAtk);
+
+                int mMin = w.minMagicDamage - eqMagMin;
+                int mMax = w.maxMagicDamage - eqMagMax;
+                if (mMin != 0 || mMax != 0)
+                    lines.Add($"Magic Damage: {FormatDelta(mMin)} ~ {FormatDelta(mMax)}");
+
+                string eqElemStr = string.Join(" & ", eqElements.Distinct());
+                if (w.magicElement.ToString() != eqElemStr)
+                {
+                    var leftElem = StringUtils.StringWithColor(w.magicElement.ToString(), GameColors.Green);
+                    var rightElem = StringUtils.StringWithColor(eqElemStr, GameColors.LightRed);
+                    lines.Add($"Magic Element: {leftElem} vs {rightElem}");
+                }
+
+                var skillLine = CompareSkill(w.skill, eqSkillLeft ?? eqSkillRight);
+                if (!string.IsNullOrEmpty(skillLine))
+                    lines.Add(skillLine);
+
+                int newRes = m_item.GetAdditionalMagicResistance();
+                if (m_item.data is ItemBlade nb) newRes += nb.magicResistance;
+                if (m_item.data is ItemBow nbw) newRes += nbw.magicResistance;
+
+                AddIfDifferent(lines, "Magic Resistance", newRes - (eqRes + eqAddMagicRes));
+            }
+
+            AddIfDifferent(lines, "Additional Damage", m_item.GetAdditionalDamage() - eqAddDamage);
+            AddIfDifferent(lines, "Additional Attack Speed", m_item.GetAttackSpeed() - eqAddSpeed);
+            AddIfDifferent(lines, "Additional Defense", m_item.GetAdditionalDefense() - eqAddDef);
+            AddIfDifferent(lines, "Additional Mana", m_item.GetAdditionalMana() - eqAddMana);
+            AddIfDifferent(lines, "Additional Health", m_item.GetAdditionalHealth() - eqAddHealth);
+            AddIfDifferent(lines, "Additional Magic Damage", m_item.GetAdditionalMagicDamage() - eqAddMagic);
+
+            foreach (MagicElement element in System.Enum.GetValues(typeof(MagicElement)))
+            {
+                if (element == MagicElement.None) continue;
+                int eqVal = eqElemRes.ContainsKey(element) ? eqElemRes[element] : 0;
+                int delta = m_item.GetAdditionalElementalResistance(element) - eqVal;
+                if (delta != 0)
+                    lines.Add($"{element} Resistance: {FormatDelta(delta)}");
+            }
+
+            if (lines.Count == 0)
+                return StringUtils.StringWithColor("Both items are the same", GameColors.Gray);
+
+            return string.Join("\n", lines);
+        }
+
+        protected virtual string BuildFullComparisonText()
+        {
+            var items = Level.instance.player?.items;
+            if (items == null)
+                return StringUtils.StringWithColor("There is no item to compare with", GameColors.Gray);
+
+            if (m_item.IsWeapon())
+            {
+                var left = items.GetLeftHand();
+                var right = items.GetRightHand();
+
+                bool leftWeapon = left != null && left.IsWeapon();
+                bool rightWeapon = right != null && right.IsWeapon();
+
+                if (IsOneHandWeapon(m_item) && leftWeapon && rightWeapon && IsOneHandWeapon(left) && IsOneHandWeapon(right))
+                {
+                    var leftText = BuildComparisonTextSingle(left);
+                    var rightText = BuildComparisonTextSingle(right);
+                    return $"Left-Hand Weapon comparison:\n{leftText}\n\nRight-Hand Weapon comparison:\n{rightText}";
+                }
+
+                if (IsTwoHandWeapon(m_item) && leftWeapon && rightWeapon && IsOneHandWeapon(left) && IsOneHandWeapon(right))
+                {
+                    return BuildComparisonTextAggregated(left, right);
+                }
+            }
+
+            var equipped = GetEquippedItem(m_item);
+            if (equipped == null)
+                return StringUtils.StringWithColor("There is no item to compare with", GameColors.Gray);
+
+            return BuildComparisonTextSingle(equipped);
         }
 
         protected virtual void Update()
@@ -707,8 +969,7 @@ namespace PLAYERTWO.ARPGProject
 
             if (pressed && !m_showComparison && gameObject.activeSelf && m_item.IsEquippable())
             {
-                var equipped = GetEquippedItem(m_item);
-                comparisonText.text = BuildComparisonText(equipped);
+                comparisonText.text = BuildFullComparisonText();
                 comparisonText.gameObject.SetActive(true);
                 m_showComparison = true;
             }

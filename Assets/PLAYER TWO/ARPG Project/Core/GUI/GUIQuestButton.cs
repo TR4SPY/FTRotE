@@ -45,7 +45,7 @@ namespace PLAYERTWO.ARPGProject
         }
 
         protected virtual void ShowQuestWindow() =>
-            GUIWindowsManager.instance.quest.SetQuest(m_quest.data);
+            GUIWindowsManager.instance.quest.SetQuestFromLog(m_quest.data);
 
         protected virtual void UpdateProgress()
         {
