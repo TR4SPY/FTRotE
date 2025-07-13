@@ -1,0 +1,85 @@
+
+[Fading Transparent Visibility]
+
+[CREDITS]
+
+Developed by Unity Asset Store Publisher: Dozed
+https://assetstore.unity.com/publishers/28998
+
+Contacts:
+Website: https://github.com/Dozed12
+Email: up201607929@fe.up.pt
+
+[DESCRIPTION]
+
+	This asset produces a fade effect to GameObjects using a custom transparency shader while mantaining all the
+features of the Standard Shader. This effect occurs per object pixel based on the relative position of another
+GameObject. It is highly costumizable to achieve any kind of desired effect and highly optimized to do so without
+any performance impact.
+
+[USAGE]
+
+	This system requires a GameObject to serve as the view point, with the ViewPoint.cs script attached. After that
+all the GameObjects that are to use this effect require a Material using the VisibilityTransparentStandard shader
+and the Visibility.cs script attached. This Visibility.cs requires a View to be specified which is the GameObject
+mentioned previously.
+	There are many options to costumize the transparency fade effect. These are available both in the ViewPoint.cs
+script and in the Material of the GameObjects that use the effect. To facilitate working with this system the
+ViewPoint.cs settings are used by all the GameObjects with the Material. However the user can choose to override
+these settings in the Material by ticking the "Override Viewer Settings" option and setting up custom options there.
+
+[SYSTEM & OPTIONS]
+
+	The system works by creating limits relative to the view point with different alpha(transparency) values.
+The shader will attribute an alpha value per pixel using linear interpolations between these limits to obtain the fading
+effect.
+
+There are 3 control points to consider
+
+|-------------|----------|
+A             B          C
+
+- A is the view point and has the value "Center Alpha"
+- B is a point at distance "Visibility Distance" and has the value "Range Alpha"
+- C is a point at distance "Visibility Distance" + "Limit Distance" and has the value "Limit Alpha"
+
+Everything beyond C has alpha equal to "Limit Alpha"
+
+	On top of this the view can be limited by and angle "Visibility Angle" which is relative to the front of the view point
+GameObject. The view point GameObject should be an empty GameObject in case the front is not correct so it can be
+easily rotated. Along with this "Visibility Angle" there is the "Angle Alpha" which is the alpha value to be attributed to
+all pixels beyond this angle. Note that "Visibility Angle" is the total view angle from one side to the other.
+
+	Finally this shader also includes an Outline that can be added. This Outline is applied at point B and its size
+is defined by the options "Outline Internal", which expands the size towards the view, and "Outline External" which 
+expands outwards. It is also possible to define the color of this Outline using the "Outline Color" and "Outline Alpha" options
+
+[OPTIMIZATIONS]
+
+	The shader effect is highly optimized to save as many calculations as possible and to allow it to be used with the same
+performance as the Standard Shader provided by Unity.
+Of the many optimizations implemented the most significant are:
+	- Comparison of cosines instead of angles (when using Visibility Angle);
+	- Simplification of calculations for GameObjects entirely beyond the "Visibility Distance" + "Limit Distance" using the
+	GameObject Bounding Box;
+	- Simplification of calculations for GameObjects entirely outside of the Visibility Angle using the GameObject Bounding
+	Box.
+
+[LIMITATIONS]
+
+	Due to Unity limitations it's not possible for transparent GameObjects to receive shadows. In the future, when the 
+High Definition Render Pipeline becomes more widely used, this will be possible. It's still possible to use baked shadows
+and with great results as it's shown in one of the screenshots.
+
+[NOTICE]
+
+	The models presented in the Sample Scene are from the Medieval Interior Asset Pack which are freely distributed and can be used
+for any purpose. These models are used purely for demonstration purposes and are not an integral part of this asset.
+The full package can be obtained here:
+https://soi.itch.io/medieval-interior-asset-pack
+
+[CLOSING]
+
+Thank you for purchasing this asset.
+
+If you need any help, support or even have suggestions or requests feel free to contact me by email at up201607929@fe.up.pt

@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -18,6 +19,9 @@ namespace PLAYERTWO.ARPGProject
 
         [Tooltip("The prefab of the slot used to represent cells.")]
         public GUIInventorySlot inventorySlot;
+
+        [Tooltip("The button that will be used to automatically sort the Inventory's items.")]
+        public Button autoSortButton;
 
         [Header("Containers")]
         [Tooltip(
@@ -40,6 +44,8 @@ namespace PLAYERTWO.ARPGProject
         protected Inventory m_inventory;
         protected GUIInventorySlot[,] m_slots;
         protected float m_initializationTime;
+
+        protected List<GUIItem> m_items = new();
 
         /// <summary>
         /// Returns the center of the grid container.
@@ -95,6 +101,10 @@ namespace PLAYERTWO.ARPGProject
             GUI.instance.onSelectItem.AddListener((item) => TryRemove(item));
             m_inventory.onItemAdded += CreateAndPlace;
             m_inventory.onMoneyChanged += UpdateMoney;
+            m_inventory.onInventoryCleared += Clear;
+
+            if (autoSortButton)
+                autoSortButton.onClick.AddListener(() => m_inventory.Sort());
         }
 
         /// <summary>
@@ -139,6 +149,7 @@ namespace PLAYERTWO.ARPGProject
             item.transform.SetParent(itemsContainer);
             ((RectTransform)item.transform).anchoredPosition = new Vector2(posX, posY);
             item.interactable = true;
+            m_items.Add(item);
             PlayAudio(placeClip);
             UpdateSlots();
         }
@@ -172,6 +183,7 @@ namespace PLAYERTWO.ARPGProject
             }
 
             item.SetLastPosition(this, position);
+            m_items.Remove(item);
             UpdateSlots();
 
             // Ostateczne usunięcie z GUI
@@ -376,6 +388,18 @@ namespace PLAYERTWO.ARPGProject
 
             if (amberlingsText != null)
                 amberlingsText.text = currency.amberlings.ToString();
+        }
+
+        protected virtual void Clear()
+        {
+            foreach (var item in m_items)
+            {
+                if (item != null)
+                    Destroy(item.gameObject);
+            }
+
+            m_items.Clear();
+            UpdateSlots();
         }
 
         protected virtual void PlayAudio(AudioClip audio)

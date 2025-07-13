@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 6f5afd092f004674c87e5af989c73151
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 136037
+  packageName: Fading Transparent Visibility
+  packageVersion: 1.0
+  assetPath: Assets/FadingTransparentVisibility/Models&Materials/Capsule.mat
+  uploadId: 453711

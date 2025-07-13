@@ -42,7 +42,7 @@ namespace PLAYERTWO.ARPGProject
                 guildText.gameObject.SetActive(true);
                 string guildFormatted = $"< {guild} >";
 
-                var crest = GuildManager.instance?.currentGuildCrest;
+                var crest = GuildManager.GetCurrentGuildCrest();
                 if (crest != null)
                 {
                     string spriteName = crest.name;

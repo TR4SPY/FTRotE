@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 9051345152343d043ace6a9fe98e0a6d
+timeCreated: 1469951900
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 136037
+  packageName: Fading Transparent Visibility
+  packageVersion: 1.0
+  assetPath: Assets/FadingTransparentVisibility/Models&Materials/Chairs/trn_ChairSimple.mat
+  uploadId: 453711

@@ -22,13 +22,18 @@ namespace PLAYERTWO.ARPGProject
 
         [Tooltip("A reference to the Container containing both rewards and currency rewards.")]
         public Transform rewards;
-        
+
+        [Tooltip("Shown instead of the Cancel button when the quest is complete.")]
+        public Text completeText;
+
+        [Header("Containers")]
         [Tooltip("Container for displaying the reward entries dynamically.")]
         public Transform rewardsContainer;
 
         [Tooltip("Container dla ikon monet w Quest Window.")]
         public Transform currencyContainer;
 
+        [Header("Prefabs")]
         [Tooltip("Prefab z childami Name(Text) i Icon(Image).")]
         public GameObject priceTagPrefab;
         
@@ -38,7 +43,7 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("Prefab for header lines.")]
         public GameObject textLineHeaderPrefab;
 
-        [Header("Ikony walut")]
+        [Header("Currency Icons")]
         public Sprite solmireIcon;
         public Sprite lunarisIcon;
         public Sprite amberlingsIcon;
@@ -451,15 +456,43 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void UpdateButtons()
         {
-            if (!quest)
-                return;
+        if (!quest)
+            return;
+
+        // If the completeText field isn't assigned, warn and fallback to default cancel logic
+        if (completeText == null)
+        {
+            Debug.LogWarning("You need to assign a UI Text (Legacy) to the Complete Text field", this);
+            bool isLogFallback = Game.instance.quests.ContainsQuest(quest);
+            logActions.SetActive(isLogFallback);
+            giverActions.SetActive(!isLogFallback);
+            cancel.gameObject.SetActive(true);
+            cancel.interactable = Game.instance.quests.TryGetQuest(quest, out var questInstance) && !questInstance.completed;
+            return;
+        }
 
             var isLog = Game.instance.quests.ContainsQuest(quest);
             logActions.SetActive(isLog);
             giverActions.SetActive(!isLog);
-
-            bool hasRequiredItem = Game.instance.currentCharacter.inventory.HasItem(quest.requiredItem.data);
-            complete.gameObject.SetActive(quest.requiresManualCompletion && hasRequiredItem);
+            
+            // Check if this quest instance is completed
+            bool isComplete = false;
+            if (Game.instance.quests.TryGetQuest(quest, out var instance))
+            isComplete = instance.completed;
+            if (isComplete)
+            {
+                // Hide the cancel button and show completion text
+                completeText.gameObject.SetActive(true);
+                cancel.gameObject.SetActive(false);
+                completeText.text = "This Quest is Complete";
+            }
+            else
+            {
+                // Show the cancel button, hide completion text, and set interactable
+                completeText.gameObject.SetActive(false);
+                cancel.gameObject.SetActive(true);
+                cancel.interactable = Game.instance.quests.TryGetQuest(quest, out var questInstance) && !questInstance.completed;
+            }
         }
 
         protected virtual void OnInventoryUpdated()
@@ -469,6 +502,11 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void Start()
         {
+            if (completeText == null)
+            {
+                Debug.LogWarning("the Complete Text field hasn't been assigned, You need to assign a UI Text (Legacy) to the Complete Text field", this);
+            }
+            
             InitializeCallbacks();
             Game.instance.currentCharacter.inventory.onInventoryUpdated += UpdateButtons;
         }

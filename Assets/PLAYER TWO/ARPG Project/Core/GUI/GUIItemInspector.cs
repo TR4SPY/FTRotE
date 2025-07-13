@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -38,6 +39,9 @@ namespace PLAYERTWO.ARPGProject
 
         [Tooltip("A reference to the Text component that represents the Item's name.")]
         public Text itemName;
+
+        [Tooltip("References the Text component displaying the comparison stats.")]
+        public Text comparisonText;
 
         [Tooltip("A reference to the Text component that represents the Item's potion description.")]
         public Text potionDescription;
@@ -102,6 +106,7 @@ namespace PLAYERTWO.ARPGProject
         protected CanvasGroup m_group;
         protected ItemInstance m_item;
         protected GUIItem m_guiItem;
+        protected bool m_showComparison;
 
         protected Entity m_entity;
 
@@ -588,6 +593,131 @@ namespace PLAYERTWO.ARPGProject
                 return;
 
             element.transform.parent.gameObject.SetActive(value);
+        }
+
+        protected virtual ItemInstance GetEquippedItem(ItemInstance item)
+        {
+            var items = Level.instance.player?.items;
+            if (items == null || item == null)
+                return null;
+
+            if (item.IsArmor())
+            {
+                switch (item.GetArmor().slot)
+                {
+                    case ItemSlots.Helm:
+                        return items.GetHelm();
+                    case ItemSlots.Chest:
+                        return items.GetChest();
+                    case ItemSlots.Pants:
+                        return items.GetPants();
+                    case ItemSlots.Gloves:
+                        return items.GetGloves();
+                    case ItemSlots.Boots:
+                        return items.GetBoots();
+                }
+            }
+            else if (item.IsShield())
+                return items.GetLeftHand();
+            else if (item.IsBow())
+                return items.GetRightHand();
+            else if (item.IsWeapon())
+            {
+                var right = items.GetRightHand();
+                if (right != null && right.IsWeapon())
+                    return right;
+
+                var left = items.GetLeftHand();
+                if (left != null && left.IsWeapon())
+                    return left;
+            }
+
+            return null;
+        }
+
+        protected virtual string FormatDelta(float value)
+        {
+            if (Mathf.Approximately(value, 0))
+                return "0";
+
+            var color = value > 0 ? GameColors.LightBlue : GameColors.LightRed;
+            var sign = value > 0 ? "+" : string.Empty;
+            return StringUtils.StringWithColor($"{sign}{value}", color);
+        }
+
+        protected virtual string BuildComparisonText(ItemInstance equipped)
+        {
+            if (equipped == null)
+                return string.Empty;
+
+            var text = string.Empty;
+
+            if (m_item.IsWeapon() && equipped.IsWeapon())
+            {
+                var min = m_item.GetWeapon().minDamage - equipped.GetWeapon().minDamage;
+                var max = m_item.GetWeapon().maxDamage - equipped.GetWeapon().maxDamage;
+                text += $"Damage: {FormatDelta(min)} ~ {FormatDelta(max)}";
+                var atk = m_item.GetWeapon().attackSpeed - equipped.GetWeapon().attackSpeed;
+                text += $"\nAttack Speed: {FormatDelta(atk)}";
+            }
+            else if ((m_item.IsArmor() || m_item.IsShield()) && (equipped.IsArmor() || equipped.IsShield()))
+            {
+                int def = 0;
+                if (m_item.IsArmor())
+                    def += m_item.GetArmor().defense;
+                if (m_item.IsShield())
+                    def += m_item.GetShield().defense;
+
+                int eqDef = 0;
+                if (equipped.IsArmor())
+                    eqDef += equipped.GetArmor().defense;
+                if (equipped.IsShield())
+                    eqDef += equipped.GetShield().defense;
+
+                text += $"Defense: {FormatDelta(def - eqDef)}";
+            }
+
+            int health = m_item.GetAdditionalHealth() - equipped.GetAdditionalHealth();
+            int mana = m_item.GetAdditionalMana() - equipped.GetAdditionalMana();
+            int damage = m_item.GetAdditionalDamage() - equipped.GetAdditionalDamage();
+            int speed = m_item.GetAttackSpeed() - equipped.GetAttackSpeed();
+            int defense = m_item.GetAdditionalDefense() - equipped.GetAdditionalDefense();
+
+            if (damage != 0)
+                text += $"\nAdditional Damage: {FormatDelta(damage)}";
+            if (speed != 0)
+                text += $"\nAdditional Attack Speed: {FormatDelta(speed)}";
+            if (defense != 0)
+                text += $"\nAdditional Defense: {FormatDelta(defense)}";
+            if (mana != 0)
+                text += $"\nAdditional Mana: {FormatDelta(mana)}";
+            if (health != 0)
+                text += $"\nAdditional Health: {FormatDelta(health)}";
+
+            return text;
+        }
+
+        protected virtual void Update()
+        {
+            if (comparisonText == null || m_item == null)
+                return;
+
+            var pressed = Keyboard.current != null &&
+                (Keyboard.current.leftShiftKey.isPressed || Keyboard.current.rightShiftKey.isPressed);
+
+            if (pressed && !m_showComparison && gameObject.activeSelf && m_item.IsEquippable())
+            {
+                var equipped = GetEquippedItem(m_item);
+                comparisonText.text = BuildComparisonText(equipped);
+                comparisonText.gameObject.SetActive(true);
+                m_showComparison = true;
+            }
+            else if (!pressed && m_showComparison)
+            {
+                comparisonText.gameObject.SetActive(false);
+                comparisonText.text = string.Empty;
+                m_showComparison = false;
+            }
         }
 
         protected virtual void Start()

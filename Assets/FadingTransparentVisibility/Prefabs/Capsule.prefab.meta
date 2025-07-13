@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c57da8f39a0cbcb418766e5c96626c5c
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 136037
+  packageName: Fading Transparent Visibility
+  packageVersion: 1.0
+  assetPath: Assets/FadingTransparentVisibility/Prefabs/Capsule.prefab
+  uploadId: 453711

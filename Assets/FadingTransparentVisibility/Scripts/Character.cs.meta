@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 758f03bfa3dad364b8ebba486a91c099
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 136037
+  packageName: Fading Transparent Visibility
+  packageVersion: 1.0
+  assetPath: Assets/FadingTransparentVisibility/Scripts/Character.cs
+  uploadId: 453711

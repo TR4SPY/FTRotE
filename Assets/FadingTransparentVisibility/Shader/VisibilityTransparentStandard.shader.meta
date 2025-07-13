@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 25221380ec91732419946f67b29897cf
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 136037
+  packageName: Fading Transparent Visibility
+  packageVersion: 1.0
+  assetPath: Assets/FadingTransparentVisibility/Shader/VisibilityTransparentStandard.shader
+  uploadId: 453711

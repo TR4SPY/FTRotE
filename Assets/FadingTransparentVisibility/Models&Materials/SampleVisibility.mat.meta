@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 967085f67ddb5a54192b11999663b234
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 136037
+  packageName: Fading Transparent Visibility
+  packageVersion: 1.0
+  assetPath: Assets/FadingTransparentVisibility/Models&Materials/SampleVisibility.mat
+  uploadId: 453711

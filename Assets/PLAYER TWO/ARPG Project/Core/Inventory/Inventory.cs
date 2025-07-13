@@ -12,6 +12,8 @@ namespace PLAYERTWO.ARPGProject
         public Action onMoneyChanged;
         public Currency currency = new Currency();
 
+        public Action onInventoryCleared;
+        
         protected ItemInstance[,] m_grid;
         protected int m_money;
 
@@ -287,6 +289,35 @@ namespace PLAYERTWO.ARPGProject
                 return new();
 
             return items[item];
+        }
+
+        /// <summary>
+        /// Clears the Inventory, removing all items and resetting the grid.
+        /// </summary>
+        public virtual void Clear()
+        {
+            items.Clear();
+            m_grid = new ItemInstance[rows, columns];
+            onInventoryCleared?.Invoke();
+        }
+
+        /// <summary>
+        /// Sorts the Inventory items based on their size (rows * columns).
+        /// </summary>
+        public virtual void Sort()
+        {
+            var sortedItems = new List<ItemInstance>(items.Keys);
+            sortedItems.Sort(
+                (a, b) =>
+                {
+                    var areaComparison = (b.rows * b.columns).CompareTo(a.rows * a.columns);
+                    return areaComparison != 0 ? areaComparison : b.rows.CompareTo(a.rows);
+                }
+            );
+            Clear();
+
+            foreach (var item in sortedItems)
+                TryAddOrStack(item);
         }
     }
 }
