@@ -41,6 +41,9 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The completing mode of the Quest.")]
         public CompletingMode completingMode;
 
+        [Tooltip("Can this quest be completed from Quest Log level?")]
+        public bool allowLogCompletion = false;
+
         [Header("Reward Settings")]
         [Tooltip("The amount of experience points gained by completing this Quest.")]
         public int experience;
