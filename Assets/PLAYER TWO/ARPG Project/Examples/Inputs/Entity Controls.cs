@@ -401,6 +401,484 @@ public partial class @EntityControls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Gameplay1"",
+            ""id"": ""ecf292c4-3ea1-4f65-9841-3bf096ef7f39"",
+            ""actions"": [
+                {
+                    ""name"": ""Set Destination"",
+                    ""type"": ""Value"",
+                    ""id"": ""6e9d433b-0d6a-4ee3-a6e8-049dd057fa96"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Attack Mode"",
+                    ""type"": ""Button"",
+                    ""id"": ""1c03051c-2543-4c78-ad3c-5b460573182c"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Skill"",
+                    ""type"": ""Button"",
+                    ""id"": ""1e8a8541-e855-42e2-946b-fdc5fa0a3a8d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Consume Item 0"",
+                    ""type"": ""Button"",
+                    ""id"": ""87111076-73de-4862-a51d-555346272d6c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Consume Item 1"",
+                    ""type"": ""Button"",
+                    ""id"": ""3c7f3390-2ebd-4063-baf4-3cd882eead1d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Consume Item 2"",
+                    ""type"": ""Button"",
+                    ""id"": ""ceec7624-9b8e-4318-936b-2074400255c6"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Consume Item 3"",
+                    ""type"": ""Button"",
+                    ""id"": ""5db4fdcb-bd92-4c8c-9d4f-51e879f514bd"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Select Skill 0"",
+                    ""type"": ""Button"",
+                    ""id"": ""9380528b-bf80-4959-8d83-81fc85f4f795"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Select Skill 1"",
+                    ""type"": ""Button"",
+                    ""id"": ""355920c0-1d81-4388-bb26-d0bb57e963a7"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Select Skill 2"",
+                    ""type"": ""Button"",
+                    ""id"": ""e2d1a298-a322-416c-bfe7-dc8d6cabdbe6"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Select Skill 3"",
+                    ""type"": ""Button"",
+                    ""id"": ""9f28205e-6b1f-4d8d-ae0f-8fa9e6e733ba"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Select Skill 4"",
+                    ""type"": ""Button"",
+                    ""id"": ""50cc9624-55f2-4443-8428-059e50b3bf12"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Select Skill 5"",
+                    ""type"": ""Button"",
+                    ""id"": ""99f83af3-4249-4de5-8d9b-fdce05583a60"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Select Skill 6"",
+                    ""type"": ""Button"",
+                    ""id"": ""5b3ee5b4-8412-4ab3-b0ec-6b3de917f16e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Select Skill 7"",
+                    ""type"": ""Button"",
+                    ""id"": ""7474068c-ca88-4d0c-a7f5-6ba792060476"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Directional Movement"",
+                    ""type"": ""Value"",
+                    ""id"": ""5c6418b6-3a27-4a6c-a500-f4c6f3b30f4c"",
+                    ""expectedControlType"": ""Stick"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Attack"",
+                    ""type"": ""Button"",
+                    ""id"": ""ba87c455-a379-4b96-b876-a69485a755c1"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Interact"",
+                    ""type"": ""Button"",
+                    ""id"": ""6d7a41b6-938f-4a5f-a70d-61896851c382"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""7bd2000b-c52e-4938-9b70-09d54ac423de"",
+                    ""path"": ""<Keyboard>/leftShift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Attack Mode"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3c719203-d35c-41b9-9746-f4d46aa90fc8"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Skill"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ca7cbd5b-f159-4536-a8ad-c96304330eff"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Skill"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""290dfce1-475b-46ea-a8f3-e9db9e15f8c3"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Select Skill 0"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4c4bd8c4-ee46-4fc4-8ab0-db0f0e8cc6f2"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Select Skill 1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9b5d8a90-2fde-4353-b3fa-9904d38e170a"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Select Skill 2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0bce7914-bc72-4b81-9126-fb534c762b3f"",
+                    ""path"": ""<Keyboard>/4"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Select Skill 3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""31c25d23-4b7b-4dbb-88c3-b10e5730a7b1"",
+                    ""path"": ""<Keyboard>/5"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Select Skill 4"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""72ad3efe-0e06-46af-9a53-fbf2b152b35d"",
+                    ""path"": ""<Keyboard>/6"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Select Skill 5"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4a36d77b-3ad5-4f65-975d-16666ce7f0ae"",
+                    ""path"": ""<Keyboard>/7"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Select Skill 6"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fd24aa08-fa1d-41c4-81a0-503c0e7da911"",
+                    ""path"": ""<Keyboard>/8"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Select Skill 7"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b2bfb248-8422-4b30-b04c-12c41dbeb6e2"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Consume Item 0"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b060773d-9568-4587-9598-71df93e9b53f"",
+                    ""path"": ""<Keyboard>/t"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Consume Item 1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f35cc879-8a55-4d18-8fc1-dfdb29fe57f7"",
+                    ""path"": ""<Keyboard>/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Consume Item 2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a7377c90-ffea-437f-b3ff-1c34847d4aa6"",
+                    ""path"": ""<Keyboard>/u"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Consume Item 3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6c8f6dbd-f353-4ca4-9f93-98d27502e2a2"",
+                    ""path"": ""<Gamepad>/leftStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Directional Movement"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""648c6485-351a-49d3-a76f-3caf7d96833b"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Attack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a6765586-e723-4889-a912-056ad2dea4ca"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""WASD"",
+                    ""id"": ""77ffe344-a689-4563-98c6-484848296a71"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Set Destination"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""05327d4c-7048-438b-95c8-1c6fb7aa01a8"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Set Destination"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""f7f0fad2-dbed-4b78-9700-a7c530198ecc"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Set Destination"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""cb872004-0f71-4d1d-9813-4364c7110d0a"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Set Destination"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""8849aeb2-f71f-4ee9-b95e-fc3832d580e0"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Set Destination"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Arrows"",
+                    ""id"": ""0c25e95e-b37a-4858-a62f-2bea127ffe38"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Set Destination"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""55bd3032-fb12-4a45-af88-d1097c8314e0"",
+                    ""path"": ""<Keyboard>/upArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Set Destination"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""62d714ae-2ee1-41b6-9965-daf358313087"",
+                    ""path"": ""<Keyboard>/downArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Set Destination"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""6f5649e4-c55c-4b20-892b-b598eb8d7bbc"",
+                    ""path"": ""<Keyboard>/leftArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Set Destination"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""3c2c9575-fa29-4115-bae5-780a7893b0a5"",
+                    ""path"": ""<Keyboard>/rightArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Set Destination"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -425,11 +903,32 @@ public partial class @EntityControls: IInputActionCollection2, IDisposable
         m_Gameplay_DirectionalMovement = m_Gameplay.FindAction("Directional Movement", throwIfNotFound: true);
         m_Gameplay_Attack = m_Gameplay.FindAction("Attack", throwIfNotFound: true);
         m_Gameplay_Interact = m_Gameplay.FindAction("Interact", throwIfNotFound: true);
+        // Gameplay1
+        m_Gameplay1 = asset.FindActionMap("Gameplay1", throwIfNotFound: true);
+        m_Gameplay1_SetDestination = m_Gameplay1.FindAction("Set Destination", throwIfNotFound: true);
+        m_Gameplay1_AttackMode = m_Gameplay1.FindAction("Attack Mode", throwIfNotFound: true);
+        m_Gameplay1_Skill = m_Gameplay1.FindAction("Skill", throwIfNotFound: true);
+        m_Gameplay1_ConsumeItem0 = m_Gameplay1.FindAction("Consume Item 0", throwIfNotFound: true);
+        m_Gameplay1_ConsumeItem1 = m_Gameplay1.FindAction("Consume Item 1", throwIfNotFound: true);
+        m_Gameplay1_ConsumeItem2 = m_Gameplay1.FindAction("Consume Item 2", throwIfNotFound: true);
+        m_Gameplay1_ConsumeItem3 = m_Gameplay1.FindAction("Consume Item 3", throwIfNotFound: true);
+        m_Gameplay1_SelectSkill0 = m_Gameplay1.FindAction("Select Skill 0", throwIfNotFound: true);
+        m_Gameplay1_SelectSkill1 = m_Gameplay1.FindAction("Select Skill 1", throwIfNotFound: true);
+        m_Gameplay1_SelectSkill2 = m_Gameplay1.FindAction("Select Skill 2", throwIfNotFound: true);
+        m_Gameplay1_SelectSkill3 = m_Gameplay1.FindAction("Select Skill 3", throwIfNotFound: true);
+        m_Gameplay1_SelectSkill4 = m_Gameplay1.FindAction("Select Skill 4", throwIfNotFound: true);
+        m_Gameplay1_SelectSkill5 = m_Gameplay1.FindAction("Select Skill 5", throwIfNotFound: true);
+        m_Gameplay1_SelectSkill6 = m_Gameplay1.FindAction("Select Skill 6", throwIfNotFound: true);
+        m_Gameplay1_SelectSkill7 = m_Gameplay1.FindAction("Select Skill 7", throwIfNotFound: true);
+        m_Gameplay1_DirectionalMovement = m_Gameplay1.FindAction("Directional Movement", throwIfNotFound: true);
+        m_Gameplay1_Attack = m_Gameplay1.FindAction("Attack", throwIfNotFound: true);
+        m_Gameplay1_Interact = m_Gameplay1.FindAction("Interact", throwIfNotFound: true);
     }
 
     ~@EntityControls()
     {
         UnityEngine.Debug.Assert(!m_Gameplay.enabled, "This will cause a leak and performance issues, EntityControls.Gameplay.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Gameplay1.enabled, "This will cause a leak and performance issues, EntityControls.Gameplay1.Disable() has not been called.");
     }
 
     public void Dispose()
@@ -669,7 +1168,210 @@ public partial class @EntityControls: IInputActionCollection2, IDisposable
         }
     }
     public GameplayActions @Gameplay => new GameplayActions(this);
+
+    // Gameplay1
+    private readonly InputActionMap m_Gameplay1;
+    private List<IGameplay1Actions> m_Gameplay1ActionsCallbackInterfaces = new List<IGameplay1Actions>();
+    private readonly InputAction m_Gameplay1_SetDestination;
+    private readonly InputAction m_Gameplay1_AttackMode;
+    private readonly InputAction m_Gameplay1_Skill;
+    private readonly InputAction m_Gameplay1_ConsumeItem0;
+    private readonly InputAction m_Gameplay1_ConsumeItem1;
+    private readonly InputAction m_Gameplay1_ConsumeItem2;
+    private readonly InputAction m_Gameplay1_ConsumeItem3;
+    private readonly InputAction m_Gameplay1_SelectSkill0;
+    private readonly InputAction m_Gameplay1_SelectSkill1;
+    private readonly InputAction m_Gameplay1_SelectSkill2;
+    private readonly InputAction m_Gameplay1_SelectSkill3;
+    private readonly InputAction m_Gameplay1_SelectSkill4;
+    private readonly InputAction m_Gameplay1_SelectSkill5;
+    private readonly InputAction m_Gameplay1_SelectSkill6;
+    private readonly InputAction m_Gameplay1_SelectSkill7;
+    private readonly InputAction m_Gameplay1_DirectionalMovement;
+    private readonly InputAction m_Gameplay1_Attack;
+    private readonly InputAction m_Gameplay1_Interact;
+    public struct Gameplay1Actions
+    {
+        private @EntityControls m_Wrapper;
+        public Gameplay1Actions(@EntityControls wrapper) { m_Wrapper = wrapper; }
+        public InputAction @SetDestination => m_Wrapper.m_Gameplay1_SetDestination;
+        public InputAction @AttackMode => m_Wrapper.m_Gameplay1_AttackMode;
+        public InputAction @Skill => m_Wrapper.m_Gameplay1_Skill;
+        public InputAction @ConsumeItem0 => m_Wrapper.m_Gameplay1_ConsumeItem0;
+        public InputAction @ConsumeItem1 => m_Wrapper.m_Gameplay1_ConsumeItem1;
+        public InputAction @ConsumeItem2 => m_Wrapper.m_Gameplay1_ConsumeItem2;
+        public InputAction @ConsumeItem3 => m_Wrapper.m_Gameplay1_ConsumeItem3;
+        public InputAction @SelectSkill0 => m_Wrapper.m_Gameplay1_SelectSkill0;
+        public InputAction @SelectSkill1 => m_Wrapper.m_Gameplay1_SelectSkill1;
+        public InputAction @SelectSkill2 => m_Wrapper.m_Gameplay1_SelectSkill2;
+        public InputAction @SelectSkill3 => m_Wrapper.m_Gameplay1_SelectSkill3;
+        public InputAction @SelectSkill4 => m_Wrapper.m_Gameplay1_SelectSkill4;
+        public InputAction @SelectSkill5 => m_Wrapper.m_Gameplay1_SelectSkill5;
+        public InputAction @SelectSkill6 => m_Wrapper.m_Gameplay1_SelectSkill6;
+        public InputAction @SelectSkill7 => m_Wrapper.m_Gameplay1_SelectSkill7;
+        public InputAction @DirectionalMovement => m_Wrapper.m_Gameplay1_DirectionalMovement;
+        public InputAction @Attack => m_Wrapper.m_Gameplay1_Attack;
+        public InputAction @Interact => m_Wrapper.m_Gameplay1_Interact;
+        public InputActionMap Get() { return m_Wrapper.m_Gameplay1; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(Gameplay1Actions set) { return set.Get(); }
+        public void AddCallbacks(IGameplay1Actions instance)
+        {
+            if (instance == null || m_Wrapper.m_Gameplay1ActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_Gameplay1ActionsCallbackInterfaces.Add(instance);
+            @SetDestination.started += instance.OnSetDestination;
+            @SetDestination.performed += instance.OnSetDestination;
+            @SetDestination.canceled += instance.OnSetDestination;
+            @AttackMode.started += instance.OnAttackMode;
+            @AttackMode.performed += instance.OnAttackMode;
+            @AttackMode.canceled += instance.OnAttackMode;
+            @Skill.started += instance.OnSkill;
+            @Skill.performed += instance.OnSkill;
+            @Skill.canceled += instance.OnSkill;
+            @ConsumeItem0.started += instance.OnConsumeItem0;
+            @ConsumeItem0.performed += instance.OnConsumeItem0;
+            @ConsumeItem0.canceled += instance.OnConsumeItem0;
+            @ConsumeItem1.started += instance.OnConsumeItem1;
+            @ConsumeItem1.performed += instance.OnConsumeItem1;
+            @ConsumeItem1.canceled += instance.OnConsumeItem1;
+            @ConsumeItem2.started += instance.OnConsumeItem2;
+            @ConsumeItem2.performed += instance.OnConsumeItem2;
+            @ConsumeItem2.canceled += instance.OnConsumeItem2;
+            @ConsumeItem3.started += instance.OnConsumeItem3;
+            @ConsumeItem3.performed += instance.OnConsumeItem3;
+            @ConsumeItem3.canceled += instance.OnConsumeItem3;
+            @SelectSkill0.started += instance.OnSelectSkill0;
+            @SelectSkill0.performed += instance.OnSelectSkill0;
+            @SelectSkill0.canceled += instance.OnSelectSkill0;
+            @SelectSkill1.started += instance.OnSelectSkill1;
+            @SelectSkill1.performed += instance.OnSelectSkill1;
+            @SelectSkill1.canceled += instance.OnSelectSkill1;
+            @SelectSkill2.started += instance.OnSelectSkill2;
+            @SelectSkill2.performed += instance.OnSelectSkill2;
+            @SelectSkill2.canceled += instance.OnSelectSkill2;
+            @SelectSkill3.started += instance.OnSelectSkill3;
+            @SelectSkill3.performed += instance.OnSelectSkill3;
+            @SelectSkill3.canceled += instance.OnSelectSkill3;
+            @SelectSkill4.started += instance.OnSelectSkill4;
+            @SelectSkill4.performed += instance.OnSelectSkill4;
+            @SelectSkill4.canceled += instance.OnSelectSkill4;
+            @SelectSkill5.started += instance.OnSelectSkill5;
+            @SelectSkill5.performed += instance.OnSelectSkill5;
+            @SelectSkill5.canceled += instance.OnSelectSkill5;
+            @SelectSkill6.started += instance.OnSelectSkill6;
+            @SelectSkill6.performed += instance.OnSelectSkill6;
+            @SelectSkill6.canceled += instance.OnSelectSkill6;
+            @SelectSkill7.started += instance.OnSelectSkill7;
+            @SelectSkill7.performed += instance.OnSelectSkill7;
+            @SelectSkill7.canceled += instance.OnSelectSkill7;
+            @DirectionalMovement.started += instance.OnDirectionalMovement;
+            @DirectionalMovement.performed += instance.OnDirectionalMovement;
+            @DirectionalMovement.canceled += instance.OnDirectionalMovement;
+            @Attack.started += instance.OnAttack;
+            @Attack.performed += instance.OnAttack;
+            @Attack.canceled += instance.OnAttack;
+            @Interact.started += instance.OnInteract;
+            @Interact.performed += instance.OnInteract;
+            @Interact.canceled += instance.OnInteract;
+        }
+
+        private void UnregisterCallbacks(IGameplay1Actions instance)
+        {
+            @SetDestination.started -= instance.OnSetDestination;
+            @SetDestination.performed -= instance.OnSetDestination;
+            @SetDestination.canceled -= instance.OnSetDestination;
+            @AttackMode.started -= instance.OnAttackMode;
+            @AttackMode.performed -= instance.OnAttackMode;
+            @AttackMode.canceled -= instance.OnAttackMode;
+            @Skill.started -= instance.OnSkill;
+            @Skill.performed -= instance.OnSkill;
+            @Skill.canceled -= instance.OnSkill;
+            @ConsumeItem0.started -= instance.OnConsumeItem0;
+            @ConsumeItem0.performed -= instance.OnConsumeItem0;
+            @ConsumeItem0.canceled -= instance.OnConsumeItem0;
+            @ConsumeItem1.started -= instance.OnConsumeItem1;
+            @ConsumeItem1.performed -= instance.OnConsumeItem1;
+            @ConsumeItem1.canceled -= instance.OnConsumeItem1;
+            @ConsumeItem2.started -= instance.OnConsumeItem2;
+            @ConsumeItem2.performed -= instance.OnConsumeItem2;
+            @ConsumeItem2.canceled -= instance.OnConsumeItem2;
+            @ConsumeItem3.started -= instance.OnConsumeItem3;
+            @ConsumeItem3.performed -= instance.OnConsumeItem3;
+            @ConsumeItem3.canceled -= instance.OnConsumeItem3;
+            @SelectSkill0.started -= instance.OnSelectSkill0;
+            @SelectSkill0.performed -= instance.OnSelectSkill0;
+            @SelectSkill0.canceled -= instance.OnSelectSkill0;
+            @SelectSkill1.started -= instance.OnSelectSkill1;
+            @SelectSkill1.performed -= instance.OnSelectSkill1;
+            @SelectSkill1.canceled -= instance.OnSelectSkill1;
+            @SelectSkill2.started -= instance.OnSelectSkill2;
+            @SelectSkill2.performed -= instance.OnSelectSkill2;
+            @SelectSkill2.canceled -= instance.OnSelectSkill2;
+            @SelectSkill3.started -= instance.OnSelectSkill3;
+            @SelectSkill3.performed -= instance.OnSelectSkill3;
+            @SelectSkill3.canceled -= instance.OnSelectSkill3;
+            @SelectSkill4.started -= instance.OnSelectSkill4;
+            @SelectSkill4.performed -= instance.OnSelectSkill4;
+            @SelectSkill4.canceled -= instance.OnSelectSkill4;
+            @SelectSkill5.started -= instance.OnSelectSkill5;
+            @SelectSkill5.performed -= instance.OnSelectSkill5;
+            @SelectSkill5.canceled -= instance.OnSelectSkill5;
+            @SelectSkill6.started -= instance.OnSelectSkill6;
+            @SelectSkill6.performed -= instance.OnSelectSkill6;
+            @SelectSkill6.canceled -= instance.OnSelectSkill6;
+            @SelectSkill7.started -= instance.OnSelectSkill7;
+            @SelectSkill7.performed -= instance.OnSelectSkill7;
+            @SelectSkill7.canceled -= instance.OnSelectSkill7;
+            @DirectionalMovement.started -= instance.OnDirectionalMovement;
+            @DirectionalMovement.performed -= instance.OnDirectionalMovement;
+            @DirectionalMovement.canceled -= instance.OnDirectionalMovement;
+            @Attack.started -= instance.OnAttack;
+            @Attack.performed -= instance.OnAttack;
+            @Attack.canceled -= instance.OnAttack;
+            @Interact.started -= instance.OnInteract;
+            @Interact.performed -= instance.OnInteract;
+            @Interact.canceled -= instance.OnInteract;
+        }
+
+        public void RemoveCallbacks(IGameplay1Actions instance)
+        {
+            if (m_Wrapper.m_Gameplay1ActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IGameplay1Actions instance)
+        {
+            foreach (var item in m_Wrapper.m_Gameplay1ActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_Gameplay1ActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public Gameplay1Actions @Gameplay1 => new Gameplay1Actions(this);
     public interface IGameplayActions
+    {
+        void OnSetDestination(InputAction.CallbackContext context);
+        void OnAttackMode(InputAction.CallbackContext context);
+        void OnSkill(InputAction.CallbackContext context);
+        void OnConsumeItem0(InputAction.CallbackContext context);
+        void OnConsumeItem1(InputAction.CallbackContext context);
+        void OnConsumeItem2(InputAction.CallbackContext context);
+        void OnConsumeItem3(InputAction.CallbackContext context);
+        void OnSelectSkill0(InputAction.CallbackContext context);
+        void OnSelectSkill1(InputAction.CallbackContext context);
+        void OnSelectSkill2(InputAction.CallbackContext context);
+        void OnSelectSkill3(InputAction.CallbackContext context);
+        void OnSelectSkill4(InputAction.CallbackContext context);
+        void OnSelectSkill5(InputAction.CallbackContext context);
+        void OnSelectSkill6(InputAction.CallbackContext context);
+        void OnSelectSkill7(InputAction.CallbackContext context);
+        void OnDirectionalMovement(InputAction.CallbackContext context);
+        void OnAttack(InputAction.CallbackContext context);
+        void OnInteract(InputAction.CallbackContext context);
+    }
+    public interface IGameplay1Actions
     {
         void OnSetDestination(InputAction.CallbackContext context);
         void OnAttackMode(InputAction.CallbackContext context);
