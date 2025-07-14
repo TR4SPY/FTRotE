@@ -23,6 +23,7 @@ namespace PLAYERTWO.ARPGProject
         protected float m_currentMusicVolume;
         protected float m_currentEffectsVolume;
         protected float m_currentUiEffectsVolume;
+        protected int m_currentMovementSetting;
 
         protected const string k_resolutionKey = "settings/resolution";
         protected const string k_fullScreenKey = "settings/fullScreen";
@@ -30,6 +31,7 @@ namespace PLAYERTWO.ARPGProject
         protected const string k_musicVolumeKey = "settings/musicVolume";
         protected const string k_effectsVolumeKey = "settings/effectsVolume";
         protected const string k_uiEffectsVolumeKey = "settings/uiEffectsVolume";
+        protected const string k_movementSettingKey = "settings/movementSetting";
 
         public bool GetDisplayDifficulty() => PlayerPrefs.GetInt("DisplayDifficulty", 1) == 1;
         public int GetDifficultyTextOption() => PlayerPrefs.GetInt("DifficultyTextOption", 0);
@@ -208,6 +210,25 @@ namespace PLAYERTWO.ARPGProject
             m_currentUiEffectsVolume = value;
         }
 
+        public virtual int GetMovementSetting() => m_currentMovementSetting;
+
+        public virtual void SetMovementSetting(float value)
+        {
+            SetMovementSetting((int)value);
+        }
+
+        public virtual void SetMovementSetting(int value)
+        {
+            m_currentMovementSetting = value;
+            PlayerPrefs.SetInt(k_movementSettingKey, m_currentMovementSetting);
+            PlayerPrefs.Save();
+
+            if (Level.instance && Level.instance.player && Level.instance.player.inputs)
+            {
+                Level.instance.player.inputs.SetMovementSetting(value);
+            }
+        }
+
         protected virtual Vector2Int GetResolutionScale(ResolutionOption option)
         {
             var nativeWidth = Display.main.systemWidth;
@@ -242,6 +263,7 @@ namespace PLAYERTWO.ARPGProject
             PlayerPrefs.SetFloat(k_musicVolumeKey, m_currentMusicVolume);
             PlayerPrefs.SetFloat(k_effectsVolumeKey, m_currentEffectsVolume);
             PlayerPrefs.SetFloat(k_uiEffectsVolumeKey, m_currentUiEffectsVolume);
+            PlayerPrefs.SetInt(k_movementSettingKey, m_currentMovementSetting);
             
             PlayerPrefs.Save();
         }
@@ -259,6 +281,7 @@ namespace PLAYERTWO.ARPGProject
             var musicVolume = PlayerPrefs.GetFloat(k_musicVolumeKey, m_audio.initialMusicVolume);
             var effectsVolume = PlayerPrefs.GetFloat(k_effectsVolumeKey, m_audio.initialEffectsVolume);
             var uiEffectsVolume = PlayerPrefs.GetFloat(k_uiEffectsVolumeKey, m_audio.initialUiEffectsVolume);
+            var movementSetting = PlayerPrefs.GetInt(k_movementSettingKey, 0);
 
             SetResolution(resolution);
             SetFullScreen(fullScreen == 1);
@@ -266,6 +289,7 @@ namespace PLAYERTWO.ARPGProject
             SetMusicVolume(musicVolume);
             SetEffectsVolume(effectsVolume);
             SetUIEffectsVolume(uiEffectsVolume);
+            SetMovementSetting(movementSetting);
 
             bool displayDifficulty = PlayerPrefs.GetInt("DisplayDifficulty", 1) == 1;
             bool displayDamageText = PlayerPrefs.GetInt("DisplayDamageText", 1) == 1;

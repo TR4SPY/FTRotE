@@ -29,10 +29,25 @@ namespace PLAYERTWO.ARPGProject
         public Button resetButton;
         public Button acceptButton;
 
+
+        [Header("Guild Creation Cost")]
+        [Tooltip("Container used to display the guild creation price.")]
+        public Transform createPriceContainer;
+
+        [Tooltip("Prefab with 'Name'(Text) and 'Icon'(Image).")]
+        public GameObject priceTagPrefab;
+
+        [Header("Currency Icons")]
+        public Sprite solmireIcon;
+        public Sprite lunarisIcon;
+        public Sprite amberlingsIcon;
+
         private readonly Dictionary<string, Texture2D> m_cache = new();
         private string m_selectedFile;
         private Sprite m_selectedSprite;
         private Sprite m_defaultPreviewSprite;
+
+        private static readonly int k_CreateCost = Currency.ConvertToAmberlings(5, CurrencyType.Solmire);
 
         protected Guildmaster m_guildmaster;
 
@@ -274,9 +289,14 @@ namespace PLAYERTWO.ARPGProject
         private void UpdateAcceptButton()
         {
             if (acceptButton)
-                acceptButton.interactable =
-                    !string.IsNullOrWhiteSpace(guildNameInput?.text) &&
-                    (m_selectedSprite != null || !string.IsNullOrEmpty(m_selectedFile));
+               {
+                bool hasNameAndCrest = !string.IsNullOrWhiteSpace(guildNameInput?.text) && (m_selectedSprite != null || !string.IsNullOrEmpty(m_selectedFile));
+
+                var money = Level.instance?.player?.inventory?.instance?.money ?? 0;
+                bool canAfford = money >= k_CreateCost;
+
+                acceptButton.interactable = hasNameAndCrest && canAfford;
+            }
         }
 
         private void Accept()
@@ -293,6 +313,12 @@ namespace PLAYERTWO.ARPGProject
 
             string guildName = guildNameInput.text.Trim();
             TMP_SpriteAsset crestAsset = CreateTMPAssetFromSprite(crest);
+
+            var inventory = Level.instance.player.inventory.instance;
+            if (inventory.money < k_CreateCost)
+                return;
+
+            inventory.SpendMoney(k_CreateCost);
 
             GuildManager.CreateGuild(guildName, crest, crestAsset);
             Hide();
@@ -320,11 +346,54 @@ namespace PLAYERTWO.ARPGProject
         {
             m_guildmaster = guildmaster;
         }
+
+        protected override void OnOpen()
+        {
+            base.OnOpen();
+            ShowPriceTags(createPriceContainer, k_CreateCost);
+            UpdateAcceptButton();
+        }
         
         private void OnDisable()
         {
             gameplayMap?.Enable();
             guiMap?.Enable();
+        }
+
+        private void ClearPriceTags(Transform container)
+        {
+            if (!container) return;
+            foreach (Transform child in container)
+                Destroy(child.gameObject);
+        }
+
+        private void AddPriceTag(Transform container, int amount, Sprite icon)
+        {
+            var go = Instantiate(priceTagPrefab, container);
+
+            var textObj = go.transform.Find("Name")?.GetComponent<Text>();
+            if (textObj) textObj.text = amount.ToString();
+
+            var imageObj = go.transform.Find("Icon")?.GetComponent<Image>();
+            if (imageObj && icon)
+                imageObj.sprite = icon;
+        }
+
+        private void ShowPriceTags(Transform container, int totalAmberlings)
+        {
+            ClearPriceTags(container);
+
+            if (totalAmberlings <= 0) return;
+
+            var c = new Currency();
+            c.SetFromTotalAmberlings(totalAmberlings);
+
+            if (c.solmire > 0)
+                AddPriceTag(container, c.solmire, solmireIcon);
+            if (c.lunaris > 0)
+                AddPriceTag(container, c.lunaris, lunarisIcon);
+            if (c.amberlings > 0)
+                AddPriceTag(container, c.amberlings, amberlingsIcon);
         }
 
         private static TMP_SpriteAsset CreateTMPAssetFromSprite(Sprite sprite)

@@ -83,6 +83,44 @@ namespace PLAYERTWO.ARPGProject
             }
         }
 
+        protected InputActionMap m_gameplayMap;
+        protected InputActionMap m_gameplay1Map;
+
+        protected virtual void InitializeActionMaps()
+        {
+            if (actions == null)
+                return;
+
+            m_gameplayMap = actions.FindActionMap("Gameplay", false);
+            m_gameplay1Map = actions.FindActionMap("Gameplay1", false);
+        }
+
+        public void UpdateMovementSetting()
+        {
+            if (actions == null)
+                return;
+
+            if (m_gameplayMap == null || m_gameplay1Map == null)
+                InitializeActionMaps();
+
+            int option = GameSettings.instance ? GameSettings.instance.GetMovementSetting() : 0;
+
+            m_gameplayMap?.Disable();
+            m_gameplay1Map?.Disable();
+
+            if (option == 0)
+                m_gameplayMap?.Enable();
+            else
+                m_gameplay1Map?.Enable();
+        }
+
+        public void SetMovementSetting(int option)
+        {
+            // Option parameter kept for compatibility
+            UpdateMovementSetting();
+        }
+
+
         public virtual bool MouseRaycast(
             out RaycastHit closestHit,
             int layer = Physics.DefaultRaycastLayers
@@ -453,6 +491,8 @@ namespace PLAYERTWO.ARPGProject
             InitializeCallbacks();
             InitializeActionsCallbacks();
             InitializeDestinationEffect();
+            InitializeActionMaps();
+            UpdateMovementSetting();
         }
 
         protected virtual void Update()
@@ -464,9 +504,15 @@ namespace PLAYERTWO.ARPGProject
             HandleMoveDirectionUnlock();
         }
 
-        protected virtual void OnEnable() => actions.Enable();
+        protected virtual void OnEnable()
+        {
+            UpdateMovementSetting();
+        }
 
-        protected virtual void OnDisable() => actions.Disable();
+        protected virtual void OnDisable()
+        {
+            actions.Disable();
+        }
 
         protected virtual void OnDestroy() => FinalizeActionCallbacks();
     }

@@ -11,6 +11,7 @@ namespace PLAYERTWO.ARPGProject
         public GUIWindow graphicsSettingsWindow;
         public GUIWindow uiSettingsWindow;
         public GUIWindow researchSettingsWindow;
+        public GUIWindow keybindingsSettingsWindow;
 
         [Header("Main Settings Menu")]
         public GameObject mainSettings;
@@ -20,6 +21,7 @@ namespace PLAYERTWO.ARPGProject
         public Button graphicsSettingsButton;
         public Button uiSettingsButton;
         public Button researchSettingsButton;
+        public Button keybindingsSettingsButton;
 
         protected override void Start()
         {
@@ -43,6 +45,11 @@ namespace PLAYERTWO.ARPGProject
                 researchSettingsButton.onClick.AddListener(ShowResearchSettings);
             else
                 Debug.LogError("[Settings] Research Settings Button is NULL! Assign it in the Inspector.");
+
+            if (keybindingsSettingsButton != null)
+                keybindingsSettingsButton.onClick.AddListener(ShowKeybindingsSettings);
+            else
+                Debug.LogError("[Settings] Keybindings Settings Button is NULL! Assign it in the Inspector.");
         }
 
         /// <summary>
@@ -83,6 +90,14 @@ namespace PLAYERTWO.ARPGProject
         public void ShowResearchSettings()
         {
             researchSettingsWindow.Show();
+        }
+
+        /// <summary>
+        /// Opens the keybindings settings window.
+        /// </summary>
+        public void ShowKeybindingsSettings()
+        {
+            keybindingsSettingsWindow.Show();
         }
     }
 }
