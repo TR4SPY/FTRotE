@@ -108,12 +108,14 @@ namespace PLAYERTWO.ARPGProject
             m_gameplayMap?.Disable();
             m_gameplay1Map?.Disable();
 
-            if (option == 0)
-                m_gameplayMap?.Enable();
-            else
-                m_gameplay1Map?.Enable();
-        }
+            var selectedMap = option == 0 ? m_gameplayMap : m_gameplay1Map;
+            selectedMap?.Enable();
 
+            FinalizeActionCallbacks();
+            AssignActions(selectedMap);
+            InitializeActionsCallbacks();
+        }
+        
         public void SetMovementSetting(int option)
         {
             // Option parameter kept for compatibility
@@ -491,7 +493,6 @@ namespace PLAYERTWO.ARPGProject
             InitializeCallbacks();
             InitializeActionsCallbacks();
             InitializeDestinationEffect();
-            InitializeActionMaps();
             UpdateMovementSetting();
         }
 

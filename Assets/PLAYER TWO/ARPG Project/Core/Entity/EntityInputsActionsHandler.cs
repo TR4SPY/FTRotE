@@ -19,22 +19,40 @@ namespace PLAYERTWO.ARPGProject
         protected InputAction m_attackAction;
         protected InputAction m_interactAction;
 
+        protected virtual InputActionMap GetActiveMap()
+        {
+            int option = GameSettings.instance ? GameSettings.instance.GetMovementSetting() : 0;
+            return option == 0 ? m_gameplayMap : m_gameplay1Map;
+        }
+
+        protected virtual void AssignActions(InputActionMap map)
+        {
+            if (map == null)
+                return;
+
+            m_setDestinationAction = map.FindAction("Set Destination", false);
+            m_skillAction = map.FindAction("Skill", false);
+            m_attackModeAction = map.FindAction("Attack Mode", false);
+            m_consumeItem0 = map.FindAction("Consume Item 0", false);
+            m_consumeItem1 = map.FindAction("Consume Item 1", false);
+            m_consumeItem2 = map.FindAction("Consume Item 2", false);
+            m_consumeItem3 = map.FindAction("Consume Item 3", false);
+            m_selectSkill0 = map.FindAction("Select Skill 0", false);
+            m_selectSkill1 = map.FindAction("Select Skill 1", false);
+            m_selectSkill2 = map.FindAction("Select Skill 2", false);
+            m_selectSkill3 = map.FindAction("Select Skill 3", false);
+            m_directionalMovement = map.FindAction("Directional Movement", false);
+            m_attackAction = map.FindAction("Attack", false);
+            m_interactAction = map.FindAction("Interact", false);
+        }
+
         protected virtual void InitializeActions()
         {
-            m_setDestinationAction = actions["Set Destination"];
-            m_skillAction = actions["Skill"];
-            m_attackModeAction = actions["Attack Mode"];
-            m_consumeItem0 = actions["Consume Item 0"];
-            m_consumeItem1 = actions["Consume Item 1"];
-            m_consumeItem2 = actions["Consume Item 2"];
-            m_consumeItem3 = actions["Consume Item 3"];
-            m_selectSkill0 = actions["Select Skill 0"];
-            m_selectSkill1 = actions["Select Skill 1"];
-            m_selectSkill2 = actions["Select Skill 2"];
-            m_selectSkill3 = actions["Select Skill 3"];
-            m_directionalMovement = actions["Directional Movement"];
-            m_attackAction = actions["Attack"];
-            m_interactAction = actions["Interact"];
+            if (actions == null)
+                return;
+
+            InitializeActionMaps();
+            AssignActions(GetActiveMap());
         }
 
         protected virtual void InitializeActionsCallbacks()

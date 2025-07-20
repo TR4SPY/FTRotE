@@ -9,8 +9,9 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("Dialog przypisany do Guildmastera (opcjonalny).")]
         public Dialog assignedDialog;
 
+        // Zakładamy, że GUIGuildmaster jest przypisany bezpośrednio do GUIWindowsManager.guildmasterWindow
         protected GUIGuildmaster m_guiGuildmaster =>
-            GUIWindowsManager.instance.GetComponentInChildren<GUIGuildmaster>(true);
+            GUIWindowsManager.instance.guildmasterWindow as GUIGuildmaster;
 
         protected override void OnInteract(object other)
         {
@@ -25,37 +26,28 @@ namespace PLAYERTWO.ARPGProject
 
             if (m_guiGuildmaster == null)
             {
-                Debug.LogError("[Guildmaster] Nie znaleziono komponentu GUIGuildmaster w scenie!");
+                Debug.LogError("[Guildmaster] Nie znaleziono komponentu GUIGuildmaster w GUIWindowsManager!");
                 return;
             }
-
-            m_guiGuildmaster.Show();
 
             var logger = GetComponent<NpcInteractionLogger>();
             if (logger && entity.TryGetComponent(out Collider col))
             {
                 logger.LogInteraction(col);
             }
+
+            OpenGuildmasterService();
         }
 
         public void OpenGuildmasterService()
         {
-            var guildmasterWindow = GUIWindowsManager.instance.guildmasterWindow;
-
-            if (guildmasterWindow == null)
-            {
-                Debug.LogError("[Craftman] craftmanWindow is NULL in GUIWindowsManager!");
-                return;
-            }
-
-            guildmasterWindow.Show();
-
             if (m_guiGuildmaster == null)
             {
-                Debug.LogError("[Craftman] m_guiCraftman is NULL!");
+                Debug.LogError("[Guildmaster] m_guiGuildmaster is NULL!");
                 return;
             }
 
+            m_guiGuildmaster.Show(); // <- To wywoła OnOpen() w GUIGuildmaster
             m_guiGuildmaster.SetGuildmaster(this);
         }
     }

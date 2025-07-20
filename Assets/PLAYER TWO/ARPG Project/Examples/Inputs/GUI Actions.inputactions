@@ -27,7 +27,7 @@
                     "name": "Toggle Character",
                     "type": "Button",
                     "id": "e63801ad-e426-4901-984d-d993f8f049b6",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -36,7 +36,7 @@
                     "name": "Toggle Inventory",
                     "type": "Button",
                     "id": "5b201714-22bd-4df8-9e62-d55986432036",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -100,7 +100,7 @@
                 {
                     "name": "",
                     "id": "8c2b75cf-ff2c-4e83-9299-70b9c5e33345",
-                    "path": "<Keyboard>/s",
+                    "path": "<Keyboard>/k",
                     "interactions": "",
                     "processors": "",
                     "groups": "",

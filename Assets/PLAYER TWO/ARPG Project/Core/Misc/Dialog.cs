@@ -31,6 +31,7 @@ namespace AI_DDA.Assets.Scripts
             public DialogAction action;
             public int nextPageIndex = -1;
             public Affinity specialConditionToSet = Affinity.None;
+            public bool hideIfAlreadyInGuild;
         }
 
         public enum DialogAction
@@ -137,12 +138,16 @@ namespace AI_DDA.Assets.Scripts
                     }
                 }
 
+                if (option.hideIfAlreadyInGuild && !string.IsNullOrEmpty(Game.instance.currentCharacter.guildName))
+                {
+                    continue;
+                }
+
                 if (isAllowed)
                 {
                     filteredOptions.Add(option);
                     if (filteredOptions.Count >= 4) break;
                 }
-
             }
             return filteredOptions;
         }
