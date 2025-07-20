@@ -11,6 +11,11 @@ namespace PLAYERTWO.ARPGProject
             instance?.CreateInternal(name, crest, crestAsset);
         }
 
+        public static void DeleteGuild()
+        {
+            instance?.DeleteInternal();
+        }
+
         public static string GetCurrentGuildName()
         {
             return Game.instance?.currentCharacter?.guildName;
@@ -34,6 +39,22 @@ namespace PLAYERTWO.ARPGProject
             }
 
             Debug.Log($"Guild created: {name}");
+        }
+
+        protected virtual void DeleteInternal()
+        {
+            var character = Game.instance?.currentCharacter;
+            if (character != null)
+            {
+                string guild = character.guildName;
+                character.SetGuild(string.Empty, null, null);
+                if (character.Entity?.nametag != null)
+                {
+                    character.Entity.nametag.SetNametag(character.name, character.stats.currentLevel, string.Empty, character.GetName());
+                }
+
+                Debug.Log($"Guild deleted: {guild}");
+            }
         }
     }
 }

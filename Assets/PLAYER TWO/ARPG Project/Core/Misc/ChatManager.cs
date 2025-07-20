@@ -44,7 +44,12 @@ namespace PLAYERTWO.ARPGProject
             { "kill", new List<string> { "/kill - Kills your character." } },
             { "addexp", new List<string> { "/addexp [value] - Adds experience points." } },
             { "lvlup", new List<string> { "/lvlup - Increases your character level by one." } },
+            { "repairall", new List<string> { "/repairall - Repairs all items in your inventory and equipment." } },
+            { "stats", new List<string> { "/stats - Displays current player statistics." } },
             { "godmode", new List<string> { "/godmode - Toggles invincibility mode." } },
+            { "gremove", new List<string> { "/gremove - Removes current guild." } },
+            { "pause", new List<string> { "/pause - Pause the game." } },
+            { "resume", new List<string> { "/resume - Resume the game." } },
             { "time", new List<string> { "/time [day|night] - Changes time of day." } },
             { "weather", new List<string> { "/weather [sun|rain|snow] - Changes weather." } },
             { "dda", new List<string>
@@ -52,6 +57,7 @@ namespace PLAYERTWO.ARPGProject
                     "Available commands for Dynamic Difficulty Adjustment",
                     "/dda log - Shows current DDA log.",
                     "/dda reset - Resets AI-DDA system.",
+                    "/dda toggle - Toggle AI-DDA system.",
                     "/dda export - Exports player data to CSV.",
                     "/dda force - Forces difficulty recalculation.",
                     "/dda type - Displays current player dynamic type.",
@@ -284,6 +290,37 @@ namespace PLAYERTWO.ARPGProject
                 messageHistory.RemoveAt(0);
         }
 
+        public static List<string> BuildStatsLines(EntityStatsManager stats)
+        {
+            var lines = new List<string>();
+            if (stats == null)
+            {
+                lines.Add(StringUtils.StringWithColor("Stats unavailable.", GameColors.Crimson));
+                return lines;
+            }
+
+            string Label(string label) => StringUtils.StringWithColor($"  {label}: ", GameColors.Gold);
+            string Val(string value) => StringUtils.StringWithColor(value, GameColors.White);
+
+            lines.Add($"{Label("Level")}{Val(stats.level.ToString())}");
+            lines.Add($"{Label("Exp")}{Val($"{stats.experience}/{stats.nextLevelExp}")}");
+            lines.Add($"{Label("Health")}{Val($"{stats.health}/{stats.maxHealth}")}");
+            lines.Add($"{Label("Mana")}{Val($"{stats.mana}/{stats.maxMana}")}");
+            lines.Add($"{Label("Strength")}{Val(stats.strength.ToString())}");
+            lines.Add($"{Label("Dexterity")}{Val(stats.dexterity.ToString())}");
+            lines.Add($"{Label("Vitality")}{Val(stats.vitality.ToString())}");
+            lines.Add($"{Label("Energy")}{Val(stats.energy.ToString())}");
+            lines.Add($"{Label("Damage")}{Val($"{stats.minDamage}-{stats.maxDamage}")}");
+            lines.Add($"{Label("Defense")}{Val(stats.defense.ToString())}");
+            lines.Add($"{Label("Attack Speed")}{Val(stats.attackSpeed.ToString())}");
+            lines.Add($"{Label("Magic Damage")}{Val($"{stats.minMagicDamage}-{stats.maxMagicDamage}")}");
+            lines.Add($"{Label("Magic Resist")}{Val(stats.magicResistance.ToString())}");
+            lines.Add($"{Label("Crit Chance")}{Val($"{stats.criticalChance * 100f:F1}%")}");
+            lines.Add($"{Label("Stun Chance")}{Val($"{stats.stunChance * 100f:F1}%")}");
+
+            return lines;
+        }
+
         public void ForceCloseChat()
         {
             if (!isChatOpen) return;
@@ -340,7 +377,7 @@ namespace PLAYERTWO.ARPGProject
                         {
                             string message = StringUtils.StringWithColorAndStyle(
                                 "Available commands:\n" +
-                                "/money, /drop, /tp, /wp, /listwp, /whereami, /summon, /heal, /kill, /addexp, /lvlup, /godmode, /time, /weather, /dda, /quests, /zones, /achievements, /clear\n" +
+                                "/money, /drop, /tp, /wp, /listwp, /whereami, /summon, /heal, /kill, /addexp, /lvlup, /repairall, /stats, /godmode, /pause, /resume, /time, /weather, /gremove,/dda, /quests, /zones, /achievements, /clear\n" +
                                 "Type /help [command] for more details.",
                                 GameColors.Gray,
                                 italic: true
@@ -492,6 +529,34 @@ namespace PLAYERTWO.ARPGProject
                         break;
                     }
 
+                case "repairall":
+                    {
+                        var inv = character.inventory;
+                        var ent = character.Entity;
+
+                        if (inv != null)
+                        {
+                            foreach (var item in inv.currentItems.Keys)
+                                item.Repair();
+                        }
+
+                        if (ent != null)
+                        {
+                            foreach (var eq in ent.items.GetEquippedItems())
+                                eq?.Repair();
+
+                            AddSystemMessage(StringUtils.StringWithColorAndStyle(
+                                "All equipment repaired.", GameColors.Lime));
+                        }
+                        else
+                        {
+                            AddSystemMessage(StringUtils.StringWithColor(
+                                "Failed to repair: character entity not found.", GameColors.Crimson));
+                        }
+
+                        break;
+                    }
+
                 case "kill":
                     {
                         var entity = character.Entity;
@@ -506,6 +571,14 @@ namespace PLAYERTWO.ARPGProject
                         }
                         break;
                     }
+
+                case "pause":
+                    GamePause.instance.Pause(true);
+                    break;
+
+                case "resume":
+                    GamePause.instance.Pause(false);
+                    break;
 
                 case "time":
                     if (parts.Length >= 2)
@@ -953,12 +1026,47 @@ namespace PLAYERTWO.ARPGProject
                         break;
                     }
 
+                case "gremove":
+                    {
+                        string playerName = character.name;
+                        if (!string.IsNullOrEmpty(character.guildName))
+                        {
+                            string guildName = character.guildName;
+                            GuildManager.DeleteGuild();
+                            AddSystemMessage($"{playerName} is no longer a member of {guildName} Guild");
+                        }
+                        else
+                        {
+                            AddSystemMessage($"{playerName} has no guild assigned");
+                        }
+                        break;
+                    }
+
+                case "stats":
+                    {
+                        EntityStatsManager statsSource = null;
+                        var guiStats = GUIWindowsManager.instance?.stats;
+
+                        if (guiStats != null && guiStats.characterInstance?.Entity != null)
+                        {
+                            statsSource = guiStats.characterInstance.Entity.stats;
+                        }
+                        else
+                        {
+                            statsSource = Game.instance.currentCharacter?.Entity?.stats;
+                        }
+
+                        var statslines = BuildStatsLines(statsSource);
+                        AddSystemMessageBatch(statslines);
+                        break;
+                    }
+
                 case "dda":
                     {
                         if (parts.Length == 1)
                         {
                             AddSystemMessage(StringUtils.StringWithColor(
-                                "/dda [log/reset/export/force/type/diff/free]", GameColors.Gray));
+                                "/dda [log/reset/toggle/export/force/type/diff/free]", GameColors.Gray));
                             break;
                         }
 
@@ -1030,6 +1138,15 @@ namespace PLAYERTWO.ARPGProject
                                     logger.ExportPlayerData();
                                     AddSystemMessage(StringUtils.StringWithColor(
                                         "Exported player data to CSV.", GameColors.Lime));
+                                }
+                                break;
+
+                            case "toggle":
+                                if (diffMgr != null)
+                                {
+                                    diffMgr.useAIDDA = !diffMgr.useAIDDA;
+                                    string state = diffMgr.useAIDDA ? "ON" : "OFF";
+                                    AddSystemMessage(StringUtils.StringWithColor($"AI-DDA: {state}", GameColors.Gold));
                                 }
                                 break;
 
