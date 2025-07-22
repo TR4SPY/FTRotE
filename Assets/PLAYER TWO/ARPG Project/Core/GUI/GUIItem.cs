@@ -605,13 +605,22 @@ namespace PLAYERTWO.ARPGProject
                     cam.Camera.clearFlags = CameraClearFlags.SolidColor;
                     cam.Camera.backgroundColor = Color.clear;
                     cam.Camera.cullingMask = 1 << previewLayer;
+                    var camData = cam.Camera.GetUniversalAdditionalCameraData();
+                    int previewVolumeLayer = LayerMask.NameToLayer("PreviewVolume");
+                    if (previewVolumeLayer >= 0)
+                    {
+                       // Camera.volumeLayerMask = 1 << previewVolumeLayer;
+                       // cam.Camera.volumeTrigger = worldImage.transform;
+                        camData.volumeLayerMask = 1 << previewVolumeLayer;
+                        camData.volumeTrigger = worldImage.transform;
+                    }
 
                     cam.Image.CameraUseBoundsToClip = true;
                     cam.Image.CameraAutoUpdateBounds = false;
                     cam.Image.CameraFollowBoundsCenter = true;
                     cam.UpdateCameraClippingFromBounds();
 
-                    var camData = cam.Camera.GetUniversalAdditionalCameraData();
+                    // var camData = cam.Camera.GetUniversalAdditionalCameraData();
                     camData.SetRenderer(1);
                 }
 

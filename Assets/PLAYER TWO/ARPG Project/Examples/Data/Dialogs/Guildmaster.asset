@@ -30,6 +30,7 @@ MonoBehaviour:
       action: 9
       nextPageIndex: 0
       specialConditionToSet: 0
+      hideIfAlreadyInGuild: 1
     showOnce: 0
     isSpecial: 0
   dialogTitle: Guildmaster

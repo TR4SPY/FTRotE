@@ -9,7 +9,6 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("Dialog przypisany do Guildmastera (opcjonalny).")]
         public Dialog assignedDialog;
 
-        // Zakładamy, że GUIGuildmaster jest przypisany bezpośrednio do GUIWindowsManager.guildmasterWindow
         protected GUIGuildmaster m_guiGuildmaster =>
             GUIWindowsManager.instance.guildmasterWindow as GUIGuildmaster;
 
@@ -47,7 +46,7 @@ namespace PLAYERTWO.ARPGProject
                 return;
             }
 
-            m_guiGuildmaster.Show(); // <- To wywoła OnOpen() w GUIGuildmaster
+            m_guiGuildmaster.Show();
             m_guiGuildmaster.SetGuildmaster(this);
         }
     }
