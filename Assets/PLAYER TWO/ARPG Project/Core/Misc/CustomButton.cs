@@ -46,20 +46,23 @@ public class SaturationTintButton : MonoBehaviour,
 
     void OnEnable()
     {
-        UpdateStateImmediate();
-        transform.localScale = originalScale; // zapobiega animacji „rosnącej”
         externallyHidden = (transform.localScale == Vector3.zero);
+
+        if (!externallyHidden)
+            UpdateStateImmediate();
     }
 
     void Update()
     {
-        // Jeśli zewnętrznie wyzerowano scale – nie wykonujemy nic
-        if (externallyHidden)
+        if (transform.localScale == Vector3.zero)
         {
-            if (transform.localScale != Vector3.zero)
-                externallyHidden = false;
-            else
-                return;
+            externallyHidden = true;
+            return;
+        }
+        else if (externallyHidden)
+        {
+            externallyHidden = false;
+            UpdateStateImmediate();
         }
 
         float currentSat = runtimeMat.GetFloat("_Saturation");
@@ -71,7 +74,6 @@ public class SaturationTintButton : MonoBehaviour,
         if (transform.localScale != targetScale)
             transform.localScale = Vector3.Lerp(transform.localScale, targetScale, Time.deltaTime * transitionSpeed);
 
-        // Jeśli zmienił się stan interaktywności z zewnątrz
         if (!button.interactable && targetSaturation != disabledSaturation)
         {
             SetState(disabledSaturation, disabledTint, originalScale);
@@ -116,6 +118,8 @@ public class SaturationTintButton : MonoBehaviour,
         else
             SetState(normalSaturation, normalTint, originalScale);
 
-        transform.localScale = originalScale;
+        runtimeMat.SetFloat("_Saturation", targetSaturation);
+        runtimeMat.SetColor("_TintColor", targetTint);
+        transform.localScale = targetScale;
     }
 }
