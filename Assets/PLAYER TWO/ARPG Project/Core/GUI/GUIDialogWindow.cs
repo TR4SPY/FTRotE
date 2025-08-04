@@ -167,6 +167,17 @@ namespace AI_DDA.Assets.Scripts
                     OpenGuildmasterWindow();
                     break;
 
+                case Dialog.DialogAction.GiveBuff:
+                case Dialog.DialogAction.GiveDebuff:
+                    var buffManager = player.GetComponent<EntityBuffManager>();
+                    if (buffManager != null && option.buff != null)
+                    {
+                        bool isDebuff = option.action == Dialog.DialogAction.GiveDebuff;
+                        buffManager.AddBuff(option.buff, isDebuff);
+                    }
+                    ContinueDialog(option.nextPageIndex);
+                    break;
+
                 default:
                     Close();
                     break;

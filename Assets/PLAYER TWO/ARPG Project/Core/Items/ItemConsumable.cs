@@ -14,6 +14,9 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("An offset for the Particle System played when this Consumable is consumed.")]
         public Vector3 particleOffset;
 
+        [Tooltip("Buffs applied when this Consumable is consumed.")]
+        public Buff[] appliedBuffs;
+
         /// <summary>
         /// Consumes the item and applies its effects to the given entity.
         /// </summary>
@@ -34,6 +37,19 @@ namespace PLAYERTWO.ARPGProject
 
             if (consumeSound && GameAudio.instance)
                 GameAudio.instance.PlayEffect(consumeSound);
+        }
+
+        protected void ApplyBuffs(Entity entity)
+        {
+            if (appliedBuffs == null || appliedBuffs.Length == 0)
+                return;
+
+            var manager = entity.GetComponent<EntityBuffManager>();
+            if (!manager)
+                return;
+
+            foreach (var buff in appliedBuffs)
+                manager.AddBuff(buff);
         }
     }
 }

@@ -159,6 +159,27 @@ namespace PLAYERTWO.ARPGProject
             HandleHealing();
             Cast();
 
+            var selfBuffs = current.selfBuffs;
+            if (selfBuffs != null && selfBuffs.Length > 0 &&
+                m_entity.TryGetComponent<EntityBuffManager>(out var casterBuffs))
+            {
+                foreach (var buff in selfBuffs)
+                {
+                    casterBuffs.AddBuff(buff);
+                }
+            }
+
+            var target = m_entity.targetEntity;
+            var targetBuffs = current.targetBuffs;
+            if (target && targetBuffs != null && targetBuffs.Length > 0 &&
+                target.TryGetComponent<EntityBuffManager>(out var targetManager))
+            {
+                foreach (var buff in targetBuffs)
+                {
+                    targetManager.AddBuff(buff);
+                }
+            }
+
             if (IsAttack() && current.AsAttack().useMeleeHitbox)
             {
                 var skillDamage = m_entity.stats.GetSkillDamage(m_entity.skills.current, m_entity.skills.current.element, out var skillCritical);

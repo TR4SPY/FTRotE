@@ -32,6 +32,8 @@ namespace AI_DDA.Assets.Scripts
             public int nextPageIndex = -1;
             public Affinity specialConditionToSet = Affinity.None;
             public bool hideIfAlreadyInGuild;
+            public Buff buff;
+
         }
 
         public enum DialogAction
@@ -45,7 +47,9 @@ namespace AI_DDA.Assets.Scripts
             Exclusive = 6,
             OpenClassUpgrade = 7,
             SetSpecialCondition = 8,
-            OpenGuildmaster = 9
+            OpenGuildmaster = 9,
+            GiveBuff = 10,
+            GiveDebuff = 11
         }
 
         public List<DialogPage> pages = new List<DialogPage>();

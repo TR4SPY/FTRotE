@@ -72,6 +72,13 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The element of this spell.")]
         public MagicElement element;
 
+        [Header("Buff Settings")]
+        [Tooltip("Buffs applied to the caster when this skill is used.")]
+        public Buff[] selfBuffs;
+
+        [Tooltip("Buffs applied to the skill's target when it hits.")]
+        public Buff[] targetBuffs;
+
         /// <summary>
         /// Returns true if this Skill is a attacking skill.
         /// </summary>

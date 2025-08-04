@@ -1,0 +1,129 @@
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.Events;
+using System.Collections;
+
+namespace PLAYERTWO.ARPGProject
+{
+    [AddComponentMenu("PLAYER TWO/ARPG Project/GUI/GUI Buff Slot")]
+    public class GUIBuffSlot : GUISlot
+    {
+        [Tooltip("A reference to the Image component used as the selection outline.")]
+        public Image selection;
+
+        [Tooltip("A reference to the Image component used as the buff cool down image.")]
+        public Image coolDownImage;
+
+        [Header("Slot Events")]
+        public UnityEvent onIconClick;
+        public UnityEvent onIconDoubleClick;
+
+        protected GUISkillIcon m_icon;
+        protected Coroutine m_coolDownRoutine;
+
+        /// <summary>
+        /// Returns the current buff on this slot.
+        /// </summary>
+        public BuffInstance buff { get; protected set; }
+
+        /// <summary>
+        /// Returns the GUI Skill Icon children of this slot.
+        /// </summary>
+        public GUISkillIcon icon
+        {
+            get
+            {
+                if (!m_icon)
+                {
+                    m_icon = GetComponentInChildren<GUISkillIcon>();
+                }
+
+                return m_icon;
+            }
+        }
+
+        /// <summary>
+        /// Returns true if this buff slot is selected.
+        /// </summary>
+        public bool selected => selection && selection.enabled;
+
+        /// <summary>
+        /// Sets a given buff instance on this slot.
+        /// </summary>
+        /// <param name="instance">The buff instance you want to set.</param>
+        public virtual void SetBuff(BuffInstance instance)
+        {
+            buff = instance;
+            if (icon) icon.draggable = false;
+            //SetIcon(buff?.data?.icon);
+            SetIcon(buff?.buff?.icon);
+            Visible(buff != null);
+        }
+
+        /// <summary>
+        /// Sets the sprite of the icon on this slot.
+        /// </summary>
+        /// <param name="sprite">The sprite you want to set.</param>
+        public virtual void SetIcon(Sprite sprite)
+        {
+            if (icon) icon.image.sprite = sprite;
+        }
+
+        /// <summary>
+        /// Sets the visibility of the icon.
+        /// </summary>
+        /// <param name="value">If true, the icon is visible.</param>
+        public virtual void Visible(bool value)
+        {
+            if (icon) icon.image.enabled = value;
+        }
+
+        /// <summary>
+        /// Selects this slot highlighting it.
+        /// </summary>
+        /// <param name="value">If true, the slot will be highlighted.</param>
+        public virtual void Select(bool value)
+        {
+            if (selection) selection.enabled = value;
+        }
+
+        /// <summary>
+        /// Starts the cool down counter.
+        /// </summary>
+        /// <param name="duration">The duration of the cool down.</param>
+        public virtual void StartCoolDown(float duration)
+        {
+            if (m_coolDownRoutine != null)
+                StopCoroutine(m_coolDownRoutine);
+
+            m_coolDownRoutine = StartCoroutine(CoolDownRoutine(duration));
+        }
+
+        protected IEnumerator CoolDownRoutine(float coolDown)
+        {
+            var duration = coolDown;
+
+            if (coolDownImage) coolDownImage.fillAmount = 1;
+
+            while (duration > 0)
+            {
+                duration -= Time.deltaTime;
+                if (coolDownImage) coolDownImage.fillAmount = duration / coolDown;
+                yield return null;
+            }
+
+            if (coolDownImage) coolDownImage.fillAmount = 0;
+        }
+
+        protected virtual void Start()
+        {
+            if (icon)
+            {
+                icon.onClick.AddListener(onIconClick.Invoke);
+                icon.onDoubleClick.AddListener(onIconDoubleClick.Invoke);
+            }
+        }
+
+        protected virtual void OnEnable() => Select(false);
+    }
+}
