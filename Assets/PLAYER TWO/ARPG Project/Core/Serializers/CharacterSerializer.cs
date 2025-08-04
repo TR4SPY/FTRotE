@@ -73,7 +73,12 @@ namespace PLAYERTWO.ARPGProject
             quests = new QuestsSerializer(character.quests);
             scenes = new ScenesSerializer(character.scenes);
             var buffManager = character.Entity != null ? character.Entity.GetComponent<EntityBuffManager>() : null;
-            buffs = new BuffsSerializer(buffManager);
+            if (buffManager != null)
+                buffs = new BuffsSerializer(buffManager);
+            else if (character.buffs != null)
+                buffs = character.buffs;
+            else
+                buffs = new BuffsSerializer();
 
             health = character.savedHealth;
             mana   = character.savedMana;

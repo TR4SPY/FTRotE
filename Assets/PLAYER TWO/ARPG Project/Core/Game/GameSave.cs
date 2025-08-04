@@ -144,6 +144,9 @@ namespace PLAYERTWO.ARPGProject
                 {
                     character.savedHealth = character.Entity.stats.health;
                     character.savedMana   = character.Entity.stats.mana;
+                    var buffManager = character.Entity.GetComponent<EntityBuffManager>();
+                    if (buffManager != null)
+                        character.buffs = new BuffsSerializer(buffManager);
                 }
                 else
                 {
