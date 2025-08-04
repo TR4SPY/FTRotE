@@ -96,6 +96,9 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The group/category this item belongs to.")]
         public ItemGroup group = ItemGroup.Misc;
 
+        [Header("GUI Settings")]
+        [Tooltip("If true, disables hover background highlighting for this item.")]
+        public bool disableHoverHighlight = false;
 
         /// <summary>
         /// Instantiates the Item's prefab as child of a given Transform.

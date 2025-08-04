@@ -35,6 +35,7 @@ MonoBehaviour:
   cannotBeSold: 0
   allowedClasses: 56
   group: 5
+  disableHoverHighlight: 1
   skill: {fileID: 11400000, guid: 21f48639c9631939e9f274f156ac53b8, type: 2}
   requiredLevel: 7
   requiredStrength: 12

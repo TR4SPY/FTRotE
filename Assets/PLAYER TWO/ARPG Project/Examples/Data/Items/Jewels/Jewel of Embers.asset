@@ -20,6 +20,7 @@ MonoBehaviour:
   dropRotation: {x: -90, y: 0, z: 45}
   previewLookAtOffset: {x: 0, y: 0.05, z: 0}
   previewCameraOffset: {x: 0, y: 0, z: 0.7}
+  previewRotationEuler: {x: 0, y: 0, z: 0}
   previewScaleOverride: 0
   previewResolutionWidth: 64
   previewResolutionHeight: 64
@@ -34,5 +35,6 @@ MonoBehaviour:
   cannotBeSold: 0
   allowedClasses: -1
   group: 12
+  disableHoverHighlight: 1
   successRate: 100
   description: Increases item level by +1 up to +9

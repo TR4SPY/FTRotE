@@ -37,6 +37,10 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("SFX played when collecting the money.")]
         public AudioClip collectClip;
 
+        [Header("Hover Settings (UI)")]
+        [Tooltip("If true, disables hover background highlighting for this item.")]
+        public bool disableHoverHighlight = true;
+
         protected GameAudio m_audio => GameAudio.instance;
 
         /// <summary>
