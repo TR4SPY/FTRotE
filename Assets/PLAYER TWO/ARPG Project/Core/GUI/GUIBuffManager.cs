@@ -22,6 +22,14 @@ namespace PLAYERTWO.ARPGProject
                 {
                     m_buffManager.onBuffAdded.AddListener(HandleBuffAdded);
                     m_buffManager.onBuffRemoved.AddListener(HandleBuffRemoved);
+
+                    foreach (var instance in m_buffManager.buffs)
+                    {
+                        if (instance.isActive)
+                        {
+                            HandleBuffAdded(instance);
+                        }
+                    }
                 }
             }
         }

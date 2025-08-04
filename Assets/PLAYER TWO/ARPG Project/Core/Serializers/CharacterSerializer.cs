@@ -66,13 +66,13 @@ namespace PLAYERTWO.ARPGProject
             position = new UnitySerializer.Vector3(character.currentPosition);
             rotation = new UnitySerializer.Vector3(character.currentRotation.eulerAngles);
             scene = character.currentScene;
-            stats = new StatsSerializer(character.stats);
+            var buffManager = character.Entity != null ? character.Entity.GetComponent<EntityBuffManager>() : null;
+            stats = new StatsSerializer(character.stats, buffManager);
             equipments = new EquipmentsSerializer(character.equipments);
             inventory = new InventorySerializer(character.inventory);
             skills = new SkillsSerializer(character.skills);
             quests = new QuestsSerializer(character.quests);
             scenes = new ScenesSerializer(character.scenes);
-            var buffManager = character.Entity != null ? character.Entity.GetComponent<EntityBuffManager>() : null;
             if (buffManager != null)
                 buffs = new BuffsSerializer(buffManager);
             else if (character.buffs != null)
