@@ -24,6 +24,7 @@ GameObject:
   - component: {fileID: 3868938641226383274}
   - component: {fileID: 2214114482141136061}
   - component: {fileID: 6151044213773128109}
+  - component: {fileID: 7166700075556385229}
   m_Layer: 8
   m_Name: Skeleton Warrior
   m_TagString: Entity/Enemy
@@ -78,6 +79,7 @@ MonoBehaviour:
   addToAttackersList: 1
   limitSimultaneousAttackers: 1
   maxSimultaneousAttackers: 2
+  emergencyRadius: 3
   baseSkillUseChance: 0.4
   searchDamageSource: 1
   searchDamageSourceDelay: 0.3
@@ -256,6 +258,7 @@ MonoBehaviour:
   leftHandItem: {fileID: 11400000, guid: baca1f95bcc4f90468af7a025f5ef14d, type: 2}
   onDamageDecreaseChance: 0.1
   onDamageDecreaseAmount: 1
+  skillDurabilityMultiplier: 0.5
 --- !u!114 &2214114482141136063
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -336,8 +339,8 @@ MonoBehaviour:
   blockClips:
   - {fileID: 8300000, guid: a420a524dc0e4fd4f8bf3bd9a4808bc5, type: 3}
   stunClips: []
-  m_audioCooldown: 0.3
-  distanceLimit: 30
+  audibleDistance: 8
+  targetSetCooldown: 1
 --- !u!114 &7163626369713216906
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -461,6 +464,24 @@ CharacterController:
   m_SkinWidth: 0.025
   m_MinMoveDistance: 0
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7166700075556385229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2214114482141136195}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2e19d6f805d3cc99a0b1626cf4731dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onBuffAdded:
+    m_PersistentCalls:
+      m_Calls: []
+  onBuffRemoved:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &2214114482298043673
 GameObject:
   m_ObjectHideFlags: 0

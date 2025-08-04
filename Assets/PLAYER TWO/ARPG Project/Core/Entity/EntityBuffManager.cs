@@ -36,7 +36,6 @@ namespace PLAYERTWO.ARPGProject
                 if (instance.isActive)
                 {
                     instance.remainingTime = buff.duration;
-                    onBuffAdded?.Invoke(instance);
                     return true;
                 }
                 else if (instance.remainingCooldown > 0f)

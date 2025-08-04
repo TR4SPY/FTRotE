@@ -214,6 +214,7 @@ GameObject:
   - component: {fileID: 1480716612232448828}
   - component: {fileID: 6355741063253607789}
   - component: {fileID: -2865382452660285358}
+  - component: {fileID: 7915758531556224542}
   m_Layer: 8
   m_Name: Zombie
   m_TagString: Entity/Enemy
@@ -268,6 +269,7 @@ MonoBehaviour:
   addToAttackersList: 1
   limitSimultaneousAttackers: 1
   maxSimultaneousAttackers: 2
+  emergencyRadius: 3
   baseSkillUseChance: 0.4
   searchDamageSource: 1
   searchDamageSourceDelay: 0.3
@@ -446,6 +448,7 @@ MonoBehaviour:
   leftHandItem: {fileID: 0}
   onDamageDecreaseChance: 0.1
   onDamageDecreaseAmount: 1
+  skillDurabilityMultiplier: 0.5
 --- !u!114 &6355741063253607791
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -528,6 +531,8 @@ MonoBehaviour:
   blockClips:
   - {fileID: 8300000, guid: a420a524dc0e4fd4f8bf3bd9a4808bc5, type: 3}
   stunClips: []
+  audibleDistance: 8
+  targetSetCooldown: 1
 --- !u!114 &2730427722859469914
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -651,6 +656,24 @@ CharacterController:
   m_SkinWidth: 0.025
   m_MinMoveDistance: 0
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7915758531556224542
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6355741063253607571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2e19d6f805d3cc99a0b1626cf4731dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onBuffAdded:
+    m_PersistentCalls:
+      m_Calls: []
+  onBuffRemoved:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &6355741063376174281
 GameObject:
   m_ObjectHideFlags: 0

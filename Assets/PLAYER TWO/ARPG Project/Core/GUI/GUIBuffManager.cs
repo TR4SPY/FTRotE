@@ -41,12 +41,7 @@ namespace PLAYERTWO.ARPGProject
             {
                 var instance = pair.Key;
                 var slot = pair.Value;
-                /*
-                if (instance.duration > 0)
-                {
-                    slot.coolDownImage.fillAmount = instance.remainingTime / instance.duration;
-                }
-                */
+
                 if (instance.buff.duration > 0)
                 {
                     slot.coolDownImage.fillAmount = instance.remainingTime / instance.buff.duration;
@@ -54,6 +49,11 @@ namespace PLAYERTWO.ARPGProject
                 else
                 {
                     slot.coolDownImage.fillAmount = 0f;
+                }
+
+                if (slot.keyText)
+                {
+                    slot.keyText.text = Mathf.CeilToInt(instance.remainingTime).ToString();
                 }
             }
         }
@@ -70,6 +70,12 @@ namespace PLAYERTWO.ARPGProject
         {
             if (m_slots.TryGetValue(instance, out var slot))
             {
+                if (slot.keyText)
+                {
+                    slot.keyText.text = string.Empty;
+                    slot.keyText.gameObject.SetActive(false);
+                }
+
                 Destroy(slot.gameObject);
                 m_slots.Remove(instance);
             }

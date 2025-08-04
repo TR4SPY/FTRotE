@@ -654,6 +654,7 @@ GameObject:
   - component: {fileID: 413004977414458034}
   - component: {fileID: 7294827465150902576}
   - component: {fileID: 778509572308063303}
+  - component: {fileID: 702764158644952355}
   m_Layer: 8
   m_Name: Giant Golem Red
   m_TagString: Entity/Enemy
@@ -762,6 +763,7 @@ MonoBehaviour:
   addToAttackersList: 1
   limitSimultaneousAttackers: 1
   maxSimultaneousAttackers: 2
+  emergencyRadius: 3
   baseSkillUseChance: 0.4
   searchDamageSource: 1
   searchDamageSourceDelay: 0.3
@@ -886,6 +888,7 @@ MonoBehaviour:
   leftHandItem: {fileID: 0}
   onDamageDecreaseChance: 0.1
   onDamageDecreaseAmount: 1
+  skillDurabilityMultiplier: 0.5
 --- !u!114 &917354038989509446
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -966,8 +969,8 @@ MonoBehaviour:
   blockClips:
   - {fileID: 8300000, guid: a420a524dc0e4fd4f8bf3bd9a4808bc5, type: 3}
   stunClips: []
-  m_audioCooldown: 0.3
-  distanceLimit: 30
+  audibleDistance: 8
+  targetSetCooldown: 1
 --- !u!114 &6684433646245436906
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1091,6 +1094,24 @@ CharacterController:
   m_SkinWidth: 0.85
   m_MinMoveDistance: 0
   m_Center: {x: 0, y: 1.2, z: 0}
+--- !u!114 &702764158644952355
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9137032837993464747}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2e19d6f805d3cc99a0b1626cf4731dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onBuffAdded:
+    m_PersistentCalls:
+      m_Calls: []
+  onBuffRemoved:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1001 &417457894063966040
 PrefabInstance:
   m_ObjectHideFlags: 0
