@@ -36,6 +36,7 @@ namespace PLAYERTWO.ARPGProject
         public CharacterSkills skills;
         public CharacterQuests quests;
         public CharacterScenes scenes;
+        public BuffsSerializer buffs;
 
         public int savedHealth = -1;
         public int savedMana = -1;
@@ -277,6 +278,7 @@ namespace PLAYERTWO.ARPGProject
                 RestoreWeaponSkill(m_entity);
                 quests.InitializeQuests();
                 scenes.InitializeScenes();
+                buffs?.ApplyTo(m_entity.GetComponent<EntityBuffManager>());
             }
 
             return m_entity;
@@ -341,6 +343,8 @@ namespace PLAYERTWO.ARPGProject
                 skills = CharacterSkills.CreateFromSerializer(serializer.skills),
                 quests = CharacterQuests.CreateFromSerializer(serializer.quests),
                 scenes = CharacterScenes.CreateFromSerializer(serializer.scenes),
+                
+                buffs = serializer.buffs,
 
                 playerDeaths = serializer.playerDeaths,
                 enemiesDefeated = serializer.enemiesDefeated,

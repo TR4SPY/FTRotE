@@ -13,6 +13,7 @@ namespace PLAYERTWO.ARPGProject
         public List<Character> characters => gameData.characters;
         public List<Item> items => gameData.items;
         public List<Skill> skills => gameData.skills;
+        public List<Buff> buffs => gameData.buffs;
         public List<Quest> quests => gameData.quests;
         public List<GameObject> questItems => gameData.questItems;
         public List<GameObject> enemies => gameData.enemies;
@@ -31,6 +32,8 @@ namespace PLAYERTWO.ARPGProject
                 return items.IndexOf(element as Item);
             else if (element is Skill)
                 return skills.IndexOf(element as Skill);
+            else if (element is Buff)
+                return buffs.IndexOf(element as Buff);
             else if (element is Quest)
                 return quests.IndexOf(element as Quest);
 
@@ -52,6 +55,8 @@ namespace PLAYERTWO.ARPGProject
                 return items[id] as T;
             else if (type == typeof(Skill) && !OutOfRangeFor<Skill>(id, skills))
                 return skills[id] as T;
+            else if (type == typeof(Buff) && !OutOfRangeFor<Buff>(id, buffs))
+                return buffs[id] as T;
             else if (type == typeof(Quest) && !OutOfRangeFor<Quest>(id, quests))
                 return quests[id] as T;
 

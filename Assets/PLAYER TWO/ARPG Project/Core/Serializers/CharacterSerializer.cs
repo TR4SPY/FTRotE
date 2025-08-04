@@ -31,6 +31,7 @@ namespace PLAYERTWO.ARPGProject
         public SkillsSerializer skills;
         public QuestsSerializer quests;
         public ScenesSerializer scenes;
+        public BuffsSerializer buffs;
 
         public float dexterityMultiplier = 1.0f;
         public float strengthMultiplier = 1.0f;
@@ -71,6 +72,8 @@ namespace PLAYERTWO.ARPGProject
             skills = new SkillsSerializer(character.skills);
             quests = new QuestsSerializer(character.quests);
             scenes = new ScenesSerializer(character.scenes);
+            var buffManager = character.Entity != null ? character.Entity.GetComponent<EntityBuffManager>() : null;
+            buffs = new BuffsSerializer(buffManager);
 
             health = character.savedHealth;
             mana   = character.savedMana;

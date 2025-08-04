@@ -17,6 +17,9 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The list of all available Skills.")]
         public List<Skill> skills;
 
+        [Tooltip("The list of all available Buffs and Debuffs.")]
+        public List<Buff> buffs;
+
         [Tooltip("The list of all available< Quests.")]
         public List<Quest> quests;
 

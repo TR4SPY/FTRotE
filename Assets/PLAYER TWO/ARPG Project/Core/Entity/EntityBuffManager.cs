@@ -10,6 +10,7 @@ namespace PLAYERTWO.ARPGProject
     {
         public UnityEvent<BuffInstance> onBuffAdded;
         public UnityEvent<BuffInstance> onBuffRemoved;
+        public List<BuffInstance> buffs => m_buffs;
 
         protected readonly List<BuffInstance> m_buffs = new();
         protected EntityStatsManager m_stats;
@@ -54,6 +55,27 @@ namespace PLAYERTWO.ARPGProject
             ApplyModifiers(buff, true);
             onBuffAdded?.Invoke(instance);
             return true;
+        }
+
+        public virtual void RestoreBuff(Buff buff, bool isDebuff, float remainingTime, float remainingCooldown, bool isActive)
+        {
+            if (!buff || !m_stats)
+                return;
+
+            var instance = new BuffInstance(buff, isDebuff)
+            {
+                remainingTime = remainingTime,
+                remainingCooldown = remainingCooldown,
+                isActive = isActive
+            };
+
+            m_buffs.Add(instance);
+
+            if (isActive)
+            {
+                ApplyModifiers(buff, true);
+                onBuffAdded?.Invoke(instance);
+            }
         }
 
         public virtual void RemoveBuff(BuffInstance instance)
