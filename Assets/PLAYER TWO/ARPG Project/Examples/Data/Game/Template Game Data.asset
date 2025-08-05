@@ -113,6 +113,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8a1f708d247c2c1d3b5d75b21f6af462, type: 2}
   buffs:
   - {fileID: 11400000, guid: f50197f9164e9af00a49d840184caef9, type: 2}
+  - {fileID: 11400000, guid: 59feddb45c22f6cdaba2e293c7235ce3, type: 2}
+  - {fileID: 11400000, guid: 78f1b2bb2dec2f8b4885e55d642e1fa5, type: 2}
+  - {fileID: 11400000, guid: cfce1591f60ec9800b179d4c1240f6ea, type: 2}
   quests:
   - {fileID: 11400000, guid: 6d71c4c0e355cc84a9b7ffa082860dd7, type: 2}
   - {fileID: 11400000, guid: 7a25f4387e11fbc4698fd47d7830d567, type: 2}

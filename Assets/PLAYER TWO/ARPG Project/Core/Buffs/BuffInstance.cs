@@ -17,7 +17,7 @@ namespace PLAYERTWO.ARPGProject
             this.buff = buff;
             this.isDebuff = isDebuff;
 
-            remainingTime = buff.duration;
+            remainingTime = buff.removeOnLogout ? float.PositiveInfinity : buff.duration;
             remainingCooldown = 0f;
             isActive = true;
         }

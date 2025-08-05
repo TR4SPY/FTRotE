@@ -13,16 +13,13 @@ MonoBehaviour:
   m_Name: Guildmaster
   m_EditorClassIdentifier: 
   pages:
-  - dialogText: "So\u2026 you\u2019ve brought me junk and hope. That\u2019s a dangerous
-      mix.\n\nI\u2019m Kaelen. They call me Craftman, though what I do borders more
-      on alchemy than carpentry. If it can be reforged, infused, socketed, or shattered
-      \u2014 I know how. But nothing comes without risk. Or cost. Some say I\u2019m
-      the last true craftsman in Ashenvale... Maybe even in all of Eldoria. If that\u2019s
-      true, then you better pray I stay alive.\n\nPlace your item. Choose your gem.
-      \nSay your prayers. Then let\u2019s see if fate is on your side today."
+  - dialogText: "Names are\u2026 ceremonial. Function is what matters.\nAnd \"I am
+      here, to help\"...\n\n[Whisper to himself]\nJeeez, that sounded disappointing,
+      as if I were from the government.\n\nDo you seek to lead \u2014 or to follow?\nEither
+      way, the paperwork won't file itself.\n\nWhat do you require?"
     specialCondition: 
     options:
-    - optionText: "I\u2019ll take my chances."
+    - optionText: I would like to form a guild.
       isForSocializer: 0
       isForAchiever: 0
       isForKiller: 0
@@ -31,6 +28,23 @@ MonoBehaviour:
       nextPageIndex: 0
       specialConditionToSet: 0
       hideIfAlreadyInGuild: 1
+      buff: {fileID: 0}
+    - optionText: I'm just curious...
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 5
+      nextPageIndex: -1
+      specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 11400000, guid: f50197f9164e9af00a49d840184caef9, type: 2}
     showOnce: 0
     isSpecial: 0
-  dialogTitle: Guildmaster
+  - dialogText: "Curious, are we...?\n\n\n\nFine. You\u2019ll need this more than
+      you know.\n\n\n\nDon\u2019t waste it."
+    specialCondition: 
+    options: []
+    showOnce: 0
+    isSpecial: 0
+  dialogTitle: Vaelthar - Guildmaster

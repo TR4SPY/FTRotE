@@ -69,7 +69,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 24
+    m_FontSize: 32
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 1
@@ -80,7 +80,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 00s
+  m_Text: 00
 --- !u!114 &7985929121969960657
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -122,7 +122,7 @@ GameObject:
   - component: {fileID: 3170536075642843105}
   - component: {fileID: 3170536075642843039}
   - component: {fileID: 3170536075642843038}
-  - component: {fileID: 9020086431764123695}
+  - component: {fileID: 8884401160782379958}
   m_Layer: 5
   m_Name: Buff Slot
   m_TagString: Untagged
@@ -191,7 +191,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &9020086431764123695
+--- !u!114 &8884401160782379958
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

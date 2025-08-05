@@ -173,7 +173,15 @@ namespace AI_DDA.Assets.Scripts
                     if (buffManager != null && option.buff != null)
                     {
                         bool isDebuff = option.action == Dialog.DialogAction.GiveDebuff;
-                        buffManager.AddBuff(option.buff, isDebuff);
+                        bool added = buffManager.AddBuff(option.buff, isDebuff);
+                        if (!added)
+                        {
+                            Debug.LogWarning($"[GUIDialogWindow] Failed to add {(isDebuff ? "debuff" : "buff")} '{option.buff.name}'.");
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogWarning("[GUIDialogWindow] Buff manager or buff is missing for dialog option.");
                     }
                     ContinueDialog(option.nextPageIndex);
                     break;
