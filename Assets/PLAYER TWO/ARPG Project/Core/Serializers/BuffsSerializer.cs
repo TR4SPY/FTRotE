@@ -25,6 +25,9 @@ namespace PLAYERTWO.ARPGProject
             if (manager == null) return;
             foreach (var instance in manager.buffs)
             {
+                if (instance.buff != null && instance.buff.removeOnLogout)
+                    continue;
+
                 buffs.Add(new BuffData
                 {
                     buffId = GameDatabase.instance.GetElementId<Buff>(instance.buff),

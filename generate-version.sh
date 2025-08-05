@@ -1,17 +1,23 @@
 #!/bin/bash
 
-start_commit="523db6d"
+# OFFSET — commit numer, od którego zaczynamy liczenie (199 w tym przypadku)
+offset=199
 
-count=$(git rev-list --count ${start_commit}..HEAD)
+# Liczba commitów w repo
+total=$(git rev-list --count HEAD)
 
-if [ "$count" -eq 0 ]; then
-    echo "No version (waiting for next commit)"
+# Ile commitów od startu wersjonowania
+count=$((total - offset))
+
+if [ "$count" -le 0 ]; then
+    echo "No version (waiting for commit #$((offset + 1)))"
     exit 0
 fi
 
+# Wylicz numer wersji
 minor=$((count))
-letter_index=$(( (count - 1) / 99 ))
+letter_index=$(( (minor - 1) / 99 ))
 letter=$(printf "\x$(printf %x $((65 + letter_index)))")
-
 version="0.$(printf "%02d" $minor)$letter"
+
 echo "$version"

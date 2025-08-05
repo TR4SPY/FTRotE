@@ -353,10 +353,17 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void InitializeTooltips()
         {
-            AttachTooltip(strength?.pointsText != null ? strength.pointsText.gameObject : strength?.gameObject, "strength");
-            AttachTooltip(dexterity?.pointsText != null ? dexterity.pointsText.gameObject : dexterity?.gameObject, "dexterity");
-            AttachTooltip(vitality?.pointsText != null ? vitality.pointsText.gameObject : vitality?.gameObject, "vitality");
-            AttachTooltip(energy?.pointsText != null ? energy.pointsText.gameObject : energy?.gameObject, "energy");
+            AttachTooltip(strength?.gameObject, "strength");
+            AttachTooltip(strength?.pointsText?.gameObject, "strength");
+
+            AttachTooltip(dexterity?.gameObject, "dexterity");
+            AttachTooltip(dexterity?.pointsText?.gameObject, "dexterity");
+
+            AttachTooltip(vitality?.gameObject, "vitality");
+            AttachTooltip(vitality?.pointsText?.gameObject, "vitality");
+
+            AttachTooltip(energy?.gameObject, "energy");
+            AttachTooltip(energy?.pointsText?.gameObject, "energy");
 
             AttachTooltip(defenseText?.gameObject, "defense");
             AttachTooltip(magicResistanceText?.gameObject, "magicResistance");
@@ -369,6 +376,7 @@ namespace PLAYERTWO.ARPGProject
             AttachTooltip(damageText?.gameObject, "minDamage");
             AttachTooltip(magicDamageText?.gameObject, "minMagicDamage");
         }
+
 
         protected virtual void AttachTooltip(GameObject go, string stat)
         {

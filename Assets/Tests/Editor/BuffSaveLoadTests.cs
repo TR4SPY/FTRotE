@@ -33,4 +33,35 @@ public class BuffSaveLoadTests
 
         Object.DestroyImmediate(buff);
     }
+
+    [Test]
+    public void SessionOnlyBuffNotSerialized()
+    {
+        var buff = ScriptableObject.CreateInstance<Buff>();
+        buff.removeOnLogout = true;
+
+        var go = new GameObject();
+        var statsManager = go.AddComponent<EntityStatsManager>();
+        var buffManager = go.AddComponent<EntityBuffManager>();
+        new CharacterStats(1, 10, 0, 0, 0, 0, 0).InitializeStats(statsManager);
+
+        buffManager.AddBuff(buff);
+        Assert.AreEqual(1, buffManager.buffs.Count);
+
+        var serializer = new BuffsSerializer(buffManager);
+
+        Object.DestroyImmediate(go);
+
+        var go2 = new GameObject();
+        var statsManager2 = go2.AddComponent<EntityStatsManager>();
+        var buffManager2 = go2.AddComponent<EntityBuffManager>();
+        new CharacterStats(1, 10, 0, 0, 0, 0, 0).InitializeStats(statsManager2);
+
+        serializer.ApplyTo(buffManager2);
+
+        Assert.AreEqual(0, buffManager2.buffs.Count);
+
+        Object.DestroyImmediate(go2);
+        Object.DestroyImmediate(buff);
+    }
 }

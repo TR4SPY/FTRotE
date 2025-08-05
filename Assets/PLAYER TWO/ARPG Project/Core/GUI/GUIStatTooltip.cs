@@ -61,7 +61,8 @@ namespace PLAYERTWO.ARPGProject
             }
             builder.Append($"Total: {current}");
 
-            GUITooltip.instance.ShowTooltip(statName, builder.ToString(), gameObject);
+            string displayName = StringUtils.ConvertToTitleCase(statName);
+            GUITooltip.instance.ShowTooltip(displayName, builder.ToString(), gameObject);
         }
 
         public void OnPointerExit(PointerEventData eventData)

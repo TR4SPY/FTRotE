@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -20,6 +21,16 @@ namespace PLAYERTWO.ARPGProject
             m_stats = GetComponent<EntityStatsManager>();
         }
 
+        protected virtual void OnEnable()
+        {
+            SceneManager.sceneLoaded += OnSceneLoaded;
+        }
+
+        protected virtual void OnDisable()
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
+
         public virtual bool AddBuff(Buff buff)
         {
             return AddBuff(buff, false);
@@ -30,13 +41,116 @@ namespace PLAYERTWO.ARPGProject
             if (!buff || !m_stats)
                 return false;
 
+            bool isDebuffType = isDebuff || buff.isDebuff;
+            if (isDebuffType && buff.immunityItems != null && buff.immunityItems.Length > 0)
+            {
+                var entity = GetComponent<Entity>();
+                var inventory = entity != null ? entity.inventory : null;
+                if (inventory != null)
+                {
+                    var itemsDict = inventory.instance.items;
+                    bool hasImmunity = false;
+
+                    if (buff.requireAllItems)
+                    {
+                        hasImmunity = true;
+                        foreach (var required in buff.immunityItems)
+                        {
+                            bool found = false;
+                            foreach (var pair in itemsDict)
+                            {
+                                if (pair.Key != null && pair.Key.data == required)
+                                {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (!found)
+                            {
+                                hasImmunity = false;
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (var pair in itemsDict)
+                        {
+                            if (pair.Key == null)
+                                continue;
+
+                            foreach (var required in buff.immunityItems)
+                            {
+                                if (pair.Key.data == required)
+                                {
+                                    hasImmunity = true;
+                                    break;
+                                }
+                            }
+
+                            if (hasImmunity)
+                                break;
+                        }
+                    }
+
+                    if (hasImmunity)
+                        return false;
+                }
+            }
+
+            if (buff.incompatibleBuffs != null && buff.incompatibleBuffs.Length > 0)
+            {
+                foreach (var existing in m_buffs)
+                {
+                    if (!existing.isActive)
+                        continue;
+
+                    if (System.Array.IndexOf(buff.incompatibleBuffs, existing.buff) >= 0)
+                        return false;
+                }
+            }
+            
+            if (buff.allowedScenes != null && buff.allowedScenes.Length > 0)
+            {
+                var sceneName = Level.instance?.currentScene.name;
+                if (string.IsNullOrEmpty(sceneName) || System.Array.IndexOf(buff.allowedScenes, sceneName) < 0)
+                    return false;
+            }
+
+            string className = gameObject.name.Replace("(Clone)", "").Trim();
+            if (ClassHierarchy.NameToBits.TryGetValue(className, out var playerClass))
+            {
+                var allowed = buff.allowedClasses;
+                if ((allowed & playerClass) == 0 && allowed != CharacterClassRestrictions.None)
+                    return false;
+            }
+
+            if (isDebuff && buff.ignoreIfResistant != null)
+            {
+                foreach (var requirement in buff.ignoreIfResistant)
+                {
+                    if (string.IsNullOrEmpty(requirement.statName))
+                        continue;
+
+                    var prop = typeof(EntityStatsManager).GetProperty(requirement.statName,
+                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+                    if (prop != null && prop.PropertyType == typeof(int))
+                    {
+                        int value = (int)prop.GetValue(m_stats);
+                        if (value >= requirement.minimumValue)
+                            return false;
+                    }
+                }
+            }
+
             var instance = m_buffs.Find(b => b.buff == buff && b.isDebuff == isDebuff);
 
             if (instance != null)
             {
                 if (instance.isActive)
                 {
-                    instance.remainingTime = buff.duration;
+                    instance.remainingTime = buff.removeOnLogout ? float.PositiveInfinity : buff.duration;
                     return true;
                 }
                 else if (instance.remainingCooldown > 0f)
@@ -118,6 +232,20 @@ namespace PLAYERTWO.ARPGProject
             return result;
         }
 
+        protected virtual void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            for (int i = m_buffs.Count - 1; i >= 0; i--)
+            {
+                var instance = m_buffs[i];
+                var allowed = instance.buff.allowedScenes;
+                if (allowed != null && allowed.Length > 0 && System.Array.IndexOf(allowed, scene.name) < 0)
+                {
+                    RemoveBuff(instance);
+                    m_buffs.RemoveAt(i);
+                }
+            }
+        }
+
         protected virtual void Update()
         {
             float dt = Time.deltaTime;
@@ -142,7 +270,7 @@ namespace PLAYERTWO.ARPGProject
         protected virtual void ActivateBuff(BuffInstance instance)
         {
             instance.isActive = true;
-            instance.remainingTime = instance.buff.duration;
+            instance.remainingTime = instance.buff.removeOnLogout ? float.PositiveInfinity : instance.buff.duration;
             ApplyModifiers(instance.buff, true);
             onBuffAdded?.Invoke(instance);
         }
