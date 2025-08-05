@@ -24,6 +24,21 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The Audio Clip that plays when points are removed.")]
         public AudioClip removePointClip;
 
+        /// <summary>
+        /// Default color of the points text used when the value matches the base value.
+        /// </summary>
+        private Color m_defaultColor;
+
+        /// <summary>
+        /// Base value of the attribute without any modifications.
+        /// </summary>
+        private int m_basePoints;
+
+        /// <summary>
+        /// Indicates whether the base points have been initialised to avoid early colour changes.
+        /// </summary>
+        private bool m_hasBasePoints;
+
         private Coroutine holdRoutine;
         private bool isHolding = false;
         private bool isAddButtonHeld = false;
@@ -57,13 +72,16 @@ namespace PLAYERTWO.ARPGProject
         protected GameAudio m_audio => GameAudio.instance;
 
         /// <summary>
-        /// Resets the distributed points to zero and sets the current points.
+        /// Resets the distributed points to zero and sets the current and base points.
         /// </summary>
         /// <param name="currentPoints">The amount of points on this attribute.</param>
-        public virtual void Reset(int currentPoints)
+        /// <param name="basePoints">The base value of this attribute.</param>
+        public virtual void Reset(int currentPoints, int basePoints)
         {
             distributedPoints = 0;
             this.currentPoints = currentPoints;
+            m_basePoints = basePoints;
+            m_hasBasePoints = true;
 
             if (stats.availablePoints > 0)
                 addButton.transform.localScale = Vector3.one;
@@ -117,11 +135,29 @@ namespace PLAYERTWO.ARPGProject
         }
 
         /// <summary>
-        /// Updates the text showing the total points.
+        /// Updates the text showing the total points and adjusts the colour based on the
+        /// comparison with the base value.
         /// </summary>
         public virtual void UpdateText()
         {
             pointsText.text = (currentPoints + distributedPoints).ToString();
+
+            if (m_hasBasePoints)
+            {
+                int total = currentPoints + distributedPoints;
+                if (total > m_basePoints)
+                {
+                    pointsText.color = GameColors.Green;
+                }
+                else if (total < m_basePoints)
+                {
+                    pointsText.color = GameColors.LightRed;
+                }
+                else
+                {
+                    pointsText.color = m_defaultColor;
+                }
+            }
         }
 
         private void AddHoldEvents(EventTrigger trigger, bool isAdd)
@@ -189,6 +225,8 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void Start()
         {
+            m_defaultColor = pointsText.color;
+
             stats.onPointsChanged += (availablePoints) =>
             {
                 addButton.transform.localScale = availablePoints > 0 ? Vector3.one : Vector3.zero;

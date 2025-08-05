@@ -211,10 +211,10 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         public void Cancel()
         {
-            strength.Reset(m_entity.stats.strength);
-            dexterity.Reset(m_entity.stats.dexterity);
-            vitality.Reset(m_entity.stats.vitality);
-            energy.Reset(m_entity.stats.energy);
+            strength.Reset(m_entity.stats.strength, m_entity.stats.GetBaseStrength());
+            dexterity.Reset(m_entity.stats.dexterity, m_entity.stats.GetBaseDexterity());
+            vitality.Reset(m_entity.stats.vitality, m_entity.stats.GetBaseVitality());
+            energy.Reset(m_entity.stats.energy, m_entity.stats.GetBaseEnergy());
 
             UpdateApplyCancelButtons();
         }
@@ -255,10 +255,10 @@ namespace PLAYERTWO.ARPGProject
             criticalChanceText.text = $"{(m_entity.stats.criticalChance * 100):F2}%";
 
             availablePoints = m_entity.stats.availablePoints;
-            strength.Reset(m_entity.stats.strength);
-            dexterity.Reset(m_entity.stats.dexterity);
-            vitality.Reset(m_entity.stats.vitality);
-            energy.Reset(m_entity.stats.energy);
+            strength.Reset(m_entity.stats.strength, m_entity.stats.GetBaseStrength());
+            dexterity.Reset(m_entity.stats.dexterity, m_entity.stats.GetBaseDexterity());
+            vitality.Reset(m_entity.stats.vitality, m_entity.stats.GetBaseVitality());
+            energy.Reset(m_entity.stats.energy, m_entity.stats.GetBaseEnergy());
 
             string staticType = characterInstance.playerType;
             string dynamicType = PlayerBehaviorLogger.Instance?.currentDynamicPlayerType ?? "Unknown";
@@ -323,8 +323,37 @@ namespace PLAYERTWO.ARPGProject
             InitializeEntity();
             InitializeCallbacks();
             InitializeTexts();
+            InitializeTooltips();
             Refresh();
             UpdateApplyCancelButtons();
+        }
+
+        protected virtual void InitializeTooltips()
+        {
+            AttachTooltip(strength?.pointsText != null ? strength.pointsText.gameObject : strength?.gameObject, "strength");
+            AttachTooltip(dexterity?.pointsText != null ? dexterity.pointsText.gameObject : dexterity?.gameObject, "dexterity");
+            AttachTooltip(vitality?.pointsText != null ? vitality.pointsText.gameObject : vitality?.gameObject, "vitality");
+            AttachTooltip(energy?.pointsText != null ? energy.pointsText.gameObject : energy?.gameObject, "energy");
+
+            AttachTooltip(defenseText?.gameObject, "defense");
+            AttachTooltip(magicResistanceText?.gameObject, "magicResistance");
+            AttachTooltip(maxHealthText?.gameObject, "maxHealth");
+            AttachTooltip(maxManaText?.gameObject, "maxMana");
+            AttachTooltip(attackSpeedText?.gameObject, "attackSpeed");
+            AttachTooltip(stunSpeedText?.gameObject, "stunSpeed");
+            AttachTooltip(stunChanceText?.gameObject, "stunChance");
+            AttachTooltip(criticalChanceText?.gameObject, "criticalChance");
+            AttachTooltip(damageText?.gameObject, "minDamage");
+            AttachTooltip(magicDamageText?.gameObject, "minMagicDamage");
+        }
+
+        protected virtual void AttachTooltip(GameObject go, string stat)
+        {
+            if (!go)
+                return;
+
+            var tooltip = go.GetComponent<GUIStatTooltip>() ?? go.AddComponent<GUIStatTooltip>();
+            tooltip.statName = stat;
         }
     }
 }

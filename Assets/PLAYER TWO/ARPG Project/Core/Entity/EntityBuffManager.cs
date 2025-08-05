@@ -89,6 +89,35 @@ namespace PLAYERTWO.ARPGProject
             onBuffRemoved?.Invoke(instance);
         }
 
+        /// <summary>
+        /// Returns the contribution of each active buff to the given stat.
+        /// </summary>
+        /// <param name="statName">The name of the stat in <see cref="Buff"/> and <see cref="EntityStatsManager"/>.</param>
+        /// <returns>A dictionary mapping the buff name to the amount it modifies the stat.</returns>
+        public virtual Dictionary<string, int> GetStatModifiers(string statName)
+        {
+            var result = new Dictionary<string, int>();
+
+            if (string.IsNullOrEmpty(statName))
+                return result;
+
+            var field = typeof(Buff).GetField(statName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            if (field == null)
+                return result;
+
+            foreach (var instance in m_buffs)
+            {
+                if (!instance.isActive || instance.buff == null)
+                    continue;
+
+                int value = (int)field.GetValue(instance.buff);
+                if (value != 0)
+                    result[instance.buff.name] = value;
+            }
+
+            return result;
+        }
+
         protected virtual void Update()
         {
             float dt = Time.deltaTime;

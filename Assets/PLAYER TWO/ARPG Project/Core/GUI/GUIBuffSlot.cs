@@ -1,12 +1,14 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using System.Collections;
+using System.Reflection;
 
 namespace PLAYERTWO.ARPGProject
 {
     [AddComponentMenu("PLAYER TWO/ARPG Project/GUI/GUI Buff Slot")]
-    public class GUIBuffSlot : GUISlot
+    public class GUIBuffSlot : GUISlot, IPointerEnterHandler, IPointerExitHandler
     {
         [Tooltip("A reference to the Image component used as the selection outline.")]
         public Image selection;
@@ -20,6 +22,8 @@ namespace PLAYERTWO.ARPGProject
 
         protected GUISkillIcon m_icon;
         protected Coroutine m_coolDownRoutine;
+
+        private static readonly FieldInfo s_lastTargetField = typeof(GUITooltip).GetField("lastTarget", BindingFlags.NonPublic | BindingFlags.Instance);
 
         /// <summary>
         /// Returns the current buff on this slot.
@@ -124,6 +128,40 @@ namespace PLAYERTWO.ARPGProject
             }
         }
 
+        protected virtual void ShowBuffTooltip()
+        {
+            if (buff != null)
+            {
+                GUITooltip.instance.ShowTooltip(buff.buff.name, TooltipFormatter.FormatBuffTooltip(buff), gameObject);
+            }
+        }
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            ShowBuffTooltip();
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            GUITooltip.instance.HideTooltipDynamic();
+        }
+
         protected virtual void OnEnable() => Select(false);
+
+        protected virtual void OnDisable()
+        {
+            GUITooltip.instance.HideTooltipDynamic();
+        }
+
+        protected virtual void OnDestroy()
+        {
+            if (!GUITooltip.instance || s_lastTargetField == null) return;
+
+            var target = s_lastTargetField.GetValue(GUITooltip.instance) as GameObject;
+            if (target == gameObject)
+            {
+                GUITooltip.instance.HideTooltipDynamic();
+            }
+        }
     }
 }
