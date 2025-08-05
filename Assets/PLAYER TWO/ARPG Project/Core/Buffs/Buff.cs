@@ -78,6 +78,9 @@ namespace PLAYERTWO.ARPGProject
         public int increaseMagicalDamagePercent;
         public int increaseMagicalDamageValue;
 
+        public int additionalExperienceRewardPercent;
+        public int additionalMoneyRewardPercent;
+
         public bool magicImmunity;
         public bool fireImmunity;
         public bool waterImmunity;
@@ -131,6 +134,8 @@ namespace PLAYERTWO.ARPGProject
                 { nameof(increaseDamageValue), "Damage" },
                 { nameof(increaseMagicalDamagePercent), "Magical Damage %" },
                 { nameof(increaseMagicalDamageValue), "Magical Damage" },
+                { nameof(additionalExperienceRewardPercent), "Experience Reward %" },
+                { nameof(additionalMoneyRewardPercent), "Money Reward %" },
                 { nameof(magicImmunity), "Magic Immunity" },
                 { nameof(fireImmunity), "Fire Immunity" },
                 { nameof(waterImmunity), "Water Immunity" },

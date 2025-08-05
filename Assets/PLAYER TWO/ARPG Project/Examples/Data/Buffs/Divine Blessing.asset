@@ -46,14 +46,21 @@ MonoBehaviour:
   healthRegenPerSecond: 0
   healthRegenPer5Seconds: 20
   healthRegenPer30Seconds: 10
-  additionalMana: 200
-  additionalHealth: 200
+  experiencePerSecondPercent: 0
+  experiencePer5SecondsPercent: 0
+  experiencePer30SecondsPercent: 0
+  additionalMana: 0
+  additionalManaPercent: 20
+  additionalHealth: 0
+  additionalHealthPercent: 20
   increaseAttackSpeedPercent: 0
   increaseAttackSpeedValue: 0
   increaseDamagePercent: 0
   increaseDamageValue: 0
   increaseMagicalDamagePercent: 0
   increaseMagicalDamageValue: 0
+  additionalExperienceRewardPercent: 0
+  additionalMoneyRewardPercent: 0
   magicImmunity: 0
   fireImmunity: 0
   waterImmunity: 0
@@ -67,3 +74,4 @@ MonoBehaviour:
   additionalAmberlingsPerMinute: 0
   additionalLunarisPerMinute: 0
   additionalSolmiresPerMinute: 0
+  itemPricePercent: 0

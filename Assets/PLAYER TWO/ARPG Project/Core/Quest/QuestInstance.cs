@@ -149,14 +149,15 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         public virtual void Reward(Entity entity)
         {
-            if (!entity) return;
-
             if (entity.stats)
                 entity.stats.AddExperience(finalExperience);
 
             if (entity.inventory)
             {
-                entity.inventory.currency.AddAmberlings(finalCoins);
+                int coins = finalCoins;
+                if (entity.stats)
+                    coins = Mathf.RoundToInt(coins * (1f + entity.stats.additionalMoneyRewardPercent / 100f));
+                entity.inventory.currency.AddAmberlings(coins);
 
                 foreach (var item in data.items)
                 {

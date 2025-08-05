@@ -146,6 +146,9 @@ namespace PLAYERTWO.ARPGProject
             }
 
             player.stats.AddExperience(finalExp);
+
+            if (player.stats != null)
+                finalGold = Mathf.RoundToInt(finalGold * (1f + player.stats.additionalMoneyRewardPercent / 100f));
             player.inventory.instance.money += finalGold;
 
             Debug.Log($"[Waypoint] {player.name} discovered waypoint '{title}' (ID: {waypointID}) and received {finalExp} EXP, {finalGold} Gold.");

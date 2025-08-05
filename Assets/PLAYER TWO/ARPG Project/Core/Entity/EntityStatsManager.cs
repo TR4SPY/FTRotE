@@ -143,6 +143,8 @@ namespace PLAYERTWO.ARPGProject
         public int increaseDamageValue { get; protected set; }
         public int increaseMagicalDamagePercent { get; protected set; }
         public int increaseMagicalDamageValue { get; protected set; }
+        public int additionalExperienceRewardPercent { get; protected set; }
+        public int additionalMoneyRewardPercent { get; protected set; }
         public bool magicImmunity { get; protected set; }
         public bool fireImmunity { get; protected set; }
         public bool waterImmunity { get; protected set; }
@@ -806,6 +808,9 @@ namespace PLAYERTWO.ARPGProject
         {
             if (!canGainExperience || m_reachedMaxLevel)
                 return;
+
+            if (additionalExperienceRewardPercent != 0)
+                amount = Mathf.RoundToInt(amount * (1f + additionalExperienceRewardPercent / 100f));
 
             experience += amount;
 

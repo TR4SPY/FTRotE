@@ -95,9 +95,11 @@ namespace AI_DDA.Assets.Scripts
             }
 
             if (entity.inventory != null)
-            {
-                    entity.inventory.instance.money += finalCoins;
-                Debug.Log($"[AI-DDA] {entity.name} received {finalCoins} coins.");
+            {                
+                int fcoins = finalCoins;
+                if (entity.stats != null)
+                    fcoins = Mathf.RoundToInt(fcoins * (1f + entity.stats.additionalMoneyRewardPercent / 100f));
+                entity.inventory.instance.money += fcoins;
             }
             else
             {

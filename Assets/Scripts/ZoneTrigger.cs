@@ -119,6 +119,10 @@ namespace AI_DDA.Assets.Scripts
             }
 
             player.stats.AddExperience(finalExp);
+
+            if (player.stats != null)
+                finalGold = Mathf.RoundToInt(finalGold * (1f + player.stats.additionalMoneyRewardPercent / 100f));
+
             player.inventory.instance.money += finalGold;
 
             Debug.Log($"[Zone] {player.name} discovered zone '{zoneName}' and received {finalExp} EXP, {finalGold} Gold.");

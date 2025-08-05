@@ -163,18 +163,38 @@ namespace PLAYERTWO.ARPGProject
                 if (field == null)
                     continue;
 
-                int value = (int)field.GetValue(buff);
-                if (value == 0)
-                    continue;
-
-                if (!hasAnyStat)
+                if (field.FieldType == typeof(int))
                 {
-                    sb.AppendLine("Effects:");
-                    hasAnyStat = true;
+                    int value = (int)field.GetValue(buff);
+                    if (value == 0)
+                        continue;
+
+                    if (!hasAnyStat)
+                    {
+                        sb.AppendLine("Effects:");
+                        hasAnyStat = true;
+                    }
+
+                    string sign = value > 0 ? "+" : "";
+                    sb.AppendLine($"   • {entry.Value}: {sign}{value}");
+                    continue;
                 }
 
-                string sign = value > 0 ? "+" : "";
-                sb.AppendLine($"   • {entry.Value}: {sign}{value}");
+                if (field.FieldType == typeof(bool))
+                {
+                    bool value = (bool)field.GetValue(buff);
+                    if (!value)
+                        continue;
+
+                if (!hasAnyStat)
+                    {
+                        sb.AppendLine("Effects:");
+                        hasAnyStat = true;
+                    }
+
+                    sb.AppendLine($"   • {entry.Value}");
+                    continue;
+                }
             }
 
             return sb.ToString().TrimEnd();

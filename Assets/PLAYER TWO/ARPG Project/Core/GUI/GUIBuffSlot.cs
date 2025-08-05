@@ -10,9 +10,6 @@ namespace PLAYERTWO.ARPGProject
     [AddComponentMenu("PLAYER TWO/ARPG Project/GUI/GUI Buff Slot")]
     public class GUIBuffSlot : GUISlot, IPointerEnterHandler, IPointerExitHandler
     {
-        [Tooltip("A reference to the Image component used as the selection outline.")]
-        public Image selection;
-
         [Tooltip("A reference to the Image component used as the buff cool down image.")]
         public Image coolDownImage;
 
@@ -63,12 +60,7 @@ namespace PLAYERTWO.ARPGProject
                 return m_icon;
             }
         }
-
-        /// <summary>
-        /// Returns true if this buff slot is selected.
-        /// </summary>
-        public bool selected => selection && selection.enabled;
-
+        
         /// <summary>
         /// Sets a given buff instance on this slot.
         /// </summary>
@@ -111,15 +103,6 @@ namespace PLAYERTWO.ARPGProject
         public virtual void Visible(bool value)
         {
             if (icon) icon.image.enabled = value;
-        }
-
-        /// <summary>
-        /// Selects this slot highlighting it.
-        /// </summary>
-        /// <param name="value">If true, the slot will be highlighted.</param>
-        public virtual void Select(bool value)
-        {
-            if (selection) selection.enabled = value;
         }
 
         /// <summary>
@@ -179,14 +162,6 @@ namespace PLAYERTWO.ARPGProject
         public void OnPointerExit(PointerEventData eventData)
         {
             GUITooltip.instance.HideTooltipDynamic();
-        }
-
-        protected virtual void OnEnable() => Select(false);
-
-        protected virtual void OnDisable()
-        {
-            GUITooltip.instance.HideTooltipDynamic();
-            StopPulse();
         }
 
         protected virtual void OnDestroy()

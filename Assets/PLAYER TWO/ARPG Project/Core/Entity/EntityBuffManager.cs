@@ -314,6 +314,8 @@ namespace PLAYERTWO.ARPGProject
             int damageValue = 0;
             int magicDamagePercent = 0;
             int magicDamageValue = 0;
+            int experienceRewardPercent = 0;
+            int moneyRewardPercent = 0;
             int manaRegenPerSecond = 0;
             int manaRegenPer5Seconds = 0;
             int manaRegenPer30Seconds = 0;
@@ -366,6 +368,8 @@ namespace PLAYERTWO.ARPGProject
                 damageValue += b.increaseDamageValue;
                 magicDamagePercent += b.increaseMagicalDamagePercent;
                 magicDamageValue += b.increaseMagicalDamageValue;
+                experienceRewardPercent += b.additionalExperienceRewardPercent;
+                moneyRewardPercent += b.additionalMoneyRewardPercent;
                 manaRegenPerSecond += b.manaRegenPerSecond;
                 manaRegenPer5Seconds += b.manaRegenPer5Seconds;
                 manaRegenPer30Seconds += b.manaRegenPer30Seconds;
@@ -443,6 +447,8 @@ namespace PLAYERTWO.ARPGProject
             SetStatProperty("additionalLunarisPerMinute", lunarisPerMinute);
             SetStatProperty("additionalSolmiresPerMinute", solmiresPerMinute);
             SetStatProperty("itemPricePercent", itemPricePercent);
+            SetStatProperty("additionalExperienceRewardPercent", experienceRewardPercent);
+            SetStatProperty("additionalMoneyRewardPercent", moneyRewardPercent);
         }
         
         protected virtual void SetStatProperty(string name, int value)
