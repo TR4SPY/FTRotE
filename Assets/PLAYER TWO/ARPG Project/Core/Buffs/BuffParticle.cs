@@ -8,19 +8,7 @@ namespace AI_DDA.Assets.Scripts
     /// Handles spawning and cleanup of particle systems for active buffs on the player.
     /// </summary>
     public class BuffParticle : MonoBehaviour
-    {
-        [System.Serializable]
-        public class BuffParticleMapping
-        {
-            [Tooltip("Name of the buff to match.")]
-            public string buffName;
-            [Tooltip("Particle system prefab to spawn when the buff is applied.")]
-            public ParticleSystem particlePrefab;
-        }
-
-        [Tooltip("Particles to spawn for specific buffs.")]
-        public List<BuffParticleMapping> buffParticles = new();
-
+    {        
         protected EntityBuffManager m_buffManager;
         protected readonly Dictionary<BuffInstance, ParticleSystem> m_activeParticles = new();
 
@@ -45,8 +33,8 @@ namespace AI_DDA.Assets.Scripts
 
         protected virtual void OnBuffAdded(BuffInstance instance)
         {
-            var prefab = GetParticlePrefab(instance.buff.name);
-            if (!prefab) return;
+            var prefab = instance.buff.particlePrefab;
+                if (!prefab) return;
 
             var particle = Instantiate(prefab, transform);
             m_activeParticles[instance] = particle;
@@ -64,16 +52,6 @@ namespace AI_DDA.Assets.Scripts
             }
 
             m_activeParticles.Remove(instance);
-        }
-
-        protected ParticleSystem GetParticlePrefab(string buffName)
-        {
-            foreach (var mapping in buffParticles)
-            {
-                if (mapping.buffName == buffName)
-                    return mapping.particlePrefab;
-            }
-            return null;
         }
     }
 }

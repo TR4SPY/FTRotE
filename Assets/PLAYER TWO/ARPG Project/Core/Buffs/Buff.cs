@@ -11,6 +11,7 @@ namespace PLAYERTWO.ARPGProject
         public float duration = 5f;
         public float cooldown = 0f;
         public bool isDebuff;
+        public ParticleSystem particlePrefab;
 
         [Header("Stat Modifiers")]
         public int strength;

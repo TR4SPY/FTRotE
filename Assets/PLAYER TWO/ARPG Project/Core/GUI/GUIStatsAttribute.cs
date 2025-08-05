@@ -24,10 +24,15 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The Audio Clip that plays when points are removed.")]
         public AudioClip removePointClip;
 
-        /// <summary>
         /// Default color of the points text used when the value matches the base value.
         /// </summary>
         private Color m_defaultColor;
+
+        /// <summary>
+        /// Indicates whether the default colour has already been captured.
+        /// </summary>
+        private bool m_hasDefaultColor;
+
 
         /// <summary>
         /// Base value of the attribute without any modifications.
@@ -71,6 +76,12 @@ namespace PLAYERTWO.ARPGProject
 
         protected GameAudio m_audio => GameAudio.instance;
 
+        protected virtual void Awake()
+        {
+            m_defaultColor = pointsText.color;
+            m_hasDefaultColor = true;
+        }
+
         /// <summary>
         /// Resets the distributed points to zero and sets the current and base points.
         /// </summary>
@@ -87,6 +98,7 @@ namespace PLAYERTWO.ARPGProject
                 addButton.transform.localScale = Vector3.one;
 
             removeButton.transform.localScale = Vector3.zero;
+            pointsText.color = m_defaultColor;
             UpdateText();
         }
 
@@ -225,7 +237,8 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void Start()
         {
-            m_defaultColor = pointsText.color;
+            if (!m_hasDefaultColor)
+                m_defaultColor = pointsText.color;
 
             stats.onPointsChanged += (availablePoints) =>
             {

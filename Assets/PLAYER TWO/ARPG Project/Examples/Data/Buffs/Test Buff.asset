@@ -16,6 +16,7 @@ MonoBehaviour:
   duration: 60
   cooldown: 300
   isDebuff: 0
+  particlePrefab: {fileID: 6810471105834413002, guid: ed05951bba3063541ae0bf0a229243f9, type: 3}
   strength: 25
   dexterity: 0
   vitality: 0

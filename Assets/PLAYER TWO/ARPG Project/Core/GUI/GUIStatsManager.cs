@@ -255,10 +255,33 @@ namespace PLAYERTWO.ARPGProject
             criticalChanceText.text = $"{(m_entity.stats.criticalChance * 100):F2}%";
 
             availablePoints = m_entity.stats.availablePoints;
-            strength.Reset(m_entity.stats.strength, m_entity.stats.GetBaseStrength());
-            dexterity.Reset(m_entity.stats.dexterity, m_entity.stats.GetBaseDexterity());
-            vitality.Reset(m_entity.stats.vitality, m_entity.stats.GetBaseVitality());
-            energy.Reset(m_entity.stats.energy, m_entity.stats.GetBaseEnergy());
+
+            var buffManager = m_entity.GetComponent<EntityBuffManager>();
+
+            int baseStrength = m_entity.stats.strength;
+            int baseDexterity = m_entity.stats.dexterity;
+            int baseVitality = m_entity.stats.vitality;
+            int baseEnergy = m_entity.stats.energy;
+
+            if (buffManager)
+            {
+                foreach (var value in buffManager.GetStatModifiers(nameof(Buff.strength)).Values)
+                    baseStrength -= value;
+
+                foreach (var value in buffManager.GetStatModifiers(nameof(Buff.dexterity)).Values)
+                    baseDexterity -= value;
+
+                foreach (var value in buffManager.GetStatModifiers(nameof(Buff.vitality)).Values)
+                    baseVitality -= value;
+
+                foreach (var value in buffManager.GetStatModifiers(nameof(Buff.energy)).Values)
+                    baseEnergy -= value;
+            }
+
+            strength.Reset(m_entity.stats.strength, baseStrength);
+            dexterity.Reset(m_entity.stats.dexterity, baseDexterity);
+            vitality.Reset(m_entity.stats.vitality, baseVitality);
+            energy.Reset(m_entity.stats.energy, baseEnergy);
 
             string staticType = characterInstance.playerType;
             string dynamicType = PlayerBehaviorLogger.Instance?.currentDynamicPlayerType ?? "Unknown";
