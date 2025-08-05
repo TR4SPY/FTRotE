@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Collections;
 using System.Text;
 using System.Reflection;
 using UnityEngine;
@@ -15,6 +15,9 @@ namespace PLAYERTWO.ARPGProject
         private EntityStatsManager m_stats;
         private EntityBuffManager m_buffs;
 
+        private bool m_initializationFailed;
+        private bool m_waiting;
+
         protected virtual void Start()
         {
             InitializeReferences();
@@ -22,8 +25,31 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void InitializeReferences()
         {
-            if (Level.instance?.player == null)
+            if (m_initializationFailed || m_stats != null && m_buffs != null || m_waiting)
                 return;
+            
+            StartCoroutine(WaitForPlayer());
+        }
+
+        private IEnumerator WaitForPlayer()
+        {
+            m_waiting = true;
+            float elapsed = 0f;
+            const float timeout = 5f;
+            while (Level.instance?.player == null && elapsed < timeout)
+            {
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+
+            m_waiting = false;
+
+            if (Level.instance?.player == null)
+            {
+                Debug.LogError("GUIStatTooltip could not find player after 5 seconds.", this);
+                m_initializationFailed = true;
+                yield break;
+            }
 
             m_stats = Level.instance.player.stats;
             m_buffs = Level.instance.player.GetComponent<EntityBuffManager>();
@@ -31,13 +57,16 @@ namespace PLAYERTWO.ARPGProject
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (GUITooltip.instance == null)
+            if (GUITooltip.instance == null || m_initializationFailed)
                 return;
 
             if (m_stats == null || m_buffs == null)
+            {
                 InitializeReferences();
+                return;
+            }
 
-            if (m_stats == null || m_buffs == null || string.IsNullOrEmpty(statName))
+            if (string.IsNullOrEmpty(statName))
                 return;
 
             var modifiers = m_buffs.GetStatModifiers(statName);

@@ -48,6 +48,9 @@ namespace PLAYERTWO.ARPGProject
         private bool isHolding = false;
         private bool isAddButtonHeld = false;
 
+        [Tooltip("Maximum duration in seconds for a continuous hold action.")]
+        public float maxHoldDuration = 5f;
+
         protected GUIStatsManager m_stats;
 
         /// <summary>
@@ -195,7 +198,10 @@ namespace PLAYERTWO.ARPGProject
         {
             isHolding = false;
             if (holdRoutine != null)
+            {
                 StopCoroutine(holdRoutine);
+                holdRoutine = null;
+            }
         }
 
         private void ClickOnce()
@@ -226,13 +232,22 @@ namespace PLAYERTWO.ARPGProject
 
         private IEnumerator HoldLoop()
         {
-            yield return new WaitForSeconds(0.5f); 
+            yield return new WaitForSeconds(0.5f);
 
-            while (isHolding)
+            float startTime = Time.time;
+            while (isHolding && Time.time - startTime < maxHoldDuration)
             {
                 ClickOnce();
                 yield return new WaitForSeconds(0.05f);
             }
+
+            isHolding = false;
+            holdRoutine = null;
+        }
+
+        protected virtual void OnDisable()
+        {
+            StopHold();
         }
 
         protected virtual void Start()

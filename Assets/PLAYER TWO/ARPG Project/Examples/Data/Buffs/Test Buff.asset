@@ -15,6 +15,14 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 57b9783c6d8445448a29d0e30a5f23a3, type: 3}
   duration: 60
   cooldown: 300
+  allowedScenes:
+  - Tutorial
+  incompatibleBuffs: []
+  allowedClasses: -1
+  ignoreIfResistant: []
+  removeOnLogout: 0
+  immunityItems: []
+  requireAllItems: 0
   isDebuff: 0
   particlePrefab: {fileID: 6810471105834413002, guid: ed05951bba3063541ae0bf0a229243f9, type: 3}
   strength: 25

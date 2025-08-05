@@ -111,7 +111,11 @@ namespace PLAYERTWO.ARPGProject
 
             while (duration > 0)
             {
-                duration -= Time.deltaTime;
+                var delta = Time.unscaledDeltaTime;
+                if (delta <= 0f)
+                    break;
+
+                duration -= delta;
                 if (coolDownImage) coolDownImage.fillAmount = duration / coolDown;
                 yield return null;
             }
