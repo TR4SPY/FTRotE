@@ -206,6 +206,11 @@ MonoBehaviour:
   keyText: {fileID: 4586734414947609160}
   selection: {fileID: 3170536076367247903}
   coolDownImage: {fileID: 5102466786111189087}
+  frame: {fileID: 3170536076367247903}
+  buffPulseSpeed: 1
+  debuffPulseSpeed: 2
+  buffPulseColor: {r: 0.5, g: 1, b: 0.5, a: 1}
+  debuffPulseColor: {r: 1, g: 0.5, b: 0.5, a: 1}
   onIconClick:
     m_PersistentCalls:
       m_Calls: []

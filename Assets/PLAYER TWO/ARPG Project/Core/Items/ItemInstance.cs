@@ -532,6 +532,12 @@ namespace PLAYERTWO.ARPGProject
                 price = (int)(price * GetDurabilityRate());
             }
 
+            var stats = Level.instance?.player?.stats;
+            if (stats != null && stats.itemPricePercent != 0)
+            {
+                price = Mathf.RoundToInt(price * (1f + stats.itemPricePercent / 100f));
+            }
+
             return price;
         }
 

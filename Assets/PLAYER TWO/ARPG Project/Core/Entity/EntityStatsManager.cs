@@ -124,6 +124,39 @@ namespace PLAYERTWO.ARPGProject
         public int shadowResistance { get; protected set; }
         public int lightResistance { get; protected set; }
         public int arcaneResistance { get; protected set; }
+        public int manaRegenPerSecond { get; protected set; }
+        public int manaRegenPer5Seconds { get; protected set; }
+        public int manaRegenPer30Seconds { get; protected set; }
+        public int healthRegenPerSecond { get; protected set; }
+        public int healthRegenPer5Seconds { get; protected set; }
+        public int healthRegenPer30Seconds { get; protected set; }
+        public int experiencePerSecondPercent { get; protected set; }
+        public int experiencePer5SecondsPercent { get; protected set; }
+        public int experiencePer30SecondsPercent { get; protected set; }
+        public int additionalMana { get; protected set; }
+        public int additionalManaPercent { get; protected set; }
+        public int additionalHealth { get; protected set; }
+        public int additionalHealthPercent { get; protected set; }
+        public int increaseAttackSpeedPercent { get; protected set; }
+        public int increaseAttackSpeedValue { get; protected set; }
+        public int increaseDamagePercent { get; protected set; }
+        public int increaseDamageValue { get; protected set; }
+        public int increaseMagicalDamagePercent { get; protected set; }
+        public int increaseMagicalDamageValue { get; protected set; }
+        public bool magicImmunity { get; protected set; }
+        public bool fireImmunity { get; protected set; }
+        public bool waterImmunity { get; protected set; }
+        public bool iceImmunity { get; protected set; }
+        public bool earthImmunity { get; protected set; }
+        public bool airImmunity { get; protected set; }
+        public bool lightningImmunity { get; protected set; }
+        public bool shadowImmunity { get; protected set; }
+        public bool lightImmunity { get; protected set; }
+        public bool arcaneImmunity { get; protected set; }
+        public int additionalAmberlingsPerMinute { get; protected set; }
+        public int additionalLunarisPerMinute { get; protected set; }
+        public int additionalSolmiresPerMinute { get; protected set; }
+        public int itemPricePercent { get; protected set; }
 
         /// <summary>
         /// Returns the maximum number of combos.

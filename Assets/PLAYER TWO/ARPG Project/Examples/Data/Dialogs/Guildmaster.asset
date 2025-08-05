@@ -34,7 +34,7 @@ MonoBehaviour:
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 0
-      action: 5
+      action: 10
       nextPageIndex: -1
       specialConditionToSet: 0
       hideIfAlreadyInGuild: 0

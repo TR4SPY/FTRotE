@@ -25,12 +25,12 @@ MonoBehaviour:
   requireAllItems: 0
   isDebuff: 0
   particlePrefab: {fileID: 6632391711845424904, guid: df85cf5c7b38f4915b7334c441bfcf61, type: 3}
-  strength: 25
+  strength: 0
   dexterity: 0
   vitality: 0
   energy: 0
-  defense: 10
-  magicResistance: 5
+  defense: 0
+  magicResistance: 0
   fireResistance: 0
   waterResistance: 0
   iceResistance: 0
@@ -40,3 +40,30 @@ MonoBehaviour:
   shadowResistance: 0
   lightResistance: 0
   arcaneResistance: 0
+  manaRegenPerSecond: 2
+  manaRegenPer5Seconds: 5
+  manaRegenPer30Seconds: 10
+  healthRegenPerSecond: 0
+  healthRegenPer5Seconds: 0
+  healthRegenPer30Seconds: 0
+  additionalMana: 0
+  additionalHealth: 0
+  increaseAttackSpeedPercent: 0
+  increaseAttackSpeedValue: 0
+  increaseDamagePercent: 0
+  increaseDamageValue: 0
+  increaseMagicalDamagePercent: 0
+  increaseMagicalDamageValue: 0
+  magicImmunity: 0
+  fireImmunity: 0
+  waterImmunity: 0
+  iceImmunity: 0
+  earthImmunity: 0
+  airImmunity: 0
+  lightningImmunity: 0
+  shadowImmunity: 0
+  lightImmunity: 0
+  arcaneImmunity: 0
+  additionalAmberlingsPerMinute: 0
+  additionalLunarisPerMinute: 0
+  additionalSolmiresPerMinute: 0

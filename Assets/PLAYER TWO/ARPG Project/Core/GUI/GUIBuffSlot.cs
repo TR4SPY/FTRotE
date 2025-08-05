@@ -16,12 +16,30 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("A reference to the Image component used as the buff cool down image.")]
         public Image coolDownImage;
 
+        [Tooltip("A reference to the Image component used as the slot frame.")]
+        public Image frame;
+
+        [Header("Pulse Settings")]
+        [Tooltip("Pulse speed used for buffs.")]
+        public float buffPulseSpeed = 1f;
+
+        [Tooltip("Pulse speed used for debuffs.")]
+        public float debuffPulseSpeed = 2f;
+
+        [Tooltip("Frame target color for buffs.")]
+        public Color buffPulseColor = GameColors.Green;
+
+        [Tooltip("Frame target color for debuffs.")]
+        public Color debuffPulseColor = GameColors.LightRed;
+
+
         [Header("Slot Events")]
         public UnityEvent onIconClick;
         public UnityEvent onIconDoubleClick;
 
         protected GUISkillIcon m_icon;
         protected Coroutine m_coolDownRoutine;
+        protected Coroutine m_pulseRoutine;
 
         private static readonly FieldInfo s_lastTargetField = typeof(GUITooltip).GetField("lastTarget", BindingFlags.NonPublic | BindingFlags.Instance);
 
@@ -62,6 +80,19 @@ namespace PLAYERTWO.ARPGProject
             //SetIcon(buff?.data?.icon);
             SetIcon(buff?.buff?.icon);
             Visible(buff != null);
+
+            StopPulse();
+
+            if (buff != null && frame)
+            {
+                bool isDebuff = buff.isDebuff || (buff.buff != null && buff.buff.isDebuff);
+                m_pulseRoutine = StartCoroutine(PulseFrame(isDebuff));
+            }
+            else if (frame)
+            {
+                frame.color = Color.black;
+            }
+
         }
 
         /// <summary>
@@ -155,16 +186,45 @@ namespace PLAYERTWO.ARPGProject
         protected virtual void OnDisable()
         {
             GUITooltip.instance.HideTooltipDynamic();
+            StopPulse();
         }
 
         protected virtual void OnDestroy()
         {
+            StopPulse();
+
             if (!GUITooltip.instance || s_lastTargetField == null) return;
 
             var target = s_lastTargetField.GetValue(GUITooltip.instance) as GameObject;
             if (target == gameObject)
             {
                 GUITooltip.instance.HideTooltipDynamic();
+            }
+        }
+        protected virtual void StopPulse()
+        {
+            if (m_pulseRoutine != null)
+            {
+                StopCoroutine(m_pulseRoutine);
+                m_pulseRoutine = null;
+            }
+
+            if (frame)
+                frame.color = Color.black;
+        }
+
+        protected IEnumerator PulseFrame(bool isDebuff)
+        {
+            var target = isDebuff ? debuffPulseColor : buffPulseColor;
+            var speed = isDebuff ? debuffPulseSpeed : buffPulseSpeed;
+
+            float t = 0f;
+            while (true)
+            {
+                t += Time.unscaledDeltaTime * speed;
+                if (frame)
+                    frame.color = Color.Lerp(Color.black, target, Mathf.PingPong(t, 1f));
+                yield return null;
             }
         }
     }

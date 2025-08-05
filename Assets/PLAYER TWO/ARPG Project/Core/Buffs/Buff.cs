@@ -58,6 +58,42 @@ namespace PLAYERTWO.ARPGProject
         public int lightResistance;
         public int arcaneResistance;
 
+        public int manaRegenPerSecond;
+        public int manaRegenPer5Seconds;
+        public int manaRegenPer30Seconds;
+        public int healthRegenPerSecond;
+        public int healthRegenPer5Seconds;
+        public int healthRegenPer30Seconds;
+        public int experiencePerSecondPercent;
+        public int experiencePer5SecondsPercent;
+        public int experiencePer30SecondsPercent;
+        public int additionalMana;
+        public int additionalManaPercent;
+        public int additionalHealth;
+        public int additionalHealthPercent;
+        public int increaseAttackSpeedPercent;
+        public int increaseAttackSpeedValue;
+        public int increaseDamagePercent;
+        public int increaseDamageValue;
+        public int increaseMagicalDamagePercent;
+        public int increaseMagicalDamageValue;
+
+        public bool magicImmunity;
+        public bool fireImmunity;
+        public bool waterImmunity;
+        public bool iceImmunity;
+        public bool earthImmunity;
+        public bool airImmunity;
+        public bool lightningImmunity;
+        public bool shadowImmunity;
+        public bool lightImmunity;
+        public bool arcaneImmunity;
+
+        public int additionalAmberlingsPerMinute;
+        public int additionalLunarisPerMinute;
+        public int additionalSolmiresPerMinute;
+        public int itemPricePercent;
+
         public static readonly IReadOnlyDictionary<string, string> StatDisplayNames =
             new Dictionary<string, string>
             {
@@ -76,6 +112,39 @@ namespace PLAYERTWO.ARPGProject
                 { nameof(shadowResistance), "Shadow Resistance" },
                 { nameof(lightResistance), "Light Resistance" },
                 { nameof(arcaneResistance), "Arcane Resistance" },
+                { nameof(manaRegenPerSecond), "Mana Regen /s" },
+                { nameof(manaRegenPer5Seconds), "Mana Regen /5s" },
+                { nameof(manaRegenPer30Seconds), "Mana Regen /30s" },
+                { nameof(healthRegenPerSecond), "Health Regen /s" },
+                { nameof(healthRegenPer5Seconds), "Health Regen /5s" },
+                { nameof(healthRegenPer30Seconds), "Health Regen /30s" },
+                { nameof(experiencePerSecondPercent), "Experience /s %" },
+                { nameof(experiencePer5SecondsPercent), "Experience /5s %" },
+                { nameof(experiencePer30SecondsPercent), "Experience /30s %" },
+                { nameof(additionalMana), "Additional Mana" },
+                { nameof(additionalManaPercent), "Additional Mana %" },
+                { nameof(additionalHealth), "Additional Health" },
+                { nameof(additionalHealthPercent), "Additional Health %" },
+                { nameof(increaseAttackSpeedPercent), "Attack Speed %" },
+                { nameof(increaseAttackSpeedValue), "Attack Speed" },
+                { nameof(increaseDamagePercent), "Damage %" },
+                { nameof(increaseDamageValue), "Damage" },
+                { nameof(increaseMagicalDamagePercent), "Magical Damage %" },
+                { nameof(increaseMagicalDamageValue), "Magical Damage" },
+                { nameof(magicImmunity), "Magic Immunity" },
+                { nameof(fireImmunity), "Fire Immunity" },
+                { nameof(waterImmunity), "Water Immunity" },
+                { nameof(iceImmunity), "Ice Immunity" },
+                { nameof(earthImmunity), "Earth Immunity" },
+                { nameof(airImmunity), "Air Immunity" },
+                { nameof(lightningImmunity), "Lightning Immunity" },
+                { nameof(shadowImmunity), "Shadow Immunity" },
+                { nameof(lightImmunity), "Light Immunity" },
+                { nameof(arcaneImmunity), "Arcane Immunity" },
+                { nameof(additionalAmberlingsPerMinute), "Amberlings /min" },
+                { nameof(additionalLunarisPerMinute), "Lunaris /min" },
+                { nameof(additionalSolmiresPerMinute), "Solmires /min" },
+                { nameof(itemPricePercent), "Item Price %" },
             };
     }
 }

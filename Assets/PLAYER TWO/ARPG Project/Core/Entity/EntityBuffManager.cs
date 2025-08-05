@@ -302,6 +302,42 @@ namespace PLAYERTWO.ARPGProject
             int lightResistance = 0;
             int arcaneResistance = 0;
 
+            int baseMaxMana = m_stats.maxMana;
+            int baseMaxHealth = m_stats.maxHealth;
+            int additionalMana = 0;
+            int additionalManaPercent = 0;
+            int additionalHealth = 0;
+            int additionalHealthPercent = 0;
+            int attackSpeedPercent = 0;
+            int attackSpeedValue = 0;
+            int damagePercent = 0;
+            int damageValue = 0;
+            int magicDamagePercent = 0;
+            int magicDamageValue = 0;
+            int manaRegenPerSecond = 0;
+            int manaRegenPer5Seconds = 0;
+            int manaRegenPer30Seconds = 0;
+            int healthRegenPerSecond = 0;
+            int healthRegenPer5Seconds = 0;
+            int healthRegenPer30Seconds = 0;
+            int experiencePerSecondPercent = 0;
+            int experiencePer5SecondsPercent = 0;
+            int experiencePer30SecondsPercent = 0;
+            bool magicImmunity = false;
+            bool fireImmunity = false;
+            bool waterImmunity = false;
+            bool iceImmunity = false;
+            bool earthImmunity = false;
+            bool airImmunity = false;
+            bool lightningImmunity = false;
+            bool shadowImmunity = false;
+            bool lightImmunity = false;
+            bool arcaneImmunity = false;
+            int amberlingsPerMinute = 0;
+            int lunarisPerMinute = 0;
+            int solmiresPerMinute = 0;
+            int itemPricePercent = 0;
+
             foreach (var instance in m_buffs)
             {
                 if (!instance.isActive)
@@ -319,19 +355,103 @@ namespace PLAYERTWO.ARPGProject
                 shadowResistance += b.shadowResistance;
                 lightResistance += b.lightResistance;
                 arcaneResistance += b.arcaneResistance;
+
+                additionalMana += b.additionalMana;
+                additionalManaPercent += b.additionalManaPercent;
+                additionalHealth += b.additionalHealth;
+                additionalHealthPercent += b.additionalHealthPercent;
+                attackSpeedPercent += b.increaseAttackSpeedPercent;
+                attackSpeedValue += b.increaseAttackSpeedValue;
+                damagePercent += b.increaseDamagePercent;
+                damageValue += b.increaseDamageValue;
+                magicDamagePercent += b.increaseMagicalDamagePercent;
+                magicDamageValue += b.increaseMagicalDamageValue;
+                manaRegenPerSecond += b.manaRegenPerSecond;
+                manaRegenPer5Seconds += b.manaRegenPer5Seconds;
+                manaRegenPer30Seconds += b.manaRegenPer30Seconds;
+                healthRegenPerSecond += b.healthRegenPerSecond;
+                healthRegenPer5Seconds += b.healthRegenPer5Seconds;
+                healthRegenPer30Seconds += b.healthRegenPer30Seconds;
+                experiencePerSecondPercent += b.experiencePerSecondPercent;
+                experiencePer5SecondsPercent += b.experiencePer5SecondsPercent;
+                experiencePer30SecondsPercent += b.experiencePer30SecondsPercent;
+                magicImmunity |= b.magicImmunity;
+                fireImmunity |= b.fireImmunity;
+                waterImmunity |= b.waterImmunity;
+                iceImmunity |= b.iceImmunity;
+                earthImmunity |= b.earthImmunity;
+                airImmunity |= b.airImmunity;
+                lightningImmunity |= b.lightningImmunity;
+                shadowImmunity |= b.shadowImmunity;
+                lightImmunity |= b.lightImmunity;
+                arcaneImmunity |= b.arcaneImmunity;
+                amberlingsPerMinute += b.additionalAmberlingsPerMinute;
+                lunarisPerMinute += b.additionalLunarisPerMinute;
+                solmiresPerMinute += b.additionalSolmiresPerMinute;
+                itemPricePercent += b.itemPricePercent;
             }
 
             ModifyStatProperty("defense", defense);
-            ModifyStatProperty("magicResistance", magicResistance);
-            ModifyStatProperty("fireResistance", fireResistance);
-            ModifyStatProperty("waterResistance", waterResistance);
-            ModifyStatProperty("iceResistance", iceResistance);
-            ModifyStatProperty("earthResistance", earthResistance);
-            ModifyStatProperty("airResistance", airResistance);
-            ModifyStatProperty("lightningResistance", lightningResistance);
-            ModifyStatProperty("shadowResistance", shadowResistance);
-            ModifyStatProperty("lightResistance", lightResistance);
-            ModifyStatProperty("arcaneResistance", arcaneResistance);
+            if (magicImmunity) SetStatProperty("magicResistance", int.MaxValue); else ModifyStatProperty("magicResistance", magicResistance);
+            if (fireImmunity) SetStatProperty("fireResistance", int.MaxValue); else ModifyStatProperty("fireResistance", fireResistance);
+            if (waterImmunity) SetStatProperty("waterResistance", int.MaxValue); else ModifyStatProperty("waterResistance", waterResistance);
+            if (iceImmunity) SetStatProperty("iceResistance", int.MaxValue); else ModifyStatProperty("iceResistance", iceResistance);
+            if (earthImmunity) SetStatProperty("earthResistance", int.MaxValue); else ModifyStatProperty("earthResistance", earthResistance);
+            if (airImmunity) SetStatProperty("airResistance", int.MaxValue); else ModifyStatProperty("airResistance", airResistance);
+            if (lightningImmunity) SetStatProperty("lightningResistance", int.MaxValue); else ModifyStatProperty("lightningResistance", lightningResistance);
+            if (shadowImmunity) SetStatProperty("shadowResistance", int.MaxValue); else ModifyStatProperty("shadowResistance", shadowResistance);
+            if (lightImmunity) SetStatProperty("lightResistance", int.MaxValue); else ModifyStatProperty("lightResistance", lightResistance);
+            if (arcaneImmunity) SetStatProperty("arcaneResistance", int.MaxValue); else ModifyStatProperty("arcaneResistance", arcaneResistance);
+
+            int extraMana = Mathf.RoundToInt(baseMaxMana * additionalManaPercent / 100f);
+            int extraHealth = Mathf.RoundToInt(baseMaxHealth * additionalHealthPercent / 100f);
+            SetStatProperty("maxMana", baseMaxMana + additionalMana + extraMana);
+            SetStatProperty("maxHealth", baseMaxHealth + additionalHealth + extraHealth);
+            m_stats.health = Mathf.Min(m_stats.health, m_stats.maxHealth);
+            m_stats.mana = Mathf.Min(m_stats.mana, m_stats.maxMana);
+
+            int atkSpeed = m_stats.attackSpeed;
+            atkSpeed = Mathf.RoundToInt(atkSpeed * (1f + attackSpeedPercent / 100f)) + attackSpeedValue;
+            SetStatProperty("attackSpeed", atkSpeed);
+
+            int minDmg = m_stats.minDamage;
+            int maxDmg = m_stats.maxDamage;
+            float dmgMul = 1f + damagePercent / 100f;
+            minDmg = Mathf.RoundToInt(minDmg * dmgMul) + damageValue;
+            maxDmg = Mathf.RoundToInt(maxDmg * dmgMul) + damageValue;
+            SetStatProperty("minDamage", minDmg);
+            SetStatProperty("maxDamage", maxDmg);
+
+            int minMagic = m_stats.minMagicDamage;
+            int maxMagic = m_stats.maxMagicDamage;
+            float magicMul = 1f + magicDamagePercent / 100f;
+            minMagic = Mathf.RoundToInt(minMagic * magicMul) + magicDamageValue;
+            maxMagic = Mathf.RoundToInt(maxMagic * magicMul) + magicDamageValue;
+            SetStatProperty("minMagicDamage", minMagic);
+            SetStatProperty("maxMagicDamage", maxMagic);
+
+            SetStatProperty("manaRegenPerSecond", manaRegenPerSecond);
+            SetStatProperty("manaRegenPer5Seconds", manaRegenPer5Seconds);
+            SetStatProperty("manaRegenPer30Seconds", manaRegenPer30Seconds);
+            SetStatProperty("healthRegenPerSecond", healthRegenPerSecond);
+            SetStatProperty("healthRegenPer5Seconds", healthRegenPer5Seconds);
+            SetStatProperty("healthRegenPer30Seconds", healthRegenPer30Seconds);
+            SetStatProperty("experiencePerSecondPercent", experiencePerSecondPercent);
+            SetStatProperty("experiencePer5SecondsPercent", experiencePer5SecondsPercent);
+            SetStatProperty("experiencePer30SecondsPercent", experiencePer30SecondsPercent);
+            SetStatProperty("additionalAmberlingsPerMinute", amberlingsPerMinute);
+            SetStatProperty("additionalLunarisPerMinute", lunarisPerMinute);
+            SetStatProperty("additionalSolmiresPerMinute", solmiresPerMinute);
+            SetStatProperty("itemPricePercent", itemPricePercent);
+        }
+        
+        protected virtual void SetStatProperty(string name, int value)
+        {
+            var prop = typeof(EntityStatsManager).GetProperty(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            if (prop != null)
+            {
+                prop.SetValue(m_stats, value);
+            }
         }
 
         protected virtual void ModifyStatProperty(string name, int amount)

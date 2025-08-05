@@ -32,5 +32,5 @@ MonoBehaviour:
   type: 4
   element: 8
   selfBuffs:
-  - {fileID: 11400000, guid: f50197f9164e9af00a49d840184caef9, type: 2}
+  - {fileID: 11400000, guid: 59feddb45c22f6cdaba2e293c7235ce3, type: 2}
   targetBuffs: []
