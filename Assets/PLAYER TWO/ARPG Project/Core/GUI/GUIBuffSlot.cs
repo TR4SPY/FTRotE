@@ -15,6 +15,9 @@ namespace PLAYERTWO.ARPGProject
 
         [Tooltip("A reference to the Image component used as the slot frame.")]
         public Image frame;
+    
+        [Tooltip("Canvas Group used to control the slot transparency.")]
+        public CanvasGroup canvasGroup;
 
         [Header("Pulse Settings")]
         [Tooltip("Pulse speed used for buffs.")]
@@ -29,6 +32,8 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("Frame target color for debuffs.")]
         public Color debuffPulseColor = GameColors.LightRed;
 
+        [Tooltip("Curve describing the pulse intensity over time.")]
+        public AnimationCurve heartbeatCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
 
         [Header("Slot Events")]
         public UnityEvent onIconClick;
@@ -37,6 +42,8 @@ namespace PLAYERTWO.ARPGProject
         protected GUISkillIcon m_icon;
         protected Coroutine m_coolDownRoutine;
         protected Coroutine m_pulseRoutine;
+        protected Coroutine m_expiryFadeRoutine;
+        protected float m_expiryTimeLeft;
 
         private static readonly FieldInfo s_lastTargetField = typeof(GUITooltip).GetField("lastTarget", BindingFlags.NonPublic | BindingFlags.Instance);
 
@@ -78,6 +85,9 @@ namespace PLAYERTWO.ARPGProject
             if (buff != null && frame)
             {
                 bool isDebuff = buff.isDebuff || (buff.buff != null && buff.buff.isDebuff);
+                var target = isDebuff ? debuffPulseColor : buffPulseColor;
+                var speed = isDebuff ? debuffPulseSpeed : buffPulseSpeed;
+                frame.color = Color.Lerp(Color.black, target, Mathf.PingPong(Time.unscaledTime * speed, 1f));
                 m_pulseRoutine = StartCoroutine(PulseFrame(isDebuff));
             }
             else if (frame)
@@ -136,6 +146,52 @@ namespace PLAYERTWO.ARPGProject
 
             if (coolDownImage) coolDownImage.fillAmount = 0;
         }
+        public virtual void BeginExpiryFade(float timeLeft)
+        {
+            m_expiryTimeLeft = timeLeft;
+            if (m_expiryFadeRoutine == null)
+            {
+                m_expiryFadeRoutine = StartCoroutine(ExpiryFadeRoutine());
+            }
+        }
+
+        public virtual void StopExpiryFade()
+        {
+            if (m_expiryFadeRoutine != null)
+            {
+                StopCoroutine(m_expiryFadeRoutine);
+                m_expiryFadeRoutine = null;
+            }
+
+            SetAlpha(1f);
+        }
+
+        protected IEnumerator ExpiryFadeRoutine()
+        {
+            float t = 0f;
+            while (true)
+            {
+                var strength = Mathf.Clamp01((10f - m_expiryTimeLeft) / 10f);
+                t += Time.unscaledDeltaTime * strength;
+                var alpha = Mathf.Lerp(1f, 1f - strength, Mathf.PingPong(t, 1f));
+                SetAlpha(alpha);
+                yield return null;
+            }
+        }
+
+        protected void SetAlpha(float value)
+        {
+            if (canvasGroup)
+            {
+                canvasGroup.alpha = value;
+            }
+            else if (icon)
+            {
+                var c = icon.image.color;
+                c.a = value;
+                icon.image.color = c;
+            }
+        }
 
         protected virtual void Start()
         {
@@ -184,6 +240,8 @@ namespace PLAYERTWO.ARPGProject
                 m_pulseRoutine = null;
             }
 
+            StopExpiryFade();
+
             if (frame)
                 frame.color = Color.black;
         }
@@ -193,13 +251,12 @@ namespace PLAYERTWO.ARPGProject
             var target = isDebuff ? debuffPulseColor : buffPulseColor;
             var speed = isDebuff ? debuffPulseSpeed : buffPulseSpeed;
 
-            float t = 0f;
             while (true)
             {
-                t += Time.unscaledDeltaTime * speed;
+                var phase = Mathf.PingPong(Time.unscaledTime * speed, 1f);
                 if (frame)
-                    frame.color = Color.Lerp(Color.black, target, Mathf.PingPong(t, 1f));
-                yield return null;
+                    frame.color = Color.Lerp(Color.black, target, phase);
+                    yield return null;
             }
         }
     }

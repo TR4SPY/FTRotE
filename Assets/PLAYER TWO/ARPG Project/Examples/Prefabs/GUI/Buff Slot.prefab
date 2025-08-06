@@ -123,6 +123,7 @@ GameObject:
   - component: {fileID: 3170536075642843039}
   - component: {fileID: 3170536075642843038}
   - component: {fileID: 8884401160782379958}
+  - component: {fileID: 3213516313989480307}
   m_Layer: 5
   m_Name: Buff Slot
   m_TagString: Untagged
@@ -204,19 +205,100 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   keyText: {fileID: 4586734414947609160}
-  selection: {fileID: 3170536076367247903}
   coolDownImage: {fileID: 5102466786111189087}
   frame: {fileID: 3170536076367247903}
+  canvasGroup: {fileID: 3213516313989480307}
   buffPulseSpeed: 1
-  debuffPulseSpeed: 2
+  debuffPulseSpeed: 1
   buffPulseColor: {r: 0.5, g: 1, b: 0.5, a: 1}
   debuffPulseColor: {r: 1, g: 0.5, b: 0.5, a: 1}
+  heartbeatCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -0.13182831
+      value: 0.2716167
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.119711876
+      value: 0.7791391
+      inSlope: 0.71297014
+      outSlope: 0.71297014
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.29373813
+      value: 0.26559597
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.5117048
+      value: 0.78156304
+      inSlope: 0.6081481
+      outSlope: 0.6081481
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.71293557
+      value: 0.2771309
+      inSlope: 0.002111459
+      outSlope: 0.002111459
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.9545644
+      value: 0.7741307
+      inSlope: 2.4020472
+      outSlope: 2.4020472
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1.1564026
+      value: 0.274292
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   onIconClick:
     m_PersistentCalls:
       m_Calls: []
   onIconDoubleClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!225 &3213516313989480307
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3170536075642843104}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &3170536076367247969
 GameObject:
   m_ObjectHideFlags: 0

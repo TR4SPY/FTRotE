@@ -42,6 +42,7 @@ namespace PLAYERTWO.ARPGProject
             { "summon", new List<string> { "/summon [enemyId] - Summons enemy by ID." } },
             { "heal", new List<string> { "/heal - Fully restores health and mana." } },
             { "kill", new List<string> { "/kill - Kills your character." } },
+            { "buff", new List<string> { "/buff [id] - Applies a buff to your character by ID." } },
             { "addexp", new List<string> { "/addexp [value] - Adds experience points." } },
             { "lvlup", new List<string> { "/lvlup - Increases your character level by one." } },
             { "repairall", new List<string> { "/repairall - Repairs all items in your inventory and equipment." } },
@@ -68,6 +69,7 @@ namespace PLAYERTWO.ARPGProject
             { "achievements", new List<string> { "/achievements - Lists unlocked achievements." } },
             { "zones", new List<string> { "/zones - Lists discovered zones." } },
             { "quests", new List<string> { "/quests - Lists completed quests." } },
+            { "info", new List<string> { "/info - Shows game version and build date." } },
             { "clear", new List<string> { "/clear - Clears chat log." } }
         };
 
@@ -198,9 +200,6 @@ namespace PLAYERTWO.ARPGProject
                     cw?.FocusInput();
 
                     var recentMessages = GetLog();
-                    cw?.RepopulateOverlayFromHistory(recentMessages, maxToShow: cw.overlayMaxMessages);
-                    cw?.ScrollOverlayToBottom();
-
                     //cw?.SetOverlayVisible(true);
                     //cw?.StopOverlayFadeOut();
                 }
@@ -377,13 +376,28 @@ namespace PLAYERTWO.ARPGProject
                         {
                             string message = StringUtils.StringWithColorAndStyle(
                                 "Available commands:\n" +
-                                "/money, /drop, /tp, /wp, /listwp, /whereami, /summon, /heal, /kill, /addexp, /lvlup, /repairall, /stats, /godmode, /pause, /resume, /time, /weather, /gremove,/dda, /quests, /zones, /achievements, /clear\n" +
+                                "/money, /drop, /tp, /wp, /listwp, /whereami, /summon, /heal, /kill, /buff, /addexp, /lvlup, /repairall, /stats, /godmode, /pause, /resume, /time, /weather, /gremove,/dda, /quests, /zones, /achievements, /info, /clear\n" +                                
                                 "Type /help [command] for more details.",
                                 GameColors.Gray,
                                 italic: true
                             );
 
                             AddSystemMessage(message);
+                        }
+                        break;
+                    }
+
+                case "info":
+                    {
+                        var g = Game.instance;
+                        if (g != null)
+                        {
+                            string message = $"{g.gameName} - v.{g.version} Build {g.buildDate}";
+                            AddSystemMessage(StringUtils.StringWithColor(message, GameColors.Gray));
+                        }
+                        else
+                        {
+                            AddSystemMessage(StringUtils.StringWithColor("Game instance not found.", GameColors.Crimson));
                         }
                         break;
                     }
@@ -569,6 +583,51 @@ namespace PLAYERTWO.ARPGProject
                         {
                             AddSystemMessage(StringUtils.StringWithColor("Entity not found.", GameColors.Crimson));
                         }
+                        break;
+                    }
+
+                case "buff":
+                    {
+                        if (parts.Length >= 2 && int.TryParse(parts[1], out int buffId))
+                        {
+                            var buff = GameDatabase.instance.FindElementById<Buff>(buffId);
+                            if (buff != null)
+                            {
+                                var ent = character.Entity;
+                                if (ent != null)
+                                {
+                                    var manager = ent.GetComponent<EntityBuffManager>();
+                                    if (manager != null)
+                                    {
+                                        if (manager.AddBuff(buff))
+                                        {
+                                            AddSystemMessage(StringUtils.StringWithColorAndStyle($"Buff {buff.name} applied.", GameColors.Lime));
+                                        }
+                                        else
+                                        {
+                                            AddSystemMessage(StringUtils.StringWithColor($"Failed to apply buff {buff.name}.", GameColors.Crimson));
+                                        }
+                                    }
+                                    else
+                                    {
+                                        AddSystemMessage(StringUtils.StringWithColor("Failed to apply buff: buff manager not found.", GameColors.Crimson));
+                                    }
+                                }
+                                else
+                                {
+                                    AddSystemMessage(StringUtils.StringWithColor("Failed to apply buff: character entity not found.", GameColors.Crimson));
+                                }
+                            }
+                            else
+                            {
+                                AddSystemMessage(StringUtils.StringWithColor($"Buff with ID {buffId} not found.", GameColors.Crimson));
+                            }
+                        }
+                        else
+                        {
+                            AddSystemMessage(StringUtils.StringWithColor("Usage: /buff <id>", GameColors.Gray));
+                        }
+
                         break;
                     }
 

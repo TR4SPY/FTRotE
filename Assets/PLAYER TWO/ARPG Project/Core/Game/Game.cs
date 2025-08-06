@@ -9,6 +9,11 @@ namespace PLAYERTWO.ARPGProject
     [AddComponentMenu("PLAYER TWO/ARPG Project/Game/Game")]
     public class Game : Singleton<Game>
     {
+        [Header("Version Info")]
+        public string gameName = "Forsaken Tribe: Rise of the Exiled";
+        public string version = "0.05C";
+        public string buildDate = "050825";
+
         [Header("Game Settings")]
         [Tooltip("The base amount of experience necessary to level up")]
         public int baseExperience = 1973;

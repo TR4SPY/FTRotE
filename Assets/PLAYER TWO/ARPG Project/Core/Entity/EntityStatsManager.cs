@@ -215,6 +215,12 @@ namespace PLAYERTWO.ARPGProject
             Initialize();
         }
 
+        protected virtual void Start()
+        {
+            var entity = GetComponent<Entity>();
+            m_inventory = entity != null ? entity.inventory : null;
+            Initialize();
+        }
 
         /// <summary>
         /// Get or set the experience points.
@@ -271,6 +277,22 @@ namespace PLAYERTWO.ARPGProject
 
         protected ItemFinalAttributes m_additionalAttributes;
         protected List<Entity> m_defeatedEntities = new();
+
+        protected EntityInventory m_inventory;
+
+        protected float m_manaRegenTimer1;
+        protected float m_manaRegenTimer5;
+        protected float m_manaRegenTimer30;
+
+        protected float m_healthRegenTimer1;
+        protected float m_healthRegenTimer5;
+        protected float m_healthRegenTimer30;
+
+        protected float m_experienceTimer1;
+        protected float m_experienceTimer5;
+        protected float m_experienceTimer30;
+
+        protected float m_moneyTimer;
 
         /// <summary>
         /// Returns true if the Entity is using a weapon.
@@ -394,6 +416,84 @@ namespace PLAYERTWO.ARPGProject
             {
                 // Debug.LogWarning($"[EntityStatsManager - Update] {name} ID={GetInstanceID()} changed from {_lastKnownStrength} to {strength}");
                 _lastKnownStrength = strength;
+            }
+
+            float dt = Time.deltaTime;
+
+            ApplyOverTime(ref m_manaRegenTimer1, dt, 1f, manaRegenPerSecond, v => mana += v);
+            ApplyOverTime(ref m_manaRegenTimer5, dt, 5f, manaRegenPer5Seconds, v => mana += v);
+            ApplyOverTime(ref m_manaRegenTimer30, dt, 30f, manaRegenPer30Seconds, v => mana += v);
+
+            ApplyOverTime(ref m_healthRegenTimer1, dt, 1f, healthRegenPerSecond, v => health += v);
+            ApplyOverTime(ref m_healthRegenTimer5, dt, 5f, healthRegenPer5Seconds, v => health += v);
+            ApplyOverTime(ref m_healthRegenTimer30, dt, 30f, healthRegenPer30Seconds, v => health += v);
+
+            ApplyExperienceOverTime(ref m_experienceTimer1, dt, 1f, experiencePerSecondPercent);
+            ApplyExperienceOverTime(ref m_experienceTimer5, dt, 5f, experiencePer5SecondsPercent);
+            ApplyExperienceOverTime(ref m_experienceTimer30, dt, 30f, experiencePer30SecondsPercent);
+
+            ApplyCurrencyOverTime(dt);
+        }
+
+        protected void ApplyOverTime(ref float timer, float dt, float interval, int amount, System.Action<int> apply)
+        {
+            if (amount == 0)
+            {
+                timer = 0f;
+                return;
+            }
+
+            timer += dt;
+            if (timer >= interval)
+            {
+                int ticks = Mathf.FloorToInt(timer / interval);
+                timer -= interval * ticks;
+                apply(amount * ticks);
+            }
+        }
+
+        protected void ApplyExperienceOverTime(ref float timer, float dt, float interval, int percent)
+        {
+            if (percent == 0)
+            {
+                timer = 0f;
+                return;
+            }
+
+            timer += dt;
+            if (timer >= interval)
+            {
+                int ticks = Mathf.FloorToInt(timer / interval);
+                timer -= interval * ticks;
+                int amount = Mathf.RoundToInt(nextLevelExp * percent / 100f) * ticks;
+                if (amount != 0)
+                    AddExperience(amount);
+            }
+        }
+
+        protected void ApplyCurrencyOverTime(float dt)
+        {
+            if ((additionalAmberlingsPerMinute == 0 && additionalLunarisPerMinute == 0 && additionalSolmiresPerMinute == 0) || m_inventory == null)
+            {
+                m_moneyTimer = 0f;
+                return;
+            }
+
+            m_moneyTimer += dt;
+            if (m_moneyTimer >= 60f)
+            {
+                int ticks = Mathf.FloorToInt(m_moneyTimer / 60f);
+                m_moneyTimer -= 60f * ticks;
+
+                var inv = m_inventory.instance;
+                if (additionalAmberlingsPerMinute != 0)
+                    inv.currency.AddSpecificCurrency(CurrencyType.Amberlings, additionalAmberlingsPerMinute * ticks);
+                if (additionalLunarisPerMinute != 0)
+                    inv.currency.AddSpecificCurrency(CurrencyType.Lunaris, additionalLunarisPerMinute * ticks);
+                if (additionalSolmiresPerMinute != 0)
+                    inv.currency.AddSpecificCurrency(CurrencyType.Solmire, additionalSolmiresPerMinute * ticks);
+
+                inv.onMoneyChanged?.Invoke();
             }
         }
 
@@ -861,7 +961,5 @@ namespace PLAYERTWO.ARPGProject
         {
             return m_reachedMaxLevel;
         }
-
-        protected virtual void Start() => Initialize();
     }
 }

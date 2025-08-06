@@ -70,6 +70,15 @@ namespace PLAYERTWO.ARPGProject
                         slot.keyText.text = Mathf.CeilToInt(instance.remainingTime).ToString();
                     }
                 }
+                
+                if (instance.remainingTime <= 10f)
+                {
+                    slot.BeginExpiryFade(instance.remainingTime);
+                }
+                else
+                {
+                    slot.StopExpiryFade();
+                }
             }
         }
 
@@ -90,6 +99,8 @@ namespace PLAYERTWO.ARPGProject
                     slot.keyText.text = string.Empty;
                     slot.keyText.gameObject.SetActive(false);
                 }
+
+                slot.StopExpiryFade();
 
                 Destroy(slot.gameObject);
                 m_slots.Remove(instance);

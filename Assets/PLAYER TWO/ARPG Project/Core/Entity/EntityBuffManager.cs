@@ -279,16 +279,21 @@ namespace PLAYERTWO.ARPGProject
         {
             int mult = add ? 1 : -1;
 
+            int previousMaxHealth = m_stats.maxHealth;
+            int previousMaxMana = m_stats.maxMana;
+            int previousHealth = m_stats.health;
+            int previousMana = m_stats.mana;
+
             m_stats.strength += buff.strength * mult;
             m_stats.dexterity += buff.dexterity * mult;
             m_stats.vitality += buff.vitality * mult;
             m_stats.energy += buff.energy * mult;
 
             m_stats.Recalculate();
-            ApplySecondaryModifiers();
-        }
+            ApplySecondaryModifiers(previousMaxHealth, previousMaxMana, previousHealth, previousMana);
+            }
 
-        protected virtual void ApplySecondaryModifiers()
+        protected virtual void ApplySecondaryModifiers(int previousMaxHealth, int previousMaxMana, int previousHealth, int previousMana)
         {
             int defense = 0;
             int magicResistance = 0;
