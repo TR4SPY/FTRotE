@@ -47,14 +47,9 @@ namespace PLAYERTWO.ARPGProject
 
         [Header("Bonus Texts")]
         public Text additionalManaText;
-        public Text additionalManaPercentText;
         public Text additionalHealthText;
-        public Text additionalHealthPercentText;
         public Text increaseAttackSpeedPercentText;
-        public Text increaseAttackSpeedValueText;
-        public Text increaseDamagePercentText;
         public Text increaseDamageValueText;
-        public Text increaseMagicalDamagePercentText;
         public Text increaseMagicalDamageValueText;
         public Text additionalExperienceRewardPercentText;
         public Text additionalMoneyRewardPercentText;
@@ -150,14 +145,9 @@ namespace PLAYERTWO.ARPGProject
             SetNumericStat(nextComboDelayText, s.nextComboDelay, s.nextComboDelay.ToString("F2"));
 
             SetNumericStat(additionalManaText, s.additionalMana);
-            SetNumericStat(additionalManaPercentText, s.additionalManaPercent);
             SetNumericStat(additionalHealthText, s.additionalHealth);
-            SetNumericStat(additionalHealthPercentText, s.additionalHealthPercent);
             SetNumericStat(increaseAttackSpeedPercentText, s.increaseAttackSpeedPercent);
-            SetNumericStat(increaseAttackSpeedValueText, s.increaseAttackSpeedValue);
-            SetNumericStat(increaseDamagePercentText, s.increaseDamagePercent);
             SetNumericStat(increaseDamageValueText, s.increaseDamageValue);
-            SetNumericStat(increaseMagicalDamagePercentText, s.increaseMagicalDamagePercent);
             SetNumericStat(increaseMagicalDamageValueText, s.increaseMagicalDamageValue);
             SetNumericStat(additionalExperienceRewardPercentText, s.additionalExperienceRewardPercent);
             SetNumericStat(additionalMoneyRewardPercentText, s.additionalMoneyRewardPercent);

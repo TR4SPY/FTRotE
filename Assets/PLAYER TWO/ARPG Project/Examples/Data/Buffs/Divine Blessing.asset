@@ -72,6 +72,6 @@ MonoBehaviour:
   lightImmunity: 0
   arcaneImmunity: 0
   additionalAmberlingsPerMinute: 0
-  additionalLunarisPerMinute: 0
+  additionalLunarisPerMinute: 5
   additionalSolmiresPerMinute: 0
-  itemPricePercent: 0
+  itemPricePercent: 25
