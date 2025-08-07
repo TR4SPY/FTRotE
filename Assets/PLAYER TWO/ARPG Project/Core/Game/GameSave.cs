@@ -29,6 +29,12 @@ namespace PLAYERTWO.ARPGProject
         protected CharacterInstance m_currentCharacter => m_game.currentCharacter;
         public int lastSavedNPCID = 0;
 
+        protected override void Initialize()
+        {
+            base.Initialize();
+            DontDestroyOnLoad(gameObject);
+        }
+
         public virtual void Save()
         {
             lastSavedNPCID = Game.instance.lastNPCID;

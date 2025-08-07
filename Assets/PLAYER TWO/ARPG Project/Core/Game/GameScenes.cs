@@ -30,6 +30,12 @@ namespace PLAYERTWO.ARPGProject
 
         protected Sprite m_defaultLoadingSprite;
 
+        protected override void Awake()
+        {
+            base.Awake();
+            DontDestroyOnLoad(gameObject);
+        }
+
         protected virtual void Start()
         {
             m_defaultLoadingSprite = loadingImage.sprite;

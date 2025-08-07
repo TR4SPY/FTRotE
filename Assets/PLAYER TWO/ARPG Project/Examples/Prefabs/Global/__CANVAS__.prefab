@@ -4808,7 +4808,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -9296,7 +9296,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4202839085706061861}
   m_HandleRect: {fileID: 1284374384747649391}
   m_Direction: 2
-  m_Value: -0.00000045245562
+  m_Value: -0.000000113113906
   m_Size: 0.6186603
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -17435,12 +17435,14 @@ MonoBehaviour:
   energy: {fileID: 1549345821896047335}
   applyButton: {fileID: 1549345820893512681}
   cancelButton: {fileID: 1549345821512894469}
+  extendedStatsButton: {fileID: 5853228931549326348}
   playerTypeSprites:
   - {fileID: 1461787297, guid: 0e4c6040f4cac1671a0415e6573640b8, type: 3}
   - {fileID: 1750285108, guid: 0e4c6040f4cac1671a0415e6573640b8, type: 3}
   - {fileID: -1469831307, guid: 0e4c6040f4cac1671a0415e6573640b8, type: 3}
   - {fileID: -365746545, guid: 0e4c6040f4cac1671a0415e6573640b8, type: 3}
   playerTypeIcon: {fileID: 383487330810611366}
+  extendedStats: {fileID: 1774885956361127113}
 --- !u!1 &1549345820658088561
 GameObject:
   m_ObjectHideFlags: 0
@@ -35539,8 +35541,10 @@ MonoBehaviour:
   energy: {fileID: 4087715518091096533}
   applyButton: {fileID: 9004169986565932397}
   cancelButton: {fileID: 1682570902605499455}
+  extendedStatsButton: {fileID: 0}
   playerTypeSprites: []
   playerTypeIcon: {fileID: 0}
+  extendedStats: {fileID: 0}
 --- !u!1 &2983463736239802790
 GameObject:
   m_ObjectHideFlags: 0
@@ -64414,7 +64418,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -83.951195}
+  m_AnchoredPosition: {x: 0, y: -83.951324}
   m_SizeDelta: {x: 764.92, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2683628518585182366
@@ -85017,30 +85021,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da1f102265596113ba08ed821e18c355, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterNameText: {fileID: 0}
-  classText: {fileID: 0}
-  levelText: {fileID: 0}
-  availablePointsText: {fileID: 0}
-  experienceText: {fileID: 0}
-  damageText: {fileID: 0}
-  defenseText: {fileID: 0}
-  attackSpeedText: {fileID: 0}
-  maxHealthText: {fileID: 0}
-  maxManaText: {fileID: 0}
-  magicDamageText: {fileID: 0}
-  magicResistanceText: {fileID: 0}
-  stunChanceText: {fileID: 0}
-  stunSpeedText: {fileID: 0}
-  criticalChanceText: {fileID: 0}
-  playerTypeText: {fileID: 0}
-  strength: {fileID: 0}
-  dexterity: {fileID: 0}
-  vitality: {fileID: 0}
-  energy: {fileID: 0}
-  applyButton: {fileID: 0}
-  cancelButton: {fileID: 0}
-  playerTypeSprites: []
-  playerTypeIcon: {fileID: 0}
   fireResistanceText: {fileID: 3089502678632817457}
   waterResistanceText: {fileID: 1479692574841992047}
   iceResistanceText: {fileID: 7121359739509819145}

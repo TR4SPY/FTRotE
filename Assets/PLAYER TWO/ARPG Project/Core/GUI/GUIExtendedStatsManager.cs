@@ -1,12 +1,12 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace PLAYERTWO.ARPGProject
 {
-    [AddComponentMenu("PLAYER TWO/ARPG Project/GUI/GUI Stats Extended Manager")]
-    public class GUIExtendedStatsManager : GUIStatsManager
+    [AddComponentMenu("PLAYER TWO/ARPG Project/GUI/GUI Extended Stats Manager")]
+    public class GUIExtendedStatsManager : MonoBehaviour
     {
+        protected Entity m_entity;
         [Header("Resistance Texts")]
         public Text fireResistanceText;
         public Text waterResistanceText;
@@ -68,10 +68,25 @@ namespace PLAYERTWO.ARPGProject
         public Text additionalSolmiresPerMinuteText;
         public Text itemPricePercentText;
 
-        public override void Refresh()
+        protected virtual void Start()
         {
-            base.Refresh();
+            InitializeEntity();
+            Refresh();
+        }
 
+        protected virtual void InitializeEntity()
+        {
+            if (Level.instance?.player == null)
+            {
+                Debug.LogError("Player instance in Level is null. Cannot initialize entity.");
+                return;
+            }
+
+            m_entity = Level.instance.player;
+        }
+
+        public void Refresh()
+        {
             if (m_entity == null || m_entity.stats == null)
                 return;
 

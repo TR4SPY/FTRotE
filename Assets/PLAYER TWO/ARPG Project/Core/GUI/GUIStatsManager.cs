@@ -101,7 +101,6 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("A reference to the GUI Stats Attributes representing energy points.")]
         public GUIStatsAttribute energy;
 
-
         [Header("Main Buttons")]
         [Tooltip("A reference to the Apply button.")]
         public Button applyButton;
@@ -109,14 +108,20 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("A reference to the Cancel button.")]
         public Button cancelButton;
 
+        [Tooltip("A reference to the button that toggles the Extended Stats Window.")]
+        public Button extendedStatsButton;
 
         [Header("Sprites")]
-        public Sprite[] playerTypeSprites; 
+        public Sprite[] playerTypeSprites;
         [SerializeField] private Image playerTypeIcon;
 
         public CharacterInstance characterInstance;
 
         protected Entity m_entity;
+        private GUIWindow m_extendedStatsWindow;
+
+        [Tooltip("A reference to the GUI Extended Stats Manager.")]
+        public GUIExtendedStatsManager extendedStats;
 
         public event System.Action<int> onPointsChanged;
 
@@ -152,6 +157,23 @@ namespace PLAYERTWO.ARPGProject
 
             applyButton.gameObject.SetActive(shouldShow);
             cancelButton.gameObject.SetActive(shouldShow);
+        }
+
+        private void ToggleExtendedStats()
+        {
+            if (!extendedStats && GUIWindowsManager.Instance != null)
+                extendedStats = GUIWindowsManager.Instance.extendedStats;
+
+            if (!extendedStats)
+            {
+                Debug.LogWarning("[GUIStatsManager] Extended Stats Manager reference is missing.");
+                return;
+            }
+
+            if (!m_extendedStatsWindow)
+                m_extendedStatsWindow = extendedStats.GetComponent<GUIWindow>();
+
+            m_extendedStatsWindow?.Toggle();
         }
 
         //protected virtual void InitializeEntity() => m_entity = Level.instance.player;
@@ -268,10 +290,11 @@ namespace PLAYERTWO.ARPGProject
 			return;
 		}
 
-	string rawClassName = Game.instance.currentCharacter?.Entity != null
-                ? Game.instance.currentCharacter.Entity.name.Replace("(Clone)", "").Trim()
-                : "Unknown";
-
+        /*	
+        string rawClassName = Game.instance.currentCharacter?.Entity != null
+                        ? Game.instance.currentCharacter.Entity.name.Replace("(Clone)", "").Trim()
+                        : "Unknown";
+        */
             if (classText != null)
             {
                 string classDisplayName = Game.instance.currentCharacter?.GetName() ?? "Unknown";
@@ -387,6 +410,22 @@ namespace PLAYERTWO.ARPGProject
             InitializeTooltips();
             Refresh();
             UpdateApplyCancelButtons();
+
+            if (!extendedStats && GUIWindowsManager.Instance != null)
+                extendedStats = GUIWindowsManager.Instance.extendedStats;
+
+            if (!extendedStatsButton && cancelButton)
+            {
+                extendedStatsButton = Instantiate(cancelButton, cancelButton.transform.parent);
+                extendedStatsButton.gameObject.SetActive(true);
+                extendedStatsButton.name = "Extended";
+                var txt = extendedStatsButton.GetComponentInChildren<Text>();
+                if (txt) txt.text = "EXTENDED";
+                extendedStatsButton.onClick.RemoveAllListeners();
+            }
+
+            if (extendedStatsButton)
+                extendedStatsButton.onClick.AddListener(ToggleExtendedStats);
         }
 
         protected virtual void InitializeTooltips()
