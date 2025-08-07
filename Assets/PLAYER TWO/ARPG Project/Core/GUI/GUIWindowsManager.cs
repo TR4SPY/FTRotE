@@ -17,6 +17,9 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("A reference to the GUI Stats Manager.")]
         public GUIStatsManager stats;
 
+        [Tooltip("A reference to the GUI Stats Extended Manager.")]
+        public GUIExtendedStatsManager extendedStats;
+
         [Tooltip("A reference to the GUI Player Inventory.")]
         public GUIWindow inventoryWindow;
 
@@ -182,6 +185,23 @@ namespace PLAYERTWO.ARPGProject
                 {
                     Debug.LogWarning("[GUIWindowsManager] Cannot find GUIStatsManager.");
 
+                }
+            }
+
+            if (extendedStats != null)
+            {
+                var extendedWindow = extendedStats.GetComponent<GUIWindow>();
+                if (extendedWindow != null)
+                {
+                    extendedWindow.onOpen.AddListener(() =>
+                    {
+                        PlayerBehaviorLogger.Instance?.UpdatePlayerType();
+                        extendedStats.Refresh();
+                    });
+                }
+                else
+                {
+                    Debug.LogWarning("[GUIWindowsManager] Cannot find GUIExtendedStatsManager.");
                 }
             }
 

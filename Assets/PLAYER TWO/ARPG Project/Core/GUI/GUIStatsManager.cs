@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using AI_DDA.Assets.Scripts;
@@ -7,6 +8,37 @@ namespace PLAYERTWO.ARPGProject
     [AddComponentMenu("PLAYER TWO/ARPG Project/GUI/GUI Stats Manager")]
     public class GUIStatsManager : MonoBehaviour
     {
+        private readonly Dictionary<Text, Color> m_defaultTextColors = new();
+
+        private Color GetDefaultColor(Text text)
+        {
+            if (!text)
+                return Color.white;
+
+            if (!m_defaultTextColors.TryGetValue(text, out var color))
+            {
+                color = text.color;
+                m_defaultTextColors[text] = color;
+            }
+
+            return color;
+        }
+
+        private void UpdateTextColor(Text text, float current, float baseline)
+        {
+            if (!text)
+                return;
+
+            var defaultColor = GetDefaultColor(text);
+
+            if (current > baseline)
+                text.color = GameColors.Green;
+            else if (current < baseline)
+                text.color = GameColors.LightRed;
+            else
+                text.color = defaultColor;
+        }
+        
         [Header("GUI Texts")]
         [Tooltip("A reference to the Text component that represents the player's name.")]
         public Text characterNameText;
@@ -164,8 +196,14 @@ namespace PLAYERTWO.ARPGProject
             m_entity.stats.onRecalculate.AddListener(Refresh);
             m_entity.stats.onExperienceChanged.AddListener(() =>
                 experienceText.text = $"{m_entity.stats.experience} / {m_entity.stats.nextLevelExp}");
-        }
 
+            var buffManager = m_entity.GetComponent<EntityBuffManager>();
+            if (buffManager != null)
+            {
+                buffManager.onBuffAdded.AddListener(_ => Refresh());
+                buffManager.onBuffRemoved.AddListener(_ => Refresh());
+            }
+        }
         protected virtual void InitializeTexts()
         {
             if (characterInstance == null)

@@ -165,7 +165,14 @@ namespace PLAYERTWO.ARPGProject
             }
 
             instance = new BuffInstance(buff, isDebuff);
-            m_buffs.Add(instance);
+            if (isDebuffType)
+            {
+                m_buffs.Add(instance);
+            }
+            else
+            {
+                m_buffs.Insert(0, instance);
+            }
             ApplyModifiers(buff, true);
             onBuffAdded?.Invoke(instance);
             return true;
@@ -214,6 +221,99 @@ namespace PLAYERTWO.ARPGProject
 
             if (string.IsNullOrEmpty(statName))
                 return result;
+
+            if (statName == nameof(EntityStatsManager.attackSpeed))
+            {
+                int totalPercent = 0;
+                int totalValue = 0;
+
+                foreach (var  instance in m_buffs)
+                {
+                    if (!instance.isActive || instance.buff == null)
+                        continue;
+
+                    totalPercent += instance.buff.increaseAttackSpeedPercent;
+                    totalValue += instance.buff.increaseAttackSpeedValue;
+                }
+
+                int current = m_stats.attackSpeed;
+                int baseValue = Mathf.RoundToInt((current - totalValue) / (1f + totalPercent / 100f));
+
+                foreach (var instance in m_buffs)
+                {
+                    if (!instance.isActive || instance.buff == null)
+                        continue;
+
+                    var b = instance.buff;
+                    int value = Mathf.RoundToInt(baseValue * b.increaseAttackSpeedPercent / 100f) + b.increaseAttackSpeedValue;
+                    if (value != 0)
+                        result[b.name] = value;
+                }
+
+                return result;
+            }
+
+            if (statName == nameof(EntityStatsManager.minDamage) || statName == nameof(EntityStatsManager.maxDamage))
+            {
+                int totalPercent = 0;
+                int totalValue = 0;
+
+                foreach (var instance in m_buffs)
+                {
+                    if (!instance.isActive || instance.buff == null)
+                        continue;
+
+                    totalPercent += instance.buff.increaseDamagePercent;
+                    totalValue += instance.buff.increaseDamageValue;
+                }
+
+                int current = statName == nameof(EntityStatsManager.minDamage) ? m_stats.minDamage : m_stats.maxDamage;
+                int baseValue = Mathf.RoundToInt((current - totalValue) / (1f + totalPercent / 100f));
+
+                foreach (var instance in m_buffs)
+                {
+                    if (!instance.isActive || instance.buff == null)
+                        continue;
+
+                    var b = instance.buff;
+                    int value = Mathf.RoundToInt(baseValue * b.increaseDamagePercent / 100f) + b.increaseDamageValue;
+                    if (value != 0)
+                        result[b.name] = value;
+                }
+
+                return result;
+            }
+
+            if (statName == nameof(EntityStatsManager.minMagicDamage) || statName == nameof(EntityStatsManager.maxMagicDamage))
+            {
+                int totalPercent = 0;
+                int totalValue = 0;
+
+                foreach (var instance in m_buffs)
+                {
+                    if (!instance.isActive || instance.buff == null)
+                        continue;
+
+                    totalPercent += instance.buff.increaseMagicalDamagePercent;
+                    totalValue += instance.buff.increaseMagicalDamageValue;
+                }
+
+                int current = statName == nameof(EntityStatsManager.minMagicDamage) ? m_stats.minMagicDamage : m_stats.maxMagicDamage;
+                int baseValue = Mathf.RoundToInt((current - totalValue) / (1f + totalPercent / 100f));
+
+                foreach (var instance in m_buffs)
+                {
+                    if (!instance.isActive || instance.buff == null)
+                        continue;
+
+                    var b = instance.buff;
+                    int value = Mathf.RoundToInt(baseValue * b.increaseMagicalDamagePercent / 100f) + b.increaseMagicalDamageValue;
+                    if (value != 0)
+                        result[b.name] = value;
+                }
+
+                return result;
+            }
 
             var field = typeof(Buff).GetField(statName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             if (field == null)
@@ -416,8 +516,10 @@ namespace PLAYERTWO.ARPGProject
             int extraHealth = Mathf.RoundToInt(baseMaxHealth * additionalHealthPercent / 100f);
             SetStatProperty("maxMana", baseMaxMana + additionalMana + extraMana);
             SetStatProperty("maxHealth", baseMaxHealth + additionalHealth + extraHealth);
-            m_stats.health = Mathf.Min(m_stats.health, m_stats.maxHealth);
-            m_stats.mana = Mathf.Min(m_stats.mana, m_stats.maxMana);
+            int maxHealthDelta = Mathf.Max(0, m_stats.maxHealth - previousMaxHealth);
+            int maxManaDelta = Mathf.Max(0, m_stats.maxMana - previousMaxMana);
+            m_stats.health = Mathf.Min(previousHealth + maxHealthDelta, m_stats.maxHealth);
+            m_stats.mana = Mathf.Min(previousMana + maxManaDelta, m_stats.maxMana);
 
             int atkSpeed = m_stats.attackSpeed;
             atkSpeed = Mathf.RoundToInt(atkSpeed * (1f + attackSpeedPercent / 100f)) + attackSpeedValue;

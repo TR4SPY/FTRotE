@@ -198,8 +198,11 @@ namespace PLAYERTWO.ARPGProject
                 {
                     cw?.Show();
                     cw?.FocusInput();
-
+                    
                     var recentMessages = GetLog();
+                    cw?.RepopulateOverlayFromHistory(recentMessages, maxToShow: cw.overlayMaxMessages);
+                    cw?.ScrollOverlayToBottom();
+
                     //cw?.SetOverlayVisible(true);
                     //cw?.StopOverlayFadeOut();
                 }

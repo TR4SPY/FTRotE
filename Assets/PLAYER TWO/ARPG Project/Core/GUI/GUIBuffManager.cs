@@ -87,6 +87,11 @@ namespace PLAYERTWO.ARPGProject
             if (slotPrefab == null) return;
             var slot = Instantiate(slotPrefab, transform);
             slot.SetBuff(instance);
+            if (m_buffManager != null)
+            {
+                int index = m_buffManager.buffs.IndexOf(instance);
+                slot.transform.SetSiblingIndex(index);
+            }
             m_slots[instance] = slot;
         }
 

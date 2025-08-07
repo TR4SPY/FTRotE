@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Text;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -80,16 +81,41 @@ namespace PLAYERTWO.ARPGProject
 
             int current = (int)prop.GetValue(m_stats);
             int baseValue = current - buffTotal;
+            bool isPercentage = statName.Contains("Percent");
 
+            string FormatValue(int value) => isPercentage ? $"{value}%" : value.ToString();
             var builder = new StringBuilder();
-            builder.AppendLine($"Base: {baseValue}");
-            foreach (var pair in modifiers)
-            {
-                string sign = pair.Value >= 0 ? "+" : "";
-                builder.AppendLine($"{pair.Key}: {sign}{pair.Value}");
-            }
-            builder.Append($"Total: {current}");
+            builder.AppendLine($"Base: {FormatValue(baseValue)}");
 
+            var increased = modifiers.Where(m => m.Value > 0);
+            var decreased = modifiers.Where(m => m.Value < 0);
+
+            if (increased.Any())
+            {
+                builder.AppendLine("Increased by:");
+                foreach (var pair in increased)
+                {
+                    string value = FormatValue(pair.Value);
+                    value = StringUtils.StringWithColor($"+{value}", GameColors.Green);
+                    builder.AppendLine($" {pair.Key}: {value}");
+                }
+            }
+            if (decreased.Any())
+            {
+                builder.AppendLine("Decreased by:");
+                foreach (var pair in decreased)
+                {
+                    int absValue = Mathf.Abs(pair.Value);
+                    string value = FormatValue(absValue);
+                    value = StringUtils.StringWithColor($"-{value}", GameColors.LightRed);
+                    builder.AppendLine($" {pair.Key}: {value}");
+                }
+            }
+
+            Color totalColor = buffTotal > 0 ? GameColors.Green : buffTotal < 0 ? GameColors.LightRed : GameColors.White;
+            string totalValue = StringUtils.StringWithColor(FormatValue(current), totalColor);
+            builder.Append($"Total: {totalValue}");
+            
             string displayName = StringUtils.ConvertToTitleCase(statName);
             GUITooltip.instance.ShowTooltip(displayName, builder.ToString(), gameObject);
         }
