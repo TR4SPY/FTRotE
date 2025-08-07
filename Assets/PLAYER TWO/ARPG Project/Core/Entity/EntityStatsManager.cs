@@ -281,16 +281,13 @@ namespace PLAYERTWO.ARPGProject
         protected EntityInventory m_inventory;
 
         protected float m_manaRegenTimer1;
-        protected float m_manaRegenTimer5;
-        protected float m_manaRegenTimer30;
+        protected float m_manaRegenRemainder;
 
         protected float m_healthRegenTimer1;
-        protected float m_healthRegenTimer5;
-        protected float m_healthRegenTimer30;
+        protected float m_healthRegenRemainder;
 
         protected float m_experienceTimer1;
-        protected float m_experienceTimer5;
-        protected float m_experienceTimer30;
+        protected float m_experienceRemainder;
 
         protected float m_moneyTimer;
 
@@ -420,24 +417,21 @@ namespace PLAYERTWO.ARPGProject
 
             float dt = Time.deltaTime;
 
-            ApplyOverTime(ref m_manaRegenTimer1, dt, 1f, manaRegenPerSecond, v => mana += v);
-            ApplyOverTime(ref m_manaRegenTimer5, dt, 5f, manaRegenPer5Seconds, v => mana += v);
-            ApplyOverTime(ref m_manaRegenTimer30, dt, 30f, manaRegenPer30Seconds, v => mana += v);
+            float manaTotal = manaRegenPerSecond + manaRegenPer5Seconds / 5f + manaRegenPer30Seconds / 30f;
+            ApplyOverTime(ref m_manaRegenTimer1, ref m_manaRegenRemainder, dt, 1f, manaTotal, v => mana += v);
 
-            ApplyOverTime(ref m_healthRegenTimer1, dt, 1f, healthRegenPerSecond, v => health += v);
-            ApplyOverTime(ref m_healthRegenTimer5, dt, 5f, healthRegenPer5Seconds, v => health += v);
-            ApplyOverTime(ref m_healthRegenTimer30, dt, 30f, healthRegenPer30Seconds, v => health += v);
+            float healthTotal = healthRegenPerSecond + healthRegenPer5Seconds / 5f + healthRegenPer30Seconds / 30f;
+            ApplyOverTime(ref m_healthRegenTimer1, ref m_healthRegenRemainder, dt, 1f, healthTotal, v => health += v);
 
-            ApplyExperienceOverTime(ref m_experienceTimer1, dt, 1f, experiencePerSecondPercent);
-            ApplyExperienceOverTime(ref m_experienceTimer5, dt, 5f, experiencePer5SecondsPercent);
-            ApplyExperienceOverTime(ref m_experienceTimer30, dt, 30f, experiencePer30SecondsPercent);
+            float experienceTotal = experiencePerSecondPercent + experiencePer5SecondsPercent / 5f + experiencePer30SecondsPercent / 30f;
+            ApplyExperienceOverTime(ref m_experienceTimer1, ref m_experienceRemainder, dt, 1f, experienceTotal);
 
             ApplyCurrencyOverTime(dt);
         }
 
-        protected void ApplyOverTime(ref float timer, float dt, float interval, int amount, System.Action<int> apply)
+        protected void ApplyOverTime(ref float timer, ref float remainder, float dt, float interval, float amount, System.Action<int> apply)
         {
-            if (amount == 0)
+            if (amount == 0f && remainder == 0f)
             {
                 timer = 0f;
                 return;
@@ -448,13 +442,17 @@ namespace PLAYERTWO.ARPGProject
             {
                 int ticks = Mathf.FloorToInt(timer / interval);
                 timer -= interval * ticks;
-                apply(amount * ticks);
+                float total = amount * ticks + remainder;
+                int delta = Mathf.FloorToInt(total);
+                remainder = total - delta;
+                if (delta != 0)
+                    apply(delta);
             }
         }
 
-        protected void ApplyExperienceOverTime(ref float timer, float dt, float interval, int percent)
+        protected void ApplyExperienceOverTime(ref float timer, ref float remainder, float dt, float interval, float percent)
         {
-            if (percent == 0)
+            if (percent == 0f && remainder == 0f)
             {
                 timer = 0f;
                 return;
@@ -465,7 +463,9 @@ namespace PLAYERTWO.ARPGProject
             {
                 int ticks = Mathf.FloorToInt(timer / interval);
                 timer -= interval * ticks;
-                int amount = Mathf.RoundToInt(nextLevelExp * percent / 100f) * ticks;
+                float total = nextLevelExp * percent / 100f * ticks + remainder;
+                int amount = Mathf.FloorToInt(total);
+                remainder = total - amount;
                 if (amount != 0)
                     AddExperience(amount);
             }

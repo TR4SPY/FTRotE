@@ -330,6 +330,7 @@ GameObject:
   - component: {fileID: 8599894923451975246}
   - component: {fileID: 4119923726096340576}
   - component: {fileID: 1303048335854564728}
+  - component: {fileID: 374535745185485764}
   m_Layer: 8
   m_Name: Clairvoyant
   m_TagString: Entity/Player
@@ -720,6 +721,18 @@ MonoBehaviour:
   onBuffRemoved:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &374535745185485764
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2957117560480157748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b74f9c5a11046e729d35b1b78fc9a4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4482667373222356333
 GameObject:
   m_ObjectHideFlags: 0

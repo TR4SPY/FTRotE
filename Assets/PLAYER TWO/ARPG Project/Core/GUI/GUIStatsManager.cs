@@ -323,6 +323,15 @@ namespace PLAYERTWO.ARPGProject
             int baseDexterity = m_entity.stats.dexterity;
             int baseVitality = m_entity.stats.vitality;
             int baseEnergy = m_entity.stats.energy;
+            int baseDefense = m_entity.stats.defense;
+            int baseAttackSpeed = m_entity.stats.attackSpeed;
+            int baseMaxHealth = m_entity.stats.maxHealth;
+            int baseMaxMana = m_entity.stats.maxMana;
+            int baseMinDamage = m_entity.stats.minDamage;
+            int baseMaxDamage = m_entity.stats.maxDamage;
+            int baseMinMagic = m_entity.stats.minMagicDamage;
+            int baseMaxMagic = m_entity.stats.maxMagicDamage;
+            int baseMagicResistance = m_entity.stats.magicResistance;
 
             if (buffManager)
             {
@@ -337,12 +346,73 @@ namespace PLAYERTWO.ARPGProject
 
                 foreach (var value in buffManager.GetStatModifiers(nameof(Buff.energy)).Values)
                     baseEnergy -= value;
+
+                foreach (var value in buffManager.GetStatModifiers(nameof(Buff.defense)).Values)
+                    baseDefense -= value;
+
+                foreach (var value in buffManager.GetStatModifiers(nameof(EntityStatsManager.attackSpeed)).Values)
+                    baseAttackSpeed -= value;
+
+                int addHealth = 0;
+                foreach (var value in buffManager.GetStatModifiers(nameof(Buff.additionalHealth)).Values)
+                    addHealth += value;
+                int addHealthPercent = 0;
+                foreach (var value in buffManager.GetStatModifiers(nameof(Buff.additionalHealthPercent)).Values)
+                    addHealthPercent += value;
+                baseMaxHealth = Mathf.RoundToInt((baseMaxHealth - addHealth) / (1f + addHealthPercent / 100f));
+
+                int addMana = 0;
+                foreach (var value in buffManager.GetStatModifiers(nameof(Buff.additionalMana)).Values)
+                    addMana += value;
+                int addManaPercent = 0;
+                foreach (var value in buffManager.GetStatModifiers(nameof(Buff.additionalManaPercent)).Values)
+                    addManaPercent += value;
+                baseMaxMana = Mathf.RoundToInt((baseMaxMana - addMana) / (1f + addManaPercent / 100f));
+
+                foreach (var value in buffManager.GetStatModifiers(nameof(EntityStatsManager.minDamage)).Values)
+                    baseMinDamage -= value;
+                foreach (var value in buffManager.GetStatModifiers(nameof(EntityStatsManager.maxDamage)).Values)
+                    baseMaxDamage -= value;
+
+                foreach (var value in buffManager.GetStatModifiers(nameof(EntityStatsManager.minMagicDamage)).Values)
+                    baseMinMagic -= value;
+                foreach (var value in buffManager.GetStatModifiers(nameof(EntityStatsManager.maxMagicDamage)).Values)
+                    baseMaxMagic -= value;
+
+                foreach (var value in buffManager.GetStatModifiers(nameof(Buff.magicResistance)).Values)
+                    baseMagicResistance -= value;
             }
 
             strength.Reset(m_entity.stats.strength, baseStrength);
             dexterity.Reset(m_entity.stats.dexterity, baseDexterity);
             vitality.Reset(m_entity.stats.vitality, baseVitality);
             energy.Reset(m_entity.stats.energy, baseEnergy);
+
+            UpdateTextColor(defenseText, m_entity.stats.defense, baseDefense);
+            UpdateTextColor(attackSpeedText, m_entity.stats.attackSpeed, baseAttackSpeed);
+            UpdateTextColor(maxHealthText, m_entity.stats.maxHealth, baseMaxHealth);
+            UpdateTextColor(maxManaText, m_entity.stats.maxMana, baseMaxMana);
+            UpdateTextColor(magicResistanceText, m_entity.stats.magicResistance, baseMagicResistance);
+
+            if (damageText)
+            {
+                if (m_entity.stats.minDamage > baseMinDamage || m_entity.stats.maxDamage > baseMaxDamage)
+                    damageText.color = GameColors.Green;
+                else if (m_entity.stats.minDamage < baseMinDamage || m_entity.stats.maxDamage < baseMaxDamage)
+                    damageText.color = GameColors.LightRed;
+                else
+                    damageText.color = GetDefaultColor(damageText);
+            }
+
+            if (magicDamageText)
+            {
+                if (m_entity.stats.minMagicDamage > baseMinMagic || m_entity.stats.maxMagicDamage > baseMaxMagic)
+                    magicDamageText.color = GameColors.Green;
+                else if (m_entity.stats.minMagicDamage < baseMinMagic || m_entity.stats.maxMagicDamage < baseMaxMagic)
+                    magicDamageText.color = GameColors.LightRed;
+                else
+                    magicDamageText.color = GetDefaultColor(magicDamageText);
+            }
 
             string staticType = characterInstance.playerType;
             string dynamicType = PlayerBehaviorLogger.Instance?.currentDynamicPlayerType ?? "Unknown";
