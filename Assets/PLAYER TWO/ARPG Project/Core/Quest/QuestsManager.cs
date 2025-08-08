@@ -104,13 +104,18 @@ namespace PLAYERTWO.ARPGProject
 
             onQuestCompleted?.Invoke(quest);
 
-            foreach (var giver in QuestGiverRegistry.Instance.GetAll())
+           foreach (var giver in QuestGiverRegistry.Instance.GetAll())
             {
                 if (giver.HasQuest(quest.data))
                 {
                     giver.OnQuestCompleted(quest);
                     break;
                 }
+            }
+
+            if (Game.instance?.currentCharacter != null && m_quests.All(q => q.completed))
+            {
+                Game.instance.currentCharacter.storylineCompleted = true;
             }
         }
 

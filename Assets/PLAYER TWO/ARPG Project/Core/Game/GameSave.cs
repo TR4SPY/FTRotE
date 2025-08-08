@@ -216,6 +216,7 @@ namespace PLAYERTWO.ARPGProject
             if (Game.instance.currentCharacter != null)
             {
                 Game.instance.currentCharacter.totalPlayTime = character.totalPlayTime;
+                Game.instance.currentCharacter.storylineCompleted = character.storylineCompleted;
             }
 
             PlayerBehaviorLogger.Instance.unlockedAchievements = new List<string>(character.unlockedAchievements);
@@ -305,7 +306,8 @@ namespace PLAYERTWO.ARPGProject
             character.questsCompleted = PlayerBehaviorLogger.Instance.questsCompleted;
             character.potionsUsed = PlayerBehaviorLogger.Instance.potionsUsed;
             character.zonesDiscovered = PlayerBehaviorLogger.Instance.zonesDiscovered;
-
+            character.storylineCompleted = Game.instance.currentCharacter.storylineCompleted;
+            
             character.unlockedAchievements = new List<string>(PlayerBehaviorLogger.Instance.unlockedAchievements);
             int achievementsUnlocked = character.unlockedAchievements.Count;
 

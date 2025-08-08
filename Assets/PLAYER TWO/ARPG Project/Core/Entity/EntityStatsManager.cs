@@ -282,12 +282,24 @@ namespace PLAYERTWO.ARPGProject
 
         protected float m_manaRegenTimer1;
         protected float m_manaRegenRemainder;
+        protected float m_manaRegenTimer5;
+        protected float m_manaRegenRemainder5;
+        protected float m_manaRegenTimer30;
+        protected float m_manaRegenRemainder30;
 
         protected float m_healthRegenTimer1;
         protected float m_healthRegenRemainder;
+        protected float m_healthRegenTimer5;
+        protected float m_healthRegenRemainder5;
+        protected float m_healthRegenTimer30;
+        protected float m_healthRegenRemainder30;
 
         protected float m_experienceTimer1;
         protected float m_experienceRemainder;
+        protected float m_experienceTimer5;
+        protected float m_experienceRemainder5;
+        protected float m_experienceTimer30;
+        protected float m_experienceRemainder30;
 
         protected float m_moneyTimer;
 
@@ -417,14 +429,17 @@ namespace PLAYERTWO.ARPGProject
 
             float dt = Time.deltaTime;
 
-            float manaTotal = manaRegenPerSecond + manaRegenPer5Seconds / 5f + manaRegenPer30Seconds / 30f;
-            ApplyOverTime(ref m_manaRegenTimer1, ref m_manaRegenRemainder, dt, 1f, manaTotal, v => mana += v);
+            ApplyOverTime(ref m_manaRegenTimer1, ref m_manaRegenRemainder, dt, 1f, manaRegenPerSecond, v => mana += v);
+            ApplyOverTime(ref m_manaRegenTimer5, ref m_manaRegenRemainder5, dt, 5f, manaRegenPer5Seconds, v => mana += v);
+            ApplyOverTime(ref m_manaRegenTimer30, ref m_manaRegenRemainder30, dt, 30f, manaRegenPer30Seconds, v => mana += v);
 
-            float healthTotal = healthRegenPerSecond + healthRegenPer5Seconds / 5f + healthRegenPer30Seconds / 30f;
-            ApplyOverTime(ref m_healthRegenTimer1, ref m_healthRegenRemainder, dt, 1f, healthTotal, v => health += v);
+            ApplyOverTime(ref m_healthRegenTimer1, ref m_healthRegenRemainder, dt, 1f, healthRegenPerSecond, v => health += v);
+            ApplyOverTime(ref m_healthRegenTimer5, ref m_healthRegenRemainder5, dt, 5f, healthRegenPer5Seconds, v => health += v);
+            ApplyOverTime(ref m_healthRegenTimer30, ref m_healthRegenRemainder30, dt, 30f, healthRegenPer30Seconds, v => health += v);
 
-            float experienceTotal = experiencePerSecondPercent + experiencePer5SecondsPercent / 5f + experiencePer30SecondsPercent / 30f;
-            ApplyExperienceOverTime(ref m_experienceTimer1, ref m_experienceRemainder, dt, 1f, experienceTotal);
+            ApplyExperienceOverTime(ref m_experienceTimer1, ref m_experienceRemainder, dt, 1f, experiencePerSecondPercent);
+            ApplyExperienceOverTime(ref m_experienceTimer5, ref m_experienceRemainder5, dt, 5f, experiencePer5SecondsPercent);
+            ApplyExperienceOverTime(ref m_experienceTimer30, ref m_experienceRemainder30, dt, 30f, experiencePer30SecondsPercent);
 
             ApplyCurrencyOverTime(dt);
         }

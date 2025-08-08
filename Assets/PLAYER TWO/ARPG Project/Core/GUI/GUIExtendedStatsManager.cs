@@ -1,6 +1,8 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using AI_DDA.Assets.Scripts;
+using System.Collections.Generic;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -9,6 +11,20 @@ namespace PLAYERTWO.ARPGProject
     public class GUIExtendedStatsManager : MonoBehaviour
     {
         protected Entity m_entity;
+        protected EntityBuffManager m_buffManager;
+        protected EntityItemManager m_itemManager;
+
+        [Header("Player Type")]
+        public Text playerTypeDescriptionText;
+
+        private static readonly Dictionary<string, string> s_playerTypeDescriptions = new()
+        {
+            {"Achiever", "Focuses on goals, rewards, and completion."},
+            {"Explorer", "Loves discovering new areas and secrets."},
+            {"Socializer", "Enjoys interacting and forming connections."},
+            {"Killer", "Seeks competition and dominating opponents."}
+        };
+
         [Header("Resistance Texts")]
         public Text fireResistanceText;
         public Text waterResistanceText;
@@ -59,17 +75,58 @@ namespace PLAYERTWO.ARPGProject
         public Text additionalSolmiresPerMinuteText;
         public Text itemPricePercentText;
 
+        [Header("Progress Texts")]
+        public Text zonesDiscoveredText;
+        public Text achievementsUnlockedText;
+        public Text questsCompletedText;
+        public Text storylineCompletedText;
+
+        [Header("Difficulty Texts")]
+        public Text currentDifficultyText;
+        public Text difficultyMultiplierText;
+
+
         GameObject m_resistancesHeader;
         GameObject m_immunitiesHeader;
         GameObject m_regenerationsHeader;
         GameObject m_blocksHeader;
         GameObject m_combosHeader;
         GameObject m_bonusesHeader;
+        GameObject m_progressHeader;
+        GameObject m_difficultyHeader;
 
         protected virtual void Start()
         {
             InitializeEntity();
             CacheHeaders();
+            
+            if (m_entity != null)
+            {
+                if (m_entity.stats != null)
+                {
+                    m_entity.stats.onLevelUp.AddListener(Refresh);
+                    m_entity.stats.onRecalculate.AddListener(Refresh);
+                }
+
+                m_buffManager = m_entity.GetComponent<EntityBuffManager>();
+                if (m_buffManager != null)
+                {
+                    m_buffManager.onBuffAdded.AddListener(HandleBuffChanged);
+                    m_buffManager.onBuffRemoved.AddListener(HandleBuffChanged);
+                }
+
+                m_itemManager = m_entity.items;
+                if (m_itemManager != null)
+                {
+                    m_itemManager.onChanged.AddListener(Refresh);
+                }
+            }
+
+            Refresh();
+        }
+
+        protected void HandleBuffChanged(BuffInstance _)
+        {
             Refresh();
         }
 
@@ -100,6 +157,8 @@ namespace PLAYERTWO.ARPGProject
             m_blocksHeader = Find("Header Blocks");
             m_combosHeader = Find("Header Combos");
             m_bonusesHeader = Find("Header Bonuses");
+            m_progressHeader = Find("Header Progress");
+            m_difficultyHeader = Find("Header Difficulty");
         }
 
         void ToggleHeader(GameObject header, params Text[] stats)
@@ -152,6 +211,18 @@ namespace PLAYERTWO.ARPGProject
 
             var s = m_entity.stats;
 
+            string playerType = PlayerBehaviorLogger.Instance?.currentDynamicPlayerType;
+            if (string.IsNullOrEmpty(playerType) || playerType == "Unknown" || playerType == "Undefined")
+                playerType = Game.instance?.currentCharacter?.playerType;
+
+            if (playerTypeDescriptionText)
+            {
+                if (playerType != null && s_playerTypeDescriptions.TryGetValue(playerType, out var desc))
+                    playerTypeDescriptionText.text = desc;
+                else
+                    playerTypeDescriptionText.text = string.Empty;
+            }
+
             SetNumericStat(fireResistanceText, s.fireResistance);
             SetNumericStat(waterResistanceText, s.waterResistance);
             SetNumericStat(iceResistanceText, s.iceResistance);
@@ -200,15 +271,54 @@ namespace PLAYERTWO.ARPGProject
             SetNumericStat(additionalLunarisPerMinuteText, s.additionalLunarisPerMinute);
             SetNumericStat(additionalSolmiresPerMinuteText, s.additionalSolmiresPerMinute);
             SetNumericStat(itemPricePercentText, s.itemPricePercent);
+
+            var logger = PlayerBehaviorLogger.Instance;
+            if (logger != null)
+            {
+                SetNumericStat(zonesDiscoveredText, logger.zonesDiscovered);
+                SetNumericStat(achievementsUnlockedText, logger.unlockedAchievements?.Count ?? 0);
+                SetNumericStat(questsCompletedText, logger.questsCompleted);
+            }
+
+            var character = Game.instance?.currentCharacter;
+            SetBoolStat(storylineCompletedText, character != null && character.storylineCompleted);
             
+            float currentDifficulty = DifficultyManager.Instance != null ? DifficultyManager.Instance.GetRawDifficulty() : 0f;
+            float avgMultiplier = AiDDAEntityStatsManager.Instance != null ? AiDDAEntityStatsManager.Instance.GetAverageMultiplier() : 0f;
+
+            SetNumericStat(currentDifficultyText, currentDifficulty);
+            SetNumericStat(difficultyMultiplierText, avgMultiplier, avgMultiplier.ToString("F2"));
+
             ToggleHeader(m_resistancesHeader, fireResistanceText, waterResistanceText, iceResistanceText, earthResistanceText, airResistanceText, lightningResistanceText, shadowResistanceText, lightResistanceText, arcaneResistanceText);
             ToggleHeader(m_immunitiesHeader, magicImmunityText, fireImmunityText, waterImmunityText, iceImmunityText, earthImmunityText, airImmunityText, lightningImmunityText, shadowImmunityText, lightImmunityText, arcaneImmunityText);
             ToggleHeader(m_regenerationsHeader, manaRegenPerSecondText, healthRegenPerSecondText, experiencePerSecondPercentText);
             ToggleHeader(m_blocksHeader, chanceToBlockText, blockSpeedText);
             ToggleHeader(m_combosHeader, maxCombosText, timeToStopComboText, nextComboDelayText);
             ToggleHeader(m_bonusesHeader, additionalManaText, additionalHealthText, increaseAttackSpeedPercentText, increaseDamageValueText, increaseMagicalDamageValueText, additionalExperienceRewardPercentText, additionalMoneyRewardPercentText, additionalAmberlingsPerMinuteText, additionalLunarisPerMinuteText, additionalSolmiresPerMinuteText, itemPricePercentText);
-
+            ToggleHeader(m_progressHeader, zonesDiscoveredText, achievementsUnlockedText, questsCompletedText, storylineCompletedText);
+            ToggleHeader(m_difficultyHeader, currentDifficultyText, difficultyMultiplierText);
+            
             LayoutRebuilder.ForceRebuildLayoutImmediate(transform as RectTransform);
+        }
+
+        protected virtual void OnDestroy()
+        {
+            if (m_entity != null && m_entity.stats != null)
+            {
+                m_entity.stats.onLevelUp.RemoveListener(Refresh);
+                m_entity.stats.onRecalculate.RemoveListener(Refresh);
+            }
+
+            if (m_buffManager != null)
+            {
+                m_buffManager.onBuffAdded.RemoveListener(HandleBuffChanged);
+                m_buffManager.onBuffRemoved.RemoveListener(HandleBuffChanged);
+            }
+
+            if (m_itemManager != null)
+            {
+                m_itemManager.onChanged.RemoveListener(Refresh);
+            }
         }
     }
 }

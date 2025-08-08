@@ -423,7 +423,7 @@ namespace PLAYERTWO.ARPGProject
                 playerTypeText.text = $"{displayedType}";
             }
 
-            if (playerTypeIcon != null)
+                        if (playerTypeIcon != null)
             {
                 if (!string.IsNullOrEmpty(displayedType) && displayedType != "Unknown" && displayedType != "Undefined")
                 {
@@ -436,6 +436,8 @@ namespace PLAYERTWO.ARPGProject
                     playerTypeIcon.gameObject.SetActive(false);
                 }
             }
+
+            extendedStats?.Refresh();
         }
         
         private void SetPlayerTypeIcon(string playerType, Image iconImage)

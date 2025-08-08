@@ -54,6 +54,7 @@ namespace PLAYERTWO.ARPGProject
         public int waypointsDiscovered = 0;
         public int achievementsUnlocked = 0;
         public bool questionnaireCompleted = false;
+        public bool storylineCompleted = false;
 
         public string playerType = "Undefined";
         public string currentDynamicPlayerType = "Unknown";
@@ -356,6 +357,7 @@ namespace PLAYERTWO.ARPGProject
                 questsCompleted = serializer.questsCompleted,
                 waypointsDiscovered = serializer.waypointsDiscovered,
                 questionnaireCompleted = serializer.questionnaireCompleted,
+                storylineCompleted = serializer.storylineCompleted,
                 playerType = serializer.playerType,
                 currentDynamicPlayerType = serializer.currentDynamicPlayerType,
                 totalPlayTime = serializer.totalPlayTime,

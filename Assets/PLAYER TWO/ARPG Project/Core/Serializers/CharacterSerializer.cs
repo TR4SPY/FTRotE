@@ -55,6 +55,7 @@ namespace PLAYERTWO.ARPGProject
         public int waypointsDiscovered = 0;
 
         public bool questionnaireCompleted = false;
+        public bool storylineCompleted = false;
 
         public string guildName;
         public string guildCrestData;
@@ -103,6 +104,7 @@ namespace PLAYERTWO.ARPGProject
             currentDynamicPlayerType = character.currentDynamicPlayerType;
             totalPlayTime = character.totalPlayTime;
 
+            storylineCompleted = character.storylineCompleted;
             questionnaireCompleted = character.questionnaireCompleted;
             specialCondition = character.specialCondition.ToString();
 

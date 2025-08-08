@@ -61,7 +61,7 @@ MonoBehaviour:
   - dialogText: You have chosen BUFF TESTS. Pick your buff
     specialCondition: 
     options:
-    - optionText: DIVINE BLESSING
+    - optionText: (BUFF) DIVINE BLESSING
       isForSocializer: 0
       isForAchiever: 0
       isForKiller: 0
@@ -71,7 +71,7 @@ MonoBehaviour:
       specialConditionToSet: 0
       hideIfAlreadyInGuild: 0
       buff: {fileID: 11400000, guid: f50197f9164e9af00a49d840184caef9, type: 2}
-    - optionText: EXPERIENCE GAIN
+    - optionText: (BUFF) EXP GAIN
       isForSocializer: 0
       isForAchiever: 0
       isForKiller: 0
@@ -91,7 +91,7 @@ MonoBehaviour:
       specialConditionToSet: 0
       hideIfAlreadyInGuild: 0
       buff: {fileID: 11400000, guid: 78f1b2bb2dec2f8b4885e55d642e1fa5, type: 2}
-    - optionText: MANA REGEN
+    - optionText: (BUFF) MANA REGEN
       isForSocializer: 0
       isForAchiever: 0
       isForKiller: 0
@@ -101,6 +101,16 @@ MonoBehaviour:
       specialConditionToSet: 0
       hideIfAlreadyInGuild: 0
       buff: {fileID: 11400000, guid: cfce1591f60ec9800b179d4c1240f6ea, type: 2}
+    - optionText: (BUFF) FULL CHARGE
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 10
+      nextPageIndex: 0
+      specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 11400000, guid: 99d0cea35023f7c0289a6768577ac5e9, type: 2}
     showOnce: 0
     isSpecial: 0
   dialogTitle: Some Dude - Monk
