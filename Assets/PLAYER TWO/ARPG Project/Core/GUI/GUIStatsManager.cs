@@ -472,6 +472,26 @@ namespace PLAYERTWO.ARPGProject
             }
         }
 
+        protected virtual void OnEnable()
+        {
+            if (characterInstance != null)
+                characterInstance.onBuffsRestored -= Refresh;
+
+            characterInstance = Game.instance?.currentCharacter;
+
+            if (characterInstance != null)
+                characterInstance.onBuffsRestored += Refresh;
+
+            if (m_entity != null)
+                Refresh();
+        }
+
+        protected virtual void OnDisable()
+        {
+            if (characterInstance != null)
+                characterInstance.onBuffsRestored -= Refresh;
+        }
+
         protected virtual void Start()
         {
             InitializeEntity();

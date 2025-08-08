@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -58,9 +59,17 @@ namespace PLAYERTWO.ARPGProject
         public Text additionalSolmiresPerMinuteText;
         public Text itemPricePercentText;
 
+        GameObject m_resistancesHeader;
+        GameObject m_immunitiesHeader;
+        GameObject m_regenerationsHeader;
+        GameObject m_blocksHeader;
+        GameObject m_combosHeader;
+        GameObject m_bonusesHeader;
+
         protected virtual void Start()
         {
             InitializeEntity();
+            CacheHeaders();
             Refresh();
         }
 
@@ -73,6 +82,42 @@ namespace PLAYERTWO.ARPGProject
             }
 
             m_entity = Level.instance.player;
+        }
+
+        void CacheHeaders()
+        {
+            Transform[] all = GetComponentsInChildren<Transform>(true);
+
+            GameObject Find(string n)
+            {
+                var t = Array.Find(all, tr => tr.name == n);
+                return t ? t.gameObject : null;
+            }
+
+            m_resistancesHeader = Find("Header Resistances");
+            m_immunitiesHeader = Find("Header Immunities");
+            m_regenerationsHeader = Find("Header Regenerations");
+            m_blocksHeader = Find("Header Blocks");
+            m_combosHeader = Find("Header Combos");
+            m_bonusesHeader = Find("Header Bonuses");
+        }
+
+        void ToggleHeader(GameObject header, params Text[] stats)
+        {
+            if (!header)
+                return;
+
+            bool any = false;
+            foreach (var text in stats)
+            {
+                if (text && text.transform.parent.gameObject.activeSelf)
+                {
+                    any = true;
+                    break;
+                }
+            }
+
+            header.SetActive(any);
         }
 
         protected void SetNumericStat(Text text, float value, string formattedValue = null)
@@ -155,6 +200,13 @@ namespace PLAYERTWO.ARPGProject
             SetNumericStat(additionalLunarisPerMinuteText, s.additionalLunarisPerMinute);
             SetNumericStat(additionalSolmiresPerMinuteText, s.additionalSolmiresPerMinute);
             SetNumericStat(itemPricePercentText, s.itemPricePercent);
+            
+            ToggleHeader(m_resistancesHeader, fireResistanceText, waterResistanceText, iceResistanceText, earthResistanceText, airResistanceText, lightningResistanceText, shadowResistanceText, lightResistanceText, arcaneResistanceText);
+            ToggleHeader(m_immunitiesHeader, magicImmunityText, fireImmunityText, waterImmunityText, iceImmunityText, earthImmunityText, airImmunityText, lightningImmunityText, shadowImmunityText, lightImmunityText, arcaneImmunityText);
+            ToggleHeader(m_regenerationsHeader, manaRegenPerSecondText, healthRegenPerSecondText, experiencePerSecondPercentText);
+            ToggleHeader(m_blocksHeader, chanceToBlockText, blockSpeedText);
+            ToggleHeader(m_combosHeader, maxCombosText, timeToStopComboText, nextComboDelayText);
+            ToggleHeader(m_bonusesHeader, additionalManaText, additionalHealthText, increaseAttackSpeedPercentText, increaseDamageValueText, increaseMagicalDamageValueText, additionalExperienceRewardPercentText, additionalMoneyRewardPercentText, additionalAmberlingsPerMinuteText, additionalLunarisPerMinuteText, additionalSolmiresPerMinuteText, itemPricePercentText);
 
             LayoutRebuilder.ForceRebuildLayoutImmediate(transform as RectTransform);
         }

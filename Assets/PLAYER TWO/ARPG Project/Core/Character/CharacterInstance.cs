@@ -38,6 +38,8 @@ namespace PLAYERTWO.ARPGProject
         public CharacterScenes scenes;
         public BuffsSerializer buffs;
 
+        public event Action onBuffsRestored;
+
         public int savedHealth = -1;
         public int savedMana = -1;
         public float savedDifficulty = 5f; 
@@ -279,6 +281,7 @@ namespace PLAYERTWO.ARPGProject
                 quests.InitializeQuests();
                 scenes.InitializeScenes();
                 buffs?.ApplyTo(m_entity.GetComponent<EntityBuffManager>());
+                onBuffsRestored?.Invoke();
             }
 
             return m_entity;
