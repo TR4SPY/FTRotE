@@ -42,6 +42,16 @@ namespace PLAYERTWO.ARPGProject
         )]
         public float enemyLootMoneyIncreaseRate = 0.15f;
 
+        [Header("Specialization Settings")]
+        [Tooltip("Player level required to unlock tier 1 specializations")]
+        public int tier1UnlockLevel = 0;
+        [Tooltip("Player level required to unlock tier 2 specializations")]
+        public int tier2UnlockLevel = 0;
+        [Tooltip("Player level required to unlock tier 3 specializations")]
+        public int tier3UnlockLevel = 0;
+        [Tooltip("The cost required to reset a specialization")]
+        public int specializationRespecCost = 0;
+
         [Header("Combat Settings")]
         [Tooltip("The damage multiplier applied to critical hits.")]
         public float criticalMultiplier = 1.25f;
@@ -204,6 +214,21 @@ namespace PLAYERTWO.ARPGProject
         {
             lastNPCID++;
             return lastNPCID;
+        }
+
+        public bool CanSelectTier(int tier, int currentLevel)
+        {
+            switch (tier)
+            {
+                case 1:
+                    return currentLevel >= tier1UnlockLevel;
+                case 2:
+                    return currentLevel >= tier2UnlockLevel;
+                case 3:
+                    return currentLevel >= tier3UnlockLevel;
+                default:
+                    return false;
+            }
         }
 
         /// <summary>

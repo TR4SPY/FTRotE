@@ -33,6 +33,9 @@ namespace PLAYERTWO.ARPGProject
         public ScenesSerializer scenes;
         public BuffsSerializer buffs;
 
+        public Dictionary<int, int> selectedSpecializations = new Dictionary<int, int>();
+        public Dictionary<int, int> specializationSkillPoints = new Dictionary<int, int>();
+
         public float dexterityMultiplier = 1.0f;
         public float strengthMultiplier = 1.0f;
         public float vitalityMultiplier = 1.0f;
@@ -110,6 +113,21 @@ namespace PLAYERTWO.ARPGProject
 
             guildName = character.guildName;
             guildCrestData = character.guildCrestData;
+            
+            if (character.specializations != null)
+            {
+                foreach (var kvp in character.specializations.selected)
+                {
+                    if (kvp.Value != null)
+                        selectedSpecializations[kvp.Key] = kvp.Value.id;
+                }
+
+                foreach (var kvp in character.specializations.skillPoints)
+                {
+                    if (kvp.Key != null)
+                        specializationSkillPoints[kvp.Key.id] = kvp.Value;
+                }
+            }
 
             unlockedAchievements = character.unlockedAchievements != null ? new List<string>(character.unlockedAchievements) : new List<string>();
             achievementsUnlocked = unlockedAchievements.Count;

@@ -38,6 +38,7 @@ namespace PLAYERTWO.ARPGProject
         public CharacterScenes scenes;
         public BuffsSerializer buffs;
 
+        public CharacterSpecializations specializations = new CharacterSpecializations();
         public event Action onBuffsRestored;
 
         public int savedHealth = -1;
@@ -87,6 +88,7 @@ namespace PLAYERTWO.ARPGProject
             equipments = new CharacterEquipments(data);
             inventory = new CharacterInventory(data);
             skills = new CharacterSkills(data);
+            specializations = new CharacterSpecializations();
             quests = new CharacterQuests();
             scenes = new CharacterScenes();
             
@@ -164,6 +166,21 @@ namespace PLAYERTWO.ARPGProject
         public int GetDialogNextPage(int currentPage)
         {
             return selectedDialogPaths.ContainsKey(currentPage) ? selectedDialogPaths[currentPage] : -1;
+        }
+
+        public void SelectSpecialization(int tier, Specializations def)
+        {
+            specializations.SelectSpecialization(tier, def);
+        }
+
+        public Specializations GetSelected(int tier)
+        {
+            return specializations.GetSelected(tier);
+        }
+
+        public void ResetAll()
+        {
+            specializations.ResetAll();
         }
 
         public string GetSpecialConditionAsString()
@@ -345,6 +362,7 @@ namespace PLAYERTWO.ARPGProject
                 equipments = CharacterEquipments.CreateFromSerializer(serializer.equipments),
                 inventory = CharacterInventory.CreateFromSerializer(serializer.inventory),
                 skills = CharacterSkills.CreateFromSerializer(serializer.skills),
+                specializations = CharacterSpecializations.CreateFromData(serializer.selectedSpecializations, serializer.specializationSkillPoints),
                 quests = CharacterQuests.CreateFromSerializer(serializer.quests),
                 scenes = CharacterScenes.CreateFromSerializer(serializer.scenes),
                 

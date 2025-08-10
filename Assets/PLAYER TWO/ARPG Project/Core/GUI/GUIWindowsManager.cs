@@ -79,6 +79,9 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("A reference to the GUI Guildmaster.")]
         public GUIGuildmaster guildmasterWindow;
 
+        [Tooltip("A reference to the GUI Specializations Window.")]
+        public GUISpecializationsWindow specializationsWindow;
+
         [Header("Audio Settings")]
         [Tooltip("The Audio Clip that plays when opening windows.")]
         public AudioClip openClip;
@@ -179,7 +182,14 @@ namespace PLAYERTWO.ARPGProject
                     {
                         PlayerBehaviorLogger.Instance?.UpdatePlayerType();
                         stats.Refresh();
+                        stats.UpdateMasterSkillTreeButton();
                     });
+
+                    if (gui != null)
+                    {
+                        gui.onToggleCharacter.RemoveAllListeners();
+                        gui.onToggleCharacter.AddListener(() => ToggleStatsWindow(statsWindow));
+                    }
                 }
                 else
                 {
@@ -232,6 +242,20 @@ namespace PLAYERTWO.ARPGProject
                     window.Hide();
                 }
             }
+        }
+        
+        private void ToggleStatsWindow(GUIWindow statsWindow)
+        {
+            int currentTier = CharacterSpecializations.currentTier;
+            var selected = CharacterSpecializations.GetSelected(currentTier);
+            if (selected == null &&
+                CharacterSpecializations.CanSelectTier(Level.instance.player.stats.level))
+            {
+                specializationsWindow?.GetComponent<GUIWindow>()?.Show();
+                return;
+            }
+
+            statsWindow.Toggle();
         }
 
         public bool HasOpenWindows()

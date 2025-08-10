@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using AI_DDA.Assets.Scripts;
 using System;
+using System.Reflection;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -69,6 +70,11 @@ namespace PLAYERTWO.ARPGProject
         protected int m_health;
         protected int m_mana;
         protected int m_experience;
+
+        /// <summary>
+        /// External stat modifiers applied from systems like specializations.
+        /// </summary>
+        protected List<StatModifier> m_externalModifiers = new();
 
         /// <summary>
         /// Returns true if the component was initialized.
@@ -369,7 +375,25 @@ namespace PLAYERTWO.ARPGProject
                 m_items.onChanged.AddListener(Recalculate);
         }
 
+        // protected virtual void InitializeSkills() => m_skills = GetComponent<EntitySkillManager>();
+
         protected virtual void InitializeSkills() => m_skills = GetComponent<EntitySkillManager>();
+
+        /// <summary>
+        /// Replace external stat modifiers and recalculate the stats.
+        /// </summary>
+        /// <param name="modifiers">Modifiers to apply. Pass null to clear.</param>
+        public virtual void SetExternalModifiers(IEnumerable<StatModifier> modifiers)
+        {
+            m_externalModifiers = modifiers != null
+                ? new List<StatModifier>(modifiers)
+                : new List<StatModifier>();
+
+            if (initialized)
+            {
+                Recalculate();
+            }
+        }
 
         public void RecheckWeaponSkill()
         {
@@ -865,6 +889,9 @@ namespace PLAYERTWO.ARPGProject
             defense = CalculateDefense();
             stunChance = CalculateStunChance();
             stunSpeed = CalculateStunSpeed();
+
+            ApplyExternalModifiers();
+
             health = Mathf.Min(health, maxHealth);
             mana = Mathf.Min(mana, maxMana);
             
@@ -872,6 +899,33 @@ namespace PLAYERTWO.ARPGProject
 
             onRecalculate.RemoveListener(RecheckWeaponSkill);
             onRecalculate.AddListener(RecheckWeaponSkill);
+        }
+
+        /// <summary>
+        /// Apply all external stat modifiers to the calculated stats.
+        /// </summary>
+        protected virtual void ApplyExternalModifiers()
+        {
+            if (m_externalModifiers == null || m_externalModifiers.Count == 0)
+                return;
+
+            foreach (var mod in m_externalModifiers)
+            {
+                if (string.IsNullOrWhiteSpace(mod.statName))
+                    continue;
+
+                var prop = GetType().GetProperty(mod.statName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                if (prop == null || prop.PropertyType != typeof(int))
+                    continue;
+
+                int current = (int)prop.GetValue(this);
+                if (mod.percentage)
+                    current += Mathf.RoundToInt(current * mod.value / 100f);
+                else
+                    current += mod.value;
+
+                prop.SetValue(this, current);
+            }
         }
 
         /// <summary>

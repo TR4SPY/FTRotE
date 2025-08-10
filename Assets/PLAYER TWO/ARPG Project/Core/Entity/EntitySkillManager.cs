@@ -146,6 +146,29 @@ namespace PLAYERTWO.ARPGProject
         public virtual SkillAttack GetSkillAttack() => (SkillAttack)current;
 
         /// <summary>
+        /// Apply augments to equipped skills.
+        /// </summary>
+        public void ApplySkillAugments(IEnumerable<SkillAugment> augments)
+        {
+            if (equipped == null)
+                return;
+
+            foreach (var inst in equipped)
+            {
+                inst.ResetAugments();
+            }
+
+            if (augments == null)
+                return;
+
+            foreach (var aug in augments)
+            {
+                var instance = equipped.FirstOrDefault(i => i.data == aug.skill);
+                instance?.ApplyAugment(aug);
+            }
+        }
+
+        /// <summary>
         /// Performs the current selected skill, consuming the mana, and applying its effects.
         /// It casts the Skill's casting object, if any, or activates the Entity's Hitbox, if
         /// the Skill is configured to to use it.
@@ -183,6 +206,7 @@ namespace PLAYERTWO.ARPGProject
             if (IsAttack() && current.AsAttack().useMeleeHitbox)
             {
                 var skillDamage = m_entity.stats.GetSkillDamage(m_entity.skills.current, m_entity.skills.current.element, out var skillCritical);
+                skillDamage = currentInstance.GetAugmentedDamage(skillDamage);
                 m_entity.hitbox.SetDamage(skillDamage, skillCritical);
                 m_entity.hitbox.Toggle();
             }

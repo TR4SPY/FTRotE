@@ -111,6 +111,9 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("A reference to the button that toggles the Extended Stats Window.")]
         public Button extendedStatsButton;
 
+        [Tooltip("Button to reopen the Master Skill Tree.")]
+        public Button masterSkillTreeButton;
+
         [Header("Sprites")]
         public Sprite[] playerTypeSprites;
         [SerializeField] private Image playerTypeIcon;
@@ -157,6 +160,16 @@ namespace PLAYERTWO.ARPGProject
 
             applyButton.gameObject.SetActive(shouldShow);
             cancelButton.gameObject.SetActive(shouldShow);
+        }
+
+        public void UpdateMasterSkillTreeButton()
+        {
+            if (!masterSkillTreeButton)
+                return;
+
+            int currentTier = CharacterSpecializations.currentTier;
+            var selected = CharacterSpecializations.GetSelected(currentTier);
+            masterSkillTreeButton.gameObject.SetActive(selected != null);
         }
 
         private void ToggleExtendedStats()
@@ -438,6 +451,7 @@ namespace PLAYERTWO.ARPGProject
             }
 
             extendedStats?.Refresh();
+            UpdateMasterSkillTreeButton();
         }
         
         private void SetPlayerTypeIcon(string playerType, Image iconImage)
@@ -518,6 +532,15 @@ namespace PLAYERTWO.ARPGProject
 
             if (extendedStatsButton)
                 extendedStatsButton.onClick.AddListener(ToggleExtendedStats);
+            
+            if (masterSkillTreeButton)
+            {
+                masterSkillTreeButton.onClick.RemoveAllListeners();
+                masterSkillTreeButton.onClick.AddListener(() =>
+                    GUIWindowsManager.Instance.specializationsWindow?.GetComponent<GUIWindow>()?.Show());
+            }
+
+            UpdateMasterSkillTreeButton();
         }
 
         protected virtual void InitializeTooltips()
