@@ -167,8 +167,8 @@ namespace PLAYERTWO.ARPGProject
             if (!masterSkillTreeButton)
                 return;
 
-            int currentTier = CharacterSpecializations.currentTier;
-            var selected = CharacterSpecializations.GetSelected(currentTier);
+            int currentTier = 0;
+            var selected = Game.instance?.currentCharacter?.GetSelected(currentTier);
             masterSkillTreeButton.gameObject.SetActive(selected != null);
         }
 

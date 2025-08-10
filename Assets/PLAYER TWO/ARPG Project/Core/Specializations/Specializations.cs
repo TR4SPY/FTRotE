@@ -3,12 +3,6 @@ using UnityEngine;
 
 namespace PLAYERTWO.ARPGProject
 {
-    /// <summary>
-    /// Character specialization definition:
-    /// - Full descriptive data (name, tier, family, icon, tags, description).
-    /// - Lists of stat modifiers and skill augments.
-    /// - Unique identifier with lookup by ID.
-    /// </summary>
     [CreateAssetMenu(
         fileName = "New Specialization",
         menuName = "PLAYER TWO/ARPG Project/Specializations/Specialization")]
@@ -40,6 +34,10 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("Skill augments granted by this specialization.")]
         public List<SkillAugment> activeAugments = new();
 
+        [Header("Skills")]
+        [Tooltip("Skills that belong to this specialization (used by GUIMasterSkillTree to build the tree).")]
+        public List<Skill> skills = new();
+
         [Header("Description")]
         [Tooltip("Long-form description displayed in tooltips or UI panels.")]
         [TextArea]
@@ -50,16 +48,12 @@ namespace PLAYERTWO.ARPGProject
 
         private void OnEnable()
         {
-            // Register in the static lookup
             if (!s_lookup.ContainsKey(id))
                 s_lookup.Add(id, this);
             else
                 s_lookup[id] = this;
         }
 
-        /// <summary>
-        /// Finds a specialization by its unique ID.
-        /// </summary>
         public static Specializations FindById(int id)
         {
             s_lookup.TryGetValue(id, out var def);

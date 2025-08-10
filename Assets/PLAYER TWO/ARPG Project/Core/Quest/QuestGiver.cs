@@ -43,7 +43,7 @@ namespace PLAYERTWO.ARPGProject
             InitializeCallbacks();
             InitializeStates();
 
-            var stats = Game.instance.currentCharacter?.stats;
+            var stats = Level.instance?.player?.stats;
             if (stats != null)
             {
                 stats.onLevelUp.AddListener(CheckClassUpgradeQuestAvailability);
@@ -185,9 +185,16 @@ namespace PLAYERTWO.ARPGProject
             var nextClass = ClassHierarchy.GetNextTierClass(currentClass);
             if (nextClass == CharacterClassRestrictions.None)
                 return;
-
+                
             int nextTier = ClassHierarchy.GetTier(nextClass);
-            int unlockLevel = CharacterSpecializations.GetTierUnlockLevel(nextTier);
+            int unlockLevel = nextTier switch
+            {
+                1 => Game.instance.tier1UnlockLevel,
+                2 => Game.instance.tier2UnlockLevel,
+                3 => Game.instance.tier3UnlockLevel,
+                _ => int.MaxValue
+            };
+
             if (player.stats.currentLevel >= unlockLevel)
             {
                 ChangeStateTo(State.QuestAvailable);
@@ -195,6 +202,7 @@ namespace PLAYERTWO.ARPGProject
             else if (state != State.QuestInProgress)
             {
                 ChangeStateTo(State.None);
+
             }
         }
 
@@ -505,8 +513,6 @@ namespace PLAYERTWO.ARPGProject
                 FindFirstObjectByType<GUIStatsManager>()?.Refresh();
 
                 newEntity.GetComponent<PlayerInitializer>()?.Initialize();
-
-                CharacterSpecializations.UnlockTier(tierToUnlock);
             }
 
             ChangeStateTo(CurrentQuest() ? State.QuestAvailable : State.None);

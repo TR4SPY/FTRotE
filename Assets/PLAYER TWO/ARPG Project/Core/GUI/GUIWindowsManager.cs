@@ -246,10 +246,10 @@ namespace PLAYERTWO.ARPGProject
         
         private void ToggleStatsWindow(GUIWindow statsWindow)
         {
-            int currentTier = CharacterSpecializations.currentTier;
-            var selected = CharacterSpecializations.GetSelected(currentTier);
+            int currentTier = 0;
+            var selected = Game.instance?.currentCharacter?.GetSelected(currentTier);
             if (selected == null &&
-                CharacterSpecializations.CanSelectTier(Level.instance.player.stats.level))
+                Game.instance.CanSelectTier(currentTier, Level.instance.player.stats.level))
             {
                 specializationsWindow?.GetComponent<GUIWindow>()?.Show();
                 return;

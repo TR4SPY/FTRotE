@@ -72,8 +72,11 @@ namespace PLAYERTWO.ARPGProject
 
         private void OnSelectSpecialization(int index)
         {
-            CharacterSpecializations.SelectSpecialization(index);
+            var def = Specializations.FindById(index);
+            Game.instance?.currentCharacter?.SelectSpecialization(0, def);
+
             Hide();
+
             if (masterSkillTreeWindow != null)
                 masterSkillTreeWindow.Show();
         }

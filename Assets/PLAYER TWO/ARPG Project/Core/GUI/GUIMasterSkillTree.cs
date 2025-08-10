@@ -4,6 +4,16 @@ using UnityEngine.UI;
 
 namespace PLAYERTWO.ARPGProject
 {
+    /// <summary>
+    /// Interfejs, który powinien zaimplementować komponent odpowiedzialny
+    /// za sprawdzanie/ustawianie posiadanych skilli w danej specjalizacji.
+    /// </summary>
+    public interface ISkillAllocator
+    {
+        bool HasSkill(Specializations specialization, Skill skill);
+        void SetSkill(Specializations specialization, Skill skill, bool allocated);
+    }
+
     [AddComponentMenu("PLAYER TWO/ARPG Project/GUI/GUI Master Skill Tree")]
     public class GUIMasterSkillTree : MonoBehaviour
     {
@@ -23,11 +33,13 @@ namespace PLAYERTWO.ARPGProject
         }
 
         [Header("Specialization")]
-        [Tooltip("Selected SpecializationDefinition whose skills are shown.")]
+        [Tooltip("Selected specialization whose skills are shown (must expose 'skills' list).")]
         public Specializations specialization;
 
-        [Tooltip("Reference to the CharacterSpecializations component where allocations are stored.")]
-        public Object characterSpecializations;
+        [Tooltip("Component that implements ISkillAllocator (e.g., your CharacterSpecializations).")]
+        [SerializeField] private MonoBehaviour characterSpecializationsComponent;
+
+        private ISkillAllocator m_allocator;
 
         [Header("Skill Nodes")]
         [Tooltip("Nodes displayed for this skill tree. Populate in the inspector.")]
@@ -51,9 +63,18 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void Start()
         {
+            // Bezpieczne rzutowanie na interfejs — bez dynamic.
+            m_allocator = characterSpecializationsComponent as ISkillAllocator;
+            if (characterSpecializationsComponent && m_allocator == null)
+            {
+                Debug.LogWarning($"{nameof(GUIMasterSkillTree)}: Assigned component does not implement {nameof(ISkillAllocator)}.");
+            }
+
             BuildFromSpecialization();
+
             if (applyButton) applyButton.onClick.AddListener(Apply);
             if (cancelButton) cancelButton.onClick.AddListener(Cancel);
+
             UpdateAvailablePointsText();
             UpdateApplyCancelButtons();
         }
@@ -62,21 +83,17 @@ namespace PLAYERTWO.ARPGProject
         {
             m_availablePoints = maxPoints;
 
-            HashSet<Skill> specializationSkills = new();
-            if (specialization)
+            var specializationSkills = new HashSet<Skill>();
+            if (specialization && specialization.skills != null)
             {
-                try
-                {
-                    dynamic spec = specialization;
-                    foreach (Skill skill in spec.skills)
-                        specializationSkills.Add(skill);
-                }
-                catch { }
+                foreach (var s in specialization.skills)
+                    if (s) specializationSkills.Add(s);
             }
 
             foreach (var node in nodes)
             {
                 bool inSpec = specializationSkills.Count == 0 || specializationSkills.Contains(node.skill);
+
                 if (node.slot)
                     node.slot.gameObject.SetActive(inSpec);
 
@@ -100,15 +117,10 @@ namespace PLAYERTWO.ARPGProject
 
         private bool HasSkill(Skill skill)
         {
-            try
-            {
-                dynamic cs = characterSpecializations;
-                return cs.HasSkill(specialization, skill);
-            }
-            catch
-            {
+            if (m_allocator == null || specialization == null || skill == null)
                 return false;
-            }
+
+            return m_allocator.HasSkill(specialization, skill);
         }
 
         private void ToggleNode(SkillNode node)
@@ -149,18 +161,18 @@ namespace PLAYERTWO.ARPGProject
 
         public void Apply()
         {
-            try
+            if (m_allocator == null || specialization == null)
+                return;
+
+            foreach (var node in nodes)
             {
-                dynamic cs = characterSpecializations;
-                foreach (var node in nodes)
+                bool original = m_original.TryGetValue(node, out var value) && value;
+                if (node.allocated != original)
                 {
-                    bool original = m_original.TryGetValue(node, out var value) && value;
-                    if (node.allocated != original)
-                        cs.SetSkill(specialization, node.skill, node.allocated);
+                    m_allocator.SetSkill(specialization, node.skill, node.allocated);
                     m_original[node] = node.allocated;
                 }
             }
-            catch { }
 
             UpdateApplyCancelButtons();
         }

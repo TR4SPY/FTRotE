@@ -9473,8 +9473,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4202839085706061861}
   m_HandleRect: {fileID: 1284374384747649391}
   m_Direction: 2
-  m_Value: 0.097906195
-  m_Size: 0.6530131
+  m_Value: -0.00000078729227
+  m_Size: 0.65301317
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -17817,6 +17817,7 @@ MonoBehaviour:
   applyButton: {fileID: 1549345820893512681}
   cancelButton: {fileID: 1549345821512894469}
   extendedStatsButton: {fileID: 5853228931549326348}
+  masterSkillTreeButton: {fileID: 0}
   playerTypeSprites:
   - {fileID: 1461787297, guid: 0e4c6040f4cac1671a0415e6573640b8, type: 3}
   - {fileID: 1750285108, guid: 0e4c6040f4cac1671a0415e6573640b8, type: 3}
@@ -18827,6 +18828,7 @@ MonoBehaviour:
   chatWindow: {fileID: 1882663456880447917}
   minimapWindow: {fileID: 8793748978819378064}
   guildmasterWindow: {fileID: 445453192235625805}
+  specializationsWindow: {fileID: 4503642346660276857}
   openClip: {fileID: 8300000, guid: a3fcc9e9a9521ae439721668644040d0, type: 3}
   closeClip: {fileID: 8300000, guid: 2bd5a91e371e3f04f8a82106e64e6f62, type: 3}
 --- !u!1 &1549345820860330657
@@ -54367,6 +54369,7 @@ GameObject:
   - component: {fileID: 6705582620076124131}
   - component: {fileID: 3505432827586565963}
   - component: {fileID: 3278264787073925767}
+  - component: {fileID: 4503642346660276857}
   m_Layer: 5
   m_Name: Specialization Window
   m_TagString: Untagged
@@ -54458,6 +54461,31 @@ MonoBehaviour:
   onClose:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &4503642346660276857
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5063086221316757320}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65dbc64ae1473547ca1c5848062386fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  closeWhenPlayerMove: 0
+  openClip: {fileID: 0}
+  closeClip: {fileID: 0}
+  onOpen:
+    m_PersistentCalls:
+      m_Calls: []
+  onClose:
+    m_PersistentCalls:
+      m_Calls: []
+  classFamily: 
+  buttonsContainer: {fileID: 0}
+  buttonPrefab: {fileID: 0}
+  masterSkillTreeWindow: {fileID: 0}
 --- !u!1 &5064196625567005952
 GameObject:
   m_ObjectHideFlags: 0
@@ -64798,7 +64826,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -125.33136}
+  m_AnchoredPosition: {x: 0, y: -102.560524}
   m_SizeDelta: {x: 764.92, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2683628518585182366
