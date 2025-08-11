@@ -198,6 +198,29 @@ namespace PLAYERTWO.ARPGProject
                 }
             }
 
+            if (skills != null)
+            {
+                var skillsWindow = skills.GetComponent<GUIWindow>();
+                if (skillsWindow != null)
+                {
+                    skillsWindow.onOpen.AddListener(() =>
+                    {
+                        PlayerBehaviorLogger.Instance?.UpdatePlayerType();
+                        skills.Refresh();
+                    });
+
+                    if (gui != null)
+                    {
+                        gui.onToggleSkills.RemoveAllListeners();
+                        gui.onToggleSkills.AddListener(() => ToggleSkillsWindow(skillsWindow));
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning("[GUIWindowsManager] Cannot find GUISkillsManager.");
+                }
+            }
+
             if (extendedStats != null)
             {
                 var extendedWindow = extendedStats.GetComponent<GUIWindow>();
@@ -258,6 +281,19 @@ namespace PLAYERTWO.ARPGProject
             statsWindow.Toggle();
         }
 
+        private void ToggleSkillsWindow(GUIWindow skillsWindow)
+        {
+            int currentTier = 0;
+            var selected = Game.instance?.currentCharacter?.GetSelected(currentTier);
+            if (selected == null &&
+                Game.instance.CanSelectTier(currentTier, Level.instance.player.stats.level))
+            {
+                specializationsWindow?.GetComponent<GUIWindow>()?.Show();
+                return;
+            }
+
+            skillsWindow.Toggle();
+        }
         public bool HasOpenWindows()
         {
             return windows.Exists(w => w.isOpen);
