@@ -16,7 +16,8 @@ namespace PLAYERTWO.ARPGProject
     {
         Normal = 0,
         Exclusive = 1,
-        ClassUpgrade = 2
+        ClassUpgrade = 2,
+        Specialization = 3
     }
 
     [CreateAssetMenu(fileName = "New Quest", menuName = "PLAYER TWO/ARPG Project/Quest/Quest")]

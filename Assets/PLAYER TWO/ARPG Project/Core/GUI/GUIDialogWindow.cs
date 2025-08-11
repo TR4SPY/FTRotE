@@ -185,6 +185,10 @@ namespace AI_DDA.Assets.Scripts
                     }
                     ContinueDialog(option.nextPageIndex);
                     break;
+                
+                    case Dialog.DialogAction.OpenSpecialization:
+                    OpenSpecializationWindow();
+                    break;
 
                 default:
                     Close();
@@ -336,6 +340,26 @@ namespace AI_DDA.Assets.Scripts
 
             GUIWindowsManager.instance.exclusiveWindow.SetQuest(upgradeQuest);
         }
+
+        public void OpenSpecializationWindow()
+        {
+            var questGiver = currentNPC.GetComponent<QuestGiver>();
+            if (questGiver == null)
+            {
+                Debug.LogError("Brak komponentu QuestGiver.");
+                return;
+            }
+
+            var specQuest = questGiver.CurrentSpecializationQuest();
+            if (specQuest == null)
+            {
+                Debug.Log("Brak questów typu specialization.");
+                return;
+            }
+
+            GUIWindowsManager.instance.exclusiveWindow.SetQuest(specQuest);
+        }
+
         private void SetPlayerTypeIcon(Dialog.DialogOption option, Image iconImage)
         {
             iconImage.gameObject.SetActive(false);

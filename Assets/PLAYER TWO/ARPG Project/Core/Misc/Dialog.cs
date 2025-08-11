@@ -49,7 +49,8 @@ namespace AI_DDA.Assets.Scripts
             SetSpecialCondition = 8,
             OpenGuildmaster = 9,
             GiveBuff = 10,
-            GiveDebuff = 11
+            GiveDebuff = 11,
+            OpenSpecialization = 12
         }
 
         public List<DialogPage> pages = new List<DialogPage>();
@@ -139,6 +140,19 @@ namespace AI_DDA.Assets.Scripts
                         }
 
                         isAllowed = upgradeQuest != null;
+                    }
+                }
+                else if (option.action == DialogAction.OpenSpecialization)
+                {
+                    if (questGiver == null || questGiver.CurrentSpecializationQuest() == null)
+                    {
+                        Debug.LogWarning("[Dialog] Nie znaleziono QuestGivera.");
+                        isAllowed = false;
+                    }
+                    else
+                    {
+                        var specQuest = questGiver.CurrentSpecializationQuest();
+                        isAllowed = specQuest != null;
                     }
                 }
 

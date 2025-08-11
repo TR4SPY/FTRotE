@@ -43,13 +43,15 @@ namespace PLAYERTWO.ARPGProject
             InitializeCallbacks();
             InitializeStates();
 
-            var stats = Level.instance?.player?.stats;
+            var stats = Game.instance.currentCharacter?.stats;
             if (stats != null)
             {
                 stats.onLevelUp.AddListener(CheckClassUpgradeQuestAvailability);
+                stats.onLevelUp.AddListener(CheckSpecializationQuestAvailability);
             }
 
             CheckClassUpgradeQuestAvailability();
+            CheckSpecializationQuestAvailability();
         }
 
         protected virtual void InitializeCallbacks()
@@ -171,6 +173,40 @@ namespace PLAYERTWO.ARPGProject
             return null;
         }
 
+        public Quest CurrentSpecializationQuest()
+        {
+            var player = Game.instance.currentCharacter;
+            var className = player.Entity?.name?.Replace("(Clone)", "").Trim() ?? "";
+
+            if (!ClassHierarchy.NameToBits.TryGetValue(className, out var currentClass))
+            {
+                return null;
+            }
+
+            int currentLevel = player.stats.currentLevel;
+            int maxLevel = Game.instance.maxLevel;
+
+            var allQuests = quests.Concat(additionalQuests);
+            foreach (var quest in allQuests)
+            {
+                if (quest.questType != QuestType.Specialization)
+                    continue;
+
+                if (quest.requiredClass != CharacterClassRestrictions.None &&
+                    (quest.requiredClass & currentClass) == 0)
+                    continue;
+
+                if (quest.requireMaxLevel && currentLevel < maxLevel)
+                    continue;
+
+                if (!Game.instance.quests.ContainsQuest(quest) ||
+                    (Game.instance.quests.TryGetQuest(quest, out var q) && !q.completed))
+                    return quest;
+            }
+
+            return null;
+        }
+
         protected void CheckClassUpgradeQuestAvailability()
         {
             var quest = CurrentClassUpgradeQuest();
@@ -185,16 +221,9 @@ namespace PLAYERTWO.ARPGProject
             var nextClass = ClassHierarchy.GetNextTierClass(currentClass);
             if (nextClass == CharacterClassRestrictions.None)
                 return;
-                
-            int nextTier = ClassHierarchy.GetTier(nextClass);
-            int unlockLevel = nextTier switch
-            {
-                1 => Game.instance.tier1UnlockLevel,
-                2 => Game.instance.tier2UnlockLevel,
-                3 => Game.instance.tier3UnlockLevel,
-                _ => int.MaxValue
-            };
 
+            int nextTier = ClassHierarchy.GetTier(nextClass);
+            int unlockLevel = CharacterSpecializations.GetTierUnlockLevel(nextTier);
             if (player.stats.currentLevel >= unlockLevel)
             {
                 ChangeStateTo(State.QuestAvailable);
@@ -202,7 +231,33 @@ namespace PLAYERTWO.ARPGProject
             else if (state != State.QuestInProgress)
             {
                 ChangeStateTo(State.None);
+            }
+        }
 
+        protected void CheckSpecializationQuestAvailability()
+        {
+            var quest = CurrentSpecializationQuest();
+            if (quest == null)
+                return;
+
+            var player = Game.instance.currentCharacter;
+            var className = player.Entity?.name?.Replace("(Clone)", "").Trim() ?? string.Empty;
+            if (!ClassHierarchy.NameToBits.TryGetValue(className, out var currentClass))
+                return;
+
+            var nextClass = ClassHierarchy.GetNextTierClass(currentClass);
+            if (nextClass == CharacterClassRestrictions.None)
+                return;
+
+            int nextTier = ClassHierarchy.GetTier(nextClass);
+            int unlockLevel = CharacterSpecializations.GetTierUnlockLevel(nextTier);
+            if (player.stats.currentLevel >= unlockLevel)
+            {
+                ChangeStateTo(State.QuestAvailable);
+            }
+            else if (state != State.QuestInProgress)
+            {
+                ChangeStateTo(State.None);
             }
         }
 
@@ -424,7 +479,29 @@ namespace PLAYERTWO.ARPGProject
                 return;
             }
 
-            if (quest.questType == QuestType.ClassUpgrade)
+            if (quest.questType == QuestType.Specialization)
+            {
+                var player = Game.instance.currentCharacter;
+                string currentClassName = player.Entity?.name?.Replace("(Clone)", "").Trim() ?? "";
+                if (!ClassHierarchy.NameToBits.TryGetValue(currentClassName, out var currentClass))
+                {
+                    Debug.LogWarning($"[Specialization] Nieznana klasa gracza: {currentClassName}");
+                }
+                else
+                {
+                    var nextClass = ClassHierarchy.GetNextTierClass(currentClass);
+                    if (nextClass == CharacterClassRestrictions.None)
+                    {
+                        Debug.LogWarning($"[Specialization] Brak dalszej klasy po: {currentClass}");
+                    }
+                    else
+                    {
+                        int tierToUnlock = ClassHierarchy.GetTier(nextClass);
+                        CharacterSpecializations.UnlockTier(tierToUnlock);
+                    }
+                }
+            }
+            else if (quest.questType == QuestType.ClassUpgrade)
             {
                 var player = Game.instance.currentCharacter;
                 var oldEntity = player.Entity;
@@ -450,7 +527,6 @@ namespace PLAYERTWO.ARPGProject
                     return;
                 }
 
-                int tierToUnlock = ClassHierarchy.GetTier(nextClass);
                 string newClassName = nextClass.ToString();
                 var newCharacter = GameDatabase.instance.characters.FirstOrDefault(c => c.name == newClassName);
                 if (newCharacter == null)
