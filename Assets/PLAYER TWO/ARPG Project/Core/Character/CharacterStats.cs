@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -21,6 +22,8 @@ namespace PLAYERTWO.ARPGProject
         public int currentExperience => m_stats ? m_stats.experience : initialExperience;
 
         protected EntityStatsManager m_stats;
+
+        public UnityEvent onLevelUp { get; } = new UnityEvent();
 
         public CharacterStats(Character character)
         {
@@ -57,11 +60,14 @@ namespace PLAYERTWO.ARPGProject
         /// <param name="stats">The Entity Stats Manager you want to initialize.</param>
         public virtual void InitializeStats(EntityStatsManager stats, bool resetVitals = true)
         {
+            if (m_stats != null)
+                m_stats.onLevelUp.RemoveListener(HandleLevelUp);
+
             m_stats = stats;
 
             if (!resetVitals)
             {
-                m_stats.Recalculate(); // przelicz statystyki, ale nie resetuj HP/MP
+                m_stats.Recalculate();
             }
             else
             {
@@ -69,6 +75,13 @@ namespace PLAYERTWO.ARPGProject
                 initialDexterity, initialVitality, initialEnergy,
                 initialAvailablePoints, initialExperience);
             }
+
+            m_stats.onLevelUp.AddListener(HandleLevelUp);
+        }
+
+        protected virtual void HandleLevelUp()
+        {
+            onLevelUp.Invoke();
         }
 
         public static CharacterStats CreateFromSerializer(StatsSerializer serializer)

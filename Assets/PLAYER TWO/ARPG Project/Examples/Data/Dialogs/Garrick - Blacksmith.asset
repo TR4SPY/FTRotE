@@ -25,6 +25,8 @@ MonoBehaviour:
       action: 5
       nextPageIndex: -1
       specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
     showOnce: 1
     isSpecial: 0
   - dialogText: "...Hmph. Still standing? Alright then. I'm Garrick Ironbane, and
@@ -41,24 +43,8 @@ MonoBehaviour:
       action: 5
       nextPageIndex: -1
       specialConditionToSet: 0
-    showOnce: 1
-    isSpecial: 0
-  - dialogText: "I\u2019ve been hammering steel longer than you\u2019ve been walking
-      this land, and I can tell just by looking at you\u2014you\u2019ve seen your
-      fair share of fights. That\u2019s good. Means you understand that a blade isn\u2019t
-      just a piece of metal. It\u2019s trust. It\u2019s survival. A dull sword is
-      a death sentence, and a brittle one? That\u2019s worse\u2014it makes you think
-      it\u2019ll hold right up until the moment it doesn\u2019t."
-    specialCondition: 
-    options:
-    - optionText: Exactly!
-      isForSocializer: 0
-      isForAchiever: 0
-      isForKiller: 0
-      isForExplorer: 0
-      action: 5
-      nextPageIndex: -1
-      specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
     showOnce: 1
     isSpecial: 0
   - dialogText: "I don\u2019t deal in fancy engravings or delicate ornamentation.
@@ -76,6 +62,8 @@ MonoBehaviour:
       action: 4
       nextPageIndex: -1
       specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
     - optionText: Can I be of an assistance?
       isForSocializer: 0
       isForAchiever: 0
@@ -84,6 +72,18 @@ MonoBehaviour:
       action: 6
       nextPageIndex: -1
       specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
+    - optionText: SPECIALIZATION
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 12
+      nextPageIndex: -1
+      specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
     showOnce: 0
     isSpecial: 0
   dialogTitle: Garrick - Blacksmith

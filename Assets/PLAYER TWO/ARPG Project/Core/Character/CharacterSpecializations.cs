@@ -38,6 +38,38 @@ namespace PLAYERTWO.ARPGProject
         protected EntityStatsManager m_stats;
         protected EntitySkillManager m_skills;
 
+        #region Tier unlocking helpers
+
+        private static readonly HashSet<int> s_unlockedTiers = new HashSet<int>();
+
+        public static int GetTierUnlockLevel(int tier)
+        {
+            if (!Game.instance)
+                return int.MaxValue;
+
+            switch (tier)
+            {
+                case 1:
+                    return Game.instance.tier1UnlockLevel;
+                case 2:
+                    return Game.instance.tier2UnlockLevel;
+                case 3:
+                    return Game.instance.tier3UnlockLevel;
+                default:
+                    return int.MaxValue;
+            }
+        }
+
+        public static void UnlockTier(int tier)
+        {
+            if (s_unlockedTiers.Add(tier))
+                Debug.Log($"Tier {tier} unlocked.");
+        }
+
+        public static bool IsTierUnlocked(int tier) => s_unlockedTiers.Contains(tier);
+
+        #endregion
+        
         #region Unity lifecycle
 
         protected virtual void Awake()
