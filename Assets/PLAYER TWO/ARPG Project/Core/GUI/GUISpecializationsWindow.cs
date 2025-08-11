@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,19 +19,14 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("Name of the class family to load specialization sprites for.")]
         public string classFamily;
 
-        [Tooltip("Parent transform where specialization buttons will be created.")]
-        public RectTransform buttonsContainer;
-
-        [Tooltip("Prefab used to create specialization buttons.")]
-        public Button buttonPrefab;
+        [Tooltip("Buttons representing the available specializations (in order 0,1,2).")]
+        public Button[] specializationButtons = new Button[3];
 
         [Tooltip("Window to show after a specialization is selected.")]
         public GUIWindow masterSkillTreeWindow;
 
-        private readonly List<Button> m_buttons = new();
-
         /// <summary>
-        /// Build the specialization buttons when the window opens.
+        /// Build or refresh specialization buttons when the window opens.
         /// </summary>
         protected override void OnOpen()
         {
@@ -42,31 +36,34 @@ namespace PLAYERTWO.ARPGProject
 
         private void BuildButtons()
         {
-            if (!buttonPrefab || !buttonsContainer)
-                return;
-
-            if (m_buttons.Count > 0)
-                return; // Already built
-
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < specializationButtons.Length; i++)
             {
-                int index = i;
-                Button btn = Object.Instantiate(buttonPrefab, buttonsContainer);
+                Button btn = specializationButtons[i];
+                if (!btn)
+                    continue;
 
-                // Set specialization sprite
+                int index = i;
+
                 Image img = btn.GetComponent<Image>();
                 if (img)
                     img.sprite = Resources.Load<Sprite>($"Specializations_{classFamily}_{index}");
 
-                // Overlay container frame
-                GameObject frameGO = new GameObject("Frame", typeof(RectTransform), typeof(Image));
-                frameGO.transform.SetParent(btn.transform, false);
-                Image frame = frameGO.GetComponent<Image>();
+                Transform frameTr = btn.transform.Find("Frame");
+                Image frame = null;
+                if (frameTr)
+                    frame = frameTr.GetComponent<Image>();
+                else
+                {
+                    GameObject frameGO = new GameObject("Frame", typeof(RectTransform), typeof(Image));
+                    frameGO.transform.SetParent(btn.transform, false);
+                    frame = frameGO.GetComponent<Image>();
+                }
+
                 frame.sprite = Resources.Load<Sprite>("Container_Specializations");
                 frame.SetNativeSize();
 
+                btn.onClick.RemoveAllListeners();
                 btn.onClick.AddListener(() => OnSelectSpecialization(index));
-                m_buttons.Add(btn);
             }
         }
 
