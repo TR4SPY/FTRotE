@@ -178,12 +178,7 @@ namespace PLAYERTWO.ARPGProject
                 gui.onToggleSkills.RemoveAllListeners();
                 gui.onToggleSkills.AddListener(OpenSkillsFromEvent);
 
-                if (specializationsWindow != null)
-                {
-                    gui.onToggleSpecializations.RemoveAllListeners();
-                    gui.onToggleSpecializations.AddListener(OpenSpecializationsFromEvent);
-                }
-                else
+                if (specializationsWindow == null)
                 {
                     Debug.LogWarning("[GUIWindowsManager] specializationsWindow is NULL. Assign it in the Inspector.");
                 }
@@ -201,7 +196,9 @@ namespace PLAYERTWO.ARPGProject
                         });
                     }
                     else
+                    {
                         Debug.LogWarning("[GUIWindowsManager] Cannot find GUIStatsManager window.");
+                    }
                 }
 
                 if (skills != null)
@@ -216,7 +213,9 @@ namespace PLAYERTWO.ARPGProject
                         });
                     }
                     else
+                    {
                         Debug.LogWarning("[GUIWindowsManager] Cannot find GUISkillsManager window.");
+                    }
                 }
             }
             else
@@ -273,13 +272,7 @@ namespace PLAYERTWO.ARPGProject
             else Debug.LogWarning("[GUIWindowsManager] Skills window not found/already destroyed.");
         }
 
-        private void OpenSpecializationsFromEvent()
-        {
-            var win = ResolveWindow(ref specializationsWindow);
-            if (win) win.Toggle();
-            else Debug.LogWarning("[GUIWindowsManager] Specializations window not found/already destroyed.");
-        }
-
+        // UWAGA: Brak OpenSpecializationsFromEvent — świadomie nie dodajemy drugiej ścieżki.
 
         private GUIWindow ResolveWindow<T>(ref T manager) where T : Component
         {

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -81,35 +82,57 @@ namespace PLAYERTWO.ARPGProject
             if (!string.IsNullOrWhiteSpace(classFamily))
                 return classFamily;
 
-            string className = null;
-            try
+            string className = Game.instance?.currentCharacter?.data?.name;
+
+            if (string.IsNullOrWhiteSpace(className))
             {
-                className = Game.instance?.currentCharacter?.GetName();
+                try { className = Game.instance?.currentCharacter?.GetName(); } catch { }
             }
-            catch {
-
-            }
-
             if (string.IsNullOrWhiteSpace(className))
             {
                 var ent = Level.instance?.player;
                 if (ent) className = ent.name?.Replace("(Clone)", "").Trim();
             }
+            if (string.IsNullOrWhiteSpace(className))
+                return null;
 
-            if (!string.IsNullOrWhiteSpace(className)
-                && ClassHierarchy.NameToBits.TryGetValue(className, out var bit))
+            bool TryGetBitCI(string name, out CharacterClassRestrictions bit)
             {
-                foreach (var fam in ClassHierarchy.Families)
+                bit = CharacterClassRestrictions.None;
+                var map = ClassHierarchy.NameToBits;
+                if (map == null) return false;
+
+                foreach (var kv in map)
                 {
-                    for (int i = 0; i < fam.Tiers.Length; i++)
+                    if (string.Equals(kv.Key, name, StringComparison.OrdinalIgnoreCase))
                     {
-                        if (fam.Tiers[i] == bit)
-                            return fam.FamilyName;
+                        bit = kv.Value;
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            if (TryGetBitCI(className, out var classBit))
+            {
+                var families = ClassHierarchy.Families;
+                if (families != null)
+                {
+                    foreach (var fam in families)
+                    {
+                        var tiers = fam.Tiers;
+                        if (tiers == null) continue;
+
+                        for (int i = 0; i < tiers.Length; i++)
+                        {
+                            if (tiers[i] == classBit)
+                                return fam.FamilyName;
+                        }
                     }
                 }
             }
 
-            return null;
+            return className;
         }
 
         private void BuildButtons()

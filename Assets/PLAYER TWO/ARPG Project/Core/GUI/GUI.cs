@@ -118,8 +118,17 @@ namespace PLAYERTWO.ARPGProject
             m_dropItem.performed += _ => DropItem();
             m_toggleCollectiblesNames.performed += _ => onToggleCollectiblesNames.Invoke();
 
+
             if (m_toggleSpecializations != null)
-                m_toggleSpecializations.performed += _ => onToggleSpecializations.Invoke();
+            {
+                m_toggleSpecializations.performed -= OnSpecializationsAction;
+                m_toggleSpecializations.performed += OnSpecializationsAction;
+            }
+        }
+
+        private void OnSpecializationsAction(InputAction.CallbackContext _)
+        {
+            onToggleSpecializations?.Invoke();
         }
 
         public virtual void Select(GUIItem item)
