@@ -15,6 +15,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Toggle Specializations",
+                    "type": "Button",
+                    "id": "5f7ede6c-cae6-4c84-b298-fba88ac4a1b2",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Toggle Minimap",
                     "type": "Button",
                     "id": "7facd0e7-57f8-41f3-afdc-fd0bae9f48a5",
@@ -105,6 +114,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Toggle Skills",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c266cdcc-b81d-4a86-8eab-718289354873",
+                    "path": "<Keyboard>/j",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Toggle Specializations",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

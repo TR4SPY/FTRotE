@@ -42,7 +42,7 @@ namespace PLAYERTWO.ARPGProject
         public GUIWindow craftingRecipiesWindow;
 
         [Tooltip("A reference to all GUI Windows in the game.")]
-        private List<GUIWindow> windows; 
+        private List<GUIWindow> windows;
 
         [Tooltip("Reference to the Game Menu.")]
         public GameObject gameMenu;
@@ -76,6 +76,7 @@ namespace PLAYERTWO.ARPGProject
 
         [Tooltip("A reference to the Minimap HUD Window.")]
         public GUIWindow minimapWindow;
+
         [Tooltip("A reference to the GUI Guildmaster.")]
         public GUIGuildmaster guildmasterWindow;
 
@@ -165,60 +166,62 @@ namespace PLAYERTWO.ARPGProject
             gui = FindFirstObjectByType<GUI>();
 
             if (settingsWindow == null)
-            {
                 Debug.LogError("[GUIWindowsManager] settingsWindow is NULL! Assign it in the Inspector.");
-            }
 
             RebuildWindowsList();
 
-           // Debug.Log($"GUIWindowsManager initialized. Found {windows.Count} windows.");
-
-            if (stats != null)
+            if (gui != null)
             {
-                var statsWindow = stats.GetComponent<GUIWindow>();
-                if (statsWindow != null)
-                {
-                    statsWindow.onOpen.AddListener(() =>
-                    {
-                        PlayerBehaviorLogger.Instance?.UpdatePlayerType();
-                        stats.Refresh();
-                        stats.UpdateMasterSkillTreeButton();
-                    });
+                gui.onToggleCharacter.RemoveAllListeners();
+                gui.onToggleCharacter.AddListener(OpenStatsFromEvent);
 
-                    if (gui != null)
-                    {
-                        gui.onToggleCharacter.RemoveAllListeners();
-                        gui.onToggleCharacter.AddListener(() => ToggleStatsWindow(statsWindow));
-                    }
+                gui.onToggleSkills.RemoveAllListeners();
+                gui.onToggleSkills.AddListener(OpenSkillsFromEvent);
+
+                if (specializationsWindow != null)
+                {
+                    gui.onToggleSpecializations.RemoveAllListeners();
+                    gui.onToggleSpecializations.AddListener(OpenSpecializationsFromEvent);
                 }
                 else
                 {
-                    Debug.LogWarning("[GUIWindowsManager] Cannot find GUIStatsManager.");
+                    Debug.LogWarning("[GUIWindowsManager] specializationsWindow is NULL. Assign it in the Inspector.");
+                }
 
+                if (stats != null)
+                {
+                    var sw = ResolveWindow(ref stats);
+                    if (sw != null)
+                    {
+                        sw.onOpen.AddListener(() =>
+                        {
+                            PlayerBehaviorLogger.Instance?.UpdatePlayerType();
+                            stats.Refresh();
+                            stats.UpdateMasterSkillTreeButton();
+                        });
+                    }
+                    else
+                        Debug.LogWarning("[GUIWindowsManager] Cannot find GUIStatsManager window.");
+                }
+
+                if (skills != null)
+                {
+                    var skw = ResolveWindow(ref skills);
+                    if (skw != null)
+                    {
+                        skw.onOpen.AddListener(() =>
+                        {
+                            PlayerBehaviorLogger.Instance?.UpdatePlayerType();
+                            skills.Refresh();
+                        });
+                    }
+                    else
+                        Debug.LogWarning("[GUIWindowsManager] Cannot find GUISkillsManager window.");
                 }
             }
-
-            if (skills != null)
+            else
             {
-                var skillsWindow = skills.GetComponent<GUIWindow>();
-                if (skillsWindow != null)
-                {
-                    skillsWindow.onOpen.AddListener(() =>
-                    {
-                        PlayerBehaviorLogger.Instance?.UpdatePlayerType();
-                        skills.Refresh();
-                    });
-
-                    if (gui != null)
-                    {
-                        gui.onToggleSkills.RemoveAllListeners();
-                        gui.onToggleSkills.AddListener(() => ToggleSkillsWindow(skillsWindow));
-                    }
-                }
-                else
-                {
-                    Debug.LogWarning("[GUIWindowsManager] Cannot find GUISkillsManager.");
-                }
+                Debug.LogWarning("[GUIWindowsManager] GUI object not found in scene.");
             }
 
             if (extendedStats != null)
@@ -256,56 +259,66 @@ namespace PLAYERTWO.ARPGProject
             }
         }
 
+        private void OpenStatsFromEvent()
+        {
+            var win = ResolveWindow(ref stats);
+            if (win) win.Toggle();
+            else Debug.LogWarning("[GUIWindowsManager] Stats window not found/already destroyed.");
+        }
+
+        private void OpenSkillsFromEvent()
+        {
+            var win = ResolveWindow(ref skills);
+            if (win) win.Toggle();
+            else Debug.LogWarning("[GUIWindowsManager] Skills window not found/already destroyed.");
+        }
+
+        private void OpenSpecializationsFromEvent()
+        {
+            var win = ResolveWindow(ref specializationsWindow);
+            if (win) win.Toggle();
+            else Debug.LogWarning("[GUIWindowsManager] Specializations window not found/already destroyed.");
+        }
+
+
+        private GUIWindow ResolveWindow<T>(ref T manager) where T : Component
+        {
+            if (manager && manager.gameObject)
+            {
+                var w = manager.GetComponent<GUIWindow>();
+                if (w && w.gameObject) return w;
+            }
+
+            manager = FindFirstObjectByType<T>(FindObjectsInactive.Include);
+
+            if (manager && manager.gameObject)
+            {
+                var w = manager.GetComponent<GUIWindow>();
+                if (w && w.gameObject) return w;
+            }
+
+            return null;
+        }
+
         public void ResetWindowsState()
         {
             foreach (var window in windows)
             {
                 if (window != null)
-                {
                     window.Hide();
-                }
             }
         }
-        
-        private void ToggleStatsWindow(GUIWindow statsWindow)
-        {
-            int currentTier = 0;
-            var selected = Game.instance?.currentCharacter?.GetSelected(currentTier);
-            if (selected == null &&
-                Game.instance.CanSelectTier(currentTier, Level.instance.player.stats.level))
-            {
-                specializationsWindow?.GetComponent<GUIWindow>()?.Show();
-                return;
-            }
 
-            statsWindow.Toggle();
-        }
+        private void ToggleStatsWindow(GUIWindow statsWindow) => statsWindow.Toggle();
+        private void ToggleSkillsWindow(GUIWindow skillsWindow) => skillsWindow.Toggle();
 
-        private void ToggleSkillsWindow(GUIWindow skillsWindow)
-        {
-            int currentTier = 0;
-            var selected = Game.instance?.currentCharacter?.GetSelected(currentTier);
-            if (selected == null &&
-                Game.instance.CanSelectTier(currentTier, Level.instance.player.stats.level))
-            {
-                specializationsWindow?.GetComponent<GUIWindow>()?.Show();
-                return;
-            }
-
-            skillsWindow.Toggle();
-        }
-        public bool HasOpenWindows()
-        {
-            return windows.Exists(w => w.isOpen);
-        }
+        public bool HasOpenWindows() => windows.Exists(w => w.isOpen);
 
         public void CloseLastOpenedWindow()
         {
             GUIWindow lastWindow = GetLastOpenedWindow();
             if (lastWindow != null)
-            {
                 lastWindow.Hide();
-            }
         }
 
         private GUIWindow GetLastOpenedWindow()
@@ -313,9 +326,7 @@ namespace PLAYERTWO.ARPGProject
             for (int i = windows.Count - 1; i >= 0; i--)
             {
                 if (windows[i] != null && windows[i].isOpen)
-                {
                     return windows[i];
-                }
             }
             return null;
         }

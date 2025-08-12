@@ -28,6 +28,9 @@ namespace PLAYERTWO.ARPGProject
 
         [Tooltip("The list of all enemies in the game.")]
         public List<GameObject> enemies;
+        
+        [Tooltip("The list of all available Specializations.")]
+        public List<Specializations> specializations;
 
 
         /// <summary>

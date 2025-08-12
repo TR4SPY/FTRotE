@@ -18,12 +18,45 @@ namespace PLAYERTWO.ARPGProject
         public List<GameObject> questItems => gameData.questItems;
         public List<GameObject> enemies => gameData.enemies;
 
-        /// <summary>
-        /// Returns the index of a given element on a list of a given type.
-        /// If the element was not found, this method returns -1.
-        /// </summary>
-        /// <param name="element">The element you want to find the index.</param>
-        /// <typeparam name="T">The type of the list you want to find the element from.</typeparam>
+        // === NEW: Specializations ===
+        public List<Specializations> specializations => gameData.specializations;
+
+        protected override void Awake()
+        {
+            base.Awake();
+
+            SpecializationsRegisterAll();
+        }
+
+        private void SpecializationsRegisterAll()
+        {
+            if (specializations == null) return;
+
+            foreach (var s in specializations)
+            {
+                if (s == null) continue;
+                // wymuszamy OnEnable rejestrację
+                if (Specializations.FindById(s.id) != s)
+                {
+                    // dodajemy ręcznie jeśli trzeba
+                    var lookupField = typeof(Specializations)
+                        .GetField("s_lookup", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+                    var dict = lookupField?.GetValue(null) as Dictionary<int, Specializations>;
+                    if (dict != null)
+                        dict[s.id] = s;
+                }
+            }
+        }
+
+        public Specializations GetSpecializationById(int id) =>
+            specializations.FirstOrDefault(s => s != null && s.id == id);
+
+        public List<Specializations> GetSpecializationsByFamily(string family) =>
+            specializations
+                .Where(s => s != null && s.family == family)
+                .OrderBy(s => s.tier)
+                .ToList();
+
         public int GetElementId<T>(T element) where T : ScriptableObject
         {
             if (element is Character)
@@ -36,15 +69,12 @@ namespace PLAYERTWO.ARPGProject
                 return buffs.IndexOf(element as Buff);
             else if (element is Quest)
                 return quests.IndexOf(element as Quest);
+            else if (element is Specializations)
+                return specializations.IndexOf(element as Specializations);
 
             return -1;
         }
 
-        /// <summary>
-        /// Returns an element by its id from a list of a given type.
-        /// </summary>
-        /// <param name="id">The id of the element you're looking for.</param>
-        /// <typeparam name="T">The type of the list from which you want to find the element.</typeparam>
         public T FindElementById<T>(int id) where T : ScriptableObject
         {
             var type = typeof(T);
@@ -59,16 +89,12 @@ namespace PLAYERTWO.ARPGProject
                 return buffs[id] as T;
             else if (type == typeof(Quest) && !OutOfRangeFor<Quest>(id, quests))
                 return quests[id] as T;
+            else if (type == typeof(Specializations) && !OutOfRangeFor<Specializations>(id, specializations))
+                return specializations[id] as T;
 
             return default(T);
         }
 
-        /// <summary>
-        /// Returns true if the given index is out of range on a given list.
-        /// </summary>
-        /// <param name="index">The index you want to check.</param>
-        /// <param name="list">The list you want to check.</param>
-        /// <typeparam name="T">The type of the data of the list.</typeparam>
         protected virtual bool OutOfRangeFor<T>(int index, List<T> list) =>
             index < 0 || index >= list.Count;
     }

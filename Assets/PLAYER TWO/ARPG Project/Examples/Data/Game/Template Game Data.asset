@@ -142,3 +142,10 @@ MonoBehaviour:
   - {fileID: 9137032837993464747, guid: b244756fc8216127091890f43cfa2281, type: 3}
   - {fileID: 9137032837993464747, guid: 51d2f88a3d8937aa98ae107d341a4ac0, type: 3}
   - {fileID: 273316549901078574, guid: 4b88f6d8a326ed73c8178e0b61097a38, type: 3}
+  specializations:
+  - {fileID: 11400000, guid: fa382583e03be95ac83ed8c9b0e634fe, type: 2}
+  - {fileID: 11400000, guid: a29b209e92e27edd39163ea5a06b1fb8, type: 2}
+  - {fileID: 11400000, guid: 0f829f56abee2e7a28653110a913be0f, type: 2}
+  - {fileID: 11400000, guid: 834f8af9ff6537eadad99da500e3d6de, type: 2}
+  - {fileID: 11400000, guid: 94b4ea9a97bdd55c1bb27f340458e2b8, type: 2}
+  - {fileID: 11400000, guid: 0ef9b5be87b586278bbf6296ac5ef98f, type: 2}

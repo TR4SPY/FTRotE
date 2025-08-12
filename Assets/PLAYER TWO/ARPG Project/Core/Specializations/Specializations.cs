@@ -59,5 +59,27 @@ namespace PLAYERTWO.ARPGProject
             s_lookup.TryGetValue(id, out var def);
             return def;
         }
+
+        /// <summary>
+        /// Returns all loaded specializations that belong to the given family,
+        /// sorted by their identifier.
+        /// </summary>
+        public static List<Specializations> FindByFamily(string family)
+        {
+            List<Specializations> list = null;
+            foreach (var def in s_lookup.Values)
+            {
+                if (def != null && def.family == family)
+                {
+                    list ??= new List<Specializations>();
+                    list.Add(def);
+                }
+            }
+
+            if (list != null)
+                list.Sort((a, b) => a.id.CompareTo(b.id));
+
+            return list ?? new List<Specializations>();
+        }
     }
 }

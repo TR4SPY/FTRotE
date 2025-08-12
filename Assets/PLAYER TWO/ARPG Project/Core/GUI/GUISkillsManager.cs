@@ -262,6 +262,12 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         public virtual void Refresh()
         {
+            if (m_entity == null)
+                InitializeEntity();
+
+            if (m_entity == null || m_entity.skills == null)
+                return;
+
             var allSkills = m_entity.skills.ToArray();
             SetAvailableSkills(allSkills);
 

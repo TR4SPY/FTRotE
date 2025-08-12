@@ -51,6 +51,7 @@ namespace PLAYERTWO.ARPGProject
         public UnityEvent onToggleMenu;
         public UnityEvent onToggleMinimap;
         public UnityEvent onToggleCollectiblesNames;
+        public UnityEvent onToggleSpecializations;
 
         protected InputAction m_toggleSkills;
         protected InputAction m_toggleCharacter;
@@ -61,6 +62,8 @@ namespace PLAYERTWO.ARPGProject
         protected InputAction m_dropItem;
         protected InputAction m_toggleMinimap;
         protected InputAction m_toggleCollectiblesNames;
+        protected InputAction m_toggleSpecializations;
+
         protected GameAudio m_audio => GameAudio.instance;
 
         protected Entity m_entity;
@@ -88,6 +91,14 @@ namespace PLAYERTWO.ARPGProject
             m_dropItem = actions["Drop Item"];
             m_toggleMinimap = actions["Toggle Minimap"];
             m_toggleCollectiblesNames = actions["Toggle Collectibles Names"];
+
+            m_toggleSpecializations =
+                actions.FindAction("Toggle Specializations", throwIfNotFound: false);
+
+            if (m_toggleSpecializations == null)
+            {
+                Debug.LogWarning("[GUI] No 'Toggle Specializations' action found in InputActionAsset. Bind key J to one of these names.");
+            }
         }
 
         protected virtual void InitializeCallbacks()
@@ -106,6 +117,9 @@ namespace PLAYERTWO.ARPGProject
 #endif
             m_dropItem.performed += _ => DropItem();
             m_toggleCollectiblesNames.performed += _ => onToggleCollectiblesNames.Invoke();
+
+            if (m_toggleSpecializations != null)
+                m_toggleSpecializations.performed += _ => onToggleSpecializations.Invoke();
         }
 
         public virtual void Select(GUIItem item)
@@ -272,10 +286,8 @@ namespace PLAYERTWO.ARPGProject
             bool isActive = gameMenu.activeSelf;
             gameMenu.SetActive(!isActive);
 
-            // Play sound for opening / closing
             GameAudio.instance.PlayUiEffect(isActive ? windowsManager.closeClip : windowsManager.openClip);
 
-            // Pause game
             Time.timeScale = isActive ? 1 : 0;
         }
 

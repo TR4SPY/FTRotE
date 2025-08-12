@@ -1,22 +1,15 @@
+using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace PLAYERTWO.ARPGProject
 {
-    /// <summary>
-    /// Simple window that lets the player choose one of three specializations
-    /// for the current class family. Each specialization button uses a sprite
-    /// named <c>Specializations_&lt;ClassFamily&gt;_X</c> where X is 0, 1 or 2. A
-    /// decorative frame using the <c>Container_Specializations</c> sprite is
-    /// overlaid on top of each button. When a specialization is selected the
-    /// choice is forwarded to <see cref="CharacterSpecializations"/> and the
-    /// Master Skill Tree window is shown.
-    /// </summary>
     [AddComponentMenu("PLAYER TWO/ARPG Project/GUI/GUI Specializations Window")]
     public class GUISpecializationsWindow : GUIWindow
     {
         [Header("Specialization Settings")]
-        [Tooltip("Name of the class family to load specialization sprites for.")]
+        [Tooltip("Optional manual override. If empty, family is resolved from current character.")]
         public string classFamily;
 
         [Tooltip("Buttons representing the available specializations (in order 0,1,2).")]
@@ -25,57 +18,241 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("Window to show after a specialization is selected.")]
         public GUIWindow masterSkillTreeWindow;
 
-        /// <summary>
-        /// Build or refresh specialization buttons when the window opens.
-        /// </summary>
+        [Tooltip("Decorative frame sprite overlaid on specialization buttons.")]
+        public Sprite frameSprite;
+
+        [Header("Debug")]
+        public bool verboseDebug = true;
+        public bool useChildIconImage = false;
+        public string childIconName = "Icon";
+
+        private bool _builtOnce;
+
+        private void Awake()
+        {
+            if (verboseDebug) Debug.Log($"[GUI-Spec] Awake on {name}. Enabled={enabled} ActiveInHierarchy={gameObject.activeInHierarchy}", this);
+        }
+
+        protected override void Start()
+        {
+            base.Start();
+            if (verboseDebug) Debug.Log($"[GUI-Spec] Start on {name}. Build fallback.", this);
+            SafeBuild();
+        }
+
         protected override void OnOpen()
         {
+            if (verboseDebug) Debug.Log($"[GUI-Spec] OnOpen on {name}.", this);
             base.OnOpen();
+            SafeBuild();
+        }
+
+        public override void Show()
+        {
+            if (verboseDebug) Debug.Log($"[GUI-Spec] Show() on {name}.", this);
+            base.Show();
+            SafeBuild();
+        }
+
+        public override void Hide()
+        {
+            if (verboseDebug) Debug.Log($"[GUI-Spec] Hide() on {name}.", this);
+            base.Hide();
+            _builtOnce = false;
+        }
+
+        [ContextMenu("Diagnostics/Rebuild Buttons Now")]
+        private void RebuildButtonsNow_Context()
+        {
+            if (verboseDebug) Debug.Log($"[GUI-Spec] ContextMenu → manual rebuild on {name}", this);
+            _builtOnce = false;
+            SafeBuild();
+        }
+
+        private void SafeBuild()
+        {
+            if (_builtOnce) return;
+            _builtOnce = true;
             BuildButtons();
+        }
+
+        private string ResolveFamily()
+        {
+            if (!string.IsNullOrWhiteSpace(classFamily))
+                return classFamily;
+
+            string className = null;
+            try
+            {
+                className = Game.instance?.currentCharacter?.GetName();
+            }
+            catch {
+
+            }
+
+            if (string.IsNullOrWhiteSpace(className))
+            {
+                var ent = Level.instance?.player;
+                if (ent) className = ent.name?.Replace("(Clone)", "").Trim();
+            }
+
+            if (!string.IsNullOrWhiteSpace(className)
+                && ClassHierarchy.NameToBits.TryGetValue(className, out var bit))
+            {
+                foreach (var fam in ClassHierarchy.Families)
+                {
+                    for (int i = 0; i < fam.Tiers.Length; i++)
+                    {
+                        if (fam.Tiers[i] == bit)
+                            return fam.FamilyName;
+                    }
+                }
+            }
+
+            return null;
         }
 
         private void BuildButtons()
         {
+            var resolvedFamily = ResolveFamily();
+
+            if (verboseDebug)
+            {
+                Debug.Log($"[GUI-Spec] BuildButtons() begin. classFamily(override)='{classFamily ?? "<null>"}', resolved='{resolvedFamily ?? "<null>"}'", this);
+                if (GameDatabase.instance == null)
+                    Debug.LogWarning("[GUI-Spec] GameDatabase.instance == NULL (czy obiekt GameDatabase jest w scenie?)", this);
+                else if (GameDatabase.instance.gameData == null)
+                    Debug.LogWarning("[GUI-Spec] GameDatabase.gameData == NULL (przypnij GameData w inspektorze)", this);
+                else
+                    Debug.Log($"[GUI-Spec] DB.specializations count = {GameDatabase.instance.gameData.specializations?.Count ?? -1}", this);
+            }
+
+            string familyToUse = !string.IsNullOrWhiteSpace(classFamily) ? classFamily : resolvedFamily;
+
+            List<Specializations> defs = new List<Specializations>();
+            if (!string.IsNullOrWhiteSpace(familyToUse))
+            {
+                defs = GameDatabase.instance
+                    ? GameDatabase.instance.GetSpecializationsByFamily(familyToUse)
+                    : Specializations.FindByFamily(familyToUse);
+
+                if (!GameDatabase.instance)
+                    defs.Sort((a, b) => a.tier.CompareTo(b.tier));
+            }
+
+            if (verboseDebug)
+            {
+                var sb = new StringBuilder();
+                sb.AppendLine($"[GUI-Spec] Using family='{familyToUse ?? "<none>"}' → defs.Count={defs.Count}");
+                for (int i = 0; i < defs.Count; i++)
+                {
+                    var d = defs[i];
+                    sb.AppendLine($"  [{i}] {(d ? $"id={d.id} name={d.name} tier={d.tier} icon={(d.icon ? d.icon.name : "<null>")}" : "<null>")}");
+                }
+                if (defs.Count == 0)
+                    sb.AppendLine("[GUI-Spec] No specializations found — buttons will be transparent & non-interactable.");
+                Debug.Log(sb.ToString(), this);
+            }
+
             for (int i = 0; i < specializationButtons.Length; i++)
             {
-                Button btn = specializationButtons[i];
+                var btn = specializationButtons[i];
                 if (!btn)
-                    continue;
-
-                int index = i;
-
-                Image img = btn.GetComponent<Image>();
-                if (img)
-                    img.sprite = Resources.Load<Sprite>($"Specializations_{classFamily}_{index}");
-
-                Transform frameTr = btn.transform.Find("Frame");
-                Image frame = null;
-                if (frameTr)
-                    frame = frameTr.GetComponent<Image>();
-                else
                 {
-                    GameObject frameGO = new GameObject("Frame", typeof(RectTransform), typeof(Image));
-                    frameGO.transform.SetParent(btn.transform, false);
-                    frame = frameGO.GetComponent<Image>();
+                    Debug.LogWarning($"[GUI-Spec] Button[{i}] is NULL on {name}.", this);
+                    continue;
                 }
 
-                frame.sprite = Resources.Load<Sprite>("Container_Specializations");
-                frame.SetNativeSize();
+                var def = (i < defs.Count) ? defs[i] : null;
+
+                Image targetImg = null;
+                if (useChildIconImage)
+                {
+                    var child = btn.transform.Find(childIconName);
+                    if (child) targetImg = child.GetComponent<Image>();
+                    if (!targetImg)
+                        Debug.LogWarning($"[GUI-Spec] Button[{i}] child '{childIconName}' Image not found. Falling back to Button Image.", this);
+                }
+                if (!targetImg) targetImg = btn.GetComponent<Image>();
+
+                if (!targetImg)
+                {
+                    Debug.LogWarning($"[GUI-Spec] Button[{i}] has NO Image component. Add Image to the Button root or child '{childIconName}'.", this);
+                }
+                else
+                {
+                    targetImg.sprite = def ? def.icon : null;
+                    targetImg.preserveAspect = true;
+
+                    if (targetImg.sprite)
+                    {
+                        targetImg.enabled = true;
+                        targetImg.color = Color.white;
+                        if (verboseDebug)
+                        {
+                            var tex = targetImg.sprite.texture;
+                            Debug.Log($"[GUI-Spec] Button[{i}] '{btn.name}': sprite='{targetImg.sprite.name}', enabled={targetImg.enabled}, color={targetImg.color}", this);
+                            Debug.Log($"[GUI-Spec]   Sprite tex='{(tex ? tex.name : "<null>")}', rect={targetImg.sprite.rect}, pivot={targetImg.sprite.pivot}", this);
+                        }
+                    }
+                    else
+                    {
+                        targetImg.enabled = false;
+                        targetImg.color = Color.white;
+                        if (verboseDebug)
+                            Debug.Log($"[GUI-Spec] Button[{i}] '{btn.name}': no sprite → transparent.", this);
+                    }
+                }
+
+                var frameTr = btn.transform.Find("Frame");
+                var frame = frameTr ? frameTr.GetComponent<Image>() : null;
+                if (frame)
+                {
+                    frame.sprite = frameSprite;
+                    if (frame.sprite) frame.SetNativeSize();
+                }
 
                 btn.onClick.RemoveAllListeners();
-                btn.onClick.AddListener(() => OnSelectSpecialization(index));
+                if (def)
+                {
+                    btn.interactable = true;
+                    btn.onClick.AddListener(() => OnSelectSpecialization(def));
+                }
+                else
+                {
+                    btn.interactable = false;
+                    btn.onClick.AddListener(() =>
+                        Debug.LogWarning($"[GUI-Spec] Click Button[{i}] but def is NULL (family='{familyToUse ?? "<none>"}')", this));
+                }
             }
+
+            if (verboseDebug) Debug.Log("[GUI-Spec] BuildButtons() end.", this);
         }
 
-        private void OnSelectSpecialization(int index)
+        private void OnSelectSpecialization(Specializations def)
         {
-            var def = Specializations.FindById(index);
-            Game.instance?.currentCharacter?.SelectSpecialization(0, def);
+            if (!def)
+            {
+                Debug.LogWarning("[GUI-Spec] Attempted to select a null specialization", this);
+                return;
+            }
 
+            Game.instance?.currentCharacter?.SelectSpecialization(0, def);
             Hide();
 
             if (masterSkillTreeWindow != null)
                 masterSkillTreeWindow.Show();
         }
+
+        private void OnDisable()
+        {
+            if (verboseDebug) Debug.Log($"[GUI-Spec] OnDisable on {name}", this);
+        }
+        private void OnEnable()
+        {
+            if (verboseDebug) Debug.Log($"[GUI-Spec] OnEnable on {name}", this);
+            closeWhenPlayerMove = false;
+        }
+
     }
 }
