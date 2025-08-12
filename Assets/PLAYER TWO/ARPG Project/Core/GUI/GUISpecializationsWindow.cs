@@ -50,6 +50,13 @@ namespace PLAYERTWO.ARPGProject
 
         public override void Show()
         {
+            if (!CanOpen())
+            {
+                if (verboseDebug)
+                    Debug.Log("[GUI-Spec] Show() blocked - requirements not met.", this);
+                return;
+            }
+
             if (verboseDebug) Debug.Log($"[GUI-Spec] Show() on {name}.", this);
             base.Show();
             SafeBuild();
@@ -77,6 +84,21 @@ namespace PLAYERTWO.ARPGProject
             BuildButtons();
         }
 
+        private bool CanOpen()
+        {
+            var character = Game.instance?.currentCharacter;
+            if (character == null)
+                return false;
+
+            int requiredLevel = CharacterSpecializations.GetTierUnlockLevel(1);
+            if (character.stats.currentLevel < requiredLevel)
+                return false;
+
+            if (!CharacterSpecializations.IsTierUnlocked(1))
+                return false;
+
+            return true;
+        }
         private string ResolveFamily()
         {
             if (!string.IsNullOrWhiteSpace(classFamily))
