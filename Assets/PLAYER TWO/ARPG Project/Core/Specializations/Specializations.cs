@@ -24,6 +24,9 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("Icon representing the specialization in the UI.")]
         public Sprite icon;
 
+        [Tooltip("Background sprite used behind the specialization icon.")]
+        public Sprite background;
+
         [Tooltip("Optional tags for filtering or conditional logic.")]
         public string[] tags;
 

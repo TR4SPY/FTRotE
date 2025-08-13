@@ -16,7 +16,8 @@ MonoBehaviour:
   name: Bastioning
   tier: 0
   family: Knight
-  icon: {fileID: -1396554886, guid: aa0830a60db1746ebb2ac6fd1365bb46, type: 3}
+  icon: {fileID: -1396554886, guid: 24b3752cc9121bef3a1654d2c3f7ebbf, type: 3}
+  background: {fileID: -1396554886, guid: c88661061fce16bd0b0bb9fad66b412b, type: 3}
   tags: []
   statModifiers: []
   activeAugments: []

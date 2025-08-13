@@ -61,13 +61,13 @@ namespace PLAYERTWO.ARPGProject
 
                 if (slot.keyText)
                 {
-                  if (float.IsInfinity(instance.remainingTime) || instance.buff.duration <= 0f)
+                    if (float.IsInfinity(instance.remainingTime) || instance.buff.duration <= 0f)
                     {
                         slot.keyText.text = "\u221E";
                     }
                     else
                     {
-                        slot.keyText.text = Mathf.CeilToInt(instance.remainingTime).ToString();
+                        slot.keyText.text = TooltipFormatter.FormatTime(instance.remainingTime);
                     }
                 }
                 

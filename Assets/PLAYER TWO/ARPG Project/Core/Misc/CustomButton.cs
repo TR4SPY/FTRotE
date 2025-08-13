@@ -122,4 +122,20 @@ public class SaturationTintButton : MonoBehaviour,
         runtimeMat.SetColor("_TintColor", targetTint);
         transform.localScale = targetScale;
     }
+
+    public void Retarget(Image newTarget)
+    {
+        if (newTarget == null || newTarget == targetImage) return;
+
+        if (targetImage && runtimeMat && ReferenceEquals(targetImage.material, runtimeMat))
+            targetImage.material = null;
+
+        targetImage = newTarget;
+
+        if (runtimeMat) Destroy(runtimeMat);
+        runtimeMat = Instantiate(targetImage.material);
+        targetImage.material = runtimeMat;
+
+        UpdateStateImmediate();
+    }
 }

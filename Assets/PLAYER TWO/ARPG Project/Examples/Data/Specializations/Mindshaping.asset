@@ -16,7 +16,8 @@ MonoBehaviour:
   name: Mindshaping
   tier: 2
   family: Arcanist
-  icon: {fileID: 1123071798, guid: 652ca700ff0c4a0868b485229c172bf1, type: 3}
+  icon: {fileID: 1123071798, guid: e3be8565b8ea921a1a7c8a94c9b73469, type: 3}
+  background: {fileID: 1123071798, guid: 3f67c06a0178022418009de84681f3e0, type: 3}
   tags: []
   statModifiers: []
   activeAugments: []

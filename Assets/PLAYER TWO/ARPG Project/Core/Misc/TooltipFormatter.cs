@@ -1,7 +1,8 @@
-using UnityEngine;
-using PLAYERTWO.ARPGProject;
+using System;
 using System.Text;
 using System.Reflection;
+using UnityEngine;
+using PLAYERTWO.ARPGProject;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -92,16 +93,21 @@ namespace PLAYERTWO.ARPGProject
             if (seconds < 0f)
                 seconds = 0f;
 
-            if (seconds < 60f)
-                return $"{Mathf.CeilToInt(seconds)}s";
+            int totalSeconds = Mathf.CeilToInt(seconds);
+            TimeSpan time = TimeSpan.FromSeconds(totalSeconds);
 
-            if (seconds < 3600f)
-                return $"{Mathf.CeilToInt(seconds / 60f)}min";
+            var parts = new System.Collections.Generic.List<string>();
 
-            if (seconds < 86400f)
-                return $"{Mathf.CeilToInt(seconds / 3600f)}h";
+            if (time.Days > 0)
+                parts.Add($"{time.Days}d");
+            if (time.Hours > 0)
+                parts.Add($"{time.Hours}h");
+            if (time.Minutes > 0)
+                parts.Add($"{time.Minutes}m");
+            if (time.Seconds > 0 || parts.Count == 0)
+                parts.Add($"{time.Seconds}s");
 
-            return $"{Mathf.CeilToInt(seconds / 86400f)}d";
+            return string.Join(" ", parts);
         }
 
         public static string FormatCurrencyBreakdown(int totalAmberlings)

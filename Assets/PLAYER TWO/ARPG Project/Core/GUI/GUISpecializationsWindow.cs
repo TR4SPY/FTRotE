@@ -22,16 +22,24 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("Decorative frame sprite overlaid on specialization buttons.")]
         public Sprite frameSprite;
 
-        [Header("Debug")]
-        public bool verboseDebug = true;
+        [Header("Child Targets")]
         public bool useChildIconImage = false;
         public string childIconName = "Icon";
+
+        public bool useChildBackgroundImage = true;
+        public string childBackgroundName = "Background";
+
+        [Header("Debug Options")]
+        public bool verboseDebug = true;
 
         private bool _builtOnce;
 
         private void Awake()
         {
-            if (verboseDebug) Debug.Log($"[GUI-Spec] Awake on {name}. Enabled={enabled} ActiveInHierarchy={gameObject.activeInHierarchy}", this);
+            if (verboseDebug)
+                Debug.Log($"[GUI-Spec] Awake on {name}. Enabled={enabled} ActiveInHierarchy={gameObject.activeInHierarchy}", this);
+
+            gameObject.SetActive(false);
         }
 
         protected override void Start()
@@ -99,6 +107,7 @@ namespace PLAYERTWO.ARPGProject
 
             return true;
         }
+        
         private string ResolveFamily()
         {
             if (!string.IsNullOrWhiteSpace(classFamily))
@@ -192,12 +201,15 @@ namespace PLAYERTWO.ARPGProject
                 for (int i = 0; i < defs.Count; i++)
                 {
                     var d = defs[i];
-                    sb.AppendLine($"  [{i}] {(d ? $"id={d.id} name={d.name} tier={d.tier} icon={(d.icon ? d.icon.name : "<null>")}" : "<null>")}");
+                    sb.AppendLine($"  [{i}] {(d ? $"id={d.id} name={d.name} tier={d.tier} icon={(d.icon ? d.icon.name : "<null>")} bg={(d.background ? d.background.name : "<null>")}" : "<null>")}");
                 }
                 if (defs.Count == 0)
                     sb.AppendLine("[GUI-Spec] No specializations found — buttons will be transparent & non-interactable.");
                 Debug.Log(sb.ToString(), this);
             }
+
+            const float BG_SAT = 0.2f;
+            Shader satShader = Shader.Find("UI/SaturationAndTint");
 
             for (int i = 0; i < specializationButtons.Length; i++)
             {
@@ -210,51 +222,100 @@ namespace PLAYERTWO.ARPGProject
 
                 var def = (i < defs.Count) ? defs[i] : null;
 
-                Image targetImg = null;
+                Image iconImg = null;
+                Image bgImg = null;
+
                 if (useChildIconImage)
                 {
-                    var child = btn.transform.Find(childIconName);
-                    if (child) targetImg = child.GetComponent<Image>();
-                    if (!targetImg)
-                        Debug.LogWarning($"[GUI-Spec] Button[{i}] child '{childIconName}' Image not found. Falling back to Button Image.", this);
+                    var iconTr = btn.transform.Find(childIconName);
+                    if (iconTr) iconImg = iconTr.GetComponent<Image>();
+                    if (!iconImg) Debug.LogWarning($"[GUI-Spec] Button[{i}] child '{childIconName}' Image not found.", this);
                 }
-                if (!targetImg) targetImg = btn.GetComponent<Image>();
+                if (!iconImg) iconImg = btn.GetComponent<Image>(); // awaryjnie
 
-                if (!targetImg)
+                if (useChildBackgroundImage)
                 {
-                    Debug.LogWarning($"[GUI-Spec] Button[{i}] has NO Image component. Add Image to the Button root or child '{childIconName}'.", this);
+                    var bgTr = btn.transform.Find(childBackgroundName);
+                    if (bgTr) bgImg = bgTr.GetComponent<Image>();
+                    if (!bgImg) Debug.LogWarning($"[GUI-Spec] Button[{i}] child '{childBackgroundName}' Image not found.", this);
                 }
-                else
-                {
-                    targetImg.sprite = def ? def.icon : null;
-                    targetImg.preserveAspect = true;
 
-                    if (targetImg.sprite)
+                if (iconImg)
+                {
+                    if (iconImg.type != Image.Type.Simple) iconImg.type = Image.Type.Simple;
+                    iconImg.fillAmount = 1f;
+                    iconImg.preserveAspect = true;
+                }
+                if (bgImg)
+                {
+                    if (bgImg.type != Image.Type.Simple) bgImg.type = Image.Type.Simple;
+                    bgImg.fillAmount = 1f;
+                    bgImg.preserveAspect = true;
+                }
+
+                if (iconImg)
+                {
+                    iconImg.sprite = def ? def.icon : null;
+
+                    if (iconImg.sprite)
                     {
-                        targetImg.enabled = true;
-                        targetImg.color = Color.white;
-                        if (verboseDebug)
+                        iconImg.enabled = true;
+                        iconImg.color = Color.white;
+                    }
+                    else
+                    {
+                        iconImg.enabled = false;
+                        iconImg.color = Color.white;
+                    }
+
+                    var tint = btn.GetComponent<SaturationTintButton>();
+                    if (tint != null)
+                    {
+                        Material tempMat = null;
+                        bool needsMat =
+                            (iconImg.material == null) ||
+                            (iconImg.material.shader == null) ||
+                            (iconImg.material.shader.name != "UI/SaturationAndTint");
+
+                        if (needsMat && satShader != null)
                         {
-                            var tex = targetImg.sprite.texture;
-                            Debug.Log($"[GUI-Spec] Button[{i}] '{btn.name}': sprite='{targetImg.sprite.name}', enabled={targetImg.enabled}, color={targetImg.color}", this);
-                            Debug.Log($"[GUI-Spec]   Sprite tex='{(tex ? tex.name : "<null>")}', rect={targetImg.sprite.rect}, pivot={targetImg.sprite.pivot}", this);
+                            tempMat = new Material(satShader);
+                            iconImg.material = tempMat;
+                        }
+
+                        tint.Retarget(iconImg);
+
+                        if (tempMat != null)
+                            Destroy(tempMat);
+                    }
+                }
+
+                if (bgImg)
+                {
+                    var bgSprite = def ? def.background : null;
+
+                    if (bgSprite)
+                    {
+                        bgImg.sprite = bgSprite;
+                        bgImg.enabled = true;
+
+                        if (satShader != null)
+                        {
+                            var mat = bgImg.material;
+                            if (mat == null || mat.shader == null || mat.shader.name != "UI/SaturationAndTint")
+                            {
+                                mat = new Material(satShader);
+                                bgImg.material = mat;
+                            }
+                            bgImg.material.SetFloat("_Saturation", BG_SAT);
+                            bgImg.material.SetColor("_TintColor", Color.white);
                         }
                     }
                     else
                     {
-                        targetImg.enabled = false;
-                        targetImg.color = Color.white;
-                        if (verboseDebug)
-                            Debug.Log($"[GUI-Spec] Button[{i}] '{btn.name}': no sprite → transparent.", this);
+                        bgImg.sprite = null;
+                        bgImg.enabled = false;
                     }
-                }
-
-                var frameTr = btn.transform.Find("Frame");
-                var frame = frameTr ? frameTr.GetComponent<Image>() : null;
-                if (frame)
-                {
-                    frame.sprite = frameSprite;
-                    if (frame.sprite) frame.SetNativeSize();
                 }
 
                 btn.onClick.RemoveAllListeners();

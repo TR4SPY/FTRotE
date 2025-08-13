@@ -26,6 +26,8 @@ MonoBehaviour:
       action: 5
       nextPageIndex: -1
       specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
     - optionText: Do you have a quest for me?
       isForSocializer: 0
       isForAchiever: 0
@@ -34,6 +36,8 @@ MonoBehaviour:
       action: 1
       nextPageIndex: -1
       specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
     - optionText: Where is Varethyn?
       isForSocializer: 1
       isForAchiever: 0
@@ -42,6 +46,8 @@ MonoBehaviour:
       action: 6
       nextPageIndex: -1
       specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
     showOnce: 1
     isSpecial: 0
   - dialogText: "I am Eldric Valeheart, humble keeper of the shrine and servant to
@@ -58,6 +64,8 @@ MonoBehaviour:
       action: 5
       nextPageIndex: -1
       specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
     - optionText: How can I help you?
       isForSocializer: 0
       isForAchiever: 0
@@ -66,6 +74,8 @@ MonoBehaviour:
       action: 1
       nextPageIndex: -1
       specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
     showOnce: 1
     isSpecial: 0
   - dialogText: "Ashenvale is a place of quiet resilience, yet I feel the winds of
@@ -83,6 +93,8 @@ MonoBehaviour:
       action: 8
       nextPageIndex: 3
       specialConditionToSet: 1
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
     - optionText: The DARK side!
       isForSocializer: 0
       isForAchiever: 0
@@ -91,6 +103,8 @@ MonoBehaviour:
       action: 8
       nextPageIndex: 6
       specialConditionToSet: 2
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
     showOnce: 1
     isSpecial: 0
   - dialogText: "Then you walk a noble path. One of discipline, sacrifice\u2026 and,
@@ -108,6 +122,8 @@ MonoBehaviour:
       action: 5
       nextPageIndex: -1
       specialConditionToSet: 1
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
     showOnce: 1
     isSpecial: 1
   - dialogText: Ashenvale is in danger, though most do not see it. Shadows creep
@@ -124,6 +140,8 @@ MonoBehaviour:
       action: 5
       nextPageIndex: -1
       specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
     showOnce: 1
     isSpecial: 1
   - dialogText: Will you stand as a guardian of balance? Will you lend your blade
@@ -138,6 +156,8 @@ MonoBehaviour:
       action: 5
       nextPageIndex: 10
       specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
     showOnce: 1
     isSpecial: 1
   - dialogText: ...I feared as much.
@@ -151,6 +171,8 @@ MonoBehaviour:
       action: 5
       nextPageIndex: -1
       specialConditionToSet: 2
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
     showOnce: 1
     isSpecial: 1
   - dialogText: "The night calls to many, offering power without cost, knowledge
@@ -167,6 +189,8 @@ MonoBehaviour:
       action: 5
       nextPageIndex: -1
       specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
     showOnce: 1
     isSpecial: 1
   - dialogText: "You will find no guidance from me. Those who walk in shadow do not
@@ -183,6 +207,8 @@ MonoBehaviour:
       action: 5
       nextPageIndex: -1
       specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
     showOnce: 1
     isSpecial: 1
   - dialogText: Go, then. Seek whatever it is you crave. But do not return expecting
@@ -197,6 +223,8 @@ MonoBehaviour:
       action: 5
       nextPageIndex: -1
       specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
     showOnce: 1
     isSpecial: 1
   - dialogText: "But forgive an old monk his musings. You must be tired from your
@@ -213,6 +241,8 @@ MonoBehaviour:
       action: 1
       nextPageIndex: -1
       specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
     - optionText: Is there anything...
       isForSocializer: 1
       isForAchiever: 0
@@ -221,12 +251,34 @@ MonoBehaviour:
       action: 6
       nextPageIndex: -1
       specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
+    - optionText: SPEC WIZ
+      isForSocializer: 1
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 1
+      action: 12
+      nextPageIndex: -1
+      specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
     showOnce: 0
     isSpecial: 0
   - dialogText: "May the path ahead be clear, traveler\u2026 and may you tread it
       wisely."
     specialCondition: 
-    options: []
+    options:
+    - optionText: SPECIALIZATION
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 12
+      nextPageIndex: 0
+      specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
     showOnce: 0
     isSpecial: 0
   dialogTitle: Eldric - Monk
