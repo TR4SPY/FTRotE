@@ -15,12 +15,15 @@ namespace PLAYERTWO.ARPGProject
         public string playerType;
         public string currentDynamicPlayerType;
         public string specialCondition;
+
         public Dictionary<int, int> selectedDialogPaths = new Dictionary<int, int>();
         public Dictionary<string, List<int>> viewedDialogPages = new Dictionary<string, List<int>>();
-
+        public Dictionary<int, int> selectedSpecializations = new Dictionary<int, int>();
+        public Dictionary<int, int> specializationSkillPoints = new Dictionary<int, int>();
         public List<string> unlockedAchievements;
         public List<string> visitedZones = new List<string>();
         public List<int> activatedWaypoints = new List<int>();
+        public List<int> unlockedSpecializationTiers = new List<int>();
 
         public UnitySerializer.Vector3 position;
         public UnitySerializer.Vector3 rotation;
@@ -33,8 +36,6 @@ namespace PLAYERTWO.ARPGProject
         public ScenesSerializer scenes;
         public BuffsSerializer buffs;
 
-        public Dictionary<int, int> selectedSpecializations = new Dictionary<int, int>();
-        public Dictionary<int, int> specializationSkillPoints = new Dictionary<int, int>();
 
         public float dexterityMultiplier = 1.0f;
         public float strengthMultiplier = 1.0f;
@@ -128,6 +129,8 @@ namespace PLAYERTWO.ARPGProject
                         specializationSkillPoints[kvp.Key.id] = kvp.Value;
                 }
             }
+
+            unlockedSpecializationTiers = new List<int>(CharacterSpecializations.GetUnlockedTiers());
 
             unlockedAchievements = character.unlockedAchievements != null ? new List<string>(character.unlockedAchievements) : new List<string>();
             achievementsUnlocked = unlockedAchievements.Count;

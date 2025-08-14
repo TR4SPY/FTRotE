@@ -66,6 +66,10 @@ namespace PLAYERTWO.ARPGProject
                 Debug.Log($"Tier {tier} unlocked.");
         }
 
+        public static IEnumerable<int> GetUnlockedTiers() => s_unlockedTiers;
+
+        public static void ClearUnlockedTiers() => s_unlockedTiers.Clear();
+
         public static bool IsTierUnlocked(int tier) => s_unlockedTiers.Contains(tier);
 
         #endregion
@@ -318,6 +322,7 @@ namespace PLAYERTWO.ARPGProject
         public static CharacterSpecializations CreateFromData(
             Dictionary<int, int> selectedIds,
             Dictionary<int, int> pointsById,
+            IEnumerable<int> unlockedTiers,
             Currency currency = null,
             int unspent = 0,
             int respecCost = 0)
@@ -327,6 +332,14 @@ namespace PLAYERTWO.ARPGProject
             specs.m_currency = currency;
             specs.unspentSkillPoints = unspent;
             specs.specializationRespecCost = respecCost;
+
+            ClearUnlockedTiers();
+            if (unlockedTiers != null)
+            {
+                foreach (var tier in unlockedTiers)
+                    UnlockTier(tier);
+            }
+
             specs.LoadFromData(selectedIds, pointsById);
             return specs;
         }

@@ -362,7 +362,7 @@ namespace PLAYERTWO.ARPGProject
                 equipments = CharacterEquipments.CreateFromSerializer(serializer.equipments),
                 inventory = CharacterInventory.CreateFromSerializer(serializer.inventory),
                 skills = CharacterSkills.CreateFromSerializer(serializer.skills),
-                specializations = CharacterSpecializations.CreateFromData(serializer.selectedSpecializations, serializer.specializationSkillPoints),
+                specializations = CharacterSpecializations.CreateFromData(serializer.selectedSpecializations, serializer.specializationSkillPoints, serializer.unlockedSpecializationTiers),
                 quests = CharacterQuests.CreateFromSerializer(serializer.quests),
                 scenes = CharacterScenes.CreateFromSerializer(serializer.scenes),
                 

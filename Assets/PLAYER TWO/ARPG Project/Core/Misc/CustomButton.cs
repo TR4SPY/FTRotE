@@ -28,6 +28,10 @@ public class SaturationTintButton : MonoBehaviour,
     private Vector3 targetScale;
     private bool externallyHidden = false;
 
+    private float baseNormalSaturation;
+    private float baseHighlightedSaturation;
+    private float baseDisabledSaturation;
+
     void Awake()
     {
         if (targetImage == null)
@@ -42,6 +46,10 @@ public class SaturationTintButton : MonoBehaviour,
         button = GetComponent<Button>();
         originalScale = transform.localScale;
         targetScale = originalScale;
+
+        baseNormalSaturation = normalSaturation;
+        baseHighlightedSaturation = highlightedSaturation;
+        baseDisabledSaturation = disabledSaturation;
     }
 
     void OnEnable()
@@ -111,7 +119,7 @@ public class SaturationTintButton : MonoBehaviour,
         targetScale = scale;
     }
 
-    private void UpdateStateImmediate()
+    public void UpdateStateImmediate()
     {
         if (!button.interactable)
             SetState(disabledSaturation, disabledTint, originalScale);
@@ -135,6 +143,22 @@ public class SaturationTintButton : MonoBehaviour,
         if (runtimeMat) Destroy(runtimeMat);
         runtimeMat = Instantiate(targetImage.material);
         targetImage.material = runtimeMat;
+
+        UpdateStateImmediate();
+    }
+
+    public void SetSelected(bool selected)
+    {
+        if (selected)
+        {
+            normalSaturation = highlightedSaturation = disabledSaturation = 1f;
+        }
+        else
+        {
+            normalSaturation = baseNormalSaturation;
+            highlightedSaturation = baseHighlightedSaturation;
+            disabledSaturation = baseDisabledSaturation;
+        }
 
         UpdateStateImmediate();
     }

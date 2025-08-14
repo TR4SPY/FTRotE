@@ -131,6 +131,8 @@ namespace PLAYERTWO.ARPGProject
                 int unlockLevel = CharacterSpecializations.GetTierUnlockLevel(nextTier);
                 if (player.stats.currentLevel < unlockLevel)
                     return false;
+                if (CharacterSpecializations.IsTierUnlocked(nextTier))
+                    return false;
             }
 
             if (quest.requireMaxLevel && player.stats.currentLevel < Game.instance.maxLevel)
@@ -602,6 +604,9 @@ namespace PLAYERTWO.ARPGProject
                 FindFirstObjectByType<GUIStatsManager>()?.Refresh();
 
                 newEntity.GetComponent<PlayerInitializer>()?.Initialize();
+
+                CharacterSpecializations.ClearUnlockedTiers();
+                GUIWindowsManager.Instance?.specializationsWindow?.GetComponent<GUIWindow>()?.Hide();
             }
 
             ChangeStateTo(CurrentQuest() ? State.QuestAvailable : State.None);

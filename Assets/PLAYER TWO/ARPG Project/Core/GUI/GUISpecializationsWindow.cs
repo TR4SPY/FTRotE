@@ -211,6 +211,12 @@ namespace PLAYERTWO.ARPGProject
             const float BG_SAT = 0.2f;
             Shader satShader = Shader.Find("UI/SaturationAndTint");
 
+            var character = Game.instance?.currentCharacter;
+            int allowedSelections = 0;
+            for (int t = 1; t <= 3; t++)
+                if (CharacterSpecializations.IsTierUnlocked(t)) allowedSelections++;
+            int currentSelections = character?.specializations?.selected?.Count ?? 0;
+
             for (int i = 0; i < specializationButtons.Length; i++)
             {
                 var btn = specializationButtons[i];
@@ -224,6 +230,8 @@ namespace PLAYERTWO.ARPGProject
 
                 Image iconImg = null;
                 Image bgImg = null;
+
+                var tint = btn.GetComponent<SaturationTintButton>();
 
                 if (useChildIconImage)
                 {
@@ -268,7 +276,7 @@ namespace PLAYERTWO.ARPGProject
                         iconImg.color = Color.white;
                     }
 
-                    var tint = btn.GetComponent<SaturationTintButton>();
+                   // var tint = btn.GetComponent<SaturationTintButton>();
                     if (tint != null)
                     {
                         Material tempMat = null;
@@ -318,10 +326,20 @@ namespace PLAYERTWO.ARPGProject
                     }
                 }
 
+                bool isSelected = character?.GetSelected(def?.tier ?? -1) == def;
+                bool canChooseMore = currentSelections < allowedSelections;
+
+                if (bgImg && bgImg.material)
+                    bgImg.material.SetFloat("_Saturation", isSelected ? 1f : BG_SAT);
+
+                if (tint)
+                    tint.SetSelected(isSelected);
+
                 btn.onClick.RemoveAllListeners();
                 if (def)
                 {
-                    btn.interactable = true;
+                   // btn.interactable = true;
+                    btn.interactable = isSelected || canChooseMore;
                     btn.onClick.AddListener(() => OnSelectSpecialization(def));
                 }
                 else
@@ -343,7 +361,8 @@ namespace PLAYERTWO.ARPGProject
                 return;
             }
 
-            Game.instance?.currentCharacter?.SelectSpecialization(0, def);
+            // Game.instance?.currentCharacter?.SelectSpecialization(0, def);
+            Game.instance?.currentCharacter?.SelectSpecialization(def.tier, def);
             Hide();
 
             if (masterSkillTreeWindow != null)
