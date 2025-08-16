@@ -1,27 +1,34 @@
 //  ZMODYFIKOWANO 31 GRUDNIA 2024
+
 using System;
+
 using System.Collections.Generic;
+
 using UnityEngine;
+
+
 
 namespace PLAYERTWO.ARPGProject
 {
     [System.Serializable]
+    public struct SpecializationEntry
+    {
+        public int key;
+        public int value;
+    }
+
+    [System.Serializable]
     public class CharacterSerializer
     {
-        public int characterId;
-
-        public string name;
-        public string scene;
-        public string playerType;
-        public string currentDynamicPlayerType;
-        public string specialCondition;
-
         public Dictionary<int, int> selectedDialogPaths = new Dictionary<int, int>();
         public Dictionary<string, List<int>> viewedDialogPages = new Dictionary<string, List<int>>();
-        public Dictionary<int, int> selectedSpecializations = new Dictionary<int, int>();
-        public Dictionary<int, int> specializationSkillPoints = new Dictionary<int, int>();
+
+        public List<SpecializationEntry> selectedSpecializations = new List<SpecializationEntry>();
+        public List<SpecializationEntry> specializationSkillPoints = new List<SpecializationEntry>();
+
         public List<string> unlockedAchievements;
         public List<string> visitedZones = new List<string>();
+
         public List<int> activatedWaypoints = new List<int>();
         public List<int> unlockedSpecializationTiers = new List<int>();
 
@@ -36,16 +43,15 @@ namespace PLAYERTWO.ARPGProject
         public ScenesSerializer scenes;
         public BuffsSerializer buffs;
 
-
         public float dexterityMultiplier = 1.0f;
         public float strengthMultiplier = 1.0f;
         public float vitalityMultiplier = 1.0f;
         public float energyMultiplier = 1.0f;
         public float savedDifficulty;
-        
         public float totalCombatTime;
-        public float totalPlayTime = 0f; 
+        public float totalPlayTime = 0f;
 
+        public int characterId;
         public int health;
         public int mana;
         public int playerDeaths;
@@ -58,11 +64,16 @@ namespace PLAYERTWO.ARPGProject
         public int questsCompleted;
         public int waypointsDiscovered = 0;
 
-        public bool questionnaireCompleted = false;
-        public bool storylineCompleted = false;
-
+        public string name;
+        public string scene;
+        public string playerType;
+        public string currentDynamicPlayerType;
+        public string specialCondition;
         public string guildName;
         public string guildCrestData;
+
+        public bool questionnaireCompleted = false;
+        public bool storylineCompleted = false;
 
         public CharacterSerializer(CharacterInstance character)
         {
@@ -120,17 +131,22 @@ namespace PLAYERTWO.ARPGProject
                 foreach (var kvp in character.specializations.selected)
                 {
                     if (kvp.Value != null)
-                        selectedSpecializations[kvp.Key] = kvp.Value.id;
+                        selectedSpecializations.Add(new SpecializationEntry { key = kvp.Key, value = kvp.Value.id });
                 }
 
                 foreach (var kvp in character.specializations.skillPoints)
                 {
                     if (kvp.Key != null)
-                        specializationSkillPoints[kvp.Key.id] = kvp.Value;
+                        specializationSkillPoints.Add(new SpecializationEntry { key = kvp.Key.id, value = kvp.Value });
                 }
             }
 
-            unlockedSpecializationTiers = new List<int>(CharacterSpecializations.GetUnlockedTiers());
+            if (character.specializations != null)
+                unlockedSpecializationTiers = character.specializations != null
+                    ? new List<int>(character.specializations.GetUnlockedTiersInstance())
+                    : new List<int>();
+            else
+                unlockedSpecializationTiers = new List<int>();
 
             unlockedAchievements = character.unlockedAchievements != null ? new List<string>(character.unlockedAchievements) : new List<string>();
             achievementsUnlocked = unlockedAchievements.Count;

@@ -8,13 +8,47 @@ namespace PLAYERTWO.ARPGProject
     public class CharacterInstance
     {
         public Character data;
+        public CharacterStats stats;
+        public CharacterEquipments equipments;
+        public CharacterInventory inventory;
+        public CharacterSkills skills;
+        public CharacterQuests quests;
+        public CharacterScenes scenes;
+        public CharacterSpecializations specializations;
+        public BuffsSerializer buffs;
+        public Affinity affinity = Affinity.None;
+
         public string name;
         public string currentScene;
+        public string playerType = "Undefined";
+        public string currentDynamicPlayerType = "Unknown";
+        public string guildName = "";
+        public string guildCrestData = "";
+
+        public int savedHealth = -1;
+        public int savedMana = -1;
+        public int playerDeaths = 0;
+        public int enemiesDefeated = 0;
+        public int potionsUsed = 0;
+        public int difficultyMultiplier = 0;
+        public int zonesDiscovered = 0;
+        public int npcInteractions = 0;
+        public int questsCompleted = 0;
+        public int waypointsDiscovered = 0;
+        public int achievementsUnlocked = 0;
+
+        public float savedDifficulty = 5f;
+        public float totalCombatTime = 0f;
+        public float totalPlayTime = 0f;
+
+        public bool questionnaireCompleted = false;
+        public bool storylineCompleted = false;
         
         public Vector3 initialPosition;
-        public Quaternion initialRotation;
+        public Vector3 currentPosition => m_entity ? m_entity.position : initialPosition;
 
-        public CharacterStats stats;
+        public Quaternion initialRotation;
+        public Quaternion currentRotation => m_entity ? m_entity.transform.rotation : initialRotation;
 
         private Dictionary<string, float> multipliers = new Dictionary<string, float>
         {
@@ -23,63 +57,34 @@ namespace PLAYERTWO.ARPGProject
             { "Speed", 1.0f }
         };
 
+        public Dictionary<string, HashSet<int>> viewedDialogPages = new Dictionary<string, HashSet<int>>();
+        public Dictionary<int, int> selectedDialogPaths = new Dictionary<int, int>();
+
         public HashSet<string> visitedZones = new HashSet<string>();
         public HashSet<int> activatedWaypoints = new HashSet<int>();
-        public Dictionary<string, HashSet<int>> viewedDialogPages = new Dictionary<string, HashSet<int>>();
-
-        public Dictionary<int, int> selectedDialogPaths = new Dictionary<int, int>();
 
         public List<string> unlockedAchievements = new List<string>();
 
-        public CharacterEquipments equipments;
-        public CharacterInventory inventory;
-        public CharacterSkills skills;
-        public CharacterQuests quests;
-        public CharacterScenes scenes;
-        public BuffsSerializer buffs;
-
-        public CharacterSpecializations specializations = new CharacterSpecializations();
         public event Action onBuffsRestored;
 
-        public int savedHealth = -1;
-        public int savedMana = -1;
-        public float savedDifficulty = 5f; 
-        public int playerDeaths = 0;
-        public int enemiesDefeated = 0;
-        public float totalCombatTime = 0f;
-        public int potionsUsed = 0;
-        public int difficultyMultiplier = 0;
-        public int zonesDiscovered = 0;
-        public int npcInteractions = 0;
-        public int questsCompleted = 0;
-        public int waypointsDiscovered = 0;
-        public int achievementsUnlocked = 0;
-        public bool questionnaireCompleted = false;
-        public bool storylineCompleted = false;
-
-        public string playerType = "Undefined";
-        public string currentDynamicPlayerType = "Unknown";
-
-        public string guildName = "";
-        public string guildCrestData = "";
         [System.NonSerialized] public Sprite guildCrest;
         [System.NonSerialized] public TMP_SpriteAsset guildCrestTMPAsset;
 
-        public float totalPlayTime = 0f;
         protected Entity m_entity;
         public Entity Entity => m_entity;
-        public Affinity affinity = Affinity.None;
 
-        public Vector3 currentPosition => m_entity ? m_entity.position : initialPosition;
-        public Quaternion currentRotation => m_entity ? m_entity.transform.rotation : initialRotation;
         public bool HasViewedDialogPage(string npcID, int pageIndex)
         {
             return viewedDialogPages.ContainsKey(npcID) && viewedDialogPages[npcID].Contains(pageIndex);
         }
         
-        public CharacterInstance() { }
+        public CharacterInstance(bool createSpecializations = true)
+        {
+            if (createSpecializations)
+                specializations = CharacterSpecializations.Create();
+        }
 
-        public CharacterInstance(Character data, string name)
+        public CharacterInstance(Character data, string name) : this()
         {
             this.data = data;
             this.name = name;
@@ -88,10 +93,9 @@ namespace PLAYERTWO.ARPGProject
             equipments = new CharacterEquipments(data);
             inventory = new CharacterInventory(data);
             skills = new CharacterSkills(data);
-            specializations = new CharacterSpecializations();
             quests = new CharacterQuests();
             scenes = new CharacterScenes();
-            
+
         }
 
         public Dictionary<string, GameObject> GetEquippedPrefabs()
@@ -348,10 +352,26 @@ namespace PLAYERTWO.ARPGProject
 
 
         public static CharacterInstance CreateFromSerializer(CharacterSerializer serializer)
+
         {
+
             var data = GameDatabase.instance.FindElementById<Character>(serializer.characterId);
 
-            var characterInstance = new CharacterInstance()
+            var selectedSpecsDict = new Dictionary<int, int>();
+            if (serializer.selectedSpecializations != null)
+            {
+                foreach (var entry in serializer.selectedSpecializations)
+                    selectedSpecsDict[entry.key] = entry.value;
+            }
+
+            var specPointsDict = new Dictionary<int, int>();
+            if (serializer.specializationSkillPoints != null)
+            {
+                foreach (var entry in serializer.specializationSkillPoints)
+                    specPointsDict[entry.key] = entry.value;
+            }
+
+            var characterInstance = new CharacterInstance(false)
             {
                 data = data,
                 name = serializer.name,
@@ -362,7 +382,7 @@ namespace PLAYERTWO.ARPGProject
                 equipments = CharacterEquipments.CreateFromSerializer(serializer.equipments),
                 inventory = CharacterInventory.CreateFromSerializer(serializer.inventory),
                 skills = CharacterSkills.CreateFromSerializer(serializer.skills),
-                specializations = CharacterSpecializations.CreateFromData(serializer.selectedSpecializations, serializer.specializationSkillPoints, serializer.unlockedSpecializationTiers),
+                specializations = CharacterSpecializations.CreateFromData(selectedSpecsDict, specPointsDict, serializer.unlockedSpecializationTiers),
                 quests = CharacterQuests.CreateFromSerializer(serializer.quests),
                 scenes = CharacterScenes.CreateFromSerializer(serializer.scenes),
                 
@@ -498,5 +518,21 @@ namespace PLAYERTWO.ARPGProject
             catch { }
             return null;
         }
+
+        #if UNITY_EDITOR || DEVELOPMENT_BUILD
+const bool SPEC_DBG = true;
+#else
+const bool SPEC_DBG = false;
+#endif
+
+private System.Collections.IEnumerator _Dbg_LogSpecStateNextFrame()
+{
+    yield return null; // 1 frame po wczytaniu
+    var specs = Game.instance?.currentCharacter?.specializations;
+    string tiers = specs != null ? string.Join(",", specs.GetUnlockedTiersInstance()) : "NULL";
+    int selCount = specs?.selected != null ? specs.selected.Count : -1;
+    Debug.Log($"[SpecState] After load: unlocked=[{tiers}]  selectedCount={selCount}");
+}
+
     }
 }

@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq; 
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -40,8 +42,40 @@ namespace PLAYERTWO.ARPGProject
 
         #region Tier unlocking helpers
 
-        private static readonly HashSet<int> s_unlockedTiers = new HashSet<int>();
+        private readonly HashSet<int> m_unlockedTiers = new HashSet<int>();
+       
+        public static event Action onTiersChanged;
 
+        public void UnlockTierInstance(int tier)
+        {
+            if (m_unlockedTiers.Add(tier))
+                onTiersChanged?.Invoke();
+        }
+
+        public IEnumerable<int> GetUnlockedTiersInstance() => m_unlockedTiers;
+
+        public void ClearUnlockedTiersInstance()
+        {
+            if (m_unlockedTiers.Count == 0) return;
+            m_unlockedTiers.Clear();
+            onTiersChanged?.Invoke();
+        }
+
+        public bool IsTierUnlocked(int tier) => m_unlockedTiers.Contains(tier);
+
+        public static void UnlockTier(int tier) =>
+            Game.instance?.currentCharacter?.specializations?.UnlockTierInstance(tier);
+
+        public static IEnumerable<int> GetUnlockedTiers() =>
+            Game.instance?.currentCharacter?.specializations?.GetUnlockedTiersInstance()
+            ?? Enumerable.Empty<int>();
+
+        public static void ClearUnlockedTiers() =>
+            Game.instance?.currentCharacter?.specializations?.ClearUnlockedTiersInstance();
+
+        public static bool IsTierUnlockedStatic(int tier) =>
+            Game.instance?.currentCharacter?.specializations?.IsTierUnlocked(tier) ?? false;
+            
         public static int GetTierUnlockLevel(int tier)
         {
             if (!Game.instance)
@@ -49,28 +83,12 @@ namespace PLAYERTWO.ARPGProject
 
             switch (tier)
             {
-                case 1:
-                    return Game.instance.tier1UnlockLevel;
-                case 2:
-                    return Game.instance.tier2UnlockLevel;
-                case 3:
-                    return Game.instance.tier3UnlockLevel;
-                default:
-                    return int.MaxValue;
+                case 1: return Game.instance.tier1UnlockLevel;
+                case 2: return Game.instance.tier2UnlockLevel;
+                case 3: return Game.instance.tier3UnlockLevel;
+                default: return int.MaxValue;
             }
         }
-
-        public static void UnlockTier(int tier)
-        {
-            if (s_unlockedTiers.Add(tier))
-                Debug.Log($"Tier {tier} unlocked.");
-        }
-
-        public static IEnumerable<int> GetUnlockedTiers() => s_unlockedTiers;
-
-        public static void ClearUnlockedTiers() => s_unlockedTiers.Clear();
-
-        public static bool IsTierUnlocked(int tier) => s_unlockedTiers.Contains(tier);
 
         #endregion
         
@@ -317,30 +335,36 @@ namespace PLAYERTWO.ARPGProject
         }
 
         /// <summary>
-        /// Utwórz nowy komponent w runtime i załaduj dane po ID (wygodny odpowiednik CreateFromData z Kodu 2).
+        /// Tworzy nowy komponent <see cref="CharacterSpecializations"/> na dedykowanym obiekcie
+        /// i zwraca zainicjalizowaną referencję.
         /// </summary>
-        public static CharacterSpecializations CreateFromData(
-            Dictionary<int, int> selectedIds,
-            Dictionary<int, int> pointsById,
-            IEnumerable<int> unlockedTiers,
-            Currency currency = null,
-            int unspent = 0,
-            int respecCost = 0)
+        public static CharacterSpecializations Create(Currency currency = null, int unspent = 0, int respecCost = 0)
         {
             var go = new GameObject("CharacterSpecializationsRuntime");
             var specs = go.AddComponent<CharacterSpecializations>();
             specs.m_currency = currency;
             specs.unspentSkillPoints = unspent;
             specs.specializationRespecCost = respecCost;
+            return specs;
+        }
 
-            ClearUnlockedTiers();
+        /// <summary>
+        /// Utwórz nowy komponent w runtime i załaduj dane po ID (wygodny odpowiednik CreateFromData z Kodu 2).
+        /// </summary>
+        public static CharacterSpecializations CreateFromData(
+        Dictionary<int,int> selectedIds,
+        Dictionary<int,int> pointsById,
+        IEnumerable<int> unlockedTiers,
+        Currency currency = null, int unspent = 0, int respecCost = 0)
+        {
+            var specs = Create(currency, unspent, respecCost);
+
             if (unlockedTiers != null)
-            {
-                foreach (var tier in unlockedTiers)
-                    UnlockTier(tier);
-            }
+                foreach (var t in unlockedTiers)
+                    specs.UnlockTierInstance(t);
 
             specs.LoadFromData(selectedIds, pointsById);
+            onTiersChanged?.Invoke();
             return specs;
         }
 

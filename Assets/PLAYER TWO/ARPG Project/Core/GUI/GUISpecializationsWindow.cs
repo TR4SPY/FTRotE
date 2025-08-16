@@ -39,7 +39,18 @@ namespace PLAYERTWO.ARPGProject
             if (verboseDebug)
                 Debug.Log($"[GUI-Spec] Awake on {name}. Enabled={enabled} ActiveInHierarchy={gameObject.activeInHierarchy}", this);
 
+            if (Game.instance)
+                Game.instance.onDataLoaded.AddListener(OnExternalDataChanged);
+            CharacterSpecializations.onTiersChanged += OnExternalDataChanged;
+
             gameObject.SetActive(false);
+        }
+
+        private void OnDestroy()
+        {
+            if (Game.instance)
+                Game.instance.onDataLoaded.RemoveListener(OnExternalDataChanged);
+            CharacterSpecializations.onTiersChanged -= OnExternalDataChanged;
         }
 
         protected override void Start()
@@ -88,8 +99,27 @@ namespace PLAYERTWO.ARPGProject
         private void SafeBuild()
         {
             if (_builtOnce) return;
+            if (!IsDataReady())
+            {
+                if (verboseDebug)
+                    Debug.Log("[GUI-Spec] SafeBuild() delaying - data not ready.", this);
+                return;
+            }
             _builtOnce = true;
             BuildButtons();
+        }
+
+        private bool IsDataReady()
+        {
+            return GameDatabase.instance && GameDatabase.instance.gameData != null &&
+                   Game.instance && Game.instance.currentCharacter != null;
+        }
+
+        private void OnExternalDataChanged()
+        {
+            _builtOnce = false;
+            if (isOpen)
+                SafeBuild();
         }
 
         private bool CanOpen()
@@ -102,7 +132,7 @@ namespace PLAYERTWO.ARPGProject
             if (character.stats.currentLevel < requiredLevel)
                 return false;
 
-            if (!CharacterSpecializations.IsTierUnlocked(1))
+            if (!character.specializations.IsTierUnlocked(1))
                 return false;
 
             return true;
@@ -212,9 +242,10 @@ namespace PLAYERTWO.ARPGProject
             Shader satShader = Shader.Find("UI/SaturationAndTint");
 
             var character = Game.instance?.currentCharacter;
+            var specs = character?.specializations;
             int allowedSelections = 0;
             for (int t = 1; t <= 3; t++)
-                if (CharacterSpecializations.IsTierUnlocked(t)) allowedSelections++;
+                if (specs != null && specs.IsTierUnlocked(t)) allowedSelections++;
             int currentSelections = character?.specializations?.selected?.Count ?? 0;
 
             for (int i = 0; i < specializationButtons.Length; i++)
@@ -293,8 +324,10 @@ namespace PLAYERTWO.ARPGProject
 
                         tint.Retarget(iconImg);
 
+                       /*
                         if (tempMat != null)
                             Destroy(tempMat);
+                        */
                     }
                 }
 
@@ -326,7 +359,8 @@ namespace PLAYERTWO.ARPGProject
                     }
                 }
 
-                bool isSelected = character?.GetSelected(def?.tier ?? -1) == def;
+                var sel = character?.GetSelected(def?.tier ?? -1);
+                bool isSelected = (sel != null && def != null) && (sel.id == def.id);
                 bool canChooseMore = currentSelections < allowedSelections;
 
                 if (bgImg && bgImg.material)

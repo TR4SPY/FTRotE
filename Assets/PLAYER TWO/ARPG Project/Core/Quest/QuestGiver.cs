@@ -131,7 +131,7 @@ namespace PLAYERTWO.ARPGProject
                 int unlockLevel = CharacterSpecializations.GetTierUnlockLevel(nextTier);
                 if (player.stats.currentLevel < unlockLevel)
                     return false;
-                if (CharacterSpecializations.IsTierUnlocked(nextTier))
+                if (player.specializations.IsTierUnlocked(nextTier))
                     return false;
             }
 
@@ -234,7 +234,7 @@ namespace PLAYERTWO.ARPGProject
             return null;
         }
 
-        protected void CheckClassUpgradeQuestAvailability()
+     protected void CheckClassUpgradeQuestAvailability()
         {
             var quest = CurrentClassUpgradeQuest();
             if (quest == null)
@@ -251,13 +251,10 @@ namespace PLAYERTWO.ARPGProject
 
             int nextTier = ClassHierarchy.GetTier(nextClass);
             int unlockLevel = CharacterSpecializations.GetTierUnlockLevel(nextTier);
+
             if (player.stats.currentLevel >= unlockLevel)
             {
                 ChangeStateTo(State.QuestAvailable);
-            }
-            else if (state != State.QuestInProgress)
-            {
-                ChangeStateTo(State.None);
             }
         }
 
@@ -268,10 +265,6 @@ namespace PLAYERTWO.ARPGProject
             if (quest != null)
             {
                 ChangeStateTo(State.QuestAvailable);
-            }
-            else if (state != State.QuestInProgress)
-            {
-                ChangeStateTo(State.None);
             }
         }
 
