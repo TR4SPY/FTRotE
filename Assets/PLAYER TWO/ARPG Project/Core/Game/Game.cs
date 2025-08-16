@@ -234,16 +234,24 @@ namespace PLAYERTWO.ARPGProject
         /// <summary>
         /// Loads the Game data from the memory.
         /// </summary>
+
         public virtual void LoadGameData()
         {
             if (m_gameLoaded)
                 return;
 
+            // Ensure the GameDatabase is initialized before loading character data.
+            // Without this the Specializations lookup dictionary might not be
+            // populated yet, causing CharacterSpecializations to miss their
+            // references when deserializing.  Accessing the singleton forces its
+            // Awake() to run which registers all Specializations.
+            var _ = GameDatabase.instance;
             var data = GameSave.instance.Load();
+
             // Debug.Log($"[Game] Loaded {data?.characters.Count ?? 0} characters from save."); //  DEBUG - In case of issues with currentCharacter ID
 
             m_gameLoaded = true;
-
+            
             if (data == null)
                 return;
 

@@ -37,11 +37,21 @@ public class SaturationTintButton : MonoBehaviour,
         if (targetImage == null)
             targetImage = GetComponentInChildren<Image>();
 
-        runtimeMat = Instantiate(targetImage.material);
-        targetImage.material = runtimeMat;
+        var sourceMat = targetImage ? targetImage.material : null;
+        if (sourceMat == null)
+        {
+            var satShader = Shader.Find("UI/SaturationAndTint");
+            if (satShader)
+                sourceMat = new Material(satShader);
+        }
 
-        runtimeMat.SetFloat("_Saturation", normalSaturation);
-        runtimeMat.SetColor("_TintColor", normalTint);
+        if (sourceMat)
+        {
+            runtimeMat = Instantiate(sourceMat);
+            targetImage.material = runtimeMat;
+            runtimeMat.SetFloat("_Saturation", normalSaturation);
+            runtimeMat.SetColor("_TintColor", normalTint);
+        }
 
         button = GetComponent<Button>();
         originalScale = transform.localScale;
@@ -73,6 +83,8 @@ public class SaturationTintButton : MonoBehaviour,
             UpdateStateImmediate();
         }
 
+        if (!runtimeMat) return;
+        
         float currentSat = runtimeMat.GetFloat("_Saturation");
         runtimeMat.SetFloat("_Saturation", Mathf.Lerp(currentSat, targetSaturation, Time.deltaTime * transitionSpeed));
 
@@ -125,6 +137,8 @@ public class SaturationTintButton : MonoBehaviour,
             SetState(disabledSaturation, disabledTint, originalScale);
         else
             SetState(normalSaturation, normalTint, originalScale);
+        
+        if (!runtimeMat) return;
 
         runtimeMat.SetFloat("_Saturation", targetSaturation);
         runtimeMat.SetColor("_TintColor", targetTint);
@@ -141,10 +155,24 @@ public class SaturationTintButton : MonoBehaviour,
         targetImage = newTarget;
 
         if (runtimeMat) Destroy(runtimeMat);
-        runtimeMat = Instantiate(targetImage.material);
-        targetImage.material = runtimeMat;
+        var sourceMat = targetImage ? targetImage.material : null;
+        if (sourceMat == null)
+        {
+            var satShader = Shader.Find("UI/SaturationAndTint");
+            if (satShader)
+                sourceMat = new Material(satShader);
+        }
 
-        UpdateStateImmediate();
+        if (sourceMat)
+        {
+            runtimeMat = Instantiate(sourceMat);
+            targetImage.material = runtimeMat;
+            UpdateStateImmediate();
+        }
+        else
+        {
+            runtimeMat = null;
+        }
     }
 
     public void SetSelected(bool selected)
@@ -160,6 +188,7 @@ public class SaturationTintButton : MonoBehaviour,
             disabledSaturation = baseDisabledSaturation;
         }
 
-        UpdateStateImmediate();
+        if (runtimeMat)
+            UpdateStateImmediate();
     }
 }

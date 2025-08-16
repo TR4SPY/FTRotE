@@ -243,10 +243,6 @@ namespace PLAYERTWO.ARPGProject
 
             var character = Game.instance?.currentCharacter;
             var specs = character?.specializations;
-            int allowedSelections = 0;
-            for (int t = 1; t <= 3; t++)
-                if (specs != null && specs.IsTierUnlocked(t)) allowedSelections++;
-            int currentSelections = character?.specializations?.selected?.Count ?? 0;
 
             for (int i = 0; i < specializationButtons.Length; i++)
             {
@@ -361,7 +357,9 @@ namespace PLAYERTWO.ARPGProject
 
                 var sel = character?.GetSelected(def?.tier ?? -1);
                 bool isSelected = (sel != null && def != null) && (sel.id == def.id);
-                bool canChooseMore = currentSelections < allowedSelections;
+                bool canChooseThis = specs != null && def != null &&
+                                     specs.IsTierUnlocked(def.tier) && sel == null;
+
 
                 if (bgImg && bgImg.material)
                     bgImg.material.SetFloat("_Saturation", isSelected ? 1f : BG_SAT);
@@ -373,7 +371,7 @@ namespace PLAYERTWO.ARPGProject
                 if (def)
                 {
                    // btn.interactable = true;
-                    btn.interactable = isSelected || canChooseMore;
+                    btn.interactable = isSelected || canChooseThis;
                     btn.onClick.AddListener(() => OnSelectSpecialization(def));
                 }
                 else

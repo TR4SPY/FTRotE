@@ -314,7 +314,16 @@ namespace PLAYERTWO.ARPGProject
             {
                 foreach (var kvp in selectedIds)
                 {
+                    // Try resolve specialization definition via static lookup first.
                     var def = Specializations.FindById(kvp.Value);
+
+                    // When loading very early in the session the lookup dictionary
+                    // might not yet be populated. In that case fall back to the
+                    // GameDatabase which has direct references to all
+                    // Specializations assets.
+                    if (def == null)
+                        def = GameDatabase.instance?.GetSpecializationById(kvp.Value);
+
                     if (def != null)
                         selected[kvp.Key] = def;
                 }
@@ -325,7 +334,9 @@ namespace PLAYERTWO.ARPGProject
             {
                 foreach (var kvp in pointsById)
                 {
-                    var def = Specializations.FindById(kvp.Key);
+                    var def = Specializations.FindById(kvp.Key) ??
+                              GameDatabase.instance?.GetSpecializationById(kvp.Key);
+
                     if (def != null)
                         skillPoints[def] = kvp.Value;
                 }
