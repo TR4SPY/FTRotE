@@ -139,15 +139,14 @@ namespace PLAYERTWO.ARPGProject
                     if (kvp.Key != null)
                         specializationSkillPoints.Add(new SpecializationEntry { key = kvp.Key.id, value = kvp.Value });
                 }
+
+                unlockedSpecializationTiers = new List<int>(character.specializations.GetUnlockedTiersInstance());
             }
-
-            if (character.specializations != null)
-                unlockedSpecializationTiers = character.specializations != null
-                    ? new List<int>(character.specializations.GetUnlockedTiersInstance())
-                    : new List<int>();
             else
+            {
                 unlockedSpecializationTiers = new List<int>();
-
+            }
+            
             unlockedAchievements = character.unlockedAchievements != null ? new List<string>(character.unlockedAchievements) : new List<string>();
             achievementsUnlocked = unlockedAchievements.Count;
 

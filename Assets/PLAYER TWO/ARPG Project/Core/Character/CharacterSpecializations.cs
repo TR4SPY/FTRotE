@@ -63,19 +63,6 @@ namespace PLAYERTWO.ARPGProject
 
         public bool IsTierUnlocked(int tier) => m_unlockedTiers.Contains(tier);
 
-        public static void UnlockTier(int tier) =>
-            Game.instance?.currentCharacter?.specializations?.UnlockTierInstance(tier);
-
-        public static IEnumerable<int> GetUnlockedTiers() =>
-            Game.instance?.currentCharacter?.specializations?.GetUnlockedTiersInstance()
-            ?? Enumerable.Empty<int>();
-
-        public static void ClearUnlockedTiers() =>
-            Game.instance?.currentCharacter?.specializations?.ClearUnlockedTiersInstance();
-
-        public static bool IsTierUnlockedStatic(int tier) =>
-            Game.instance?.currentCharacter?.specializations?.IsTierUnlocked(tier) ?? false;
-            
         public static int GetTierUnlockLevel(int tier)
         {
             if (!Game.instance)
@@ -265,7 +252,13 @@ namespace PLAYERTWO.ARPGProject
                     pointsById[kvp.Key.id] = kvp.Value;
             }
 
-            return new SpecializationSnapshot(unspentSkillPoints, selectedIds, pointsById);
+            Debug.Log($"[CharacterSpecializations] Capture - unspentSkillPoints: {unspentSkillPoints}, " +
+                      $"selectedIds: {string.Join(", ", selectedIds.Select(kvp => $"{kvp.Key}:{kvp.Value}"))}, " +
+                      $"unlockedTiers: {string.Join(", ", m_unlockedTiers)}");
+
+            var unlocked = new List<int>(m_unlockedTiers);
+
+            return new SpecializationSnapshot(unspentSkillPoints, selectedIds, pointsById, unlocked);
         }
 
         /// <summary>
@@ -297,7 +290,21 @@ namespace PLAYERTWO.ARPGProject
                 }
             }
 
+            m_unlockedTiers.Clear();
+            if (snap.unlockedTiers != null)
+            {
+                foreach (var t in snap.unlockedTiers)
+                    m_unlockedTiers.Add(t);
+            }
+
+            onTiersChanged?.Invoke();
+
             ReapplyEffects();
+
+            var restoredSelectedIds = selected.ToDictionary(kvp => kvp.Key, kvp => kvp.Value?.id ?? -1);
+            Debug.Log($"[CharacterSpecializations] Restore - unspentSkillPoints: {unspentSkillPoints}, " +
+                      $"selectedIds: {string.Join(", ", restoredSelectedIds.Select(kvp => $"{kvp.Key}:{kvp.Value}"))}, " +
+                      $"unlockedTiers: {string.Join(", ", m_unlockedTiers)}");
         }
 
         #endregion
@@ -391,14 +398,17 @@ namespace PLAYERTWO.ARPGProject
         public int unspentSkillPoints;
         public Dictionary<int, int> selectedIds;
         public Dictionary<int, int> pointsPerSpecId;
+        public List<int> unlockedTiers;
 
         public SpecializationSnapshot(int unspentSkillPoints,
                                       Dictionary<int, int> selectedIds,
-                                      Dictionary<int, int> pointsPerSpecId)
+                                      Dictionary<int, int> pointsPerSpecId,
+                                      List<int> unlockedTiers)
         {
             this.unspentSkillPoints = unspentSkillPoints;
             this.selectedIds = selectedIds;
             this.pointsPerSpecId = pointsPerSpecId;
+            this.unlockedTiers = unlockedTiers;
         }
     }
 }

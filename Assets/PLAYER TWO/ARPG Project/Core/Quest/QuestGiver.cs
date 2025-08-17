@@ -496,17 +496,10 @@ namespace PLAYERTWO.ARPGProject
                 }
                 else
                 {
-                    var nextClass = ClassHierarchy.GetNextTierClass(currentClass);
-                    if (nextClass == CharacterClassRestrictions.None)
-                    {
-                        Debug.LogWarning($"[Specialization] Brak dalszej klasy po: {currentClass}");
-                    }
-                    else
-                    {
-                        int tierToUnlock = ClassHierarchy.GetTier(nextClass);
-                        CharacterSpecializations.UnlockTier(tierToUnlock);
-                        GUIWindowsManager.Instance?.specializationsWindow?.GetComponent<GUIWindow>()?.Show();
-                    }
+                    int tierToUnlock = ClassHierarchy.GetTier(currentClass) + 1;
+                    CharacterSpecializations.UnlockTier(tierToUnlock);
+                    Debug.Log($"[Specialization] Unlocking tier {tierToUnlock} for character {player.name} ({currentClassName})");
+                    GUIWindowsManager.Instance?.specializationsWindow?.GetComponent<GUIWindow>()?.Show();
                 }
             }
             else if (quest.questType == QuestType.ClassUpgrade)

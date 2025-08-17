@@ -71,6 +71,7 @@ namespace PLAYERTWO.ARPGProject
         {
             var quests = serializer.quests.Select(q =>
             {
+                Debug.Log($"Resolving quest ID {q.questId}");
                 var questScriptable = GameDatabase.instance.FindElementById<Quest>(q.questId);
                 if (questScriptable == null)
                 {

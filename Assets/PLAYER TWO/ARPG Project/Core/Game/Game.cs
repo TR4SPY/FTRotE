@@ -93,6 +93,7 @@ namespace PLAYERTWO.ARPGProject
         public UnityEvent<int> onCharacterAdded;
         public UnityEvent onCharacterDeleted;
         public UnityEvent onDataLoaded;
+        public UnityEvent<int> onCharacterChanged;
 
         protected GameStash m_stash;
         protected bool m_gameLoaded;
@@ -158,7 +159,8 @@ namespace PLAYERTWO.ARPGProject
 
             if (currentCharacter.currentScene != null)
                 GameScenes.instance.LoadScene(currentCharacter.currentScene);
-                GUIWindowsManager.Instance?.ResetWindowsState();
+            GUIWindowsManager.Instance?.ResetWindowsState();
+            onCharacterChanged?.Invoke(m_currentCharacterId);
         }
 
         /// <summary>

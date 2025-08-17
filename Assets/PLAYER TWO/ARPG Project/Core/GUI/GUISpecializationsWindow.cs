@@ -40,7 +40,10 @@ namespace PLAYERTWO.ARPGProject
                 Debug.Log($"[GUI-Spec] Awake on {name}. Enabled={enabled} ActiveInHierarchy={gameObject.activeInHierarchy}", this);
 
             if (Game.instance)
+            {
                 Game.instance.onDataLoaded.AddListener(OnExternalDataChanged);
+                Game.instance.onCharacterChanged.AddListener(OnCharacterChanged);
+            }
             CharacterSpecializations.onTiersChanged += OnExternalDataChanged;
 
             gameObject.SetActive(false);
@@ -49,8 +52,16 @@ namespace PLAYERTWO.ARPGProject
         private void OnDestroy()
         {
             if (Game.instance)
+            {
                 Game.instance.onDataLoaded.RemoveListener(OnExternalDataChanged);
+                Game.instance.onCharacterChanged.RemoveListener(OnCharacterChanged);
+            }
             CharacterSpecializations.onTiersChanged -= OnExternalDataChanged;
+        }
+
+        private void OnCharacterChanged(int _)
+        {
+            OnExternalDataChanged();
         }
 
         protected override void Start()
@@ -76,8 +87,11 @@ namespace PLAYERTWO.ARPGProject
                 return;
             }
 
-            if (verboseDebug) Debug.Log($"[GUI-Spec] Show() on {name}.", this);
+            if (verboseDebug)
+                Debug.Log($"[GUI-Spec] Show() on {name}. _builtOnce={_builtOnce}", this);
             base.Show();
+            if (verboseDebug && !_builtOnce)
+                Debug.Log("[GUI-Spec] Show() -> rebuilding buttons after reset.", this);
             SafeBuild();
         }
 
@@ -117,9 +131,15 @@ namespace PLAYERTWO.ARPGProject
 
         private void OnExternalDataChanged()
         {
+            if (verboseDebug)
+                Debug.Log("[GUI-Spec] External data changed; resetting build state.", this);
             _builtOnce = false;
             if (isOpen)
+            {
+                if (verboseDebug)
+                    Debug.Log("[GUI-Spec] Window open, rebuilding after external data change.", this);
                 SafeBuild();
+            }
         }
 
         private bool CanOpen()
@@ -244,6 +264,9 @@ namespace PLAYERTWO.ARPGProject
             var character = Game.instance?.currentCharacter;
             var specs = character?.specializations;
 
+            if (verboseDebug)
+                Debug.Log($"[GUI-Spec] Building buttons for character '{character?.name ?? "<null>"}'.", this);
+
             for (int i = 0; i < specializationButtons.Length; i++)
             {
                 var btn = specializationButtons[i];
@@ -360,6 +383,8 @@ namespace PLAYERTWO.ARPGProject
                 bool canChooseThis = specs != null && def != null &&
                                      specs.IsTierUnlocked(def.tier) && sel == null;
 
+                if (verboseDebug && def != null && specs != null)
+                    Debug.Log($"[GUI-Spec] Char '{character?.name}' tier {def.tier} unlocked={specs.IsTierUnlocked(def.tier)}", this);
 
                 if (bgImg && bgImg.material)
                     bgImg.material.SetFloat("_Saturation", isSelected ? 1f : BG_SAT);

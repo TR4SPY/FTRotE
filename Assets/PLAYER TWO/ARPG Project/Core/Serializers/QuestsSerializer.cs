@@ -38,6 +38,11 @@ namespace PLAYERTWO.ARPGProject
                 };
 
                 this.quests.Add(questData);
+
+                Debug.Log(
+                    $"[QuestsSerializer] Quest {id} " +
+                    $"({questInstance.data.title}) progress={questInstance.progress} " +
+                    $"completed={questInstance.completed}");
             }
         }
 

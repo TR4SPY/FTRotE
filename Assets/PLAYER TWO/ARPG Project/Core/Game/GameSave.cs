@@ -61,6 +61,14 @@ namespace PLAYERTWO.ARPGProject
             }
 
             CaptureVitalStats();
+            if (m_currentCharacter != null)
+            {
+                var tiers = m_currentCharacter.specializations != null
+                    ? string.Join(",", m_currentCharacter.specializations.GetUnlockedTiersInstance())
+                    : "None";
+                var questCount = m_currentCharacter.quests?.currentQuests?.Length ?? 0;
+                Debug.Log($"[GameSave] Saving character '{m_currentCharacter.name}' unlockedSpecializationTiers=[{tiers}] quests={questCount}");
+            }
 
             switch (mode)
             {
@@ -83,19 +91,40 @@ namespace PLAYERTWO.ARPGProject
         {
             Game.instance.lastNPCID = lastSavedNPCID;
 
+            GameSerializer data = null;
             switch (mode)
             {
                 default:
 #if !UNITY_WEBGL
                 case Mode.Binary:
-                    return LoadBinary();
+                    data = LoadBinary();
+                    break;
                 case Mode.JSON:
-                    return LoadJSON();
+                    data = LoadJSON();
+                    break;
 #endif
                 case Mode.PlayerPrefs:
-                    return LoadPlayerPrefs();
+                    data = LoadPlayerPrefs();
+                    break;
             }
+
+            if (data != null && m_currentCharacter != null)
+            {
+                var currentId = GameDatabase.instance.GetElementId<Character>(m_currentCharacter.data);
+                var charData = data.characters.FirstOrDefault(c => c.characterId == currentId);
+                if (charData != null)
+                {
+                    var tiers = charData.unlockedSpecializationTiers != null
+                        ? string.Join(",", charData.unlockedSpecializationTiers)
+                        : "None";
+                    var questCount = charData.quests?.quests?.Count ?? 0;
+                    Debug.Log($"[GameSave] Loaded character '{m_currentCharacter.name}' unlockedSpecializationTiers=[{tiers}] quests={questCount}");
+                }
+            }
+
+            return data;
         }
+
 
         protected virtual void SaveBinary()
         {
