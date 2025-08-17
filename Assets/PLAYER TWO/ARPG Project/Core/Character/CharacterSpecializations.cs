@@ -61,6 +61,8 @@ namespace PLAYERTWO.ARPGProject
             onTiersChanged?.Invoke();
         }
 
+        public void NotifyTierChange() => onTiersChanged?.Invoke();
+
         public bool IsTierUnlocked(int tier) => m_unlockedTiers.Contains(tier);
 
         public static int GetTierUnlockLevel(int tier)
@@ -378,8 +380,7 @@ namespace PLAYERTWO.ARPGProject
             var specs = Create(currency, unspent, respecCost);
 
             if (unlockedTiers != null)
-                foreach (var t in unlockedTiers)
-                    specs.UnlockTierInstance(t);
+                specs.m_unlockedTiers.UnionWith(unlockedTiers);
 
             specs.LoadFromData(selectedIds, pointsById);
             specs.onTiersChanged?.Invoke();

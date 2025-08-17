@@ -161,7 +161,7 @@ namespace PLAYERTWO.ARPGProject
                 GameScenes.instance.LoadScene(currentCharacter.currentScene);
             GUIWindowsManager.Instance?.ResetWindowsState();
             onCharacterChanged?.Invoke(m_currentCharacterId);
-            CharacterSpecializations.onTiersChanged?.Invoke();
+            currentCharacter.specializations?.NotifyTierChange();
         }
 
         /// <summary>
@@ -264,7 +264,7 @@ namespace PLAYERTWO.ARPGProject
 
             stash.LoadData(data.stashes);
             onDataLoaded?.Invoke();
-            CharacterSpecializations.onTiersChanged?.Invoke();
+            currentCharacter.specializations?.NotifyTierChange();
         }
 
         /// <summary>
