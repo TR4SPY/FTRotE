@@ -33,6 +33,7 @@ namespace PLAYERTWO.ARPGProject
         public bool verboseDebug = true;
 
         private bool _builtOnce;
+        private CharacterSpecializations _specs;
 
         private void Awake()
         {
@@ -43,8 +44,8 @@ namespace PLAYERTWO.ARPGProject
             {
                 Game.instance.onDataLoaded.AddListener(OnExternalDataChanged);
                 Game.instance.onCharacterChanged.AddListener(OnCharacterChanged);
+                SubscribeToSpecs(Game.instance.currentCharacter?.specializations);
             }
-            CharacterSpecializations.onTiersChanged += OnExternalDataChanged;
 
             gameObject.SetActive(false);
         }
@@ -56,12 +57,29 @@ namespace PLAYERTWO.ARPGProject
                 Game.instance.onDataLoaded.RemoveListener(OnExternalDataChanged);
                 Game.instance.onCharacterChanged.RemoveListener(OnCharacterChanged);
             }
-            CharacterSpecializations.onTiersChanged -= OnExternalDataChanged;
+            UnsubscribeFromSpecs(_specs);
         }
 
         private void OnCharacterChanged(int _)
         {
+            UnsubscribeFromSpecs(_specs);
+            SubscribeToSpecs(Game.instance?.currentCharacter?.specializations);
             OnExternalDataChanged();
+        }
+
+        private void SubscribeToSpecs(CharacterSpecializations specs)
+        {
+            if (specs == null) return;
+            _specs = specs;
+            specs.onTiersChanged += OnExternalDataChanged;
+        }
+
+        private void UnsubscribeFromSpecs(CharacterSpecializations specs)
+        {
+            if (specs == null) return;
+            specs.onTiersChanged -= OnExternalDataChanged;
+            if (_specs == specs)
+                _specs = null;
         }
 
         protected override void Start()

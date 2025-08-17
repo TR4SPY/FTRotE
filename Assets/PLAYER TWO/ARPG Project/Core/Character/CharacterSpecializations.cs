@@ -44,7 +44,7 @@ namespace PLAYERTWO.ARPGProject
 
         private readonly HashSet<int> m_unlockedTiers = new HashSet<int>();
        
-        public static event Action onTiersChanged;
+        public event Action onTiersChanged;
 
         public void UnlockTierInstance(int tier)
         {
@@ -256,9 +256,12 @@ namespace PLAYERTWO.ARPGProject
                       $"selectedIds: {string.Join(", ", selectedIds.Select(kvp => $"{kvp.Key}:{kvp.Value}"))}, " +
                       $"unlockedTiers: {string.Join(", ", m_unlockedTiers)}");
 
-            var unlocked = new List<int>(m_unlockedTiers);
 
-            return new SpecializationSnapshot(unspentSkillPoints, selectedIds, pointsById, unlocked);
+            return new SpecializationSnapshot(
+                unspentSkillPoints,
+                selectedIds,
+                pointsById,
+                new List<int>(m_unlockedTiers));
         }
 
         /// <summary>
@@ -292,14 +295,11 @@ namespace PLAYERTWO.ARPGProject
 
             m_unlockedTiers.Clear();
             if (snap.unlockedTiers != null)
-            {
-                foreach (var t in snap.unlockedTiers)
-                    m_unlockedTiers.Add(t);
-            }
-
-            onTiersChanged?.Invoke();
+                m_unlockedTiers.UnionWith(snap.unlockedTiers);
 
             ReapplyEffects();
+
+            onTiersChanged?.Invoke();
 
             var restoredSelectedIds = selected.ToDictionary(kvp => kvp.Key, kvp => kvp.Value?.id ?? -1);
             Debug.Log($"[CharacterSpecializations] Restore - unspentSkillPoints: {unspentSkillPoints}, " +
@@ -382,7 +382,7 @@ namespace PLAYERTWO.ARPGProject
                     specs.UnlockTierInstance(t);
 
             specs.LoadFromData(selectedIds, pointsById);
-            onTiersChanged?.Invoke();
+            specs.onTiersChanged?.Invoke();
             return specs;
         }
 

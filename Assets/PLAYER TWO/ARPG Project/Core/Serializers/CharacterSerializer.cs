@@ -146,7 +146,7 @@ namespace PLAYERTWO.ARPGProject
             {
                 unlockedSpecializationTiers = new List<int>();
             }
-            
+
             unlockedAchievements = character.unlockedAchievements != null ? new List<string>(character.unlockedAchievements) : new List<string>();
             achievementsUnlocked = unlockedAchievements.Count;
 
@@ -170,7 +170,12 @@ namespace PLAYERTWO.ARPGProject
 
         public virtual string ToJson() => JsonUtility.ToJson(this);
 
-        public static CharacterSerializer FromJson(string json) =>
-            JsonUtility.FromJson<CharacterSerializer>(json);
+        public static CharacterSerializer FromJson(string json)
+        {
+            var serializer = JsonUtility.FromJson<CharacterSerializer>(json);
+            if (serializer.unlockedSpecializationTiers == null)
+                serializer.unlockedSpecializationTiers = new List<int>();
+            return serializer;
+        }
     }
 }
