@@ -133,6 +133,10 @@ public class SaturationTintButton : MonoBehaviour,
 
     public void UpdateStateImmediate()
     {
+        if (button == null)
+            button = GetComponent<Button>();
+        if (button == null) return;
+
         if (!button.interactable)
             SetState(disabledSaturation, disabledTint, originalScale);
         else
@@ -167,7 +171,10 @@ public class SaturationTintButton : MonoBehaviour,
         {
             runtimeMat = Instantiate(sourceMat);
             targetImage.material = runtimeMat;
-            UpdateStateImmediate();
+            if (button == null)
+                button = GetComponent<Button>();
+            if (button != null)
+                UpdateStateImmediate();
         }
         else
         {
@@ -189,6 +196,11 @@ public class SaturationTintButton : MonoBehaviour,
         }
 
         if (runtimeMat)
-            UpdateStateImmediate();
+        {
+            if (button == null)
+                button = GetComponent<Button>();
+            if (button != null)
+                UpdateStateImmediate();
+        }
     }
 }

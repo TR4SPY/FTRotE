@@ -164,10 +164,7 @@ namespace PLAYERTWO.ARPGProject
         private bool CanOpen()
         {
             var specs = Game.instance?.currentCharacter?.specializations;
-            if (specs == null)
-                return false;
-
-            return specs.GetUnlockedTiersInstance().Count() > specs.selected.Count;
+            return specs != null && specs.GetUnlockedTiersInstance().Any();
         }
         
         private string ResolveFamily()
@@ -412,6 +409,8 @@ namespace PLAYERTWO.ARPGProject
                 {
                    // btn.interactable = true;
                     btn.interactable = isSelected || canChooseThis;
+                    tint?.SetSelected(isSelected);
+                    tint?.UpdateStateImmediate();
                     btn.onClick.AddListener(() => OnSelectSpecialization(def));
                 }
                 else
