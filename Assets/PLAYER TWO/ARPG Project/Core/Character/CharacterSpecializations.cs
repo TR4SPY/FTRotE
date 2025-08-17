@@ -54,6 +54,14 @@ namespace PLAYERTWO.ARPGProject
 
         public IEnumerable<int> GetUnlockedTiersInstance() => m_unlockedTiers;
 
+        public void SetUnlockedTiers(IEnumerable<int> tiers)
+        {
+            m_unlockedTiers.Clear();
+            if (tiers != null)
+                m_unlockedTiers.UnionWith(tiers);
+            onTiersChanged?.Invoke();
+        }
+
         public void ClearUnlockedTiersInstance()
         {
             if (m_unlockedTiers.Count == 0) return;
@@ -63,7 +71,7 @@ namespace PLAYERTWO.ARPGProject
 
         public void NotifyTierChange() => onTiersChanged?.Invoke();
 
-        public bool IsTierUnlocked(int tier) => tier == 0 || m_unlockedTiers.Contains(tier);
+        public bool IsTierUnlocked(int tier) => m_unlockedTiers.Contains(tier);
 
         public static int GetTierUnlockLevel(int tier)
         {
@@ -87,7 +95,6 @@ namespace PLAYERTWO.ARPGProject
         {
             m_stats  = GetComponent<EntityStatsManager>();
             m_skills = GetComponent<EntitySkillManager>();
-            m_unlockedTiers.Add(0);
             ReapplyEffects();
         }
 
@@ -126,6 +133,9 @@ namespace PLAYERTWO.ARPGProject
             selected.TryGetValue(tier, out var def);
             return def;
         }
+
+        public int GetNextFreeTier() =>
+            m_unlockedTiers.OrderBy(t => t).First(t => !selected.ContainsKey(t));
 
         /// <summary>
         /// Pełny reset (bez kosztu waluty). Czyści wybory i punkty per-specjalizacja.
@@ -245,7 +255,7 @@ namespace PLAYERTWO.ARPGProject
             foreach (var kvp in selected)
             {
                 if (kvp.Value != null)
-                    selectedIds[kvp.Key] = kvp.Value.id; // zakładamy, że Specializations ma pole 'id'
+                    selectedIds[kvp.Key] = kvp.Value.id;
             }
 
             var pointsById = new Dictionary<int, int>();
@@ -259,12 +269,15 @@ namespace PLAYERTWO.ARPGProject
                       $"selectedIds: {string.Join(", ", selectedIds.Select(kvp => $"{kvp.Key}:{kvp.Value}"))}, " +
                       $"unlockedTiers: {string.Join(", ", m_unlockedTiers)}");
 
+            var unlockedTiers = new List<int>(m_unlockedTiers);
+            if (IsTierUnlocked(0) && !unlockedTiers.Contains(0))
+                unlockedTiers.Add(0);
 
             return new SpecializationSnapshot(
                 unspentSkillPoints,
                 selectedIds,
                 pointsById,
-                new List<int>(m_unlockedTiers));
+                unlockedTiers);
         }
 
         /// <summary>
@@ -298,7 +311,10 @@ namespace PLAYERTWO.ARPGProject
 
             m_unlockedTiers.Clear();
             if (snap.unlockedTiers != null)
-                m_unlockedTiers.UnionWith(snap.unlockedTiers);
+            {
+                foreach (var tier in snap.unlockedTiers)
+                    m_unlockedTiers.Add(tier);
+            }
 
             ReapplyEffects();
 
@@ -367,7 +383,6 @@ namespace PLAYERTWO.ARPGProject
             specs.m_currency = currency;
             specs.unspentSkillPoints = unspent;
             specs.specializationRespecCost = respecCost;
-            specs.m_unlockedTiers.Add(0);
             return specs;
         }
 
@@ -385,7 +400,6 @@ namespace PLAYERTWO.ARPGProject
             if (unlockedTiers != null)
                 specs.m_unlockedTiers.UnionWith(unlockedTiers);
 
-            specs.m_unlockedTiers.Add(0);
             specs.LoadFromData(selectedIds, pointsById);
             specs.onTiersChanged?.Invoke();
             return specs;

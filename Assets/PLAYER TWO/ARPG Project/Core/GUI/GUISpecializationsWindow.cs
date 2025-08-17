@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -162,18 +163,11 @@ namespace PLAYERTWO.ARPGProject
 
         private bool CanOpen()
         {
-            var character = Game.instance?.currentCharacter;
-            if (character == null)
+            var specs = Game.instance?.currentCharacter?.specializations;
+            if (specs == null)
                 return false;
 
-            int requiredLevel = CharacterSpecializations.GetTierUnlockLevel(1);
-            if (character.stats.currentLevel < requiredLevel)
-                return false;
-
-            if (!character.specializations.IsTierUnlocked(1))
-                return false;
-
-            return true;
+            return specs.GetUnlockedTiersInstance().Count() > specs.selected.Count;
         }
         
         private string ResolveFamily()
@@ -396,10 +390,13 @@ namespace PLAYERTWO.ARPGProject
                     }
                 }
 
-                var sel = character?.GetSelected(def?.tier ?? -1);
-                bool isSelected = (sel != null && def != null) && (sel.id == def.id);
-                bool canChooseThis = specs != null && def != null &&
-                                     specs.IsTierUnlocked(def.tier) && sel == null;
+
+                bool isSelected = specs != null && def != null &&
+                                   specs.selected.Values.Contains(def);
+                bool hasFreeSlot = specs != null &&
+                                   specs.GetUnlockedTiersInstance().Count() > specs.selected.Count;
+                bool canChooseThis = hasFreeSlot && def != null &&
+                                     !specs.selected.Values.Contains(def);
 
                 if (verboseDebug && def != null && specs != null)
                     Debug.Log($"[GUI-Spec] Char '{character?.name}' tier {def.tier} unlocked={specs.IsTierUnlocked(def.tier)}", this);
@@ -436,8 +433,12 @@ namespace PLAYERTWO.ARPGProject
                 return;
             }
 
-            // Game.instance?.currentCharacter?.SelectSpecialization(0, def);
-            Game.instance?.currentCharacter?.SelectSpecialization(def.tier, def);
+            var specs = Game.instance?.currentCharacter?.specializations;
+            if (specs == null)
+                return;
+
+            int tierSlot = specs.GetNextFreeTier();
+            Game.instance.currentCharacter.SelectSpecialization(tierSlot, def);
             Hide();
 
             if (masterSkillTreeWindow != null)

@@ -123,15 +123,11 @@ namespace PLAYERTWO.ARPGProject
 
             if (quest.questType == QuestType.Specialization)
             {
-                var nextClass = ClassHierarchy.GetNextTierClass(currentClass);
-                if (nextClass == CharacterClassRestrictions.None)
-                    return false;
-
-                int nextTier = ClassHierarchy.GetTier(nextClass);
-                int unlockLevel = CharacterSpecializations.GetTierUnlockLevel(nextTier);
+                int currentTier = ClassHierarchy.GetTier(currentClass);
+                int unlockLevel = CharacterSpecializations.GetTierUnlockLevel(currentTier + 1);
                 if (player.stats.currentLevel < unlockLevel)
                     return false;
-                if (player.specializations.IsTierUnlocked(nextTier))
+                if (player.specializations.IsTierUnlocked(currentTier))
                     return false;
             }
 
@@ -496,7 +492,7 @@ namespace PLAYERTWO.ARPGProject
                 }
                 else
                 {
-                    int tierToUnlock = ClassHierarchy.GetTier(currentClass) + 1;
+                    int tierToUnlock = ClassHierarchy.GetTier(currentClass);
                     var specs = Game.instance?.currentCharacter?.specializations;
                     specs?.UnlockTierInstance(tierToUnlock);
                     GameSave.instance?.Save();

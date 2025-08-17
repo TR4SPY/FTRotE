@@ -125,10 +125,7 @@ namespace PLAYERTWO.ARPGProject
 
                     if (m_currentCharacter.specializations != null && charData.unlockedSpecializationTiers != null)
                     {
-                        m_currentCharacter.specializations.ClearUnlockedTiersInstance();
-                        foreach (var tier in charData.unlockedSpecializationTiers)
-                            m_currentCharacter.specializations.UnlockTierInstance(tier);
-                        m_currentCharacter.specializations.NotifyTierChange();
+                        m_currentCharacter.specializations.SetUnlockedTiers(charData.unlockedSpecializationTiers);
                         Debug.Log($"[GameSave] Applied specialization tiers to character '{m_currentCharacter.name}'");
                     }
                 }
