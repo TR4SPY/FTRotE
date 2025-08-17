@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using System.Collections.Generic;
 using TMPro;
+using System.Linq;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -349,14 +350,9 @@ namespace PLAYERTWO.ARPGProject
             MinimapHUD.instance?.SetTarget(entity);
             Waypoint.SetPlayer(entity); 
         }
-
-
         public static CharacterInstance CreateFromSerializer(CharacterSerializer serializer)
-
         {
-
             var data = GameDatabase.instance.FindElementById<Character>(serializer.characterId);
-
             var selectedSpecsDict = new Dictionary<int, int>();
             if (serializer.selectedSpecializations != null)
             {
@@ -382,13 +378,9 @@ namespace PLAYERTWO.ARPGProject
                 equipments = CharacterEquipments.CreateFromSerializer(serializer.equipments),
                 inventory = CharacterInventory.CreateFromSerializer(serializer.inventory),
                 skills = CharacterSkills.CreateFromSerializer(serializer.skills),
-                specializations = CharacterSpecializations.CreateFromData(
-                    selectedSpecsDict,
-                    specPointsDict,
-                    serializer.unlockedSpecializationTiers ?? new List<int>()),
                 quests = CharacterQuests.CreateFromSerializer(serializer.quests),
                 scenes = CharacterScenes.CreateFromSerializer(serializer.scenes),
-                
+
                 buffs = serializer.buffs,
 
                 playerDeaths = serializer.playerDeaths,
@@ -420,6 +412,17 @@ namespace PLAYERTWO.ARPGProject
                     : 0
             };
 
+            characterInstance.specializations = CharacterSpecializations.CreateFromData(
+                selectedSpecsDict,
+                specPointsDict,
+                serializer.unlockedSpecializationTiers ?? new List<int>());
+
+            if (characterInstance.specializations == null)
+                characterInstance.specializations = CharacterSpecializations.CreateFromData(
+                    selectedSpecsDict,
+                    specPointsDict,
+                    serializer.unlockedSpecializationTiers ?? new List<int>());
+
             if (serializer.viewedDialogPages != null)
             {
                 characterInstance.viewedDialogPages = new Dictionary<string, HashSet<int>>();
@@ -432,10 +435,11 @@ namespace PLAYERTWO.ARPGProject
             if (!Enum.TryParse(serializer.specialCondition, out Affinity parsedCondition))
             {
                 Debug.LogError($"[AI-DDA] Błąd wczytywania specialCondition: {serializer.specialCondition}. Ustawiono 'None'.");
+
                 parsedCondition = Affinity.None;
             }
-            characterInstance.specialCondition = parsedCondition;
 
+            characterInstance.specialCondition = parsedCondition;
             characterInstance.savedHealth = serializer.health;
             characterInstance.savedMana = serializer.mana;
 
@@ -443,6 +447,7 @@ namespace PLAYERTWO.ARPGProject
             characterInstance.SetMultiplier("Strength", serializer.strengthMultiplier);
             characterInstance.SetMultiplier("Vitality", serializer.vitalityMultiplier);
             characterInstance.SetMultiplier("Energy", serializer.energyMultiplier);
+
             characterInstance.savedDifficulty = serializer.savedDifficulty;
             characterInstance.guildName = serializer.guildName;
             characterInstance.guildCrestData = serializer.guildCrestData;

@@ -63,7 +63,7 @@ namespace PLAYERTWO.ARPGProject
 
         public void NotifyTierChange() => onTiersChanged?.Invoke();
 
-        public bool IsTierUnlocked(int tier) => m_unlockedTiers.Contains(tier);
+        public bool IsTierUnlocked(int tier) => tier == 0 || m_unlockedTiers.Contains(tier);
 
         public static int GetTierUnlockLevel(int tier)
         {
@@ -87,6 +87,7 @@ namespace PLAYERTWO.ARPGProject
         {
             m_stats  = GetComponent<EntityStatsManager>();
             m_skills = GetComponent<EntitySkillManager>();
+            m_unlockedTiers.Add(0);
             ReapplyEffects();
         }
 
@@ -361,10 +362,12 @@ namespace PLAYERTWO.ARPGProject
         public static CharacterSpecializations Create(Currency currency = null, int unspent = 0, int respecCost = 0)
         {
             var go = new GameObject("CharacterSpecializationsRuntime");
+            UnityEngine.Object.DontDestroyOnLoad(go);
             var specs = go.AddComponent<CharacterSpecializations>();
             specs.m_currency = currency;
             specs.unspentSkillPoints = unspent;
             specs.specializationRespecCost = respecCost;
+            specs.m_unlockedTiers.Add(0);
             return specs;
         }
 
@@ -382,6 +385,7 @@ namespace PLAYERTWO.ARPGProject
             if (unlockedTiers != null)
                 specs.m_unlockedTiers.UnionWith(unlockedTiers);
 
+            specs.m_unlockedTiers.Add(0);
             specs.LoadFromData(selectedIds, pointsById);
             specs.onTiersChanged?.Invoke();
             return specs;

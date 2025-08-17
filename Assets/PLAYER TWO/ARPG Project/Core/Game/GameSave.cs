@@ -30,7 +30,7 @@ namespace PLAYERTWO.ARPGProject
         public int lastSavedNPCID = 0;
 
         protected override void Initialize()
-        {
+        { 
             base.Initialize();
             DontDestroyOnLoad(gameObject);
         }
@@ -50,6 +50,9 @@ namespace PLAYERTWO.ARPGProject
 
             if (m_currentCharacter != null)
             {
+                if (m_currentCharacter.specializations == null)
+                    Debug.LogWarning("[GameSave] currentCharacter.specializations is null.");
+
                 SaveDifficultyForCharacter(m_currentCharacter);
                 SaveLogsForCharacter(m_currentCharacter);
                 SaveLogsIfEnabled();
@@ -119,6 +122,15 @@ namespace PLAYERTWO.ARPGProject
                         : "None";
                     var questCount = charData.quests?.quests?.Count ?? 0;
                     Debug.Log($"[GameSave] Loaded character '{m_currentCharacter.name}' unlockedSpecializationTiers=[{tiers}] quests={questCount}");
+
+                    if (m_currentCharacter.specializations != null && charData.unlockedSpecializationTiers != null)
+                    {
+                        m_currentCharacter.specializations.ClearUnlockedTiersInstance();
+                        foreach (var tier in charData.unlockedSpecializationTiers)
+                            m_currentCharacter.specializations.UnlockTierInstance(tier);
+                        m_currentCharacter.specializations.NotifyTierChange();
+                        Debug.Log($"[GameSave] Applied specialization tiers to character '{m_currentCharacter.name}'");
+                    }
                 }
             }
 
