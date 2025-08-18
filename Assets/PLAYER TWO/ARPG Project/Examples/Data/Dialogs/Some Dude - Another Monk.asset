@@ -56,6 +56,16 @@ MonoBehaviour:
       specialConditionToSet: 0
       hideIfAlreadyInGuild: 0
       buff: {fileID: 0}
+    - optionText: SPEC
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 12
+      nextPageIndex: -1
+      specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
     showOnce: 0
     isSpecial: 0
   - dialogText: You have chosen BUFF TESTS. Pick your buff

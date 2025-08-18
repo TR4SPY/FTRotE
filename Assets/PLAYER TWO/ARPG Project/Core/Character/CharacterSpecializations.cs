@@ -75,14 +75,13 @@ namespace PLAYERTWO.ARPGProject
 
         public static int GetTierUnlockLevel(int tier)
         {
-            if (!Game.instance)
-                return int.MaxValue;
+            if (!Game.instance) return int.MaxValue;
 
             switch (tier)
             {
-                case 1: return Game.instance.tier1UnlockLevel;
-                case 2: return Game.instance.tier2UnlockLevel;
-                case 3: return Game.instance.tier3UnlockLevel;
+                case 0: return Game.instance.tier1UnlockLevel;
+                case 1: return Game.instance.tier2UnlockLevel;
+                case 2: return Game.instance.tier3UnlockLevel;
                 default: return int.MaxValue;
             }
         }

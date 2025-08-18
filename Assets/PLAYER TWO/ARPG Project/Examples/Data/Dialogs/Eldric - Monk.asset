@@ -254,10 +254,10 @@ MonoBehaviour:
       hideIfAlreadyInGuild: 0
       buff: {fileID: 0}
     - optionText: SPEC WIZ
-      isForSocializer: 1
+      isForSocializer: 0
       isForAchiever: 0
       isForKiller: 0
-      isForExplorer: 1
+      isForExplorer: 0
       action: 12
       nextPageIndex: -1
       specialConditionToSet: 0
