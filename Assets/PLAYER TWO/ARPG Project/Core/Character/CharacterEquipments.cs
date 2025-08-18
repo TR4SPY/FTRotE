@@ -73,14 +73,15 @@ namespace PLAYERTWO.ARPGProject
         public virtual void InitializeEquipments(EntityItemManager items)
         {
             m_items = items;
-            m_items.TryEquip(initialRightHand, ItemSlots.RightHand);
-            m_items.TryEquip(initialLeftHand, ItemSlots.LeftHand);
-            m_items.TryEquip(initialHelm, ItemSlots.Helm);
-            m_items.TryEquip(initialChest, ItemSlots.Chest);
-            m_items.TryEquip(initialPants, ItemSlots.Pants);
-            m_items.TryEquip(initialGloves, ItemSlots.Gloves);
-            m_items.TryEquip(initialBoots, ItemSlots.Boots);
+            m_items.ForceEquip(initialRightHand, ItemSlots.RightHand);
+            m_items.ForceEquip(initialLeftHand, ItemSlots.LeftHand);
+            m_items.ForceEquip(initialHelm, ItemSlots.Helm);
+            m_items.ForceEquip(initialChest, ItemSlots.Chest);
+            m_items.ForceEquip(initialPants, ItemSlots.Pants);
+            m_items.ForceEquip(initialGloves, ItemSlots.Gloves);
+            m_items.ForceEquip(initialBoots, ItemSlots.Boots);
             m_items.SetConsumables(initialConsumables);
+            m_items.RevalidateEquippedItems();
         }
 
         protected virtual void InstantiateItem(CharacterItem item, ref ItemInstance reference)

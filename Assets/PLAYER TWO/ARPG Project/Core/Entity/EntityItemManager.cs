@@ -120,13 +120,13 @@ namespace PLAYERTWO.ARPGProject
             if (rightHandItem)
             {
                 var instance = new ItemInstance(rightHandItem);
-                Equip(instance, ItemSlots.RightHand);
+                ForceEquip(instance, ItemSlots.RightHand);
             }
 
             if (leftHandItem)
             {
                 var instance = new ItemInstance(leftHandItem);
-                Equip(instance, ItemSlots.LeftHand);
+                ForceEquip(instance, ItemSlots.LeftHand);
             }
         }
 
@@ -189,6 +189,15 @@ namespace PLAYERTWO.ARPGProject
             var items = m_items.Select(item => item.Value);
 
             return items.Where(item => item != null).ToArray();
+        }
+
+        /// <summary>
+        /// Re-evaluates requirements for all currently equipped items.
+        /// </summary>
+        public virtual void RevalidateEquippedItems()
+        {
+            foreach (var item in GetEquippedItems())
+                item?.EvaluateRequirements(entity);
         }
 
         /// <summary>
@@ -276,6 +285,18 @@ namespace PLAYERTWO.ARPGProject
             return true;
         }
 
+        /// <summary>
+        /// Force equips an item bypassing requirement checks.
+        /// Requirement validation is performed after equipping.
+        /// </summary>
+        /// <param name="item">Item to equip.</param>
+        /// <param name="slot">Target slot.</param>
+        public virtual void ForceEquip(ItemInstance item, ItemSlots slot)
+        {
+            Equip(item, slot);
+            item?.EvaluateRequirements(entity);
+        }
+        
         /// <summary>
         /// Equips an Item Instance to a given slot.
         /// </summary>

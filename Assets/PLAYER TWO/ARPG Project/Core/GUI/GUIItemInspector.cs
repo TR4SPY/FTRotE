@@ -180,6 +180,8 @@ namespace PLAYERTWO.ARPGProject
                 if (classRestrictionsText != null)
                     classRestrictionsText.text = "";
             }
+
+            UpdateSealTooltip();
         }
 
         protected virtual void UpdatePriceText()
@@ -518,6 +520,36 @@ namespace PLAYERTWO.ARPGProject
             else
             {
                 classRestrictionsText.text = result;
+            }
+        }
+
+        protected virtual void UpdateSealTooltip()
+        {
+            if (classRestrictionsText == null || m_item == null)
+                return;
+
+            if (m_item.SealType == SealType.None || m_item.effectiveness >= 1f)
+                return;
+
+            var lines = new List<string>();
+
+            if (m_item.SealType == SealType.Restricted)
+            {
+                int percent = Mathf.RoundToInt(m_item.effectiveness * 100f);
+                lines.Add(StringUtils.StringWithColor($"Restricted to {percent}% due to incompatibility", attentionColor));
+                lines.Add(StringUtils.StringWithColor("Unequip ⇒ full requirements needed to re-equip", attentionColor));
+            }
+            else if (m_item.SealType == SealType.Incompatible)
+            {
+                lines.Add(StringUtils.StringWithColor("Item incompatible with class", attentionColor));
+                lines.Add(StringUtils.StringWithColor("Replace this item", attentionColor));
+            }
+
+            if (lines.Count > 0)
+            {
+                var prefix = string.IsNullOrEmpty(classRestrictionsText.text) ? string.Empty : classRestrictionsText.text + "\n";
+                classRestrictionsText.gameObject.SetActive(true);
+                classRestrictionsText.text = prefix + string.Join("\n", lines);
             }
         }
 

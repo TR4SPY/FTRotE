@@ -365,6 +365,7 @@ namespace PLAYERTWO.ARPGProject
                     entity.nametag.SetNametag(entity.name, level);
                 });
             }
+            onLevelUp.AddListener(() => m_items?.RevalidateEquippedItems());
         }
 
         protected virtual void InitializeItems()
@@ -439,6 +440,7 @@ namespace PLAYERTWO.ARPGProject
             this.availablePoints = availablePoints;
             this.experience = experience;
             Recalculate();
+            m_items?.RevalidateEquippedItems();
         }
 
         private int _lastKnownStrength;
@@ -547,6 +549,7 @@ namespace PLAYERTWO.ARPGProject
             this.energy += energy;
             this.availablePoints -= strength + dexterity + vitality + energy;
             Recalculate();
+            m_items?.RevalidateEquippedItems();
         }
 
         public ItemWeapon GetCurrentWeapon() => m_items?.GetWeapon();

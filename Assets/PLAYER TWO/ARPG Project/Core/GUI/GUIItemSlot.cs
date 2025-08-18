@@ -38,6 +38,16 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The Audio Clip that plays when unequipping an item.")]
         public AudioClip unequipClip;
 
+        [Header("Seal Settings")]
+        [Tooltip("Image overlay used to display item seal state.")]
+        public Image sealOverlay;
+
+        [Tooltip("Sprite used when the item is restricted.")]
+        public Sprite restrictedSeal;
+
+        [Tooltip("Sprite used when the item is incompatible.")]
+        public Sprite incompatibleSeal;
+
         protected bool m_hovering;
         protected bool m_inspecting;
         protected float m_initializationTime;
@@ -69,6 +79,7 @@ namespace PLAYERTWO.ARPGProject
             m_image.color = m_initialColor;
             PlayAudio(equipClip);
             onEquip.Invoke(item);
+            UpdateSealOverlay();
         }
 
         /// <summary>
@@ -81,6 +92,7 @@ namespace PLAYERTWO.ARPGProject
             item = null;
             PlayAudio(unequipClip);
             onUnequip.Invoke(m_tempItem);
+            UpdateSealOverlay();
         }
 
         /// <summary>
@@ -235,10 +247,16 @@ namespace PLAYERTWO.ARPGProject
             m_image = GetComponent<Image>();
             m_initialColor = m_image.color;
             m_initializationTime = Time.time;
+
+            if (!restrictedSeal)
+                restrictedSeal = Resources.Load<Sprite>("RestrictedSeal");
+            if (!incompatibleSeal)
+                incompatibleSeal = Resources.Load<Sprite>("IncompatibleSeal");
         }
 
         protected virtual void Update()
         {
+            UpdateSealOverlay();
             if (!m_hovering)
             {
                 if (m_image.color != m_initialColor)
@@ -261,6 +279,23 @@ namespace PLAYERTWO.ARPGProject
 #endif
         }
 
+        protected virtual void UpdateSealOverlay()
+        {
+            if (!sealOverlay)
+                return;
+
+            if (item && item.item != null && item.item.IsSealed())
+            {
+                var sealType = item.item.SealType;
+                sealOverlay.sprite = sealType == SealType.Restricted ? restrictedSeal : incompatibleSeal;
+                sealOverlay.enabled = true;
+            }
+            else
+            {
+                sealOverlay.enabled = false;
+            }
+        }
+        
         protected virtual void OnDisable()
         {
             if (m_inspecting)

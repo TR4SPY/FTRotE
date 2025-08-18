@@ -34,6 +34,8 @@ namespace PLAYERTWO.ARPGProject
 
         public int itemLevel { get; private set; } = 0;
         public bool isSkillEnabled = false;
+        public float effectiveness { get; set; } = 1f;
+        public int sealType;
 
         protected int m_stack;
 
@@ -99,7 +101,7 @@ namespace PLAYERTWO.ARPGProject
             this.elements = elements ?? new ItemElements();
 
             if (IsEquippable())
-                durability = GetEquippable().maxDurability;
+                durability = Mathf.RoundToInt(GetEquippable().maxDurability * effectiveness);
 
             m_stack = 1;
         }
@@ -327,7 +329,7 @@ namespace PLAYERTWO.ARPGProject
             if (!IsEquippable()) return;
 
             var maxDurability = GetEquippable().maxDurability;
-            durability = Mathf.Clamp(durability - amount, 0, maxDurability);
+            durability = Mathf.Clamp(durability - Mathf.RoundToInt(amount * effectiveness), 0, maxDurability);
 
             if (durability <= 0)
                 onBreak?.Invoke();
@@ -345,8 +347,8 @@ namespace PLAYERTWO.ARPGProject
 
             float multiplier = GetItemLevelMultiplier();
 
-            var minDamage = Mathf.RoundToInt(GetWeapon().minDamage * multiplier);
-            var maxDamage = Mathf.RoundToInt(GetWeapon().maxDamage * multiplier);
+            var minDamage = Mathf.RoundToInt(GetWeapon().minDamage * multiplier * effectiveness);
+            var maxDamage = Mathf.RoundToInt(GetWeapon().maxDamage * multiplier * effectiveness);
 
             if (IsAboutToBreak())
             {
@@ -366,8 +368,8 @@ namespace PLAYERTWO.ARPGProject
 
             float multiplier = GetItemLevelMultiplier();
 
-            var minMagic = Mathf.RoundToInt(GetWeapon().minMagicDamage * multiplier);
-            var maxMagic = Mathf.RoundToInt(GetWeapon().maxMagicDamage * multiplier);
+            var minMagic = Mathf.RoundToInt(GetWeapon().minMagicDamage * multiplier * effectiveness);
+            var maxMagic = Mathf.RoundToInt(GetWeapon().maxMagicDamage * multiplier * effectiveness);
 
             if (IsAboutToBreak())
             {
@@ -381,7 +383,7 @@ namespace PLAYERTWO.ARPGProject
         public int GetAdditionalMagicDamage()
         {
             if (data is ItemWeapon weapon)
-                return weapon.minMagicDamage;
+                return Mathf.RoundToInt(weapon.minMagicDamage * effectiveness);
 
             return 0;
         }
@@ -389,7 +391,7 @@ namespace PLAYERTWO.ARPGProject
         public int GetAdditionalElementalDamage(MagicElement element)
         {
             if (data is ItemWeapon weapon && weapon.magicElement == element)
-                return weapon.minMagicDamage;
+                return Mathf.RoundToInt(weapon.minMagicDamage * effectiveness);
 
             return 0;
         }
@@ -404,17 +406,17 @@ namespace PLAYERTWO.ARPGProject
 
         public float GetMagicDamageMultiplier()
         {
-            return attributes != null ? attributes.magicDamagePercent / 100f : 1f;
+            return attributes != null ? attributes.magicDamagePercent / 100f * effectiveness : 0f;
         }
 
         public int GetAdditionalMagicResistance()
         {
-            return attributes != null ? attributes.magicResistance : 0;
+            return attributes != null ? Mathf.RoundToInt(attributes.magicResistance * effectiveness) : 0;
         }
 
         public int GetAdditionalElementalResistance(MagicElement element)
         {
-            return elements != null ? elements.GetResistance(element) : 0;
+            return elements != null ? Mathf.RoundToInt(elements.GetResistance(element) * effectiveness) : 0;
         }
 
         /// <summary>
@@ -438,7 +440,7 @@ namespace PLAYERTWO.ARPGProject
             else if (IsShield())
                 baseDefense = GetShield().defense;
 
-            int scaledDefense = Mathf.RoundToInt(baseDefense * multiplier);
+            int scaledDefense = Mathf.RoundToInt(baseDefense * multiplier * effectiveness);
 
             return IsAboutToBreak() ? (int)(scaledDefense / 2f) : scaledDefense;
         }
@@ -450,7 +452,7 @@ namespace PLAYERTWO.ARPGProject
         {
             if (!IsEquippable()) return;
 
-            durability = GetEquippable().maxDurability;
+            durability = Mathf.RoundToInt(GetEquippable().maxDurability * effectiveness);
             onChanged?.Invoke();
         }
 
@@ -469,7 +471,7 @@ namespace PLAYERTWO.ARPGProject
             this.data = data;
 
             if (IsEquippable())
-                durability = GetEquippable().maxDurability;
+                durability = Mathf.RoundToInt(GetEquippable().maxDurability * effectiveness);
         }
 
         /// <summary>
@@ -709,6 +711,8 @@ namespace PLAYERTWO.ARPGProject
             var instance = new ItemInstance(item, attributes, serializer.durability, serializer.stack, elements);
             instance.SetItemLevel(serializer.itemLevel);
             instance.isSkillEnabled = serializer.skillEnabled;
+            instance.sealType = serializer.sealType;
+            instance.effectiveness = serializer.effectiveness;
 
             return instance;
         }

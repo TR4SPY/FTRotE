@@ -131,9 +131,11 @@ namespace PLAYERTWO.ARPGProject
                 }
             }
 
+            if (m_currentCharacter?.Entity != null)
+                m_currentCharacter.Entity.items.RevalidateEquippedItems();
+
             return data;
         }
-
 
         protected virtual void SaveBinary()
         {

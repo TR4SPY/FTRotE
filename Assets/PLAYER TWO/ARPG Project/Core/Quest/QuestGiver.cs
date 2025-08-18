@@ -557,6 +557,7 @@ namespace PLAYERTWO.ARPGProject
                 newEntity.inputs.enabled = true;
                 newEntity.skills.enabled = true;
                 newEntity.items.enabled = true;
+                newEntity.items.RevalidateEquippedItems();
 
                 var feedback = newEntity.GetComponent<EntityFeedback>();
                 feedback?.SendMessage("InitializeEntity", SendMessageOptions.DontRequireReceiver);

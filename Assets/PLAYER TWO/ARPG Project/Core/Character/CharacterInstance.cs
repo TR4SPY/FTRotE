@@ -298,6 +298,7 @@ namespace PLAYERTWO.ARPGProject
                 m_entity = GameObject.Instantiate(data.entity);
                 stats.InitializeStats(m_entity.stats);
                 equipments.InitializeEquipments(m_entity.items);
+                m_entity.items.RevalidateEquippedItems();
                 inventory.InitializeInventory(m_entity.inventory);
                 skills.InitializeSkills(m_entity.skills);
                 RestoreWeaponSkill(m_entity);
