@@ -146,6 +146,14 @@ namespace PLAYERTWO.ARPGProject
             }
         }
 
+        protected override void Awake()
+        {
+            tier1UnlockLevel = 100;
+            tier2UnlockLevel = 300;
+            tier3UnlockLevel = 500;
+            base.Awake();
+        }
+
         /// <summary>
         /// Starts a new Game session with a given Character Instance.
         /// </summary>

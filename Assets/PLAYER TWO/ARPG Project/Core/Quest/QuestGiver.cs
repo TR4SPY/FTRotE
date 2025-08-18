@@ -493,8 +493,12 @@ namespace PLAYERTWO.ARPGProject
                 else
                 {
                     int tierToUnlock = ClassHierarchy.GetTier(currentClass);
-                    var specs = Game.instance.currentCharacter?.specializations;
-                    specs?.UnlockTierInstance(tierToUnlock);
+                    var specs = Game.instance?.currentCharacter?.specializations;
+                    if (specs != null)
+                    {
+                        for (int t = 0; t <= tierToUnlock; t++)
+                            specs.UnlockTierInstance(t);
+                    }
                     GameSave.instance?.Save();
                     Debug.Log($"[Specialization] Unlocking tier {tierToUnlock} for character {player.name} ({currentClassName})");
                     GUIWindowsManager.Instance?.specializationsWindow?.GetComponent<GUIWindow>()?.Show();

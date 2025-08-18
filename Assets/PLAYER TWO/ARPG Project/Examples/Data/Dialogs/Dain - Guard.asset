@@ -27,6 +27,8 @@ MonoBehaviour:
       action: 5
       nextPageIndex: -1
       specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
     - optionText: Do you have a quest for me?
       isForSocializer: 0
       isForAchiever: 0
@@ -35,6 +37,8 @@ MonoBehaviour:
       action: 1
       nextPageIndex: -1
       specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
     showOnce: 1
     isSpecial: 0
   - dialogText: "I am Dain Havenguard, Captain of the Ashenvale Watch. Bandits lurk
@@ -51,6 +55,8 @@ MonoBehaviour:
       action: 5
       nextPageIndex: -1
       specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
     - optionText: What about that mission?
       isForSocializer: 0
       isForAchiever: 0
@@ -59,6 +65,8 @@ MonoBehaviour:
       action: 1
       nextPageIndex: -1
       specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
     showOnce: 1
     isSpecial: 0
   - dialogText: "But I am not unreasonable. If you mean no harm and pull your weight,
@@ -75,6 +83,8 @@ MonoBehaviour:
       action: 5
       nextPageIndex: -1
       specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
     - optionText: Let's cut to business, shall we?
       isForSocializer: 0
       isForAchiever: 0
@@ -83,6 +93,8 @@ MonoBehaviour:
       action: 1
       nextPageIndex: -1
       specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
     showOnce: 1
     isSpecial: 0
   - dialogText: "Now, if you're here looking for work, the village always has needs.
@@ -100,6 +112,8 @@ MonoBehaviour:
       action: 1
       nextPageIndex: -1
       specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
     - optionText: Anything exclusive for me?
       isForSocializer: 0
       isForAchiever: 1
@@ -108,6 +122,18 @@ MonoBehaviour:
       action: 6
       nextPageIndex: -1
       specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
+    - optionText: VG SPECIALIZATION
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 12
+      nextPageIndex: -1
+      specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
     showOnce: 0
     isSpecial: 0
   dialogTitle: Dain - Guard
