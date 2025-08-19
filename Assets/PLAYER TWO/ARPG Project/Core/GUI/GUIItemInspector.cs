@@ -528,8 +528,6 @@ namespace PLAYERTWO.ARPGProject
             if (classRestrictionsText == null || m_item == null)
                 return;
 
-            classRestrictionsText.text = string.Empty;
-
             if (m_item.ItemSealType == ItemSealType.None || m_item.effectiveness >= 1f)
                 return;
 
@@ -550,9 +548,13 @@ namespace PLAYERTWO.ARPGProject
             if (lines.Count > 0)
             {
                 classRestrictionsText.gameObject.SetActive(true);
-                classRestrictionsText.text = string.Join("\n", lines);
+                string existing = classRestrictionsText.text;
+                if (!string.IsNullOrEmpty(existing))
+                    existing += "\n";
+                classRestrictionsText.text = existing + string.Join("\n", lines);
             }
         }
+
         private string GetMagicDescription(ItemInstance item)
         {
             var lines = new List<string>();

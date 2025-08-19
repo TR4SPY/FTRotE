@@ -245,8 +245,8 @@ namespace PLAYERTWO.ARPGProject
             if (nextClass == CharacterClassRestrictions.None)
                 return;
 
-            int nextTier = ClassHierarchy.GetTier(nextClass);
-            int unlockLevel = CharacterSpecializations.GetTierUnlockLevel(nextTier);
+            int currentTier = ClassHierarchy.GetTier(currentClass);
+            int unlockLevel = CharacterSpecializations.GetTierUnlockLevel(currentTier);
 
             if (player.stats.currentLevel >= unlockLevel)
             {
@@ -403,13 +403,18 @@ namespace PLAYERTWO.ARPGProject
                 Debug.LogWarning("NpcInteractionLogger not found on QuestGiver. Cannot log interaction.");
             }
         }
+
         public void OpenQuestDialog()
         {
-                var current = CurrentQuest();
-                if (!current) return;
+            var current = CurrentQuest();
+            if (!current) return;
 
+            if (Game.instance.quests.ContainsQuest(current))
+                GUIWindowsManager.instance.quest.SetQuestFromLog(current);
+            else
                 GUIWindowsManager.instance.quest.SetQuest(current);
-                Debug.Log("QuestGiver interacted with by player. Quest UI opened.");
+
+            Debug.Log("QuestGiver interacted with by player. Quest UI opened.");
         }
 
         public Dialog GetDialog()

@@ -91,6 +91,24 @@ namespace PLAYERTWO.ARPGProject
         /// <returns>Returns true if the item was equipped.</returns>
         public virtual bool TryAutoEquip(GUIItem item)
         {
+            if (item.item.IsBlade() && item.item.GetBlade().IsOneHanded())
+            {
+                bool usingRightWeapon = equipments.IsUsingWeaponRight();
+                bool usingLeftWeapon = equipments.IsUsingWeaponLeft();
+                bool usingShield = equipments.IsUsingShield();
+
+                if (!usingRightWeapon)
+                    return TryEquip(item, rightHandSlot);
+
+                if (!usingLeftWeapon && !usingShield)
+                    return TryEquip(item, leftHandSlot);
+
+                if (usingShield)
+                    return TryEquip(item, leftHandSlot);
+
+                return TryEquip(item, rightHandSlot);
+            }
+
             if (TryEquip(item, rightHandSlot)) return true;
             if (TryEquip(item, leftHandSlot)) return true;
             if (TryEquip(item, helmSlot)) return true;
