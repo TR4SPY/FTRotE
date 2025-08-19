@@ -293,6 +293,16 @@ namespace PLAYERTWO.ARPGProject
         /// <param name="slot">Target slot.</param>
         public virtual void ForceEquip(ItemInstance item, ItemSlots slot)
         {
+            if (item == null)
+            {
+                if (!m_items.ContainsKey(slot))
+                    m_items.Add(slot, null);
+
+                m_items[slot] = null;
+                onChanged?.Invoke();
+                return;
+            }
+
             Equip(item, slot);
             item?.EvaluateRequirements(entity);
         }
@@ -308,6 +318,12 @@ namespace PLAYERTWO.ARPGProject
                 m_items.Add(slot, null);
 
             m_items[slot] = item;
+            if (item == null)
+            {
+                onChanged?.Invoke();
+                return;
+            }
+
             m_items[slot].onChanged += OnItemChanged;
 
             if (item.IsWeapon() || item.IsShield())

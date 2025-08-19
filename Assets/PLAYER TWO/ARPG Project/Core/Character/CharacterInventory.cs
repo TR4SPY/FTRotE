@@ -59,7 +59,7 @@ namespace PLAYERTWO.ARPGProject
                 var cItem = new CharacterItem(data, attributes, item.item.durability, item.item.stack, elements);
                 cItem.itemLevel = item.item.itemLevel;
                 cItem.skillEnabled = item.item.skillEnabled;
-                cItem.sealType = item.item.sealType;
+                cItem.SealType = item.item.sealType;
                 cItem.effectiveness = item.item.effectiveness;
 
                 if (data != null)

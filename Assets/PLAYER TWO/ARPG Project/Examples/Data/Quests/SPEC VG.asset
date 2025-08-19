@@ -28,10 +28,10 @@ MonoBehaviour:
     attributes: 0
     elements: 0
     amount: 1
-  returnToNPC: Monk
+  returnToNPC: Guard
   requiresManualCompletion: 1
   questType: 3
-  requiredClass: 16
+  requiredClass: 2
   requireMaxLevel: 0
   isMultiStage: 0
   stages: []

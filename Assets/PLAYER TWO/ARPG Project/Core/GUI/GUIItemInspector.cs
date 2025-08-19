@@ -528,18 +528,18 @@ namespace PLAYERTWO.ARPGProject
             if (classRestrictionsText == null || m_item == null)
                 return;
 
-            if (m_item.SealType == SealType.None || m_item.effectiveness >= 1f)
+            if (m_item.ItemSealType == ItemSealType.None || m_item.effectiveness >= 1f)
                 return;
 
             var lines = new List<string>();
 
-            if (m_item.SealType == SealType.Restricted)
+            if (m_item.ItemSealType == ItemSealType.Restricted)
             {
                 int percent = Mathf.RoundToInt(m_item.effectiveness * 100f);
                 lines.Add(StringUtils.StringWithColor($"Restricted to {percent}% due to incompatibility", attentionColor));
                 lines.Add(StringUtils.StringWithColor("Unequip ⇒ full requirements needed to re-equip", attentionColor));
             }
-            else if (m_item.SealType == SealType.Incompatible)
+            else if (m_item.ItemSealType == ItemSealType.Incompatible)
             {
                 lines.Add(StringUtils.StringWithColor("Item incompatible with class", attentionColor));
                 lines.Add(StringUtils.StringWithColor("Replace this item", attentionColor));

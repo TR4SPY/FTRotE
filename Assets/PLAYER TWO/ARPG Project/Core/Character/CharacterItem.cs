@@ -17,7 +17,7 @@ namespace PLAYERTWO.ARPGProject
         public bool skillEnabled;
 
         [HideInInspector]
-        public int sealType;
+        public ItemSealType SealType;
         [HideInInspector]
         public float effectiveness;
         
@@ -65,8 +65,7 @@ namespace PLAYERTWO.ARPGProject
             {
                 var durability = data is ItemEquippable ? (data as ItemEquippable).maxDurability : 0;
                 var inst = new ItemInstance(data, a, durability, stack, elements);
-                inst.sealType = this.sealType;
-                inst.effectiveness = this.effectiveness;
+                inst.SetSealState(this.SealType, this.effectiveness);
                 return inst;
             }
 
@@ -79,8 +78,7 @@ namespace PLAYERTWO.ARPGProject
             var instance = new ItemInstance(data, a, durability, finalStack, elements);
             instance.SetItemLevel(itemLevel);
             instance.isSkillEnabled = this.skillEnabled;
-            instance.sealType = this.sealType;
-            instance.effectiveness = this.effectiveness;
+            instance.SetSealState(this.SealType, this.effectiveness);
 
             return instance;
         }
@@ -93,7 +91,7 @@ namespace PLAYERTWO.ARPGProject
             var characterItem = new CharacterItem(data, attributes, serializer.durability, serializer.stack, elements);
             characterItem.itemLevel = serializer.itemLevel;
             characterItem.skillEnabled = serializer.skillEnabled;
-            characterItem.sealType = serializer.sealType;
+            characterItem.SealType = serializer.sealType;
             characterItem.effectiveness = serializer.effectiveness;
 
             return characterItem;

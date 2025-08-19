@@ -286,8 +286,8 @@ namespace PLAYERTWO.ARPGProject
 
             if (item && item.item != null && item.item.IsSealed())
             {
-                var sealType = item.item.SealType;
-                sealOverlay.sprite = sealType == SealType.Restricted ? restrictedSeal : incompatibleSeal;
+                var sealType = item.item.ItemSealType;
+                sealOverlay.sprite = sealType == ItemSealType.Restricted ? restrictedSeal : incompatibleSeal;
                 sealOverlay.enabled = true;
             }
             else

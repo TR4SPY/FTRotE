@@ -13,13 +13,49 @@ namespace PLAYERTWO.ARPGProject
         public float effectiveness { get; private set; } = 1f;
 
         /// <summary>
+        /// Indicates the current seal type applied to the item.
+        /// </summary>
+        public ItemSealType ItemSealType { get; private set; } = ItemSealType.None;
+
+        /// <summary>
+        /// Manually sets the seal state of this item.
+        /// </summary>
+        public void SetSealState(ItemSealType sealType, float effectiveness)
+        {
+            ItemSealType = sealType;
+            this.effectiveness = effectiveness;
+            isSealed = sealType != ItemSealType.None || effectiveness < 1f;
+        }
+
+        /// <summary>
         /// Evaluates item requirements against an entity and updates seal state and effectiveness.
         /// </summary>
         public void EvaluateRequirements(Entity entity)
         {
             bool meets = MeetsRequirements(entity);
-            isSealed = !meets;
-            effectiveness = meets ? 1f : 0f;
+
+            bool classAllowed = true;
+            if (entity)
+            {
+                string className = entity.name.Replace("(Clone)", "").Trim();
+                if (ClassHierarchy.NameToBits.TryGetValue(className, out var playerClass))
+                    classAllowed = IsClassAllowed(playerClass);
+            }
+
+            if (!classAllowed)
+            {
+                SetSealState(ItemSealType.Incompatible, 0f);
+            }
+            else if (!meets)
+            {
+                SetSealState(ItemSealType.Restricted, 0f);
+            }
+            else
+            {
+                SetSealState(ItemSealType.None, 1f);
+            }
         }
+
+        public bool IsSealed() => isSealed;
     }
 }

@@ -38,7 +38,7 @@ namespace PLAYERTWO.ARPGProject
         public int durability;
         public int stack;
         public int itemLevel = 0;
-        public int sealType;
+        public ItemSealType sealType;
         public float effectiveness;
         public bool skillEnabled = false;
         public Attributes attributes;
@@ -69,7 +69,7 @@ namespace PLAYERTWO.ARPGProject
 
             this.itemLevel = item.itemLevel;
             this.skillEnabled = item.isSkillEnabled;
-            this.sealType = item.sealType;
+            this.sealType = item.ItemSealType;
             this.effectiveness = item.effectiveness;
             this.attributes = new Attributes();
             this.elements = new Elements();

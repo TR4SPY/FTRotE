@@ -34,8 +34,6 @@ namespace PLAYERTWO.ARPGProject
 
         public int itemLevel { get; private set; } = 0;
         public bool isSkillEnabled = false;
-        public float effectiveness { get; set; } = 1f;
-        public int sealType;
 
         protected int m_stack;
 
@@ -711,8 +709,7 @@ namespace PLAYERTWO.ARPGProject
             var instance = new ItemInstance(item, attributes, serializer.durability, serializer.stack, elements);
             instance.SetItemLevel(serializer.itemLevel);
             instance.isSkillEnabled = serializer.skillEnabled;
-            instance.sealType = serializer.sealType;
-            instance.effectiveness = serializer.effectiveness;
+            instance.SetSealState(serializer.sealType, serializer.effectiveness);
 
             return instance;
         }
