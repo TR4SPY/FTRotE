@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace PLAYERTWO.ARPGProject
 {
     public partial class ItemInstance
@@ -32,7 +34,7 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         public void EvaluateRequirements(Entity entity)
         {
-            bool meets = MeetsRequirements(entity);
+            // bool meets = MeetsRequirements(entity);
 
             bool classAllowed = true;
             if (entity)
@@ -45,10 +47,28 @@ namespace PLAYERTWO.ARPGProject
             if (!classAllowed)
             {
                 SetSealState(ItemSealType.Incompatible, 0f);
+                return;
             }
-            else if (!meets)
+
+            float effectiveness = 1f;
+
+            int requiredStrength = GetRequiredStrength();
+            if (requiredStrength > 0)
+                effectiveness = Mathf.Min(effectiveness, entity.stats.strength / (float)requiredStrength);
+
+            int requiredDexterity = GetRequiredDexterity();
+            if (requiredDexterity > 0)
+                effectiveness = Mathf.Min(effectiveness, entity.stats.dexterity / (float)requiredDexterity);
+
+            int requiredLevel = GetRequiredLevel();
+            if (requiredLevel > 0)
+                effectiveness = Mathf.Min(effectiveness, entity.stats.level / (float)requiredLevel);
+
+            effectiveness = Mathf.Clamp01(effectiveness);
+
+            if (effectiveness < 1f)
             {
-                SetSealState(ItemSealType.Restricted, 0f);
+                SetSealState(ItemSealType.Restricted, effectiveness);
             }
             else
             {

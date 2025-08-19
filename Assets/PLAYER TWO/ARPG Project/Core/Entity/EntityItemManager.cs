@@ -670,11 +670,11 @@ namespace PLAYERTWO.ARPGProject
 
                 if (item.Value.data is ItemArmor armor)
                 {
-                    total += armor.magicResistance;
+                    total += Mathf.RoundToInt(armor.magicResistance * item.Value.effectiveness);
                 }
                 else if (item.Value.data is ItemBow bow)
                 {
-                    total += bow.magicResistance;
+                    total += Mathf.RoundToInt(bow.magicResistance * item.Value.effectiveness);
                 }
             }
 
@@ -703,10 +703,10 @@ namespace PLAYERTWO.ARPGProject
         {
             if (!IsUsingWeaponRight()) return 0;
 
-            var total = GetRightWeapon().attackSpeed;
+            var total = Mathf.RoundToInt(GetRightWeapon().attackSpeed * GetRightHand().effectiveness);
 
             if (IsUsingWeaponLeft())
-                total += (int)(GetLeftWeapon().attackSpeed * 0.5f);
+                total += Mathf.RoundToInt(GetLeftWeapon().attackSpeed * GetLeftHand().effectiveness * 0.5f);
 
             return total;
         }

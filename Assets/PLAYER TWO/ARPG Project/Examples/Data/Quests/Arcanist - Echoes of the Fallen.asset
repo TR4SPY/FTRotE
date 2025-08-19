@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fadb75505e90364e88de4f2b82a4d09, type: 3}
+  m_Name: Arcanist - Echoes of the Fallen
+  m_EditorClassIdentifier: 
+  title: Echoes of the Fallen
+  description: "Power is not granted. It is earned through trial, pain, and clarity
+    of purpose.\n\nThere is one who walks in ruin - a knight once sworn to light,
+    now bound in shadow. The Fallen Dark Knight. His presence corrupts the land.
+    His soul, long lost\u2026 but not forgotten.\n\nYou must face him. Not to destroy
+    what remains but to confront what you may become, should your path ever falter.\n\nBring
+    me the {quest item} he carries. Only then will you be ready to take the next
+    step.\n\nGo now. Let your resolve be stronger than his despair."
+  objective: Class Upgrade
+  targetProgress: 1
+  completingMode: 3
+  allowLogCompletion: 0
+  experience: 0
+  coins: 0
+  items: []
+  destinationScene: 
+  progressKey: 
+  requiredItem:
+    data: {fileID: 11400000, guid: b9ab9063df42e2eb7a11801925634dc3, type: 2}
+    attributes: 0
+    elements: 0
+    amount: 1
+  returnToNPC: Brother Ilvyr - Monk
+  requiresManualCompletion: 1
+  questType: 2
+  requiredClass: 8
+  requireMaxLevel: 1
+  isMultiStage: 0
+  stages: []
+  forKiller: 0
+  forAchiever: 0
+  forExplorer: 0
+  forSocializer: 0
+  killerMultiplier: 1
+  killerGoldMultiplier: 1
+  killerExpMultiplier: 1
+  socializerMultiplier: 1
+  socializerGoldMultiplier: 1
+  socializerExpMultiplier: 1
+  explorerMultiplier: 1
+  explorerExpMultiplier: 1
+  explorerGoldMultiplier: 1
+  achieverMultiplier: 1
+  achieverExpMultiplier: 1
+  achieverGoldMultiplier: 1

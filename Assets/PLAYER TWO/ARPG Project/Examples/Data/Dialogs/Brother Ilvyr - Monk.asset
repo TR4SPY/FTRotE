@@ -1,0 +1,126 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 771f6ee7f348f39b18544bf344247ed9, type: 3}
+  m_Name: Brother Ilvyr - Monk
+  m_EditorClassIdentifier: 
+  pages:
+  - dialogText: 'Test of tests is currently testing? '
+    specialCondition: 
+    options:
+    - optionText: Exclusive Test
+      isForSocializer: 1
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 6
+      nextPageIndex: 0
+      specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
+    - optionText: Class Upgrade Test
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 7
+      nextPageIndex: 0
+      specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
+    - optionText: Quests Test
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 1
+      nextPageIndex: 0
+      specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
+    - optionText: Buffs Test
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 5
+      nextPageIndex: -1
+      specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
+    - optionText: SPEC
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 12
+      nextPageIndex: -1
+      specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 0}
+    showOnce: 0
+    isSpecial: 0
+  - dialogText: You have chosen BUFF TESTS. Pick your buff
+    specialCondition: 
+    options:
+    - optionText: (BUFF) DIVINE BLESSING
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 10
+      nextPageIndex: 0
+      specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 11400000, guid: f50197f9164e9af00a49d840184caef9, type: 2}
+    - optionText: (BUFF) EXP GAIN
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 10
+      nextPageIndex: 0
+      specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 11400000, guid: 59feddb45c22f6cdaba2e293c7235ce3, type: 2}
+    - optionText: (DEBUFF) EXP LOSS
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 11
+      nextPageIndex: 0
+      specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 11400000, guid: 78f1b2bb2dec2f8b4885e55d642e1fa5, type: 2}
+    - optionText: (BUFF) MANA REGEN
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 10
+      nextPageIndex: 0
+      specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 11400000, guid: cfce1591f60ec9800b179d4c1240f6ea, type: 2}
+    - optionText: (BUFF) FULL CHARGE
+      isForSocializer: 0
+      isForAchiever: 0
+      isForKiller: 0
+      isForExplorer: 0
+      action: 10
+      nextPageIndex: 0
+      specialConditionToSet: 0
+      hideIfAlreadyInGuild: 0
+      buff: {fileID: 11400000, guid: 99d0cea35023f7c0289a6768577ac5e9, type: 2}
+    showOnce: 0
+    isSpecial: 0
+  dialogTitle: Some Dude - Monk
