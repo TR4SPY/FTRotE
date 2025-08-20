@@ -610,22 +610,37 @@ namespace PLAYERTWO.ARPGProject
                 worldImage.CameraOffset = cameraOffset;
 
                 var cam = worldImage.ObjectCamera;
-                if (cam != null && cam.Camera != null)
+                if (cam != null)
                 {
-                    var camData = cam.Camera.GetUniversalAdditionalCameraData();
-                    int previewVolumeLayer = LayerMask.NameToLayer("PreviewVolume");
-                    if (previewVolumeLayer >= 0)
+                    var previewLight = cam.transform.Find("PreviewLight");
+                    if (previewLight == null)
                     {
-                        camData.volumeLayerMask = 1 << previewVolumeLayer;
-                        camData.volumeTrigger = worldImage.transform;
+                        int previewLayerIndex = LayerMask.NameToLayer("Model_Preview");
+                        var lightObj = new GameObject("PreviewLight");
+                        lightObj.transform.SetParent(cam.transform, false);
+                        var light = lightObj.AddComponent<Light>();
+                        light.type = LightType.Directional;
+                        light.cullingMask = 1 << previewLayerIndex;
+                        light.renderingLayerMask = (1 << previewLayerIndex);
                     }
 
-                    cam.Image.CameraUseBoundsToClip = true;
-                    cam.Image.CameraAutoUpdateBounds = false;
-                    cam.Image.CameraFollowBoundsCenter = true;
-                    cam.UpdateCameraClippingFromBounds();
+                    if (cam.Camera != null)
+                    {
+                        var camData = cam.Camera.GetUniversalAdditionalCameraData();
+                        int previewVolumeLayer = LayerMask.NameToLayer("PreviewVolume");
+                        if (previewVolumeLayer >= 0)
+                        {
+                            camData.volumeLayerMask = 1 << previewVolumeLayer;
+                            camData.volumeTrigger = worldImage.transform;
+                        }
 
-                    camData.SetRenderer(1);
+                        cam.Image.CameraUseBoundsToClip = true;
+                        cam.Image.CameraAutoUpdateBounds = false;
+                        cam.Image.CameraFollowBoundsCenter = true;
+                        cam.UpdateCameraClippingFromBounds();
+
+                        camData.SetRenderer(1);
+                    }
                 }
 
                 image.enabled = false;
@@ -660,7 +675,6 @@ namespace PLAYERTWO.ARPGProject
             return basePosition + new Vector3(col * spacing, row * spacing, 0f);
         }
 
-
         private IEnumerator FixCameraPositionAfterModelLoad()
         {
             const int maxTries = 30;
@@ -675,6 +689,21 @@ namespace PLAYERTWO.ARPGProject
 
                 yield return null;
                 tries++;
+            }
+
+            if (cam != null)
+            {
+                var previewLight = cam.transform.Find("PreviewLight");
+                if (previewLight == null)
+                {
+                    int previewLayerIndex = LayerMask.NameToLayer("Model_Preview");
+                    var lightObj = new GameObject("PreviewLight");
+                    lightObj.transform.SetParent(cam.transform, false);
+                    var light = lightObj.AddComponent<Light>();
+                    light.type = LightType.Directional;
+                    light.cullingMask = 1 << previewLayerIndex;
+                    light.renderingLayerMask = (1 << previewLayerIndex);
+                }
             }
 
             if (cam == null || cam.Camera == null)
