@@ -49,8 +49,8 @@ namespace PLAYERTWO.ARPGProject
         public int tier2UnlockLevel = 0;
         [Tooltip("Player level required to unlock tier 3 specializations")]
         public int tier3UnlockLevel = 0;
-        [Tooltip("The cost required to reset a specialization")]
-        public int specializationRespecCost = 0;
+        // [Tooltip("The cost required to reset a specialization")]
+        // public int specializationRespecCost = 0;
 
         [Header("Combat Settings")]
         [Tooltip("The damage multiplier applied to critical hits.")]

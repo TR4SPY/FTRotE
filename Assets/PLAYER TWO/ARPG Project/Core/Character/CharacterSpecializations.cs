@@ -40,6 +40,15 @@ namespace PLAYERTWO.ARPGProject
         protected EntityStatsManager m_stats;
         protected EntitySkillManager m_skills;
 
+        /// <summary>
+        /// Assigns the <see cref="Currency"/> reference used to pay respec costs.
+        /// </summary>
+        /// <param name="currency">Currency instance to withdraw respec cost from.</param>
+        public void SetCurrency(Currency currency)
+        {
+            m_currency = currency;
+        }
+
         #region Tier unlocking helpers
 
         private readonly HashSet<int> m_unlockedTiers = new HashSet<int>();

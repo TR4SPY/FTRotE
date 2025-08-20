@@ -97,11 +97,31 @@ namespace PLAYERTWO.ARPGProject
 
                 if (blade.IsTwoHanded())
                 {
+                    var inventory = GUIWindowsManager.instance?.GetInventory();
+
                     if (leftHandSlot && leftHandSlot.item)
-                        leftHandSlot.Unequip();
+                    {
+                        if (inventory && !inventory.CanAutoInsert(leftHandSlot.item))
+                            return false;
+                    }
 
                     if (rightHandSlot && rightHandSlot.item)
+                    {
+                        if (inventory && !inventory.CanAutoInsert(rightHandSlot.item))
+                            return false;
+                    }
+
+                    if (leftHandSlot && leftHandSlot.item)
+                    {
+                        inventory?.TryAutoInsert(leftHandSlot.item);
+                        leftHandSlot.Unequip();
+                    }
+
+                    if (rightHandSlot && rightHandSlot.item)
+                    {
+                        inventory?.TryAutoInsert(rightHandSlot.item);
                         rightHandSlot.Unequip();
+                    }
 
                     return TryEquip(item, rightHandSlot);
                 }
@@ -114,8 +134,39 @@ namespace PLAYERTWO.ARPGProject
                     bool usingTwoHand = equipments.IsUsingBlade() && equipments.GetRightBlade().IsTwoHanded();
                     bool usingBow = equipments.IsUsingBow();
 
-                    if (!usingRightWeapon || usingTwoHand || usingBow)
+                    if (!usingRightWeapon)
                         return TryEquip(item, rightHandSlot);
+
+                    if (usingTwoHand || usingBow)
+                    {
+                        var inventory = GUIWindowsManager.instance?.GetInventory();
+
+                        if (leftHandSlot && leftHandSlot.item)
+                        {
+                            if (inventory && !inventory.CanAutoInsert(leftHandSlot.item))
+                                return false;
+                        }
+
+                        if (rightHandSlot && rightHandSlot.item)
+                        {
+                            if (inventory && !inventory.CanAutoInsert(rightHandSlot.item))
+                                return false;
+                        }
+
+                        if (leftHandSlot && leftHandSlot.item)
+                        {
+                            inventory?.TryAutoInsert(leftHandSlot.item);
+                            leftHandSlot.Unequip();
+                        }
+
+                        if (rightHandSlot && rightHandSlot.item)
+                        {
+                            inventory?.TryAutoInsert(rightHandSlot.item);
+                            rightHandSlot.Unequip();
+                        }
+
+                        return TryEquip(item, rightHandSlot);
+                    }
 
                     if (!usingLeftWeapon && !usingShield)
                         return TryEquip(item, leftHandSlot);
@@ -128,11 +179,31 @@ namespace PLAYERTWO.ARPGProject
             }
             else if (item.item.IsBow())
             {
+                var inventory = GUIWindowsManager.instance?.GetInventory();
+
                 if (leftHandSlot && leftHandSlot.item)
-                    leftHandSlot.Unequip();
+                {
+                    if (inventory && !inventory.CanAutoInsert(leftHandSlot.item))
+                        return false;
+                }
 
                 if (rightHandSlot && rightHandSlot.item)
+                {
+                    if (inventory && !inventory.CanAutoInsert(rightHandSlot.item))
+                        return false;
+                }
+
+                if (leftHandSlot && leftHandSlot.item)
+                {
+                    inventory?.TryAutoInsert(leftHandSlot.item);
+                    leftHandSlot.Unequip();
+                }
+
+                if (rightHandSlot && rightHandSlot.item)
+                {
+                    inventory?.TryAutoInsert(rightHandSlot.item);
                     rightHandSlot.Unequip();
+                }
 
                 return TryEquip(item, rightHandSlot);
             }
@@ -142,7 +213,15 @@ namespace PLAYERTWO.ARPGProject
                     (equipments.IsUsingBow() || (equipments.IsUsingBlade() && equipments.GetRightBlade().IsTwoHanded()));
 
                 if (usingTwoHand && rightHandSlot && rightHandSlot.item)
+                {
+                    var inventory = GUIWindowsManager.instance?.GetInventory();
+
+                    if (inventory && !inventory.CanAutoInsert(rightHandSlot.item))
+                        return false;
+
+                    inventory?.TryAutoInsert(rightHandSlot.item);
                     rightHandSlot.Unequip();
+                }
 
                 return TryEquip(item, leftHandSlot);
             }

@@ -544,23 +544,33 @@ namespace PLAYERTWO.ARPGProject
 
                 int previewLayer = LayerMask.NameToLayer("Model_Preview");
 
+                // Ensure the WorldImage camera only renders the preview layer
+                worldImage.CameraCullingMask = 1 << previewLayer;
+
+                // Attach a dedicated preview light when the camera is created
+                worldImage.OnCameraCreated += cam =>
+                {
+                    var previewLight = new GameObject("PreviewLight");
+                    previewLight.layer = previewLayer;
+                    previewLight.transform.SetParent(cam.transform, false);
+
+                    var light = previewLight.AddComponent<Light>();
+                    light.type = LightType.Directional;
+                    light.intensity = 1.2f;
+                    light.color = Color.white;
+                    light.transform.rotation = Quaternion.Euler(50, -30, 0);
+                    light.cullingMask = 1 << previewLayer;
+                    light.renderingLayerMask = 1 << previewLayer;
+                    light.shadows = LightShadows.None;
+
+                    cam.Camera.clearFlags = CameraClearFlags.SolidColor;
+                    cam.Camera.backgroundColor = Color.clear;
+                };
+
                 var renderAnchor = new GameObject("Render_" + item.GetHashCode());
                 renderAnchorObject = renderAnchor;
                 renderAnchor.transform.position = GetPreviewPositionFor(item);
                 renderAnchor.layer = previewLayer;
-
-                var previewLight = new GameObject("PreviewLight");
-                previewLight.transform.SetParent(renderAnchor.transform, false);
-                previewLight.layer = previewLayer;
-
-                var light = previewLight.AddComponent<Light>();
-                light.type = LightType.Directional;
-                light.intensity = 1.2f;
-                light.color = Color.white;
-                light.transform.rotation = Quaternion.Euler(50, -30, 0);
-                light.cullingMask = 1 << previewLayer;
-                light.renderingLayerMask = 1 << previewLayer;
-                light.shadows = LightShadows.None;
 
                 var renderModel = Instantiate(item.data.prefab, renderAnchor.transform);
                 renderModel.transform.localPosition = Vector3.zero;
@@ -602,15 +612,10 @@ namespace PLAYERTWO.ARPGProject
                 var cam = worldImage.ObjectCamera;
                 if (cam != null && cam.Camera != null)
                 {
-                    cam.Camera.clearFlags = CameraClearFlags.SolidColor;
-                    cam.Camera.backgroundColor = Color.clear;
-                    cam.Camera.cullingMask = 1 << previewLayer;
                     var camData = cam.Camera.GetUniversalAdditionalCameraData();
                     int previewVolumeLayer = LayerMask.NameToLayer("PreviewVolume");
                     if (previewVolumeLayer >= 0)
                     {
-                       // Camera.volumeLayerMask = 1 << previewVolumeLayer;
-                       // cam.Camera.volumeTrigger = worldImage.transform;
                         camData.volumeLayerMask = 1 << previewVolumeLayer;
                         camData.volumeTrigger = worldImage.transform;
                     }
@@ -620,7 +625,6 @@ namespace PLAYERTWO.ARPGProject
                     cam.Image.CameraFollowBoundsCenter = true;
                     cam.UpdateCameraClippingFromBounds();
 
-                    // var camData = cam.Camera.GetUniversalAdditionalCameraData();
                     camData.SetRenderer(1);
                 }
 

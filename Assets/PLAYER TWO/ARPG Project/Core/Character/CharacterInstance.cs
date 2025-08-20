@@ -82,7 +82,10 @@ namespace PLAYERTWO.ARPGProject
         public CharacterInstance(bool createSpecializations = true)
         {
             if (createSpecializations)
-                specializations = CharacterSpecializations.Create();
+                specializations = CharacterSpecializations.Create(
+                    null,
+                    0
+                   /* , Game.instance != null ? Game.instance.specializationRespecCost : 0 */);
         }
 
         public CharacterInstance(Character data, string name) : this()
@@ -96,7 +99,6 @@ namespace PLAYERTWO.ARPGProject
             skills = new CharacterSkills(data);
             quests = new CharacterQuests();
             scenes = new CharacterScenes();
-
         }
 
         public Dictionary<string, GameObject> GetEquippedPrefabs()
@@ -296,10 +298,16 @@ namespace PLAYERTWO.ARPGProject
             if (m_entity == null)
             {
                 m_entity = GameObject.Instantiate(data.entity);
+
                 stats.InitializeStats(m_entity.stats);
                 equipments.InitializeEquipments(m_entity.items);
                 m_entity.items.RevalidateEquippedItems();
                 inventory.InitializeInventory(m_entity.inventory);
+                specializations.SetCurrency(m_entity.inventory.instance.currency);
+                /*
+                specializations.specializationRespecCost =
+                Game.instance != null ? Game.instance.specializationRespecCost : 0;
+                */
                 skills.InitializeSkills(m_entity.skills);
                 RestoreWeaponSkill(m_entity);
                 quests.InitializeQuests();
@@ -416,13 +424,19 @@ namespace PLAYERTWO.ARPGProject
             characterInstance.specializations = CharacterSpecializations.CreateFromData(
                 selectedSpecsDict,
                 specPointsDict,
-                serializer.unlockedSpecializationTiers ?? new List<int>());
+                serializer.unlockedSpecializationTiers ?? new List<int>(),
+                null,
+                0
+                /* ,Game.instance != null ? Game.instance.specializationRespecCost : 0 */);
 
             if (characterInstance.specializations == null)
                 characterInstance.specializations = CharacterSpecializations.CreateFromData(
                     selectedSpecsDict,
                     specPointsDict,
-                    serializer.unlockedSpecializationTiers ?? new List<int>());
+                    serializer.unlockedSpecializationTiers ?? new List<int>(),
+                    null,
+                    0
+                   /* , Game.instance != null ? Game.instance.specializationRespecCost : 0*/);
 
             if (serializer.viewedDialogPages != null)
             {
@@ -536,7 +550,7 @@ const bool SPEC_DBG = false;
 
 private System.Collections.IEnumerator _Dbg_LogSpecStateNextFrame()
 {
-    yield return null; // 1 frame po wczytaniu
+    yield return null;
     var specs = Game.instance?.currentCharacter?.specializations;
     string tiers = specs != null ? string.Join(",", specs.GetUnlockedTiersInstance()) : "NULL";
     int selCount = specs?.selected != null ? specs.selected.Count : -1;

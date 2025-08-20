@@ -124,7 +124,7 @@ namespace PLAYERTWO.ARPGProject
             if (quest.questType == QuestType.Specialization)
             {
                 int currentTier = ClassHierarchy.GetTier(currentClass);
-                int unlockLevel = CharacterSpecializations.GetTierUnlockLevel(currentTier + 1);
+                int unlockLevel = CharacterSpecializations.GetTierUnlockLevel(currentTier);
                 if (player.stats.currentLevel < unlockLevel)
                     return false;
                 if (player.specializations.IsTierUnlocked(currentTier))
@@ -463,7 +463,7 @@ namespace PLAYERTWO.ARPGProject
             bool isFetch = (!instance.IsMultiStage() && quest.IsFetchAfterKill()) ||
                         (instance.IsMultiStage() && instance.GetCurrentStage().completingMode == Quest.CompletingMode.FetchAfterKill);
 
-            if (isFetch && !instance.completed)
+            if (isFetch && (!instance.completed || quest.questType == QuestType.Specialization))
             {
                 var fetchItem = instance.IsMultiStage()
                     ? instance.GetCurrentStage().requiredItem
@@ -483,8 +483,6 @@ namespace PLAYERTWO.ARPGProject
                 {
                     Debug.LogWarning($"Quest '{quest.title}' has no assigned NPC! Check returnToNPC.");
                 }
-
-                return;
             }
 
             if (quest.questType == QuestType.Specialization)
