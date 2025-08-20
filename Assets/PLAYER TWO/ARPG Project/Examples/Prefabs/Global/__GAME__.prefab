@@ -98,7 +98,7 @@ GameObject:
   - component: {fileID: 7952096078989433651}
   - component: {fileID: 2549783833396777464}
   - component: {fileID: 9166076969468311500}
-  - component: {fileID: 3638802792816742192}
+  - component: {fileID: 3853694225410440990}
   m_Layer: 0
   m_Name: __GAME__
   m_TagString: Untagged
@@ -146,7 +146,6 @@ MonoBehaviour:
   tier1UnlockLevel: 0
   tier2UnlockLevel: 0
   tier3UnlockLevel: 0
-  specializationRespecCost: 0
   criticalMultiplier: 1.25
   maxAttackSpeed: 1000
   maxBlockChance: 0.75
@@ -336,7 +335,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2e9965163931b9888437eeaf8398d76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &3638802792816742192
+--- !u!114 &3853694225410440990
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -345,7 +344,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2175000572608817883}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1f1879b0e85b88a028a84e66cfcc5b18, type: 3}
+  m_Script: {fileID: 11500000, guid: 9b59f4ac028252d25acd2e895acd20b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   previewLayerName: Model_Preview
