@@ -91,22 +91,60 @@ namespace PLAYERTWO.ARPGProject
         /// <returns>Returns true if the item was equipped.</returns>
         public virtual bool TryAutoEquip(GUIItem item)
         {
-            if (item.item.IsBlade() && item.item.GetBlade().IsOneHanded())
+            if (item.item.IsBlade())
             {
-                bool usingRightWeapon = equipments.IsUsingWeaponRight();
-                bool usingLeftWeapon = equipments.IsUsingWeaponLeft();
-                bool usingShield = equipments.IsUsingShield();
+                var blade = item.item.GetBlade();
 
-                if (!usingRightWeapon)
+                if (blade.IsTwoHanded())
+                {
+                    if (leftHandSlot && leftHandSlot.item)
+                        leftHandSlot.Unequip();
+
+                    if (rightHandSlot && rightHandSlot.item)
+                        rightHandSlot.Unequip();
+
                     return TryEquip(item, rightHandSlot);
+                }
 
-                if (!usingLeftWeapon && !usingShield)
-                    return TryEquip(item, leftHandSlot);
+                if (blade.IsOneHanded())
+                {
+                    bool usingRightWeapon = equipments.IsUsingWeaponRight();
+                    bool usingLeftWeapon = equipments.IsUsingWeaponLeft();
+                    bool usingShield = equipments.IsUsingShield();
+                    bool usingTwoHand = equipments.IsUsingBlade() && equipments.GetRightBlade().IsTwoHanded();
+                    bool usingBow = equipments.IsUsingBow();
 
-                if (usingShield)
+                    if (!usingRightWeapon || usingTwoHand || usingBow)
+                        return TryEquip(item, rightHandSlot);
+
+                    if (!usingLeftWeapon && !usingShield)
+                        return TryEquip(item, leftHandSlot);
+
+                    if (usingShield)
+                        return TryEquip(item, rightHandSlot);
+
                     return TryEquip(item, leftHandSlot);
+                }
+            }
+            else if (item.item.IsBow())
+            {
+                if (leftHandSlot && leftHandSlot.item)
+                    leftHandSlot.Unequip();
+
+                if (rightHandSlot && rightHandSlot.item)
+                    rightHandSlot.Unequip();
 
                 return TryEquip(item, rightHandSlot);
+            }
+            else if (item.item.IsShield())
+            {
+                bool usingTwoHand = equipments.IsUsingWeaponRight() &&
+                    (equipments.IsUsingBow() || (equipments.IsUsingBlade() && equipments.GetRightBlade().IsTwoHanded()));
+
+                if (usingTwoHand && rightHandSlot && rightHandSlot.item)
+                    rightHandSlot.Unequip();
+
+                return TryEquip(item, leftHandSlot);
             }
 
             if (TryEquip(item, rightHandSlot)) return true;

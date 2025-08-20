@@ -74,7 +74,7 @@ MonoBehaviour:
       specialConditionToSet: 0
       hideIfAlreadyInGuild: 0
       buff: {fileID: 0}
-    - optionText: SPECIALIZATION
+    - optionText: What does it mean to endure?
       isForSocializer: 0
       isForAchiever: 0
       isForKiller: 0

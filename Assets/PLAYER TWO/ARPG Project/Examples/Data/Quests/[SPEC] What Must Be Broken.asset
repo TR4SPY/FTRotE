@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fadb75505e90364e88de4f2b82a4d09, type: 3}
+  m_Name: '[SPEC] What Must Be Broken'
+  m_EditorClassIdentifier: 
+  title: What Must Be Broken
+  description: "To protect. To lead. Or\u2026 to destroy.\nThree branches. One root:
+    choice.\n\nThe path of Sundering is not bloodlust. It is precision. Force without
+    mercy, but not without purpose.\nIn the ruins of Varn Hollow lies a creature
+    too proud to die. Break its will, its armor, break what others couldn\u2019t.\n\nBring
+    me its sundered emblem.\nSome things must be broken so others can stand."
+  objective: Bring {item}
+  targetProgress: 1
+  completingMode: 3
+  allowLogCompletion: 0
+  experience: 10000
+  coins: 10000
+  items: []
+  destinationScene: 
+  progressKey: 
+  requiredItem:
+    data: {fileID: 11400000, guid: b950b49437045f103ae48bc0d0df39a6, type: 2}
+    attributes: 0
+    elements: 0
+    amount: 1
+  returnToNPC: Guildmaster
+  requiresManualCompletion: 1
+  questType: 3
+  requiredClass: 4
+  requireMaxLevel: 0
+  isMultiStage: 0
+  stages: []
+  forKiller: 0
+  forAchiever: 0
+  forExplorer: 0
+  forSocializer: 0
+  killerMultiplier: 1.5
+  killerGoldMultiplier: 1.1
+  killerExpMultiplier: 0.8
+  socializerMultiplier: 0.5
+  socializerGoldMultiplier: 1.25
+  socializerExpMultiplier: 1
+  explorerMultiplier: 1.2
+  explorerExpMultiplier: 1.25
+  explorerGoldMultiplier: 0.9
+  achieverMultiplier: 1
+  achieverExpMultiplier: 1.5
+  achieverGoldMultiplier: 1.5

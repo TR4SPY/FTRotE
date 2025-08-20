@@ -137,27 +137,30 @@ namespace PLAYERTWO.ARPGProject
         /// Sets the current Quest.
         /// </summary>
         /// <param name="quest">The Quest you want to set.</param>
-        public virtual void SetQuest(Quest quest)
+        public virtual void SetQuest(Quest quest, bool fromLog = false)
         {
-            if (!quest)
-                return;
-
+            if (!quest) return;
+            openedFromLog = fromLog;
             this.quest = quest;
             window.Show();
             UpdateTexts();
             UpdateButtons();
         }
 
+        public void SetQuestFromLog(Quest quest) => SetQuest(quest, true);
+
+
         /// <summary>
         /// Sets the current Quest when opened from the Quest Log window.
         /// </summary>
         /// <param name="quest">The Quest you want to set.</param>
+/*
         public void SetQuestFromLog(Quest quest)
         {
             openedFromLog = true;
             SetQuest(quest);
         }
-
+*/
         public void CompleteQuest()
         {
             if (!quest)

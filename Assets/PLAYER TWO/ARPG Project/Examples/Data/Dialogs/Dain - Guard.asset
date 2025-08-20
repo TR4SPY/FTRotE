@@ -124,7 +124,7 @@ MonoBehaviour:
       specialConditionToSet: 0
       hideIfAlreadyInGuild: 0
       buff: {fileID: 0}
-    - optionText: VG SPECIALIZATION
+    - optionText: What is the path of leadership?
       isForSocializer: 0
       isForAchiever: 0
       isForKiller: 0

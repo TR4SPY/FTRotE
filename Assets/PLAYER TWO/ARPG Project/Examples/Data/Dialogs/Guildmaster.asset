@@ -29,22 +29,16 @@ MonoBehaviour:
       specialConditionToSet: 0
       hideIfAlreadyInGuild: 1
       buff: {fileID: 0}
-    - optionText: I'm just curious...
+    - optionText: What's the trial?
       isForSocializer: 0
       isForAchiever: 0
       isForKiller: 0
       isForExplorer: 0
-      action: 10
+      action: 12
       nextPageIndex: -1
       specialConditionToSet: 0
       hideIfAlreadyInGuild: 0
-      buff: {fileID: 11400000, guid: f50197f9164e9af00a49d840184caef9, type: 2}
-    showOnce: 0
-    isSpecial: 0
-  - dialogText: "Curious, are we...?\n\n\n\nFine. You\u2019ll need this more than
-      you know.\n\n\n\nDon\u2019t waste it."
-    specialCondition: 
-    options: []
+      buff: {fileID: 0}
     showOnce: 0
     isSpecial: 0
   dialogTitle: Vaelthar - Guildmaster

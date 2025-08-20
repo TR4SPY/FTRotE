@@ -22,4 +22,7 @@ MonoBehaviour:
   statModifiers: []
   activeAugments: []
   skills: []
-  description: 
+  description: "Bastioning \u2013 A defensive specialization focused on endurance,
+    protection, and battlefield control.\nBastion Knights become living fortresses,
+    shielding allies, absorbing damage, and holding the line where others would break.
+    Their presence alone can turn chaos into order."
