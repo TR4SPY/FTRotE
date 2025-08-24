@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c03f6f012f430fd47972013eeb810656, type: 3}
+  m_Name: Snowy Slash
+  m_EditorClassIdentifier: 
+  id: 514
+  prefab: {fileID: 522953657856914826, guid: a5c90ad9f3f19999892895dfbd5bd82e, type: 3}
+  price: 500
+  rarity: 0
+  dropPosition: {x: 0, y: 0, z: 0}
+  dropRotation: {x: -90, y: 0, z: 45}
+  previewLookAtOffset: {x: 0, y: 0, z: 0}
+  previewCameraOffset: {x: 0, y: 0, z: 1.2}
+  previewRotationEuler: {x: -90, y: -230, z: 0}
+  previewScaleOverride: 0
+  previewResolutionWidth: 64
+  previewResolutionHeight: 128
+  previewCameraFollowBoundsCenter: 1
+  image: {fileID: 21300000, guid: 0d0456bf396b3064caf5a44c6d183071, type: 3}
+  rows: 2
+  columns: 1
+  canStack: 0
+  stackCapacity: 0
+  isQuestSpecific: 0
+  cannotBeDropped: 0
+  cannotBeSold: 0
+  allowedClasses: 7
+  group: 5
+  disableHoverHighlight: 1
+  skill: {fileID: 11400000, guid: 5bdc859eb729b42faaee7d330e467a20, type: 2}
+  requiredLevel: 0
+  requiredStrength: 22
+  requiredEnergy: 0

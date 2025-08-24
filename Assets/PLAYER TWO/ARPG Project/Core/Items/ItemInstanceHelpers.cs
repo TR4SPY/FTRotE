@@ -53,6 +53,11 @@ namespace PLAYERTWO.ARPGProject
         public virtual ItemBow GetBow() => GetData<ItemBow>();
 
         /// <summary>
+        /// Returns the data of this Item Instance as an Item Jewelry.
+        /// </summary>
+        public virtual ItemJewelry GetJewelry() => GetData<ItemJewelry>();
+
+        /// <summary>
         /// Returns true if this Item allows stacking.
         /// </summary>
         public virtual bool IsStackable() => data.canStack;
@@ -101,5 +106,10 @@ namespace PLAYERTWO.ARPGProject
         /// Returns true if this Item is a Bow.
         /// </summary>
         public virtual bool IsBow() => data is ItemBow;
+
+        /// <summary>
+        /// Returns true if this Item is a Jewelry piece.
+        /// </summary>
+        public virtual bool IsJewelry() => data is ItemJewelry;
     }
 }

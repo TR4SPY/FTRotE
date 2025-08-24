@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 714677181b4f39440a248d8ae62fba51, type: 3}
   m_Name: Fire Ball
   m_EditorClassIdentifier: 
-  icon: {fileID: 21300000, guid: a6e96e12c46f60c4c805bc81ffeb68ba, type: 3}
+  icon: {fileID: -2120596413, guid: 88fa488b94c452d90ae026efd30a58e4, type: 3}
   sound: {fileID: 8300000, guid: 5bb4f799c34da8946afc28ae40d71231, type: 3}
   coolDown: 3
   castObject: {fileID: 2908150686304117074, guid: 3877a4b05eeba8644bd817bd1ac9115d, type: 3}
@@ -31,6 +31,8 @@ MonoBehaviour:
   form: 2
   type: 3
   element: 1
+  selfBuffs: []
+  targetBuffs: []
   useMeleeHitbox: 0
   minAttackDistance: 10
   requiredWeapon: 0

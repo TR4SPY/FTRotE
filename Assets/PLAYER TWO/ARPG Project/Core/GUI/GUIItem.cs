@@ -544,25 +544,31 @@ namespace PLAYERTWO.ARPGProject
 
                 int previewLayer = LayerMask.NameToLayer("Model_Preview");
 
-                // Ensure the WorldImage camera only renders the preview layer
                 worldImage.CameraCullingMask = 1 << previewLayer;
 
-                // Attach a dedicated preview light when the camera is created
                 worldImage.OnCameraCreated += cam =>
                 {
-                    var previewLight = new GameObject("PreviewLight");
+                    var previewLight = cam.transform.Find("PreviewLight")?.gameObject;
+                    if (previewLight == null)
+                    {
+                        previewLight = new GameObject("PreviewLight");
+                        previewLight.transform.SetParent(cam.transform, false);
+                    }
                     previewLight.layer = previewLayer;
-                    previewLight.transform.SetParent(cam.transform, false);
 
-                    var light = previewLight.AddComponent<Light>();
-                    light.type = LightType.Directional;
+                    var light = previewLight.GetComponent<Light>();
+                    if (light == null)
+                        light = previewLight.AddComponent<Light>();
+
+                    light.type = LightType.Point;
+                    light.range = 2.5f;
                     light.intensity = 1.2f;
                     light.color = Color.white;
-                    light.transform.rotation = Quaternion.Euler(50, -30, 0);
                     light.cullingMask = 1 << previewLayer;
                     light.renderingLayerMask = 1 << previewLayer;
                     light.shadows = LightShadows.None;
 
+                    cam.Camera.cullingMask = 1 << previewLayer;
                     cam.Camera.clearFlags = CameraClearFlags.SolidColor;
                     cam.Camera.backgroundColor = Color.clear;
                 };
@@ -612,20 +618,27 @@ namespace PLAYERTWO.ARPGProject
                 var cam = worldImage.ObjectCamera;
                 if (cam != null)
                 {
-                    var previewLight = cam.transform.Find("PreviewLight");
+                    int previewLayerIndex = LayerMask.NameToLayer("Model_Preview");
+                    var previewLight = cam.transform.Find("PreviewLight")?.gameObject;
                     if (previewLight == null)
                     {
-                        int previewLayerIndex = LayerMask.NameToLayer("Model_Preview");
-                        var lightObj = new GameObject("PreviewLight");
-                        lightObj.transform.SetParent(cam.transform, false);
-                        var light = lightObj.AddComponent<Light>();
-                        light.type = LightType.Directional;
-                        light.cullingMask = 1 << previewLayerIndex;
-                        light.renderingLayerMask = (1 << previewLayerIndex);
+                        previewLight = new GameObject("PreviewLight");
+                        previewLight.transform.SetParent(cam.transform, false);
                     }
+                    previewLight.layer = previewLayerIndex;
+
+                    var light = previewLight.GetComponent<Light>();
+                    if (light == null)
+                        light = previewLight.AddComponent<Light>();
+
+                    light.type = LightType.Point;
+                    light.range = 2.5f;
+                    light.cullingMask = 1 << previewLayerIndex;
+                    light.renderingLayerMask = (1 << previewLayerIndex);
 
                     if (cam.Camera != null)
                     {
+                        cam.Camera.cullingMask = 1 << previewLayerIndex;
                         var camData = cam.Camera.GetUniversalAdditionalCameraData();
                         int previewVolumeLayer = LayerMask.NameToLayer("PreviewVolume");
                         if (previewVolumeLayer >= 0)
@@ -693,17 +706,26 @@ namespace PLAYERTWO.ARPGProject
 
             if (cam != null)
             {
-                var previewLight = cam.transform.Find("PreviewLight");
+                int previewLayerIndex = LayerMask.NameToLayer("Model_Preview");
+                var previewLight = cam.transform.Find("PreviewLight")?.gameObject;
                 if (previewLight == null)
                 {
-                    int previewLayerIndex = LayerMask.NameToLayer("Model_Preview");
-                    var lightObj = new GameObject("PreviewLight");
-                    lightObj.transform.SetParent(cam.transform, false);
-                    var light = lightObj.AddComponent<Light>();
-                    light.type = LightType.Directional;
-                    light.cullingMask = 1 << previewLayerIndex;
-                    light.renderingLayerMask = (1 << previewLayerIndex);
+                    previewLight = new GameObject("PreviewLight");
+                    previewLight.transform.SetParent(cam.transform, false);
                 }
+                previewLight.layer = previewLayerIndex;
+
+                var light = previewLight.GetComponent<Light>();
+                if (light == null)
+                    light = previewLight.AddComponent<Light>();
+
+                light.type = LightType.Point;
+                light.range = 2.5f;
+                light.cullingMask = 1 << previewLayerIndex;
+                light.renderingLayerMask = (1 << previewLayerIndex);
+
+                if (cam.Camera != null)
+                    cam.Camera.cullingMask = 1 << previewLayerIndex;
             }
 
             if (cam == null || cam.Camera == null)
@@ -818,7 +840,7 @@ namespace PLAYERTWO.ARPGProject
             {
                 // Debug.Log($"[HOTBAR] Moving {item.stack} potions to new free slot.");
 
-                freeSlot.Equip(this); // Przeniesienie przedmiotu do hotbara
+                freeSlot.Equip(this);
 
                 var inventory = Level.instance.player.inventory.instance;
                 inventory.TryRemoveItem(item);
@@ -900,11 +922,9 @@ namespace PLAYERTWO.ARPGProject
 
             if (GUI.instance.selected == this && worldImage != null)
             {
-                // Zamroź pozycję ModelPreview
                 worldImage.transform.localPosition = Vector3.zero;
                 worldImage.transform.localRotation = Quaternion.identity;
 
-                // Zamroź pozycję modelu 3D
                 var model = worldImage.WorldObjects?.FirstOrDefault();
                 if (model != null)
                 {
@@ -944,9 +964,16 @@ namespace PLAYERTWO.ARPGProject
             if (previewSlotIndex >= 0)
                 PreviewPositionPool.Release(previewSlotIndex);
 
+            if (worldImage != null)
+            {
+                var cam = worldImage.ObjectCamera;
+                var previewLight = cam?.transform.Find("PreviewLight");
+                if (previewLight != null)
+                    Destroy(previewLight.gameObject);
+            }
+
             if (renderAnchorObject != null)
                 Destroy(renderAnchorObject);
         }
-
     }
 }

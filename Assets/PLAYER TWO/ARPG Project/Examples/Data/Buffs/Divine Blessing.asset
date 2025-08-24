@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0b69db866db7d843b013da9096729c0, type: 3}
   m_Name: Divine Blessing
   m_EditorClassIdentifier: 
-  icon: {fileID: 21300000, guid: 57b9783c6d8445448a29d0e30a5f23a3, type: 3}
+  icon: {fileID: -192669993, guid: bc7aee2492bcda2d4aff256372442519, type: 3}
   duration: 0
   cooldown: 0
   allowedScenes:

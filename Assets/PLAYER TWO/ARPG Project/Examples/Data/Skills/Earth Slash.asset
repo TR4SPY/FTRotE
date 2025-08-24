@@ -10,34 +10,36 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 714677181b4f39440a248d8ae62fba51, type: 3}
-  m_Name: Arcane Lightning
+  m_Name: Earth Slash
   m_EditorClassIdentifier: 
-  icon: {fileID: 21300000, guid: a29c987760d69664d97dbdbd91a26598, type: 3}
-  sound: {fileID: 0}
-  coolDown: 5
-  castObject: {fileID: 1462989671274373383, guid: 4c0c99d9df63d5e40905d43180c41c3c, type: 3}
-  castingOrigin: 2
+  icon: {fileID: -1596707781, guid: 88fa488b94c452d90ae026efd30a58e4, type: 3}
+  sound: {fileID: 8300000, guid: ff3194a23b5958441b31003b08ee4682, type: 3}
+  coolDown: 1.4
+  castObject: {fileID: 3153472991145048103, guid: a687f2ffbe4e1a65ea49f6b83c83ef8a, type: 3}
+  castingOrigin: 0
   requireTarget: 1
   faceInterestDirection: 1
-  useRegularAttackClip: 0
+  useRegularAttackClip: 1
   overrideClip: {fileID: 0}
   useMana: 1
-  manaCost: 25
+  manaCost: 20
   useBlood: 0
   bloodCost: 0
   useHealing: 0
   healingAmount: 0
-  school: 8
-  form: 2
-  type: 3
-  element: 6
-  useMeleeHitbox: 0
-  minAttackDistance: 3
-  requiredWeapon: 0
-  damageMode: 1
-  minDamage: 8
-  maxDamage: 12
-  elementMultiplier: 1
+  school: 0
+  form: 0
+  type: 0
+  element: 4
+  selfBuffs: []
+  targetBuffs: []
+  useMeleeHitbox: 1
+  minAttackDistance: 1.5
+  requiredWeapon: 1
+  damageMode: 0
+  minDamage: 10
+  maxDamage: 18
+  elementMultiplier: 2.5
   destroyOnHit: 0
   particleDestroyOnCollision: 0
   destroyOnFirstParticleCollision: 0

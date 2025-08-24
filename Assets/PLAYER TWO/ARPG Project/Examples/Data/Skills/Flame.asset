@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 714677181b4f39440a248d8ae62fba51, type: 3}
   m_Name: Flame
   m_EditorClassIdentifier: 
-  icon: {fileID: 21300000, guid: 13104951d0a519d4ab8165b082081be4, type: 3}
+  icon: {fileID: 456366699, guid: 88fa488b94c452d90ae026efd30a58e4, type: 3}
   sound: {fileID: 0}
   coolDown: 2
   castObject: {fileID: 3769577770551662168, guid: 032e94f5346d13049ad2a525276e501d, type: 3}
@@ -31,6 +31,8 @@ MonoBehaviour:
   form: 2
   type: 1
   element: 1
+  selfBuffs: []
+  targetBuffs: []
   useMeleeHitbox: 0
   minAttackDistance: 10
   requiredWeapon: 0

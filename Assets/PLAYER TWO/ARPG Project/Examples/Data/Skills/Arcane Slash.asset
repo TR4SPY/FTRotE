@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 714677181b4f39440a248d8ae62fba51, type: 3}
   m_Name: Arcane Slash
   m_EditorClassIdentifier: 
-  icon: {fileID: 21300000, guid: e90bd80d8ded7e54d9e9a4aac49688f8, type: 3}
+  icon: {fileID: -196603509, guid: 88fa488b94c452d90ae026efd30a58e4, type: 3}
   sound: {fileID: 8300000, guid: ff3194a23b5958441b31003b08ee4682, type: 3}
-  coolDown: 5
+  coolDown: 0.5
   castObject: {fileID: 1644841586978610676, guid: f1cd27120f1ef554ab6ece4a355d67aa, type: 3}
   castingOrigin: 0
   requireTarget: 1
@@ -27,11 +27,20 @@ MonoBehaviour:
   bloodCost: 0
   useHealing: 0
   healingAmount: 0
+  school: 0
+  form: 0
+  type: 0
+  element: 9
+  selfBuffs: []
+  targetBuffs: []
   useMeleeHitbox: 1
   minAttackDistance: 1.5
   requiredWeapon: 1
   damageMode: 0
   minDamage: 8
   maxDamage: 16
+  elementMultiplier: 1
   destroyOnHit: 0
   particleDestroyOnCollision: 0
+  destroyOnFirstParticleCollision: 0
+  particleCollideOnce: 0

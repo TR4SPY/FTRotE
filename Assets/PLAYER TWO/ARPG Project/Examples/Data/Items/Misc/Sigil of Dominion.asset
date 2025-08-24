@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e66f08cc1ae20c2fda51454cf4c19af6, type: 3}
+  m_Name: Sigil of Dominion
+  m_EditorClassIdentifier: 
+  id: 202
+  prefab: {fileID: 7683540883309638213, guid: a4d8193edf863d2e199563e8463a864f, type: 3}
+  price: 0
+  rarity: 2
+  dropPosition: {x: 0, y: 0, z: 0}
+  dropRotation: {x: -90, y: 0, z: 45}
+  previewLookAtOffset: {x: 0, y: -0.2, z: 0}
+  previewCameraOffset: {x: 0, y: 0, z: -1}
+  previewRotationEuler: {x: 0, y: 180, z: 0}
+  previewScaleOverride: 0
+  previewResolutionWidth: 64
+  previewResolutionHeight: 64
+  previewCameraFollowBoundsCenter: 1
+  image: {fileID: 0}
+  rows: 1
+  columns: 1
+  canStack: 0
+  stackCapacity: 0
+  isQuestSpecific: 1
+  cannotBeDropped: 1
+  cannotBeSold: 1
+  allowedClasses: 4
+  group: 20
+  disableHoverHighlight: 0
+  maxDurability: 255
+  maxUpgradeLevel: 0
+  requiredLevel: 0
+  requiredStrength: 0
+  requiredDexterity: 0
+  miscType: 0
+  wearable: 11
+  buffsOnEquip: []
+  disappearOnZeroDurability: 0
+  cannotUnequip: 1
+  disappearAfterDuration: 0
+  lifetime: 0
+  disappearAfterBuffEnds: 0

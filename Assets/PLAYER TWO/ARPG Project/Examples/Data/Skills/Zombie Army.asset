@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d25c1d2a7bd33846812aee4e77de3c9, type: 3}
   m_Name: Zombie Army
   m_EditorClassIdentifier: 
-  icon: {fileID: 21300000, guid: 9626775936b747c4c826fe06ec1e30e9, type: 3}
+  icon: {fileID: -1963450203, guid: 88fa488b94c452d90ae026efd30a58e4, type: 3}
   sound: {fileID: 8300000, guid: 61e69b8d8c1659446af96200f7b6aa39, type: 3}
   coolDown: 60
   castObject: {fileID: 0}
@@ -31,6 +31,8 @@ MonoBehaviour:
   form: 2
   type: 2
   element: 7
+  selfBuffs: []
+  targetBuffs: []
   entitiesPrefabs:
   - {fileID: 536741433349615226, guid: 72f511ae82346fb4492d1fbdfe67302a, type: 3}
   - {fileID: 536741433349615226, guid: 72f511ae82346fb4492d1fbdfe67302a, type: 3}

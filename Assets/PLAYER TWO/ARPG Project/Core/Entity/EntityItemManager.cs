@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -82,6 +84,11 @@ namespace PLAYERTWO.ARPGProject
         protected Dictionary<string, GameObject> m_entityPieces = new();
 
         protected List<ItemInstance> m_consumables = new();
+
+        protected Dictionary<ItemInstance, Coroutine> m_miscTimers = new();
+        protected Dictionary<ItemInstance, (ItemSlots slot, HashSet<Buff> buffs)> m_miscBuffs = new();
+        protected Dictionary<ItemInstance, Action> m_miscBreakHandlers = new();
+        protected EntityBuffManager m_buffManager;
 
         protected float m_nextDurabilityMultiplier = 1f;
 
@@ -227,6 +234,15 @@ namespace PLAYERTWO.ARPGProject
             if (item.IsArmor() && item.GetArmor().slot != slot)
                 return false;
 
+            if (item.IsJewelry())
+            {
+                var jewelry = item.GetJewelry();
+                if (jewelry.type == ItemJewelry.JewelryType.Necklace && slot != ItemSlots.Necklace)
+                    return false;
+                if (jewelry.type == ItemJewelry.JewelryType.Ring && slot != ItemSlots.LeftRing && slot != ItemSlots.RightRing)
+                    return false;
+            }
+
             if (item.IsWeapon() && slot != ItemSlots.RightHand && slot != ItemSlots.LeftHand)
                 return false;
 
@@ -325,6 +341,11 @@ namespace PLAYERTWO.ARPGProject
             }
 
             m_items[slot].onChanged += OnItemChanged;
+
+            if (item.data is ItemMisc misc)
+            {
+                HandleMiscEquip(item, misc, slot);
+            }
 
             if (item.IsWeapon() || item.IsShield())
             {
@@ -446,6 +467,41 @@ namespace PLAYERTWO.ARPGProject
         {
             if (!m_items.TryGetValue(slot, out var item)) return;
 
+            if (item != null && item.data is ItemMisc misc)
+            {
+                var manager = entity.GetComponent<EntityBuffManager>();
+                if (manager != null && misc.buffsOnEquip != null)
+                {
+                    foreach (var buff in misc.buffsOnEquip)
+                    {
+                        var instance = manager.buffs.Find(b => b.buff == buff);
+                        manager.RemoveBuff(instance);
+                    }
+                }
+
+                if (m_miscTimers.TryGetValue(item, out var routine))
+                {
+                    StopCoroutine(routine);
+                    m_miscTimers.Remove(item);
+                }
+
+                if (m_miscBuffs.ContainsKey(item))
+                {
+                    m_miscBuffs.Remove(item);
+                    if (m_miscBuffs.Count == 0 && m_buffManager != null)
+                    {
+                        m_buffManager.onBuffRemoved.RemoveListener(OnMiscBuffRemoved);
+                        m_buffManager = null;
+                    }
+                }
+
+                if (m_miscBreakHandlers.TryGetValue(item, out var handler))
+                {
+                    item.onBreak -= handler;
+                    m_miscBreakHandlers.Remove(item);
+                }
+            }
+
             if (item.IsWeapon() || item.IsShield())
             {
                 m_itemInstances[slot][m_items[slot]]?.SetActive(false);
@@ -557,7 +613,7 @@ namespace PLAYERTWO.ARPGProject
                 if (itemInstance == null)
                     continue;
 
-                if (Random.value < onDamageDecreaseChance)
+                if (UnityEngine.Random.value < onDamageDecreaseChance)
                 {
                     float magicResistance = entity.stats.magicResistance;
                     float magicResistanceFactor = magicResistance / (magicResistance + 50f);
@@ -745,6 +801,67 @@ namespace PLAYERTWO.ARPGProject
 
             projectile.SetDamage(entity, damage, critical, entity.targetTags);
             return projectile;
+        }
+
+        protected virtual void HandleMiscEquip(ItemInstance item, ItemMisc misc, ItemSlots slot)
+        {
+            var manager = entity.GetComponent<EntityBuffManager>();
+            if (manager != null && misc.buffsOnEquip != null)
+            {
+                foreach (var buff in misc.buffsOnEquip)
+                    manager.AddBuff(buff);
+
+                if (misc.disappearAfterBuffEnds && misc.buffsOnEquip.Length > 0)
+                {
+                    if (m_buffManager == null)
+                    {
+                        m_buffManager = manager;
+                        m_buffManager.onBuffRemoved.AddListener(OnMiscBuffRemoved);
+                    }
+
+                    m_miscBuffs[item] = (slot, new HashSet<Buff>(misc.buffsOnEquip));
+                }
+            }
+
+            if (misc.disappearAfterDuration && misc.lifetime > 0f)
+            {
+                var routine = StartCoroutine(MiscLifetimeRoutine(item, slot, misc.lifetime));
+                m_miscTimers[item] = routine;
+            }
+
+            if (misc.disappearOnZeroDurability)
+            {
+                Action handler = null;
+                handler = () => { RemoveItem(slot); };
+                item.onBreak += handler;
+                m_miscBreakHandlers[item] = handler;
+            }
+        }
+
+        protected virtual IEnumerator MiscLifetimeRoutine(ItemInstance item, ItemSlots slot, float lifetime)
+        {
+            yield return new WaitForSeconds(lifetime);
+            if (m_items.TryGetValue(slot, out var current) && current == item)
+                RemoveItem(slot);
+        }
+
+        protected virtual void OnMiscBuffRemoved(BuffInstance instance)
+        {
+            if (instance == null || instance.buff == null) return;
+
+            foreach (var pair in m_miscBuffs.ToList())
+            {
+                if (pair.Value.buffs.Contains(instance.buff))
+                {
+                    pair.Value.buffs.Remove(instance.buff);
+                    if (pair.Value.buffs.Count == 0)
+                    {
+                        RemoveItem(pair.Value.slot);
+                        m_miscBuffs.Remove(pair.Key);
+                    }
+                    break;
+                }
+            }
         }
 
         protected virtual void OnItemChanged() => onChanged.Invoke();

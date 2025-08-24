@@ -29,7 +29,13 @@ namespace PLAYERTWO.ARPGProject
             Wings = 11,
             Jewels = 12,
             Consumables = 13,
-            Misc = 14,
+            Jewelry = 14,
+            Glyphs = 15,
+            Pets = 16,
+            Mounts = 17,
+            Reserved = 18,
+            ReservedTwo = 19,
+            Misc = 20,
         }
 
         [Header("Item Settings")]

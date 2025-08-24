@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbd6cae1676739d4b93a17b051b3dc1b, type: 3}
   m_Name: Healing
   m_EditorClassIdentifier: 
-  icon: {fileID: 21300000, guid: 805e896b14516a0419af4c615e7afe85, type: 3}
+  icon: {fileID: -933839009, guid: 88fa488b94c452d90ae026efd30a58e4, type: 3}
   sound: {fileID: 0}
   coolDown: 10
   castObject: {fileID: 1112473011492276456, guid: b4b51d2f8857f1a4ea71aae95673f7a2, type: 3}

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 714677181b4f39440a248d8ae62fba51, type: 3}
   m_Name: Arrows Rain
   m_EditorClassIdentifier: 
-  icon: {fileID: 21300000, guid: 36ca1bd573089774eabc1f3191526385, type: 3}
+  icon: {fileID: -2022665983, guid: 88fa488b94c452d90ae026efd30a58e4, type: 3}
   sound: {fileID: 0}
   coolDown: 10
   castObject: {fileID: 1939688788036364893, guid: 7fc0cf63083592a43af2a358fa0e7ebb, type: 3}
@@ -27,11 +27,20 @@ MonoBehaviour:
   bloodCost: 0
   useHealing: 0
   healingAmount: 0
+  school: 0
+  form: 0
+  type: 0
+  element: 0
+  selfBuffs: []
+  targetBuffs: []
   useMeleeHitbox: 0
   minAttackDistance: 10
   requiredWeapon: 2
   damageMode: 0
   minDamage: 1
   maxDamage: 4
+  elementMultiplier: 1
   destroyOnHit: 0
   particleDestroyOnCollision: 1
+  destroyOnFirstParticleCollision: 0
+  particleCollideOnce: 0

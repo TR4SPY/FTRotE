@@ -29,7 +29,7 @@ MonoBehaviour:
   destinationScene: 
   progressKey: 
   requiredItem:
-    data: {fileID: 11400000, guid: d75560fb023ce23e982b62158d73087e, type: 2}
+    data: {fileID: 11400000, guid: 1149c8de37b88162f8a702390fd48369, type: 2}
     attributes: 0
     elements: 0
     amount: 1

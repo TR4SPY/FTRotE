@@ -71,7 +71,6 @@ namespace PLAYERTWO.ARPGProject
             }
         }
 
-        /*────────── UPDATE ─────────*/
         protected override void Update()
         {
             base.Update();
@@ -104,6 +103,8 @@ namespace PLAYERTWO.ARPGProject
 
         public override bool CanUnequip()
         {
+            if (item && item.item.data is ItemMisc misc && misc.cannotUnequip)
+                return false;
             if (slot != ItemSlots.RightHand) return true;
             return !m_entity.items.IsUsingWeaponLeft();
         }

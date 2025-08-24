@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 714677181b4f39440a248d8ae62fba51, type: 3}
   m_Name: Triple Shot
   m_EditorClassIdentifier: 
-  icon: {fileID: 21300000, guid: a79ae48d9e6101043a7ce314c780eeba, type: 3}
+  icon: {fileID: -570483080, guid: 88fa488b94c452d90ae026efd30a58e4, type: 3}
   sound: {fileID: 8300000, guid: 36ecab5f5149b374a87e11f76210452b, type: 3}
   coolDown: 1
   castObject: {fileID: 1511927781803526295, guid: 18b3df9556a6ea24fab0b09f1c2797f8, type: 3}
@@ -27,12 +27,19 @@ MonoBehaviour:
   bloodCost: 0
   useHealing: 0
   healingAmount: 0
+  school: 0
+  form: 0
+  type: 0
+  element: 0
+  selfBuffs: []
+  targetBuffs: []
   useMeleeHitbox: 0
   minAttackDistance: 10
   requiredWeapon: 2
   damageMode: 0
   minDamage: 1
   maxDamage: 4
+  elementMultiplier: 1
   destroyOnHit: 0
   particleDestroyOnCollision: 0
   destroyOnFirstParticleCollision: 0

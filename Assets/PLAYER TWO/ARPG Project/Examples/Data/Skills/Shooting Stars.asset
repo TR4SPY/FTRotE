@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 714677181b4f39440a248d8ae62fba51, type: 3}
   m_Name: Shooting Stars
   m_EditorClassIdentifier: 
-  icon: {fileID: 21300000, guid: 2ff6273f779ff637280403f73c32196d, type: 3}
+  icon: {fileID: 342823647, guid: 88fa488b94c452d90ae026efd30a58e4, type: 3}
   sound: {fileID: 0}
   coolDown: 2
   castObject: {fileID: 6108195706035121270, guid: 53ef88825b9fb5929b874f4eba5bf914, type: 3}
@@ -31,6 +31,8 @@ MonoBehaviour:
   form: 2
   type: 1
   element: 9
+  selfBuffs: []
+  targetBuffs: []
   useMeleeHitbox: 0
   minAttackDistance: 12
   requiredWeapon: 0

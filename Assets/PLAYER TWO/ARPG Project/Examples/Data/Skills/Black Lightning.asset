@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 714677181b4f39440a248d8ae62fba51, type: 3}
   m_Name: Black Lightning
   m_EditorClassIdentifier: 
-  icon: {fileID: 21300000, guid: bc66cf3c55d63ed46af8b1d82cf84e34, type: 3}
+  icon: {fileID: 1456973247, guid: 88fa488b94c452d90ae026efd30a58e4, type: 3}
   sound: {fileID: 0}
   coolDown: 5
   castObject: {fileID: 5627696518775099638, guid: a8b88babde300536794147b5b94b2c67, type: 3}
@@ -31,6 +31,8 @@ MonoBehaviour:
   form: 2
   type: 3
   element: 7
+  selfBuffs: []
+  targetBuffs: []
   useMeleeHitbox: 0
   minAttackDistance: 10
   requiredWeapon: 0

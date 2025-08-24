@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0b69db866db7d843b013da9096729c0, type: 3}
   m_Name: Mana Regen
   m_EditorClassIdentifier: 
-  icon: {fileID: 21300000, guid: 92f9edc39defc6946b6a6d173b78e4e8, type: 3}
+  icon: {fileID: -1219977736, guid: bc7aee2492bcda2d4aff256372442519, type: 3}
   duration: 900
   cooldown: 0
   allowedScenes:
