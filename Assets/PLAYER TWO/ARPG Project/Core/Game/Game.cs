@@ -121,13 +121,11 @@ namespace PLAYERTWO.ARPGProject
                     LoadGameData();
                 }
 
-                if (m_currentCharacterId < 0 || m_currentCharacterId >= characters.Count)
-                {
-                    if (characters.Count == 0)
-                        CreateCharacter("Player", 0);
+                if (characters.Count == 0)
+                    return null;
 
+                if (m_currentCharacterId < 0 || m_currentCharacterId >= characters.Count)
                     m_currentCharacterId = 0;
-                }
 
                 return characters[m_currentCharacterId];
             }

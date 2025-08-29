@@ -20,10 +20,13 @@ namespace PLAYERTWO.ARPGProject
         public UnityEvent onProgressChanged;
         public UnityEvent onQuestRemoved;
 
-        protected QuestsManager m_manager => Game.instance.currentCharacter.quests.manager;
+        protected QuestsManager m_manager => Game.instance.currentCharacter?.quests?.manager;
 
         protected virtual void InitializeCallbacks()
         {
+            if (m_manager == null)
+                return;
+
             m_manager.onQuestAdded += OnQuestAdded;
             m_manager.onQuestCompleted += OnQuestCompleted;
             m_manager.onProgressChanged += OnProgressChanged;
@@ -32,7 +35,7 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void HandleInitialQuests()
         {
-            if (!triggerOnStart)
+            if (!triggerOnStart || m_manager == null)
                 return;
 
             foreach (var instance in m_manager.list)

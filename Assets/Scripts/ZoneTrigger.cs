@@ -94,7 +94,14 @@ namespace AI_DDA.Assets.Scripts
             if (player == null || player.stats == null || player.inventory == null)
                 return;
 
-            string playerType = Game.instance.currentCharacter.currentDynamicPlayerType;
+            // string playerType = Game.instance.currentCharacter.currentDynamicPlayerType;
+            
+            var character = Game.instance.currentCharacter;
+            if (character == null)
+                return;
+
+            string playerType = character.currentDynamicPlayerType;
+
             int finalExp = 0;
             int finalGold = 0;
 

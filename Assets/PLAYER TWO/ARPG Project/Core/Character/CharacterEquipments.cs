@@ -11,6 +11,13 @@ namespace PLAYERTWO.ARPGProject
         public ItemInstance initialPants;
         public ItemInstance initialGloves;
         public ItemInstance initialBoots;
+        public ItemInstance initialWings;
+        public ItemInstance initialLeftRing;
+        public ItemInstance initialRightRing;
+        public ItemInstance initialNecklace;
+        public ItemInstance initialMount;
+        public ItemInstance initialPet;
+        public ItemInstance initialCharm;
         public ItemInstance[] initialConsumables;
 
         public ItemInstance currentRightHand => m_items ? m_items.GetRightHand() : initialRightHand;
@@ -20,6 +27,13 @@ namespace PLAYERTWO.ARPGProject
         public ItemInstance currentPants => m_items ? m_items.GetPants() : initialPants;
         public ItemInstance currentGloves => m_items ? m_items.GetGloves() : initialGloves;
         public ItemInstance currentBoots => m_items ? m_items.GetBoots() : initialBoots;
+        public ItemInstance currentWings => m_items ? m_items.GetWings() : initialWings;
+        public ItemInstance currentLeftRing => m_items ? m_items.GetLeftRing() : initialLeftRing;
+        public ItemInstance currentRightRing => m_items ? m_items.GetRightRing() : initialRightRing;
+        public ItemInstance currentNecklace => m_items ? m_items.GetNecklace() : initialNecklace;
+        public ItemInstance currentMount => m_items ? m_items.GetMount() : initialMount;
+        public ItemInstance currentPet => m_items ? m_items.GetPet() : initialPet;
+        public ItemInstance currentCharm => m_items ? m_items.GetCharm() : initialCharm;
         public ItemInstance[] currentConsumables => m_items ? m_items.GetConsumables() : initialConsumables;
 
         protected EntityItemManager m_items;
@@ -33,6 +47,13 @@ namespace PLAYERTWO.ARPGProject
             InstantiateItem(data.pants, ref initialPants);
             InstantiateItem(data.gloves, ref initialGloves);
             InstantiateItem(data.boots, ref initialBoots);
+            InstantiateItem(data.wings, ref initialWings);
+            InstantiateItem(data.leftRing, ref initialLeftRing);
+            InstantiateItem(data.rightRing, ref initialRightRing);
+            InstantiateItem(data.necklace, ref initialNecklace);
+            InstantiateItem(data.mount, ref initialMount);
+            InstantiateItem(data.pet, ref initialPet);
+            InstantiateItem(data.charm, ref initialCharm);
             InstantiateConsumables(data.initialConsumables, data.maxConsumableSlots);
         }
 
@@ -46,7 +67,14 @@ namespace PLAYERTWO.ARPGProject
                 { "Chest", currentChest },
                 { "Pants", currentPants },
                 { "Gloves", currentGloves },
-                { "Boots", currentBoots }
+                { "Boots", currentBoots },
+                { "Wings", currentWings },
+                { "LeftRing", currentLeftRing },
+                { "RightRing", currentRightRing },
+                { "Necklace", currentNecklace },
+                { "Mount", currentMount },
+                { "Pet", currentPet },
+                { "Charm", currentCharm }
             };
         }
 
@@ -54,7 +82,10 @@ namespace PLAYERTWO.ARPGProject
             ItemInstance initialLeftHand, ItemInstance initialHelm,
             ItemInstance initialChest, ItemInstance initialPants,
             ItemInstance initialGloves, ItemInstance initialBoots,
-            ItemInstance[] initialConsumables)
+            ItemInstance initialWings, ItemInstance initialLeftRing,
+            ItemInstance initialRightRing, ItemInstance initialNecklace,
+            ItemInstance initialMount, ItemInstance initialPet,
+            ItemInstance initialCharm, ItemInstance[] initialConsumables)
         {
             this.initialRightHand = initialRightHand;
             this.initialLeftHand = initialLeftHand;
@@ -63,6 +94,13 @@ namespace PLAYERTWO.ARPGProject
             this.initialPants = initialPants;
             this.initialGloves = initialGloves;
             this.initialBoots = initialBoots;
+            this.initialWings = initialWings;
+            this.initialLeftRing = initialLeftRing;
+            this.initialRightRing = initialRightRing;
+            this.initialNecklace = initialNecklace;
+            this.initialMount = initialMount;
+            this.initialPet = initialPet;
+            this.initialCharm = initialCharm;
             this.initialConsumables = initialConsumables;
         }
 
@@ -80,6 +118,13 @@ namespace PLAYERTWO.ARPGProject
             m_items.ForceEquip(initialPants, ItemSlots.Pants);
             m_items.ForceEquip(initialGloves, ItemSlots.Gloves);
             m_items.ForceEquip(initialBoots, ItemSlots.Boots);
+            m_items.ForceEquip(initialWings, ItemSlots.Wings);
+            m_items.ForceEquip(initialLeftRing, ItemSlots.LeftRing);
+            m_items.ForceEquip(initialRightRing, ItemSlots.RightRing);
+            m_items.ForceEquip(initialNecklace, ItemSlots.Necklace);
+            m_items.ForceEquip(initialMount, ItemSlots.Mount);
+            m_items.ForceEquip(initialPet, ItemSlots.Pet);
+            m_items.ForceEquip(initialCharm, ItemSlots.Charm);
             m_items.SetConsumables(initialConsumables);
             m_items.RevalidateEquippedItems();
         }
@@ -90,18 +135,20 @@ namespace PLAYERTWO.ARPGProject
         }
 
         protected virtual void InstantiateConsumables(Item[] consumables, int maxCapacity)
+
         {
             initialConsumables = new ItemInstance[maxCapacity];
 
             for (int i = 0; i < maxCapacity; i++)
             {
                 if (consumables.Length <= i || !consumables[i]) continue;
-
+                
                 initialConsumables[i] = new ItemInstance(consumables[i]);
             }
         }
 
         public static CharacterEquipments CreateFromSerializer(EquipmentsSerializer equipments)
+
         {
             var consumables = new ItemInstance[equipments.consumables.Length];
 
@@ -118,6 +165,13 @@ namespace PLAYERTWO.ARPGProject
                 ItemInstance.CreateFromSerializer(equipments.pants),
                 ItemInstance.CreateFromSerializer(equipments.gloves),
                 ItemInstance.CreateFromSerializer(equipments.boots),
+                ItemInstance.CreateFromSerializer(equipments.wings),
+                ItemInstance.CreateFromSerializer(equipments.leftRing),
+                ItemInstance.CreateFromSerializer(equipments.rightRing),
+                ItemInstance.CreateFromSerializer(equipments.necklace),
+                ItemInstance.CreateFromSerializer(equipments.mount),
+                ItemInstance.CreateFromSerializer(equipments.pet),
+                ItemInstance.CreateFromSerializer(equipments.charm),
                 consumables
             );
         }

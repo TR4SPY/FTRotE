@@ -140,8 +140,8 @@ namespace PLAYERTWO.ARPGProject
         }
 
         protected virtual void EvaluateQuestScene() =>
-            Game.instance.quests.ReachedScene(currentScene.name);
-
+            Game.instance.quests?.ReachedScene(currentScene.name);
+            
         protected override void Initialize()
         {
             Debug.Log("Initializing Level...");

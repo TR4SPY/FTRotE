@@ -654,6 +654,13 @@ namespace PLAYERTWO.ARPGProject
                 else
                     text += lineBreak + attr;
             }
+            
+            if (data is ItemMisc misc && misc.wearable != ItemMisc.WearableType.None)
+            {
+                string lineBreak = text.Length > 0 ? "\n" : "";
+                string wearableName = StringUtils.ConvertToTitleCase(misc.wearable.ToString());
+                text += lineBreak + $"Can be equipped as {wearableName}";
+            }
 
             if (data.allowedClasses != CharacterClassRestrictions.None)
             {

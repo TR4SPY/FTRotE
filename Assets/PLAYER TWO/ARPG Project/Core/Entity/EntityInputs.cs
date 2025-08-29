@@ -76,6 +76,9 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void InitializeDestinationEffect()
         {
+            if (Level.instance == null)
+                return;
+
             if (destinationEffect)
             {
                 m_destinationEffect = Instantiate(destinationEffect);
@@ -474,7 +477,7 @@ namespace PLAYERTWO.ARPGProject
         /// <param name="position">The position where the effect should be shown.</param>
         protected virtual void ShowDestinationEffect(Vector3 position)
         {
-            if (!m_destinationEffect)
+            if (Level.instance == null || !m_destinationEffect)
                 return;
 
             if (m_destinationEffect.isPlaying)

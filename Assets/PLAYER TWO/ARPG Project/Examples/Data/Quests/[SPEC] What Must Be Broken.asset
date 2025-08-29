@@ -18,7 +18,7 @@ MonoBehaviour:
     mercy, but not without purpose.\nIn the ruins of Varn Hollow lies a creature
     too proud to die. Break its will, its armor, break what others couldn\u2019t.\n\nBring
     me its sundered emblem.\nSome things must be broken so others can stand."
-  objective: Bring {item}
+  objective: Bring Sigil of Dominion
   targetProgress: 1
   completingMode: 3
   allowLogCompletion: 0

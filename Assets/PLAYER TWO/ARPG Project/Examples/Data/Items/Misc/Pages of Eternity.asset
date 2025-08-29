@@ -45,7 +45,7 @@ MonoBehaviour:
   wearable: 11
   buffsOnEquip: []
   disappearOnZeroDurability: 0
-  cannotUnequip: 1
+  cannotUnequip: 0
   disappearAfterDuration: 0
   lifetime: 0
   disappearAfterBuffEnds: 0

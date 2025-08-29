@@ -56,6 +56,27 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The initial Item equipped on the boots slot.")]
         public CharacterItem boots;
 
+        [Tooltip("The initial Item equipped on the wings slot.")]
+        public CharacterItem wings;
+
+        [Tooltip("The initial Item equipped on the left ring slot.")]
+        public CharacterItem leftRing;
+
+        [Tooltip("The initial Item equipped on the right ring slot.")]
+        public CharacterItem rightRing;
+
+        [Tooltip("The initial Item equipped on the necklace slot.")]
+        public CharacterItem necklace;
+
+        [Tooltip("The initial Item equipped on the mount slot.")]
+        public CharacterItem mount;
+
+        [Tooltip("The initial Item equipped on the pet slot.")]
+        public CharacterItem pet;
+
+        [Tooltip("The initial Item equipped on the charm slot.")]
+        public CharacterItem charm;
+
         [Header("Initial Consumables")]
         [Tooltip("The maximum amount of available consumable slots.")]
         public int maxConsumableSlots = 4;

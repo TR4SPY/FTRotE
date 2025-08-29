@@ -242,6 +242,61 @@ namespace PLAYERTWO.ARPGProject
                 if (jewelry.type == ItemJewelry.JewelryType.Ring && slot != ItemSlots.LeftRing && slot != ItemSlots.RightRing)
                     return false;
             }
+            
+            if (item.data is ItemMisc misc)
+            {
+                switch (misc.wearable)
+                {
+                    case ItemMisc.WearableType.None:
+                        return false;
+                    case ItemMisc.WearableType.Helm:
+                        if (slot != ItemSlots.Helm) return false;
+                        break;
+                    case ItemMisc.WearableType.Pants:
+                        if (slot != ItemSlots.Pants) return false;
+                        break;
+                    case ItemMisc.WearableType.Armor:
+                        if (slot != ItemSlots.Chest) return false;
+                        break;
+                    case ItemMisc.WearableType.Gloves:
+                        if (slot != ItemSlots.Gloves) return false;
+                        break;
+                    case ItemMisc.WearableType.Boots:
+                        if (slot != ItemSlots.Boots) return false;
+                        break;
+                    case ItemMisc.WearableType.Wings:
+                        if (slot != ItemSlots.Wings) return false;
+                        break;
+                    case ItemMisc.WearableType.OneHandedWeapon:
+                        if (slot != ItemSlots.RightHand && slot != ItemSlots.LeftHand) return false;
+                        break;
+                    case ItemMisc.WearableType.TwoHandedWeapon:
+                        if (slot != ItemSlots.RightHand) return false;
+                        if (IsUsingWeaponLeft() || IsUsingShield()) return false;
+                        break;
+                    case ItemMisc.WearableType.Shield:
+                        if (slot != ItemSlots.LeftHand) return false;
+                        if (IsUsingWeaponRight() && (!IsUsingBlade() || GetRightBlade().IsTwoHanded())) return false;
+                        break;
+                    case ItemMisc.WearableType.Ring:
+                        if (slot != ItemSlots.LeftRing && slot != ItemSlots.RightRing) return false;
+                        break;
+                    case ItemMisc.WearableType.Necklace:
+                        if (slot != ItemSlots.Necklace) return false;
+                        break;
+                    case ItemMisc.WearableType.Glyph:
+                        if (slot != ItemSlots.Charm) return false;
+                        break;
+                    case ItemMisc.WearableType.Pet:
+                        if (slot != ItemSlots.Pet) return false;
+                        break;
+                    case ItemMisc.WearableType.Mount:
+                        if (slot != ItemSlots.Mount) return false;
+                        break;
+                    case ItemMisc.WearableType.Consumable:
+                        return false;
+                }
+            }
 
             if (item.IsWeapon() && slot != ItemSlots.RightHand && slot != ItemSlots.LeftHand)
                 return false;

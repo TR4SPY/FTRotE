@@ -59,6 +59,11 @@ namespace PLAYERTWO.ARPGProject
         {
             if (!item || !CanUnequip()) return;
 
+            var rot = GetItemRotation();
+            if (rot != null)
+                rot.isHovered = false;
+            GUIItemInspector.instance.Hide();
+
             if (m_blacksmith.isOpen && m_blacksmith.slot.CanEquip(item))
             {
                 var guiItem = item;

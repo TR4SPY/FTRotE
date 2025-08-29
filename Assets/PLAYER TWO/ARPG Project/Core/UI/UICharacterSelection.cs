@@ -514,6 +514,11 @@ namespace PLAYERTWO.ARPGProject
                         m_audio.PlayUiEffect(selectCharacterAudio);
                         SelectCharacter(index);
                     });
+                    m_characters[i].onDoubleClick.AddListener((character) =>
+                    {
+                        SelectCharacter(index);
+                        StartGame();
+                    });
                 }
 
                 m_characters[i].SetCharacter(characters[i]);

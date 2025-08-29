@@ -12,6 +12,13 @@ namespace PLAYERTWO.ARPGProject
         public ItemSerializer pants;
         public ItemSerializer gloves;
         public ItemSerializer boots;
+        public ItemSerializer wings;
+        public ItemSerializer leftRing;
+        public ItemSerializer rightRing;
+        public ItemSerializer necklace;
+        public ItemSerializer mount;
+        public ItemSerializer pet;
+        public ItemSerializer charm;
         public ItemSerializer[] consumables;
 
         public EquipmentsSerializer(CharacterEquipments equipments)
@@ -23,6 +30,13 @@ namespace PLAYERTWO.ARPGProject
             SerializeItem(equipments.currentPants, ref pants);
             SerializeItem(equipments.currentGloves, ref gloves);
             SerializeItem(equipments.currentBoots, ref boots);
+            SerializeItem(equipments.currentWings, ref wings);
+            SerializeItem(equipments.currentLeftRing, ref leftRing);
+            SerializeItem(equipments.currentRightRing, ref rightRing);
+            SerializeItem(equipments.currentNecklace, ref necklace);
+            SerializeItem(equipments.currentMount, ref mount);
+            SerializeItem(equipments.currentPet, ref pet);
+            SerializeItem(equipments.currentCharm, ref charm);
             SerializeConsumables(equipments.currentConsumables);
         }
 

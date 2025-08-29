@@ -18,7 +18,7 @@ MonoBehaviour:
     Not shouted orders, but presence the kind that shapes men and moments alike.\nBeyond
     Ravager\u2019s Pass, a broken warband awaits.\nYou will not fight them - you
     will lead them."
-  objective: Bring {item}
+  objective: Bring Sigil of Honor
   targetProgress: 1
   completingMode: 3
   allowLogCompletion: 0

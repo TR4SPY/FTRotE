@@ -214,8 +214,17 @@ namespace PLAYERTWO.ARPGProject
                 GameAudio.instance.PlayDeniedSound();
         }
 
+
         protected virtual void HandleRightClick()
         {
+            if (itemRotation != null)
+                itemRotation.isHovered = false;
+            if (m_hovering)
+            {
+                m_hovering = false;
+                GUIItemInspector.instance.Hide();
+            }
+
             if (onMerchant)
             {
 #if UNITY_ANDROID || UNITY_IOS
@@ -786,6 +795,9 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void OnDisable()
         {
+            if (itemRotation != null)
+                itemRotation.isHovered = false;
+
             if (m_hovering)
             {
                 m_hovering = false;
