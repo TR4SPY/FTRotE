@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -80,6 +81,8 @@ namespace PLAYERTWO.ARPGProject
                     slot.StopExpiryFade();
                 }
             }
+
+            SortSlots();
         }
 
         protected virtual void HandleBuffAdded(BuffInstance instance)
@@ -93,6 +96,7 @@ namespace PLAYERTWO.ARPGProject
                 slot.transform.SetSiblingIndex(index);
             }
             m_slots[instance] = slot;
+            SortSlots();
         }
 
         protected virtual void HandleBuffRemoved(BuffInstance instance)
@@ -109,6 +113,52 @@ namespace PLAYERTWO.ARPGProject
 
                 Destroy(slot.gameObject);
                 m_slots.Remove(instance);
+            }
+            
+            SortSlots();
+        }
+
+        protected void SortSlots()
+        {
+            if (m_slots.Count == 0)
+            {
+                return;
+            }
+
+            var buffInstances = m_slots.Keys.ToList();
+            var buffs = new List<BuffInstance>();
+            var debuffs = new List<BuffInstance>();
+
+            foreach (var inst in buffInstances)
+            {
+                if (inst.isDebuff)
+                {
+                    debuffs.Add(inst);
+                }
+                else
+                {
+                    buffs.Add(inst);
+                }
+            }
+
+            buffs.Sort((a, b) => b.remainingTime.CompareTo(a.remainingTime));
+            debuffs.Sort((a, b) => b.remainingTime.CompareTo(a.remainingTime));
+
+            int index = 0;
+            foreach (var inst in buffs)
+            {
+                if (m_slots.TryGetValue(inst, out var slot))
+                {
+                    slot.transform.SetSiblingIndex(index++);
+                }
+            }
+
+            foreach (var inst in debuffs)
+            {
+                if (m_slots.TryGetValue(inst, out var slot))
+                {
+                    slot.transform.SetSiblingIndex(index++);
+                }
             }
         }
     }

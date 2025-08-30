@@ -52,6 +52,26 @@ MonoBehaviour:
     m_Localized: I Decline
     m_Metadata:
       m_Items: []
+  - m_Id: 86721417658155008
+    m_Localized: Character
+    m_Metadata:
+      m_Items: []
+  - m_Id: 22371162308608
+    m_Localized: Skills
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86721430308175872
+    m_Localized: Accept
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86721492262240256
+    m_Localized: Cancel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86723081911844864
+    m_Localized: Type your message...
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -217,7 +217,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   skills:
-  - {fileID: 11400000, guid: c5d05af11151a654caafe5b06ed8a230, type: 2}
+  - {fileID: 11400000, guid: 8a1f708d247c2c1d3b5d75b21f6af462, type: 2}
   autoEquipFirstSkill: 1
   ignoreCoolDown: 0
   hands: {fileID: 7391064519067798078}
@@ -259,6 +259,9 @@ MonoBehaviour:
   onDamageDecreaseChance: 0.1
   onDamageDecreaseAmount: 1
   skillDurabilityMultiplier: 0.5
+  maxDurabilityLossPerHit: 5
+  maxDurabilityChecksPerFrame: 1
+  durabilityThreatMultiplier: 0.1
 --- !u!114 &2214114482141136063
 MonoBehaviour:
   m_ObjectHideFlags: 0

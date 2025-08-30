@@ -317,9 +317,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   level: 2
-  strength: 10
+  strength: 20
   dexterity: 15
-  vitality: 15
+  vitality: 10
   energy: 10
   alwaysUseBaseComboStats: 0
   baseMaxCombos: 1
@@ -406,8 +406,7 @@ MonoBehaviour:
   onPerform:
     m_PersistentCalls:
       m_Calls: []
-  skills:
-  - {fileID: 11400000, guid: 8a1f708d247c2c1d3b5d75b21f6af462, type: 2}
+  skills: []
   autoEquipFirstSkill: 1
   ignoreCoolDown: 0
   hands: {fileID: 8946844864039556367}
@@ -449,6 +448,9 @@ MonoBehaviour:
   onDamageDecreaseChance: 0.1
   onDamageDecreaseAmount: 1
   skillDurabilityMultiplier: 0.5
+  maxDurabilityLossPerHit: 5
+  maxDurabilityChecksPerFrame: 1
+  durabilityThreatMultiplier: 0.1
 --- !u!114 &6355741063253607791
 MonoBehaviour:
   m_ObjectHideFlags: 0

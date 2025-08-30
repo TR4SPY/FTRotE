@@ -15,14 +15,26 @@ MonoBehaviour:
   m_TableCollectionName: String Table
   m_TableCollectionNameGuidString: 333036ce7ba7129cb8d0b734697f6b83
   m_Entries:
+  - m_Id: 86721430308175872
+    m_Key: Accept
+    m_Metadata:
+      m_Items: []
   - m_Id: 25959339048960
     m_Key: Back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86721492262240256
+    m_Key: Cancel
     m_Metadata:
       m_Items: []
   - m_Id: 25368164483072
     m_Key: 'Change
 
       Language'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86721417658155008
+    m_Key: Character
     m_Metadata:
       m_Items: []
   - m_Id: 25762944958464
@@ -33,20 +45,24 @@ MonoBehaviour:
     m_Key: I Accept
     m_Metadata:
       m_Items: []
-  - m_Id: 792755879936
-    m_Key: INFORMATION
-    m_Metadata:
-      m_Items: []
-  - m_Id: 22371162308608
-    m_Key: New Entry
-    m_Metadata:
-      m_Items: []
   - m_Id: 26294765928448
     m_Key: I Decline
     m_Metadata:
       m_Items: []
+  - m_Id: 792755879936
+    m_Key: INFORMATION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86723081911844864
+    m_Key: Chat_Msg
+    m_Metadata:
+      m_Items: []
   - m_Id: 25872961552384
     m_Key: Polish
+    m_Metadata:
+      m_Items: []
+  - m_Id: 22371162308608
+    m_Key: Skills
     m_Metadata:
       m_Items: []
   - m_Id: 1210936377344

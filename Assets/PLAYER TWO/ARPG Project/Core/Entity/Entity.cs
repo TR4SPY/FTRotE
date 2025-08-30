@@ -546,14 +546,14 @@ namespace PLAYERTWO.ARPGProject
             onPerformAttack.Invoke(attackType);
         }
 
-        public virtual void TakeMagicDamage(int damage)
+        public virtual void TakeMagicDamage(int damage, Entity origin = null)
         {
             int resistance = stats.magicResistance;
-            int finalDamage = Mathf.Max(damage - resistance, 1); // Obrażenia nie mogą spaść poniżej 1
-
+            int finalDamage = Mathf.Max(damage - resistance, 1);
             stats.health -= finalDamage;
 
-            onDamage?.Invoke(finalDamage, position, false); // Wywołanie eventu obrażeń
+            onDamage?.Invoke(finalDamage, position, false); 
+            onDamageEx?.Invoke(finalDamage, position, false, origin);
 
             if (stats.health <= 0)
             {

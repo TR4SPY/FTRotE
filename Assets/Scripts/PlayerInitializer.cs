@@ -93,6 +93,31 @@ namespace AI_DDA.Assets.Scripts
                     if (gameSave != null && currentCharacter != null)
                     {
                         DifficultyManager.Instance?.ResetDifficultyLoad();
+                        bool hasSavedLogs =
+                            currentCharacter.totalPlayTime > 0f ||
+                            currentCharacter.playerDeaths > 0 ||
+                            currentCharacter.enemiesDefeated > 0 ||
+                            currentCharacter.questsCompleted > 0 ||
+                            currentCharacter.potionsUsed > 0 ||
+                            currentCharacter.zonesDiscovered > 0 ||
+                            currentCharacter.npcInteractions > 0 ||
+                            currentCharacter.waypointsDiscovered > 0 ||
+                            (currentCharacter.unlockedAchievements != null && currentCharacter.unlockedAchievements.Count > 0);
+
+                        if (!hasSavedLogs)
+                        {
+                            playerLogger.playerDeaths = 0;
+                            playerLogger.enemiesDefeated = 0;
+                            playerLogger.totalCombatTime = 0f;
+                            playerLogger.npcInteractions = 0;
+                            playerLogger.waypointsDiscovered = 0;
+                            playerLogger.questsCompleted = 0;
+                            playerLogger.potionsUsed = 0;
+                            playerLogger.zonesDiscovered = 0;
+                            playerLogger.unlockedAchievements.Clear();
+                            playerLogger.currentDynamicPlayerType = "Unknown";
+                            playerLogger.lastUpdateTime = Time.time;
+                        }
 
                         gameSave.LoadLogsForCharacter(currentCharacter);
                         gameSave.LoadDifficultyForCharacter(currentCharacter);

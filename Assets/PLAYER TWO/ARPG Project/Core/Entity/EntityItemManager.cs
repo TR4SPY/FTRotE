@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -70,6 +71,15 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("Multiplier applied to durability loss when damage is caused by a skill.")]
         public float skillDurabilityMultiplier = 0.5f;
 
+        [Tooltip("Maximum durability points an item can lose from a single damage event.")]
+        public int maxDurabilityLossPerHit = 5;
+
+        [Tooltip("Maximum number of durability reductions allowed per frame.")]
+        public int maxDurabilityChecksPerFrame = 1;
+
+        [Tooltip("Additional durability loss per enemy level above the entity's level.")]
+        public float durabilityThreatMultiplier = 0.1f;
+
         protected GameObject m_rightHandObject;
         protected GameObject m_leftHandObject;
 
@@ -91,6 +101,9 @@ namespace PLAYERTWO.ARPGProject
         protected EntityBuffManager m_buffManager;
 
         protected float m_nextDurabilityMultiplier = 1f;
+        
+        protected int m_lastDurabilityFrame = -1;
+        protected int m_durabilityChecksThisFrame = 0;
 
         protected Entity m_entity;
 
@@ -119,7 +132,7 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void InitializeCallbacks()
         {
-            entity.onDamage.AddListener((amount, origin, critical) => ApplyDamage());
+            entity.onDamageEx.AddListener((amount, position, critical, origin) => ApplyDamage(amount, origin));
         }
 
         protected virtual void InitializeItems()
@@ -659,30 +672,74 @@ namespace PLAYERTWO.ARPGProject
 
         /// <summary>
         /// Applies damage to all the items if the random chance was met.
+        /// Durability loss is capped per frame and scaled by the attacker level.
         /// </summary>
-        public virtual void ApplyDamage()
+        public virtual void ApplyDamage(int amount, Entity origin)
         {
-            foreach (var item in m_items)
+            if (Time.frameCount != m_lastDurabilityFrame)
             {
-                var itemInstance = item.Value;
+                m_lastDurabilityFrame = Time.frameCount;
+                m_durabilityChecksThisFrame = 0;
+            }
+
+            if (m_durabilityChecksThisFrame >= maxDurabilityChecksPerFrame)
+            {
+                m_nextDurabilityMultiplier = 1f;
+                return;
+            }
+
+            m_durabilityChecksThisFrame++;
+
+            if (amount <= 0)
+            {
+                m_nextDurabilityMultiplier = 1f;
+                return;
+            }
+
+            if (entity == null || entity.stats == null)
+            {
+                m_nextDurabilityMultiplier = 1f;
+                return;
+            }
+
+            float currentMultiplier = m_nextDurabilityMultiplier;
+            m_nextDurabilityMultiplier = 1f;
+
+            float magicResistance = entity.stats.magicResistance;
+            float magicResistanceFactor = magicResistance / (magicResistance + 50f);
+
+            float threatFactor = 1f;
+            if (origin != null && origin.stats != null)
+            {
+                var statsType = origin.stats.GetType();
+                var prop = statsType.GetProperty("threatFactor", BindingFlags.Instance | BindingFlags.Public);
+                if (prop != null && prop.PropertyType == typeof(float))
+                {
+                    var val = prop.GetValue(origin.stats);
+                    if (val is float f) threatFactor = f;
+                }
+            }
+
+            int equipped = m_items.Values.Count(i => i != null);
+            if (equipped == 0)
+                return;
+
+            int rawLoss = onDamageDecreaseAmount * amount;
+            int totalLoss = Mathf.Max(
+                1,
+                Mathf.CeilToInt(rawLoss * (1f - magicResistanceFactor) * currentMultiplier * threatFactor)
+            );
+
+            totalLoss = Mathf.Min(totalLoss, maxDurabilityLossPerHit);
+            int lossPerItem = Mathf.CeilToInt((float)totalLoss / equipped);
+
+            foreach (var kv in m_items)
+            {
+                var itemInstance = kv.Value;
                 if (itemInstance == null)
                     continue;
 
-                if (UnityEngine.Random.value < onDamageDecreaseChance)
-                {
-                    float magicResistance = entity.stats.magicResistance;
-                    float magicResistanceFactor = magicResistance / (magicResistance + 50f);
-
-                    int rawLoss = onDamageDecreaseAmount;
-                    int loss = Mathf.Max(
-                        1,
-                        Mathf.CeilToInt(rawLoss * (1f - magicResistanceFactor) * m_nextDurabilityMultiplier)
-                    );
-
-                    m_nextDurabilityMultiplier = 1f;
-
-                    itemInstance.ApplyDamage(loss);
-                }
+                itemInstance.ApplyDamage(lossPerItem);
             }
         }
 

@@ -229,19 +229,20 @@ namespace PLAYERTWO.ARPGProject
             return value.ToString("F2");
         }
 
-        int CalculateStorylineProgress(CharacterInstance character, PlayerBehaviorLogger logger)
+        public static int CalculateStorylineProgress(CharacterInstance character)
         {
+            var logger = PlayerBehaviorLogger.Instance;
             if (character == null || logger == null)
                 return 0;
+
+            var playerClass = CharacterInstance.GetClassBitFromName(character.data.name);
+            string pType = character.currentDynamicPlayerType;
 
             float questsRatio = 0f;
             var db = GameDatabase.instance;
             if (db != null)
             {
-                var playerClass = CharacterInstance.GetClassBitFromName(character.data.name);
-                string pType = character.currentDynamicPlayerType;
                 int total = 0;
-
                 foreach (var q in db.quests)
                 {
                     if (q == null)
@@ -265,6 +266,30 @@ namespace PLAYERTWO.ARPGProject
                 questsRatio = total > 0 ? logger.questsCompleted / (float)total : 0f;
             }
 
+            float achievementsRatio = 0f;
+            var achManager = logger.achievementManager;
+            if (achManager != null)
+            {
+                int total = 0;
+                foreach (var ach in achManager.achievements)
+                {
+                    if (ach == null)
+                        continue;
+
+                    if (ach.forClass != CharacterClassRestrictions.None &&
+                        (ach.forClass & playerClass) == 0)
+                        continue;
+
+                    if (!string.IsNullOrEmpty(ach.forWho) && !string.Equals(ach.forWho, pType, StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    total++;
+                }
+
+                int unlocked = logger.unlockedAchievements?.Count ?? 0;
+                achievementsRatio = total > 0 ? unlocked / (float)total : 0f;
+            }
+
             float zonesRatio = 0f;
             if (LevelZones.instance != null)
             {
@@ -280,16 +305,18 @@ namespace PLAYERTWO.ARPGProject
             }
 
             float levelRatio = 0f;
-            if (Game.instance != null && character.stats != null && Game.instance.maxLevel > 0)
-                levelRatio = character.stats.currentLevel / (float)Game.instance.maxLevel;
+            if (character.stats != null && Game.instance != null && Game.instance.maxLevel > 1)
+            {
+                levelRatio = (character.stats.currentLevel - 1f) / (Game.instance.maxLevel - 1f);
+                levelRatio = Mathf.Clamp01(levelRatio);
+            }
 
-            var classBit = CharacterInstance.GetClassBitFromName(character.data.name);
-            int tierIndex = ClassHierarchy.GetTier(classBit);
-            float classRatio = (tierIndex + 1) / 3f;
+            float classRatio = 0f;
+            int tierIndex = ClassHierarchy.GetTier(playerClass);
+            classRatio = Mathf.Clamp01(tierIndex / 3f);
 
-            float avg = (questsRatio + zonesRatio + waypointsRatio + levelRatio + classRatio) / 5f;
-            int percent = Mathf.RoundToInt(avg * 100f);
-            return Mathf.Clamp(percent, 0, 100);
+            float average = (questsRatio + achievementsRatio + zonesRatio + waypointsRatio + levelRatio + classRatio) / 6f;
+            return Mathf.RoundToInt(average * 100f);
         }
 
         public void Refresh()
@@ -371,7 +398,7 @@ namespace PLAYERTWO.ARPGProject
             var character = Game.instance?.currentCharacter;
             if (character != null && logger != null)
             {
-                int percent = CalculateStorylineProgress(character, logger);
+                int percent = CalculateStorylineProgress(character);
                 SetNumericStat(storylineCompletedText, percent, $"{percent}%");
             }
             
