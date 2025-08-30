@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 // using System.Linq;
 using PLAYERTWO.ARPGProject;
+using System;
 
 namespace AI_DDA.Assets.Scripts
 {
@@ -20,6 +21,11 @@ namespace AI_DDA.Assets.Scripts
 
         [Tooltip("The description of the zone.")]
         public string zoneDescription;
+
+        [Header("Restrictions")]
+        public CharacterClassRestrictions allowedClasses = CharacterClassRestrictions.None;
+        public PlayerType allowedPlayerTypes = PlayerType.None;
+
 
         [Header("Region Tracking")]
         public bool requireInside = true;
@@ -45,6 +51,11 @@ namespace AI_DDA.Assets.Scripts
 
         private GUIZoneHUD guiZoneHUD;
         private bool wasTriggeredOnce = false;
+
+        // Prevents zone discovery immediately on scene load when the player
+        // starts inside one or more ZoneTrigger colliders. This avoids
+        // counting the spawn region as "discovered" before the player moves.
+        private const float InitialTriggerGracePeriod = 0.5f;
 
         protected Collider m_collider;
 
@@ -76,7 +87,7 @@ namespace AI_DDA.Assets.Scripts
             InitializeCollider();
 
 #if UNITY_2023_1_OR_NEWER
-            guiZoneHUD = Object.FindFirstObjectByType<GUIZoneHUD>();
+            guiZoneHUD = UnityEngine.Object.FindFirstObjectByType<GUIZoneHUD>();
 #else
             guiZoneHUD = Object.FindObjectOfType<GUIZoneHUD>();
 #endif
@@ -137,10 +148,34 @@ namespace AI_DDA.Assets.Scripts
         {
             if (other == null) return;
 
+            // Ignore trigger events fired during the initial frames after the
+            // level loads. This happens when the player spawns already inside
+            // a zone collider which would otherwise mark the zone as visited
+            // without any actual exploration.
+            if (Time.timeSinceLevelLoad < InitialTriggerGracePeriod)
+                return;
+
             bool isPlayer = other.CompareTag(GameTags.Player);
             bool isAI = other.GetComponent<AgentController>()?.isAI == true;
 
             if (!isPlayer && !isAI) return;
+
+            var character = Game.instance.currentCharacter;
+            CharacterClassRestrictions playerClass = CharacterClassRestrictions.None;
+            PlayerType playerTypeEnum = PlayerType.None;
+            if (character != null)
+            {
+                if (character.data?.classPrefab != null)
+                    playerClass = CharacterInstance.GetClassBitFromName(character.data.classPrefab.name);
+                else
+                    playerClass = CharacterInstance.GetClassBitFromName(character.name);
+                Enum.TryParse(character.currentDynamicPlayerType, true, out playerTypeEnum);
+            }
+
+            if (allowedClasses != CharacterClassRestrictions.None && (allowedClasses & playerClass) == 0)
+                return;
+            if (allowedPlayerTypes != PlayerType.None && (allowedPlayerTypes & playerTypeEnum) == 0)
+                return;
 
             if (string.IsNullOrEmpty(zoneName))
             {
@@ -174,7 +209,6 @@ namespace AI_DDA.Assets.Scripts
                 return;
             }
 
-            var character = Game.instance.currentCharacter;
             if (character == null)
             {
                 Debug.LogError("[ZoneTrigger] Current character is null. Cannot log zone discovery.");

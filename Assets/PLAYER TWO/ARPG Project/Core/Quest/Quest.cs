@@ -3,13 +3,14 @@ using System.Collections.Generic;
 
 namespace PLAYERTWO.ARPGProject
 {
+    [System.Flags]
     public enum PlayerType
-    { 
-        None, 
-        Achiever, 
-        Killer, 
-        Socializer, 
-        Explorer 
+    {
+        None       = 0,
+        Achiever   = 1 << 0,
+        Killer     = 1 << 1,
+        Socializer = 1 << 2,
+        Explorer   = 1 << 3
     }
 
     public enum QuestType
@@ -154,7 +155,30 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         /// <param name="key">The progress key you want to compare.</param>
         public bool IsProgressKey(string key) => progressKey.CompareTo(key) == 0;
-        
+
+        /// <summary>
+        /// Determines whether this quest can be undertaken by a character of the
+        /// given class and player type.
+        /// </summary>
+        /// <param name="cls">The character class of the player.</param>
+        /// <param name="playerType">The dynamic player type (e.g. Killer, Explorer).</param>
+        public bool IsAvailableFor(CharacterClassRestrictions cls, string playerType)
+        {
+            bool classAllowed = requiredClass == CharacterClassRestrictions.None ||
+                                (requiredClass & cls) != 0;
+            if (!classAllowed)
+                return false;
+
+            // If no exclusivity flags are set, quest is available for all types
+            bool anyExclusive = forKiller || forAchiever || forExplorer || forSocializer;
+            if (!anyExclusive)
+                return true;
+
+            return (forKiller && playerType == "Killer") ||
+                   (forAchiever && playerType == "Achiever") ||
+                   (forExplorer && playerType == "Explorer") ||
+                   (forSocializer && playerType == "Socializer");
+        }
 
         /// <summary>
         /// Returns the formatted reward text.

@@ -8,6 +8,7 @@ using Unity.MLAgents.Policies;
 using System.Linq;
 using System.Collections.Generic;
 using System.Collections;
+using System;
 
 public class AgentController : Agent
 {
@@ -53,6 +54,26 @@ private const float stuckDistanceThreshold = 0.1f;
     public Transform target;
     public bool isAI = true;
 
+    private bool IsAllowed(CharacterClassRestrictions classes, PlayerType types)
+    {
+        var character = Game.instance?.currentCharacter;
+        CharacterClassRestrictions playerClass = CharacterClassRestrictions.None;
+        PlayerType playerTypeEnum = PlayerType.None;
+
+        if (character != null)
+        {
+            if (character.data?.classPrefab != null)
+                playerClass = CharacterInstance.GetClassBitFromName(character.data.classPrefab.name);
+            else
+                playerClass = CharacterInstance.GetClassBitFromName(character.name);
+            Enum.TryParse(character.currentDynamicPlayerType, true, out playerTypeEnum);
+        }
+
+        bool classAllowed = classes == CharacterClassRestrictions.None || (classes & playerClass) != 0;
+        bool typeAllowed = types == PlayerType.None || (types & playerTypeEnum) != 0;
+        return classAllowed && typeAllowed;
+    }
+
     public override void Initialize()
     {
         Debug.Log($"Academy environment step count: {Unity.MLAgents.Academy.Instance.StepCount}");
@@ -77,7 +98,7 @@ private const float stuckDistanceThreshold = 0.1f;
             entity.rotationSpeed = 720f;
         }
 
-        gameDatabase = Object.FindFirstObjectByType<GameDatabase>();
+        gameDatabase = UnityEngine.Object.FindFirstObjectByType<GameDatabase>();
         if (gameDatabase == null)
         {
             Debug.LogError("GameDatabase not found in the scene!");
@@ -136,10 +157,10 @@ private const float stuckDistanceThreshold = 0.1f;
 
     private void InitializeDynamicLimits()
     {
-        maxZones = LevelZones.instance?.zones.Count ?? 0;
-        maxWaypoints = Object.FindObjectsByType<Waypoint>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).Length;
-        maxNPCs = Object.FindObjectsByType<Interactive>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
-                    .Count(npc => npc.CanAgentInteract);
+       maxZones = LevelZones.instance?.zones.Count ?? 0;
+        maxWaypoints = UnityEngine.Object.FindObjectsByType<Waypoint>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).Length;
+        maxNPCs = UnityEngine.Object.FindObjectsByType<Interactive>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
+                    .Count(npc => npc.CanAgentInteract); 
 
         Debug.Log($"Limity na epizod: Zones={maxZones}, Waypoints={maxWaypoints}, NPCs={maxNPCs}");
     }
@@ -332,7 +353,7 @@ private const float stuckDistanceThreshold = 0.1f;
                 AddReward(0.4f);
                 Debug.Log($"[Agent {name}] Discovered waypoint {waypointID}. Reward: +0.4");
 
-                int totalWaypoints = Object.FindObjectsByType<Waypoint>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).Length;
+                int totalWaypoints = UnityEngine.Object.FindObjectsByType<Waypoint>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).Length;
                 if (visitedWaypoints.Count == totalWaypoints)
                 {
                     AddReward(1.0f);
@@ -370,9 +391,9 @@ private const float stuckDistanceThreshold = 0.1f;
             do
             {
                 newTarget = transform.position + new Vector3(
-                    Random.Range(-wanderRadius, wanderRadius),
+                    UnityEngine.Random.Range(-wanderRadius, wanderRadius),
                     0,
-                    Random.Range(-wanderRadius, wanderRadius)
+                    UnityEngine.Random.Range(-wanderRadius, wanderRadius)
                 );
                 attempts++;
             }
@@ -519,7 +540,7 @@ private const float stuckDistanceThreshold = 0.1f;
 
         if (count > 0)
         {
-            target = targets[Random.Range(0, count)].transform;
+            target = targets[UnityEngine.Random.Range(0, count)].transform;
             Debug.Log($"Target set to: {target.name}");
         }
         else
@@ -713,7 +734,7 @@ private const float stuckDistanceThreshold = 0.1f;
 
             if (collisionCount > 3)
             {
-                escapeDirection = new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f)).normalized;
+                escapeDirection = new Vector3(UnityEngine.Random.Range(-1f, 1f), 0, UnityEngine.Random.Range(-1f, 1f)).normalized;
                 collisionCount = 0;
             }
 
@@ -734,7 +755,7 @@ private const float stuckDistanceThreshold = 0.1f;
             {
                 Debug.Log($"[Agent {name}] Stuck detected! Attempting to escape...");
 
-                Vector3 escapeDirection = new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f)).normalized;
+                Vector3 escapeDirection = new Vector3(UnityEngine.Random.Range(-1f, 1f), 0, UnityEngine.Random.Range(-1f, 1f)).normalized;
                 entity.MoveTo(transform.position + escapeDirection * 5f);
 
                 stuckCounter = 0;
@@ -807,7 +828,7 @@ private const float stuckDistanceThreshold = 0.1f;
         entity.Revive();
         entity.stats.health = entity.stats.maxHealth;
 
-        Vector3 spawnPosition = new Vector3(Random.Range(-50f, 50f), 1f, Random.Range(-50f, 50f));
+        Vector3 spawnPosition = new Vector3(UnityEngine.Random.Range(-50f, 50f), 1f, UnityEngine.Random.Range(-50f, 50f));
         entity.Teleport(spawnPosition, Quaternion.identity);
 
         entity.SetCollidersEnabled(true);

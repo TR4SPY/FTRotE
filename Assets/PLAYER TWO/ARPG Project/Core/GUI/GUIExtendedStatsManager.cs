@@ -203,6 +203,94 @@ namespace PLAYERTWO.ARPGProject
             if (value)
                 text.text = "Yes";
         }
+        
+        protected string GetDifficultyLabel(float value)
+        {
+            if (value >= 1f && value < 2f)
+                return "I'm scared";
+            if (value >= 2f && value < 3f)
+                return "Is this even on?";
+            if (value >= 3f && value < 4f)
+                return "Baby mode";
+            if (value >= 4f && value < 5f)
+                return "Casual stroll";
+            if (value >= 5f && value < 6f)
+                return "Now we’re talking";
+            if (value >= 6f && value < 7f)
+                return "Bring it on!";
+            if (value >= 7f && value < 8f)
+                return "Why do I hear boss music?";
+            if (value >= 8f && value < 9f)
+                return "Send help!!";
+            if (value >= 9f && value < 9.01f)
+                return "Nightmare fuel";
+            if (value >= 9.01f && value <= 10f)
+                return "Abandon all hope";
+            return value.ToString("F2");
+        }
+
+        int CalculateStorylineProgress(CharacterInstance character, PlayerBehaviorLogger logger)
+        {
+            if (character == null || logger == null)
+                return 0;
+
+            float questsRatio = 0f;
+            var db = GameDatabase.instance;
+            if (db != null)
+            {
+                var playerClass = CharacterInstance.GetClassBitFromName(character.data.name);
+                string pType = character.currentDynamicPlayerType;
+                int total = 0;
+
+                foreach (var q in db.quests)
+                {
+                    if (q == null)
+                        continue;
+
+                    if (q.requiredClass != CharacterClassRestrictions.None &&
+                        (q.requiredClass & playerClass) == 0)
+                        continue;
+
+                    if (q.questType == QuestType.Exclusive)
+                    {
+                        if (pType == "Killer" && !q.forKiller) continue;
+                        if (pType == "Achiever" && !q.forAchiever) continue;
+                        if (pType == "Explorer" && !q.forExplorer) continue;
+                        if (pType == "Socializer" && !q.forSocializer) continue;
+                    }
+
+                    total++;
+                }
+
+                questsRatio = total > 0 ? logger.questsCompleted / (float)total : 0f;
+            }
+
+            float zonesRatio = 0f;
+            if (LevelZones.instance != null)
+            {
+                int totalZones = LevelZones.instance.zones.Count;
+                zonesRatio = totalZones > 0 ? logger.zonesDiscovered / (float)totalZones : 0f;
+            }
+
+            float waypointsRatio = 0f;
+            if (LevelWaypoints.instance != null && LevelWaypoints.instance.waypoints != null)
+            {
+                int totalWaypoints = LevelWaypoints.instance.waypoints.Count;
+                waypointsRatio = totalWaypoints > 0 ? logger.waypointsDiscovered / (float)totalWaypoints : 0f;
+            }
+
+            float levelRatio = 0f;
+            if (Game.instance != null && character.stats != null && Game.instance.maxLevel > 0)
+                levelRatio = character.stats.currentLevel / (float)Game.instance.maxLevel;
+
+            var classBit = CharacterInstance.GetClassBitFromName(character.data.name);
+            int tierIndex = ClassHierarchy.GetTier(classBit);
+            float classRatio = (tierIndex + 1) / 3f;
+
+            float avg = (questsRatio + zonesRatio + waypointsRatio + levelRatio + classRatio) / 5f;
+            int percent = Mathf.RoundToInt(avg * 100f);
+            return Mathf.Clamp(percent, 0, 100);
+        }
 
         public void Refresh()
         {
@@ -223,15 +311,15 @@ namespace PLAYERTWO.ARPGProject
                     playerTypeDescriptionText.text = string.Empty;
             }
 
-            SetNumericStat(fireResistanceText, s.fireResistance);
-            SetNumericStat(waterResistanceText, s.waterResistance);
-            SetNumericStat(iceResistanceText, s.iceResistance);
-            SetNumericStat(earthResistanceText, s.earthResistance);
-            SetNumericStat(airResistanceText, s.airResistance);
-            SetNumericStat(lightningResistanceText, s.lightningResistance);
-            SetNumericStat(shadowResistanceText, s.shadowResistance);
-            SetNumericStat(lightResistanceText, s.lightResistance);
-            SetNumericStat(arcaneResistanceText, s.arcaneResistance);
+            SetNumericStat(fireResistanceText, s.fireResistance, $"{s.fireResistance} pts");
+            SetNumericStat(waterResistanceText, s.waterResistance, $"{s.waterResistance} pts");
+            SetNumericStat(iceResistanceText, s.iceResistance, $"{s.iceResistance} pts");
+            SetNumericStat(earthResistanceText, s.earthResistance, $"{s.earthResistance} pts");
+            SetNumericStat(airResistanceText, s.airResistance, $"{s.airResistance} pts");
+            SetNumericStat(lightningResistanceText, s.lightningResistance, $"{s.lightningResistance} pts");
+            SetNumericStat(shadowResistanceText, s.shadowResistance, $"{s.shadowResistance} pts");
+            SetNumericStat(lightResistanceText, s.lightResistance, $"{s.lightResistance} pts");
+            SetNumericStat(arcaneResistanceText, s.arcaneResistance, $"{s.arcaneResistance} pts");
 
             SetBoolStat(magicImmunityText, s.magicImmunity);
             SetBoolStat(fireImmunityText, s.fireImmunity);
@@ -245,26 +333,26 @@ namespace PLAYERTWO.ARPGProject
             SetBoolStat(arcaneImmunityText, s.arcaneImmunity);
 
             float manaTotal = s.manaRegenPerSecond + s.manaRegenPer5Seconds / 5f + s.manaRegenPer30Seconds / 30f;
-            SetNumericStat(manaRegenPerSecondText, manaTotal, manaTotal.ToString("F2"));
+            SetNumericStat(manaRegenPerSecondText, manaTotal, manaTotal.ToString("F2") + " pts");
             
             float healthTotal = s.healthRegenPerSecond + s.healthRegenPer5Seconds / 5f + s.healthRegenPer30Seconds / 30f;
-            SetNumericStat(healthRegenPerSecondText, healthTotal, healthTotal.ToString("F2"));
+            SetNumericStat(healthRegenPerSecondText, healthTotal, healthTotal.ToString("F2") + " pts");
 
             float experienceTotal = s.experiencePerSecondPercent + s.experiencePer5SecondsPercent / 5f + s.experiencePer30SecondsPercent / 30f;
-            SetNumericStat(experiencePerSecondPercentText, experienceTotal, experienceTotal.ToString("F2"));
+            SetNumericStat(experiencePerSecondPercentText, experienceTotal, $"{experienceTotal:F2}%");
 
             SetNumericStat(chanceToBlockText, s.chanceToBlock, $"{s.chanceToBlock * 100f:F2}%");
             SetNumericStat(blockSpeedText, s.blockSpeed);
 
             SetNumericStat(maxCombosText, s.maxCombos);
-            SetNumericStat(timeToStopComboText, s.timeToStopCombo, s.timeToStopCombo.ToString("F2"));
-            SetNumericStat(nextComboDelayText, s.nextComboDelay, s.nextComboDelay.ToString("F2"));
+            SetNumericStat(timeToStopComboText, s.timeToStopCombo, $"{s.timeToStopCombo:F2}s");
+            SetNumericStat(nextComboDelayText, s.nextComboDelay, $"{s.nextComboDelay:F2}s");
 
-            SetNumericStat(additionalManaText, s.additionalMana);
-            SetNumericStat(additionalHealthText, s.additionalHealth);
-            SetNumericStat(increaseAttackSpeedPercentText, s.increaseAttackSpeedPercent);
-            SetNumericStat(increaseDamageValueText, s.increaseDamageValue);
-            SetNumericStat(increaseMagicalDamageValueText, s.increaseMagicalDamageValue);
+            SetNumericStat(additionalManaText, s.additionalMana, $"{s.additionalMana} mana");
+            SetNumericStat(additionalHealthText, s.additionalHealth, $"{s.additionalHealth} HP");
+            SetNumericStat(increaseAttackSpeedPercentText, s.increaseAttackSpeedPercent, $"{s.increaseAttackSpeedPercent}%");
+            SetNumericStat(increaseDamageValueText, s.increaseDamageValue, $"{s.increaseDamageValue} dmg");
+            SetNumericStat(increaseMagicalDamageValueText, s.increaseMagicalDamageValue, $"{s.increaseMagicalDamageValue} magic dmg");
             SetNumericStat(additionalExperienceRewardPercentText, s.additionalExperienceRewardPercent, $"{s.additionalExperienceRewardPercent}%");
             SetNumericStat(additionalMoneyRewardPercentText, s.additionalMoneyRewardPercent, $"{s.additionalMoneyRewardPercent}%");
             SetNumericStat(additionalAmberlingsPerMinuteText, s.additionalAmberlingsPerMinute, $"{s.additionalAmberlingsPerMinute} coins");
@@ -281,12 +369,16 @@ namespace PLAYERTWO.ARPGProject
             }
 
             var character = Game.instance?.currentCharacter;
-            SetBoolStat(storylineCompletedText, character != null && character.storylineCompleted);
+            if (character != null && logger != null)
+            {
+                int percent = CalculateStorylineProgress(character, logger);
+                SetNumericStat(storylineCompletedText, percent, $"{percent}%");
+            }
             
             float currentDifficulty = DifficultyManager.Instance != null ? DifficultyManager.Instance.GetRawDifficulty() : 0f;
             float avgMultiplier = AiDDAEntityStatsManager.Instance != null ? AiDDAEntityStatsManager.Instance.GetAverageMultiplier() : 0f;
 
-            SetNumericStat(currentDifficultyText, currentDifficulty, currentDifficulty.ToString("F2"));
+            SetNumericStat(currentDifficultyText, currentDifficulty, GetDifficultyLabel(currentDifficulty));
             SetNumericStat(difficultyMultiplierText, avgMultiplier, avgMultiplier.ToString("F2"));
 
             ToggleHeader(m_resistancesHeader, fireResistanceText, waterResistanceText, iceResistanceText, earthResistanceText, airResistanceText, lightningResistanceText, shadowResistanceText, lightResistanceText, arcaneResistanceText);

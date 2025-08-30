@@ -398,6 +398,7 @@ namespace PLAYERTWO.ARPGProject
                 npcInteractions = serializer.npcInteractions,
                 questsCompleted = serializer.questsCompleted,
                 waypointsDiscovered = serializer.waypointsDiscovered,
+                zonesDiscovered = serializer.zonesDiscovered,
                 questionnaireCompleted = serializer.questionnaireCompleted,
                 storylineCompleted = serializer.storylineCompleted,
                 playerType = serializer.playerType,

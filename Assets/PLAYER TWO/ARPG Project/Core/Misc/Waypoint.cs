@@ -1,8 +1,8 @@
 //  ZMODYFIKOWANO 31 GRUDNIA 2024
-
 using UnityEngine;
 using UnityEngine.Events;
-using AI_DDA.Assets.Scripts; // Dodano, aby użyć PlayerBehaviorLogger
+using System;
+using AI_DDA.Assets.Scripts;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -14,9 +14,13 @@ namespace PLAYERTWO.ARPGProject
 
         [Header("Waypoint Settings")]
         public int waypointID = -1; // Unikalne ID Waypoint
-        public bool autoActive = true;
+       public bool autoActive = true;
         public float activationRadius = 10f;
         public string title = "New Waypoint";
+
+        [Header("Restrictions")]
+        public CharacterClassRestrictions allowedClasses = CharacterClassRestrictions.None;
+        public PlayerType allowedPlayerTypes = PlayerType.None;
 
         [Header("Waypoint Discovery Rewards")]
         [Header("Achiever Rewards")]
@@ -156,6 +160,23 @@ namespace PLAYERTWO.ARPGProject
 
         protected void LogWaypointDiscovery(Collider other = null)
         {
+            var character = Game.instance.currentCharacter;
+            CharacterClassRestrictions playerClass = CharacterClassRestrictions.None;
+            PlayerType playerTypeEnum = PlayerType.None;
+            if (character != null)
+            {
+                if (character.data?.classPrefab != null)
+                    playerClass = CharacterInstance.GetClassBitFromName(character.data.classPrefab.name);
+                else
+                    playerClass = CharacterInstance.GetClassBitFromName(character.name);
+                Enum.TryParse(character.currentDynamicPlayerType, true, out playerTypeEnum);
+            }
+
+            if (allowedClasses != CharacterClassRestrictions.None && (allowedClasses & playerClass) == 0)
+                return;
+            if (allowedPlayerTypes != PlayerType.None && (allowedPlayerTypes & playerTypeEnum) == 0)
+                return;
+
             Entity interactor = m_player;
 
             if (other != null)
