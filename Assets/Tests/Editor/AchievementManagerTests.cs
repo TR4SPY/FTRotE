@@ -1,16 +1,21 @@
+using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEditor;
 using AI_DDA.Assets.Scripts;
+using AI_DDA.Assets.Scripts.Achievements;
 using PLAYERTWO.ARPGProject;
-using System.Reflection;
 
 public class AchievementManagerTests
 {
     private class TestLogger : PlayerBehaviorLogger { }
 
     [Test]
-    public void AchievementCondition_FirstBlood_ReturnsTrue()
+    public void FirstBlood_AchievementUnlocks_FromAsset()
     {
+        var achievement = AssetDatabase.LoadAssetAtPath<AchievementData>("Assets/Achievements/FirstBlood.asset");
+        Assert.IsNotNull(achievement);
+
         var loggerGO = new GameObject();
         var logger = loggerGO.AddComponent<TestLogger>();
         logger.enemiesDefeated = 1;
@@ -20,10 +25,11 @@ public class AchievementManagerTests
 
         var managerGO = new GameObject();
         var manager = managerGO.AddComponent<AchievementManager>();
-        var method = typeof(AchievementManager).GetMethod("AchievementConditionMet", BindingFlags.NonPublic | BindingFlags.Instance);
-        bool result = (bool)method.Invoke(manager, new object[]{"First Blood", logger, charInstance});
+        manager.achievements = new List<AchievementData> { achievement };
 
-        Assert.IsTrue(result);
+        manager.CheckAchievements(logger);
+
+        Assert.Contains("first_blood", logger.unlockedAchievements);
 
         Object.DestroyImmediate(loggerGO);
         Object.DestroyImmediate(managerGO);

@@ -1,6 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System.Linq;
+// using System.Linq;
 using PLAYERTWO.ARPGProject;
 
 namespace AI_DDA.Assets.Scripts
@@ -48,7 +48,6 @@ namespace AI_DDA.Assets.Scripts
 
         protected Collider m_collider;
 
-        private static readonly List<ZoneTrigger> allZones = new();
         private static readonly HashSet<string> triggeredZoneNames = new();
 
         protected virtual void InitializeCollider()
@@ -64,13 +63,12 @@ namespace AI_DDA.Assets.Scripts
 
         private void OnEnable()
         {
-            if (!allZones.Contains(this))
-                allZones.Add(this);
+            LevelZones.instance?.RegisterZone(this);
         }
 
         private void OnDisable()
         {
-            allZones.Remove(this);
+            LevelZones.instance?.UnregisterZone(this);
         }
 
         private void Start()
@@ -212,27 +210,7 @@ namespace AI_DDA.Assets.Scripts
         /// </summary>
         public static ZoneTrigger GetCurrentRegion(Vector3 position)
         {
-            ZoneTrigger exact = allZones
-                .Where(z =>
-                {
-                    Bounds bounds = z.m_collider.bounds;
-                    bounds.Expand(1f);
-                    return z.requireInside && bounds.Contains(position);
-                })
-                .OrderByDescending(z => z.priority)
-                .ThenBy(z => Vector3.Distance(position, z.transform.position))
-                .FirstOrDefault();
-
-            if (exact != null) return exact;
-
-            ZoneTrigger nearby = allZones
-                .Where(z => !z.requireInside)
-                .Where(z => Vector3.Distance(position, z.transform.position) <= z.influenceRadius)
-                .OrderByDescending(z => z.priority)
-                .ThenBy(z => Vector3.Distance(position, z.transform.position))
-                .FirstOrDefault();
-
-            return nearby;
+            return LevelZones.instance?.GetCurrentRegion(position);
         }
     }
 }

@@ -40,11 +40,14 @@ Shader "Visibility/VisibilityTransparentStandard" {
 		_OutlineExternal ("External Outline", float) = 0.1
 		_OutlineColour ("Outline Colour", color) = (0.0,0.0,0.0,1.0)
 		_OutlineAlpha ("Outline Alpha", Range (0, 1)) = 1
+        _ClipRadius ("Clip Radius", float) = 1
+        _ClipAlpha ("Clip Alpha", Range (0, 1)) = 0
+        [HideInInspector]
+        _TargetPosition ("Target Position", Vector) = (0,0,0,0)
 
-		//Hidden Properties
-		[HideInInspector]
-		_VisibleAngleCosine ("Visibility Angle Cosine", Range (-1, 1)) = 0
-
+        //Hidden Properties
+        [HideInInspector]
+        _VisibleAngleCosine ("Visibility Angle Cosine", Range (-1, 1)) = 0
 	}
 
 	SubShader {
@@ -84,12 +87,15 @@ Shader "Visibility/VisibilityTransparentStandard" {
 		uniform float _OutlineExternal;
 		uniform fixed4 _OutlineColour;
 		uniform float _OutlineAlpha;
+        uniform float _ClipRadius;
+        uniform float _ClipAlpha;
 
 		//Hidden Properties
 		uniform float _VisibleAngleCosine;
 		
 		//Non properties
 		uniform float3 _ViewPosition;
+        uniform float3 _TargetPosition;
 		uniform float3 _Forward;
 
 		struct Input {
@@ -203,6 +209,13 @@ Shader "Visibility/VisibilityTransparentStandard" {
 				o.Alpha = _AngleAlpha;
 				o.Albedo = color.rgb;
 			#endif	
+            
+            float3 ab = _TargetPosition - _ViewPosition;
+            float3 ap = IN.worldPos - _ViewPosition;
+            float h = saturate(dot(ap, ab) / dot(ab, ab));
+            float3 proj = _ViewPosition + h * ab;
+            float clipDist = distance(IN.worldPos, proj);
+            o.Alpha = lerp(_ClipAlpha, o.Alpha, saturate(clipDist / _ClipRadius));\
 
 		}
 

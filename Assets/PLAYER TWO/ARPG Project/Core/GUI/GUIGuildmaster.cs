@@ -40,16 +40,6 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("Prefab with 'Name'(Text) and 'Icon'(Image).")]
         public GameObject priceTagPrefab;
 
-        [Header("Currency Settings")]
-        [Tooltip("How many Solaris does it cost to create guild")]
-        public int costSolmire = 5;
-
-        [Tooltip("How many Lunaris does it cost to create guild")]    
-        public int costLunaris = 0;
-
-        [Tooltip("How many Amberlings does it cost to create guild")]
-        public int costAmberlings = 0;
-
         [Header("Currency Icons")]
         public Sprite solmireIcon;
         public Sprite lunarisIcon;
@@ -59,10 +49,6 @@ namespace PLAYERTWO.ARPGProject
         private string m_selectedFile;
         private Sprite m_selectedSprite;
         private Sprite m_defaultPreviewSprite;
-
-        private int k_CreateCost => Currency.ConvertToAmberlings(costAmberlings, CurrencyType.Amberlings)
-                            + Currency.ConvertToAmberlings(costLunaris, CurrencyType.Lunaris)
-                            + Currency.ConvertToAmberlings(costSolmire, CurrencyType.Solmire);
 
         protected Guildmaster m_guildmaster;
 
@@ -125,7 +111,7 @@ namespace PLAYERTWO.ARPGProject
         protected override void OnOpen()
         {
             base.OnOpen();
-            ShowPriceTags(createPriceContainer, k_CreateCost);
+            ShowPriceTags(createPriceContainer);
             UpdateAcceptButton();
         }
 
@@ -162,7 +148,8 @@ namespace PLAYERTWO.ARPGProject
                        && guildNameInput.text != defaultGuildName;
 
             var money = Level.instance?.player?.inventory?.instance?.money ?? 0;
-            bool canAfford = money >= k_CreateCost;
+            int cost = GuildManager.instance?.GetCreateCostInAmberlings() ?? 0;
+            bool canAfford = money >= cost;
 
             acceptButton.interactable = hasNameAndCrest && canAfford;
         }
@@ -183,10 +170,11 @@ namespace PLAYERTWO.ARPGProject
             TMP_SpriteAsset crestAsset = CreateTMPAssetFromSprite(crest);
 
             var inventory = Level.instance.player.inventory.instance;
-            if (inventory.money < k_CreateCost)
+            int cost = GuildManager.instance?.GetCreateCostInAmberlings() ?? 0;
+            if (inventory.money < cost)
                 return;
 
-            inventory.SpendMoney(k_CreateCost);
+            inventory.SpendMoney(cost);
             GuildManager.CreateGuild(guildName, crest, crestAsset);
             Hide();
         }
@@ -202,10 +190,11 @@ namespace PLAYERTWO.ARPGProject
             UpdateAcceptButton();
         }
 
-        private void ShowPriceTags(Transform container, int totalAmberlings)
+        private void ShowPriceTags(Transform container)
         {
             ClearPriceTags(container);
-
+            
+            int totalAmberlings = GuildManager.instance?.GetCreateCostInAmberlings() ?? 0;
             if (totalAmberlings <= 0) return;
 
             var c = new Currency();

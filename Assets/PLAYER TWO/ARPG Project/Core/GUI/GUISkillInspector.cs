@@ -56,7 +56,9 @@ namespace PLAYERTWO.ARPGProject
             if (!skill || gameObject.activeSelf) return;
 
             m_skill = skill;
+            var rect = GetComponent<RectTransform>();
             gameObject.SetActive(true);
+            rect.SetAsLastSibling();
             UpdateAll();
             FadIn();
         }

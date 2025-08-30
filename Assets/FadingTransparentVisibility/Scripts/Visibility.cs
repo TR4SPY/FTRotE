@@ -3,17 +3,15 @@ using System.Collections;
 
 public class Visibility : MonoBehaviour
 {
-
     public GameObject view;
+    public Transform target;
 
     ViewPoint viewScript;
     Renderer render;
     Bounds bounds;
 
-    // Use this for initialization
     void Start()
     {
-
         render = GetComponent<Renderer>();
         bounds = render.bounds;
 
@@ -21,25 +19,21 @@ public class Visibility : MonoBehaviour
             viewScript = view.GetComponent<ViewPoint>();
         else
             Debug.LogWarning("No view assigned in visibility script.");
-
     }
 
-    // Update is called once per frame
     void Update()
     {
-        //Check it has material, shader is correct and view was assigned
         if (render != null && view != null)
         {
-            //Each mesh material
             for (int i = 0; i < render.materials.Length; i++)
             {
                 if (render.materials[i].shader.name == "Visibility/VisibilityTransparentStandard")
                 {
-                    //Pass view position and forward vectors
                     render.materials[i].SetVector("_ViewPosition", view.transform.position);
                     render.materials[i].SetVector("_Forward", view.transform.forward);
+                    if (target != null)
+                        render.materials[i].SetVector("_TargetPosition", target.position);
 
-                    //Write view values
                     if (render.materials[i].GetFloat("_Override") == 0)
                     {
                         render.materials[i].SetFloat("_CenterAlpha", viewScript.CenterAlpha);
@@ -53,9 +47,10 @@ public class Visibility : MonoBehaviour
                         render.materials[i].SetFloat("_OutlineExternal", viewScript.OutlineExternal);
                         render.materials[i].SetColor("_OutlineColour", viewScript.OutlineColor);
                         render.materials[i].SetFloat("_OutlineAlpha", viewScript.OutlineAlpha);
+                        render.materials[i].SetFloat("_ClipRadius", viewScript.ClipRadius);
+                        render.materials[i].SetFloat("_ClipAlpha", viewScript.ClipAlpha);
                     }
 
-                    //Get bounds again in case they were modified
                     bounds = render.bounds;
 
                     /*
@@ -107,11 +102,8 @@ public class Visibility : MonoBehaviour
         }
     }
 
-    //Checks intersection between a ray and a sphere
     bool RaySphereIntersection(Vector3 rayOrigin, Vector3 rayDirection, Vector3 sphereCenter, float sphereRadius)
     {
-
-        //Check ray origin inside
         if (Vector3.Distance(rayOrigin, sphereCenter) < sphereRadius)
             return true;
 
@@ -119,16 +111,13 @@ public class Visibility : MonoBehaviour
         float b = Vector3.Dot(m, rayDirection);
         float c = Vector3.Dot(m, m) - sphereRadius * sphereRadius;
 
-        // Exit if r’s origin outside s (c > 0) and r pointing away from s (b > 0)
         if (c > 0.0f && b > 0.0f)
             return false;
 
-        // A negative discriminant corresponds to ray missing sphere
         float discr = b * b - c;
         if (discr < 0.0f)
             return false;
 
         return true;
     }
-
 }

@@ -20,7 +20,10 @@ namespace AI_DDA.Assets.Scripts
 
         public void Show(Entity player, Interactive npc, Dialog dialog)
         {
+            var rect = GetComponent<RectTransform>();
+            
             gameObject.SetActive(true);
+            rect.SetAsLastSibling();
             this.player = player;
             currentNPC = npc;
             currentDialog = dialog;

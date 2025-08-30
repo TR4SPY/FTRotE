@@ -21,4 +21,8 @@ public class ViewPoint : MonoBehaviour
     public Color OutlineColor = new Color(0.0f, 0.0f, 0.0f, 1.0f);
     [Range(0.0f, 1.0f)]
     public float OutlineAlpha = 1;
+
+    public float ClipRadius = 1f;
+    [Range(0.0f, 1.0f)]
+    public float ClipAlpha = 0f;
 }

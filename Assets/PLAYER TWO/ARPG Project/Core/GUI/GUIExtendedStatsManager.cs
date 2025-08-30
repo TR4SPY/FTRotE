@@ -19,10 +19,10 @@ namespace PLAYERTWO.ARPGProject
 
         private static readonly Dictionary<string, string> s_playerTypeDescriptions = new()
         {
-            {"Achiever", "Focuses on goals, rewards, and completion."},
-            {"Explorer", "Loves discovering new areas and secrets."},
-            {"Socializer", "Enjoys interacting and forming connections."},
-            {"Killer", "Seeks competition and dominating opponents."}
+            {"Achiever", "You are an Achiever. Focusing on goals, rewards, and completion."},
+            {"Explorer", "You are an Explorer. Loving discovering new areas and secrets."},
+            {"Socializer", "You are a Socializer. Enjoying interacting and forming connections."},
+            {"Killer", "You are a Killer! Seeking competition and dominating opponents."}
         };
 
         [Header("Resistance Texts")]
@@ -265,12 +265,12 @@ namespace PLAYERTWO.ARPGProject
             SetNumericStat(increaseAttackSpeedPercentText, s.increaseAttackSpeedPercent);
             SetNumericStat(increaseDamageValueText, s.increaseDamageValue);
             SetNumericStat(increaseMagicalDamageValueText, s.increaseMagicalDamageValue);
-            SetNumericStat(additionalExperienceRewardPercentText, s.additionalExperienceRewardPercent);
-            SetNumericStat(additionalMoneyRewardPercentText, s.additionalMoneyRewardPercent);
-            SetNumericStat(additionalAmberlingsPerMinuteText, s.additionalAmberlingsPerMinute);
-            SetNumericStat(additionalLunarisPerMinuteText, s.additionalLunarisPerMinute);
-            SetNumericStat(additionalSolmiresPerMinuteText, s.additionalSolmiresPerMinute);
-            SetNumericStat(itemPricePercentText, s.itemPricePercent);
+            SetNumericStat(additionalExperienceRewardPercentText, s.additionalExperienceRewardPercent, $"{s.additionalExperienceRewardPercent}%");
+            SetNumericStat(additionalMoneyRewardPercentText, s.additionalMoneyRewardPercent, $"{s.additionalMoneyRewardPercent}%");
+            SetNumericStat(additionalAmberlingsPerMinuteText, s.additionalAmberlingsPerMinute, $"{s.additionalAmberlingsPerMinute} coins");
+            SetNumericStat(additionalLunarisPerMinuteText, s.additionalLunarisPerMinute, $"{s.additionalLunarisPerMinute} coins");
+            SetNumericStat(additionalSolmiresPerMinuteText, s.additionalSolmiresPerMinute, $"{s.additionalSolmiresPerMinute} coins");
+            SetNumericStat(itemPricePercentText, s.itemPricePercent, $"{s.itemPricePercent}%");
 
             var logger = PlayerBehaviorLogger.Instance;
             if (logger != null)
@@ -286,7 +286,7 @@ namespace PLAYERTWO.ARPGProject
             float currentDifficulty = DifficultyManager.Instance != null ? DifficultyManager.Instance.GetRawDifficulty() : 0f;
             float avgMultiplier = AiDDAEntityStatsManager.Instance != null ? AiDDAEntityStatsManager.Instance.GetAverageMultiplier() : 0f;
 
-            SetNumericStat(currentDifficultyText, currentDifficulty);
+            SetNumericStat(currentDifficultyText, currentDifficulty, currentDifficulty.ToString("F2"));
             SetNumericStat(difficultyMultiplierText, avgMultiplier, avgMultiplier.ToString("F2"));
 
             ToggleHeader(m_resistancesHeader, fireResistanceText, waterResistanceText, iceResistanceText, earthResistanceText, airResistanceText, lightningResistanceText, shadowResistanceText, lightResistanceText, arcaneResistanceText);

@@ -11,47 +11,47 @@ using System.Collections;
 
 public class AgentController : Agent
 {
-    private Entity entity; // Referencja do Entity
-    private EntityAI entityAI; // Referencja do EntityAI
+    private Entity entity;
+    private EntityAI entityAI;
     //private float stuckTimer = 0f;
     //private Vector3 lastPosition;
     private bool isResetting = false;
     private bool agentWantsToMove = false;
-    private float interactionTimeout = 10f; // Maksymalny czas na osiągnięcie celu (w sekundach)
+    private float interactionTimeout = 10f;
     private float interactionTimer = 0f;
-    private float lastAttackTime = -5f; // Ostatni czas ataku
-    private float attackCooldown = 2f; // Cooldown ataku (w sekundach)
-    private Vector3 wanderTarget; // Docelowy punkt wędrowania
+    private float lastAttackTime = -5f;
+    private float attackCooldown = 2f;
+    private Vector3 wanderTarget;
     private float combatStartTime = 0f;
-    private float totalCombatTime = 0f;      // Cały czas walki (nie resetuje się)
-    private float combatTimeInEpisode = 0f;  // Czas walki w epizodzie (resetowany)
+    private float totalCombatTime = 0f;
+    private float combatTimeInEpisode = 0f; 
     private bool inCombat = false;
     private float lastWanderChangeTime;
     private GameDatabase gameDatabase;
     private AgentBehaviorLogger agentLogger;
     private EntityAreaScanner scanner;
     private EntitySkillManager skillManager;
-    private Vector3? currentExplorationTarget = null; // Pierwotny cel eksploracji
-    private HashSet<string> interactedNPCs = new HashSet<string>(); // Lista interakcji
+    private Vector3? currentExplorationTarget = null;
+    private HashSet<string> interactedNPCs = new HashSet<string>();
     private HashSet<string> discoveredZones = new HashSet<string>();  
     private HashSet<int> visitedWaypoints = new HashSet<int>();
-    private float inactivityTimer = 0f; // Timer do śledzenia braku aktywności
-    private const float inactivityThreshold = 60f; // Limit braku aktywności (w sekundach)
-    private int actionsTaken = 0; // Licznik wykonanych akcji
-    //private const int maxActionsPerEpisode = 1000; // Maksymalna liczba akcji w epizodzie
+    private float inactivityTimer = 0f;
+    private const float inactivityThreshold = 60f;
+    private int actionsTaken = 0; 
+    //private const int maxActionsPerEpisode = 1000;
     private int maxZones;
     private int maxNPCs;
     private int  maxWaypoints; 
-private int collisionCount = 0; // Licznik kolizji
-private float lastCollisionTime = 0f; // Ostatni czas kolizji
+private int collisionCount = 0;
+private float lastCollisionTime = 0f; 
 
 private Vector3 stuckCheckLastPosition;
 private int stuckCounter = 0;
-private const int stuckThreshold = 50; // Liczba klatek, po których uznajemy, że agent utknął
-private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie uznać agenta za „utkniętego”
+private const int stuckThreshold = 50;
+private const float stuckDistanceThreshold = 0.1f;
 
-    public Transform target; // Cel agenta
-    public bool isAI = true; // Flaga do identyfikacji jako AI Agent
+    public Transform target;
+    public bool isAI = true;
 
     public override void Initialize()
     {
@@ -69,13 +69,11 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
             Debug.LogError("Entity or EntityAI component is missing on the AI Agent!");
         }
 
-        // Ustaw flagę AI Agenta
         entity.isAgent = true;
 
-        // Ustaw domyślne parametry
         if (entity.isAgent)
         {
-            entity.moveSpeed = 5f; // Ustaw prędkość tylko dla agenta
+            entity.moveSpeed = 5f;
             entity.rotationSpeed = 720f;
         }
 
@@ -115,14 +113,12 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
         ResetAgent();
         InitializeDynamicLimits();
 
-        // Reset pozycji AI Agenta
         // Vector3 startPosition = new Vector3(Random.Range(-50f, 50f), 0.5f, Random.Range(-50f, 50f));
         // entity.Teleport(startPosition, Quaternion.identity);
 
         Debug.Log("Episode has started");
 
         // Debug.Log($"Agent position: {transform.position}");
-        // Ustaw nowy cel
         SetRandomTarget();
 
         // Debug.Log($"Target: {target?.name ?? "No target set"}");
@@ -140,7 +136,7 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
 
     private void InitializeDynamicLimits()
     {
-        maxZones = Object.FindObjectsByType<ZoneTrigger>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).Length;
+        maxZones = LevelZones.instance?.zones.Count ?? 0;
         maxWaypoints = Object.FindObjectsByType<Waypoint>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).Length;
         maxNPCs = Object.FindObjectsByType<Interactive>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
                     .Count(npc => npc.CanAgentInteract);
@@ -150,13 +146,11 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        // Pozycja agenta (3 obserwacje)
         Vector3 agentPosition = transform.position;
         sensor.AddObservation(agentPosition.x);
         sensor.AddObservation(agentPosition.y);
         sensor.AddObservation(agentPosition.z);
 
-        // Pozycja celu i odległość do celu (4 obserwacje)
         if (target != null)
         {
             Vector3 targetPosition = target.position;
@@ -173,7 +167,6 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
             sensor.AddObservation(0f); // Odległość do celu
         }
 
-        // Dodanie najbliższego przeciwnika (4 obserwacje)
         var closestEnemy = GetComponent<EntityAreaScanner>().GetClosestTarget();
         if (closestEnemy != null)
         {
@@ -191,21 +184,15 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
             sensor.AddObservation(0f); // Odległość do przeciwnika
         }
 
-        // Debugowanie
         // Debug.Log("CollectObservations: Agent now observes enemies and target zones.");
     }
 
-    // -------------------------------------------------
-    // Główne sterowanie akcji (priorytety)
-    // -------------------------------------------------
     public override void OnActionReceived(ActionBuffers actions)
     {
         agentWantsToMove = false;
 
-        // Zwiększenie licznika akcji
         actionsTaken++;
 
-        // Resetowanie timera braku aktywności po wykonaniu akcji
         inactivityTimer = 0f;
 
         float moveX = actions.ContinuousActions[0];
@@ -220,18 +207,17 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
         {
             target = zone;
             DiscoverZone(zone.name);
-            inactivityTimer = 0f; // Reset po odkryciu strefy
+            inactivityTimer = 0f;
         }
 
         if (DiscoverWaypoint())
         {
-            inactivityTimer = 0f; // Reset po odkryciu waypointu
+            inactivityTimer = 0f;
             return;
         }
 
         ContinueExploration(moveDir);
         
-        // Zwiększanie timera bezczynności, jeśli agent się nie porusza
         inactivityTimer += Time.deltaTime;
 
         if (ShouldEndEpisode())
@@ -247,10 +233,6 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
         onComplete?.Invoke();
     }
 
-    // -------------------------------------------------
-    // Metody walki, interakcji, odkrywania, roamowania
-    // -------------------------------------------------
-
     private void ContinueExploration(Vector3 moveDir)
     {
         if (currentExplorationTarget != null)
@@ -260,7 +242,7 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
         }
         else
         {
-            WanderAround(moveDir); // Jeśli nie ma innego celu, losowa eksploracja
+            WanderAround(moveDir);
         }
     }
 
@@ -278,7 +260,7 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
 
             if (interactedNPCs.Contains(closestNPC.name))
             {
-                AddReward(-0.05f); // Mniejsza kara za ponowną interakcję
+                AddReward(-0.05f);
                 return false;
             }
 
@@ -290,7 +272,7 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
             else
             {
                 interactedNPCs.Add(closestNPC.name);
-                inactivityTimer = 0f; // Reset timera bezczynności
+                inactivityTimer = 0f;
 
                 closestNPC.Interact(entity);
                 agentLogger?.LogNpcInteraction();
@@ -325,7 +307,7 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
 
             if (visitedWaypoints.Contains(waypointID))
             {
-                AddReward(-0.05f); // Kara za próbę odkrycia już odwiedzonego waypointu
+                AddReward(-0.05f);
                 Debug.Log($"[Agent {name}] Penalty for revisiting waypoint {waypointID}: -0.1");
                 return false;
             }
@@ -340,21 +322,20 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
             else
             {
                 visitedWaypoints.Add(waypointID);
-                inactivityTimer = 0f; // Reset timera bezczynności po odkryciu waypointu
+                inactivityTimer = 0f;
 
                 if (!agentLogger.discoveredWaypoints.Contains(waypointID))
                 {
                     agentLogger.LogWaypointDiscovery(waypointID);
                 }
 
-                AddReward(0.4f); // Nagroda za odkrycie nowego waypointu
+                AddReward(0.4f);
                 Debug.Log($"[Agent {name}] Discovered waypoint {waypointID}. Reward: +0.4");
 
-                // Bonus za odkrycie wszystkich waypointów w epizodzie
                 int totalWaypoints = Object.FindObjectsByType<Waypoint>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).Length;
                 if (visitedWaypoints.Count == totalWaypoints)
                 {
-                    AddReward(1.0f); // Bonus
+                    AddReward(1.0f);
                     Debug.Log($"[Agent {name}] All waypoints discovered. Bonus reward: +1.0");
                 }
 
@@ -376,10 +357,9 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
     /// </summary>
     private void WanderAround(Vector3 moveDir)
     {
-        float minDistance = 5f; // Minimalna odległość nowego celu od obecnej pozycji
-        float wanderRadius = 20f; // Maksymalny promień wędrowania
+        float minDistance = 5f;
+        float wanderRadius = 20f;
 
-        // Jeśli agent nie ma celu lub już osiągnął poprzedni, losujemy nowy cel
         if (wanderTarget == Vector3.zero || Vector3.Distance(transform.position, wanderTarget) < 2f)
         {
            // Debug.Log($"[Agent {name}] Choosing a new wander target...");
@@ -404,7 +384,6 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
           //  Debug.Log($"[Agent {name}] New wander target set: {wanderTarget}");
         }
 
-        // Jeśli Agent AI nie osiągnął jeszcze celu, kontynuuje ruch
         if (Vector3.Distance(transform.position, wanderTarget) > 2f)
         {
            // Debug.Log($"[Agent {name}] Moving to {wanderTarget}");
@@ -413,48 +392,34 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
         else
         {
            // Debug.Log($"[Agent {name}] Reached wander target, selecting a new one...");
-            wanderTarget = Vector3.zero; // Natychmiastowe losowanie nowego celu
+            wanderTarget = Vector3.zero;
         }
     }
 
     private Transform GetClosestZone()
     {
-        // np. "ZoneTrigger" obiekty
-        var zones = Object.FindObjectsByType<ZoneTrigger>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
-        if (zones.Length == 0) return null;
-
-        Transform best = null;
-        float bestDist = Mathf.Infinity;
-        foreach (var z in zones)
-        {
-            float d = Vector3.Distance(transform.position, z.transform.position);
-            if (d < bestDist)
-            {
-                bestDist = d;
-                best = z.transform;
-            }
-        }
-        return best;
+        var zone = LevelZones.instance?.GetClosestZone(transform.position);
+        return zone ? zone.transform : null;
     }
 
     private bool FindAndAttackEnemy()
     {
         var scanner = GetComponent<EntityAreaScanner>();
-        var closestEnemy = scanner?.GetClosestTarget(); // Pobranie najbliższego wroga
+        var closestEnemy = scanner?.GetClosestTarget();
 
         if (closestEnemy != null && closestEnemy.CompareTag("Entity/Enemy"))
         {
             float distanceToEnemy = Vector3.Distance(transform.position, closestEnemy.position);
 
-            if (!inCombat) // **Agent rozpoczyna walkę**
+            if (!inCombat)
             {
                 combatStartTime = Time.time;
                 inCombat = true;
-                inactivityTimer = 0f; // Reset timera bezczynności po rozpoczęciu walki
+                inactivityTimer = 0f;
                 agentLogger?.StartCombat();
             }
 
-            if (distanceToEnemy <= 1.5f) // **Zasięg ataku**
+            if (distanceToEnemy <= 1.5f)
             {
                 PerformAttack(closestEnemy);
                 return true;
@@ -467,7 +432,6 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
             }
         }
 
-        // **Jeśli agent nie ma już przeciwnika, kończymy walkę**
         if (inCombat && closestEnemy == null)
         {
             float combatDuration = Time.time - combatStartTime;
@@ -506,8 +470,7 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
         if (skillManager != null && skillManager.CanUseSkill())
         {
           //  Debug.Log($"[Agent {name}] Using skill on {enemy.name}");
-            skillManager.PerformSkill(); // Usunięcie argumentu, bo funkcja go nie wymaga
-
+            skillManager.PerformSkill();
         }
         else
         {
@@ -517,12 +480,11 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
 
         lastAttackTime = Time.time;
 
-        // **Nowe sprawdzenie, czy wróg rzeczywiście umarł**
         StartCoroutine(WaitForEnemyDeath(targetEntity));
     }
     private IEnumerator WaitForEnemyDeath(Entity targetEntity)
     {
-        float timeout = 2f; // Maksymalnie 2 sekundy czekania
+        float timeout = 2f;
         float elapsed = 0f;
 
         while (!targetEntity.isDead && elapsed < timeout)
@@ -533,7 +495,6 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
 
         if (targetEntity.isDead)
         {
-            // Zabezpieczenie: sprawdź, czy to NIE jest agent
             if (!targetEntity.isAgent)
             {
                 Debug.Log($"[Agent {name}] Killed enemy: {targetEntity.name}");
@@ -549,20 +510,22 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
             }
         }
     }
+
     private void SetRandomTarget()
     {
-        var targets = Object.FindObjectsByType<ZoneTrigger>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
-        Debug.Log($"Found {targets.Length} ZoneTriggers.");
+        var targets = LevelZones.instance?.zones;
+        int count = targets?.Count ?? 0;
+        Debug.Log($"Found {count} ZoneTriggers.");
 
-        if (targets.Length > 0)
+        if (count > 0)
         {
-            target = targets[Random.Range(0, targets.Length)].transform;
+            target = targets[Random.Range(0, count)].transform;
             Debug.Log($"Target set to: {target.name}");
         }
         else
         {
             Debug.LogWarning("No ZoneTriggers found. Cannot set target.");
-            EndAgentEpisode(); // Zamiast EndEpisode()
+            EndAgentEpisode();
             return;
         }
 
@@ -582,17 +545,17 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
         if (HasDiscoveredZone(zoneName))
         {
             Debug.Log($"[Agent {name}] Zone '{zoneName}' already discovered. Skipping.");
-            AddReward(-0.1f); // Kara za próbę ponownego odkrycia tej samej strefy
+            AddReward(-0.1f);
             return;
         }
 
         Debug.Log($"[Agent {name}] Discovering new zone: {zoneName}");
 
         discoveredZones.Add(zoneName);
-        inactivityTimer = 0f; // Reset timera bezczynności po odkryciu strefy
+        inactivityTimer = 0f;
 
         agentLogger?.LogAgentZoneDiscovery(zoneName);
-        AddReward(0.75f); // Zbalansowana nagroda za odkrycie strefy
+        AddReward(0.75f);
 
         if (!confirmedByTrigger)
         {
@@ -622,7 +585,7 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
             statsManager.energy = 55;
             statsManager.health = 500;
             //statsManager.mana = 500;
-            statsManager.Revitalize(); // Upewnia się, że mana jest na max
+            statsManager.Revitalize();
             statsManager.Initialize();
 
             Debug.Log($"[InitializeAgentStats] Stats initialized for Agent AI: Health={statsManager.health}, Mana={statsManager.mana}");
@@ -638,7 +601,6 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
         var skillManager = GetComponent<EntitySkillManager>();
         if (skillManager != null)
         {
-            // Przykład: Dodanie umiejętności do agenta
             foreach (var skill in skillManager.skills)
             {
                 Debug.Log($"Skill '{skill.name}' assigned to Agent AI.");
@@ -662,7 +624,6 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
 
         Debug.Log($"[Agent {name}] All exploration goals met. Ending episode...");
 
-        // **Jeśli agent był w walce, ale nie ma już przeciwnika, zapisz czas walki**
         if (inCombat)
         {
             float combatDuration = Time.time - combatStartTime;
@@ -743,21 +704,17 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
         {
             Debug.Log($"[Agent {name}] Obstacle detected: {collision.gameObject.name}. Adjusting path...");
 
-            // Zwiększenie licznika kolizji
             collisionCount++;
             lastCollisionTime = Time.time;
 
-            // Wybór nowego kierunku omijania przeszkody
             Vector3 escapeDirection = (transform.position - collision.contacts[0].point).normalized;
 
-            // Dynamiczne zwiększenie dystansu przy wielu kolizjach
             float escapeDistance = Mathf.Clamp(3f + collisionCount * 1.5f, 3f, 10f);
 
-            // Sprawdzenie, czy agent nie wchodzi w nieskończoną pętlę kolizji
             if (collisionCount > 3)
             {
                 escapeDirection = new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f)).normalized;
-                collisionCount = 0; // Reset licznika po zastosowaniu alternatywnego rozwiązania
+                collisionCount = 0;
             }
 
             entity.MoveTo(transform.position + escapeDirection * escapeDistance);
@@ -777,16 +734,15 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
             {
                 Debug.Log($"[Agent {name}] Stuck detected! Attempting to escape...");
 
-                // Przesunięcie w losowy kierunek
                 Vector3 escapeDirection = new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f)).normalized;
-                entity.MoveTo(transform.position + escapeDirection * 5f); // Przesunięcie o 5 jednostek
+                entity.MoveTo(transform.position + escapeDirection * 5f);
 
-                stuckCounter = 0; // Reset licznika po próbie ucieczki
+                stuckCounter = 0;
             }
         }
         else
         {
-            stuckCounter = 0; // Agent się porusza, więc resetujemy licznik
+            stuckCounter = 0;
         }
 
         stuckCheckLastPosition = transform.position;
@@ -804,7 +760,7 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
             {
                 Debug.Log($"Interaction target timed out: {target.name}. Selecting new target.");
                 isResetting = true;
-                target = null; // Resetowanie celu
+                target = null;
                 interactionTimer = 0f;
                 SetRandomTarget();
                 isResetting = false;
@@ -816,7 +772,7 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
         }
     }
 
-    private bool deathLogged = false; // Flaga do sprawdzania, czy śmierć została zalogowana
+    private bool deathLogged = false;
 
     private void HandleAgentDeath()
     {
@@ -824,7 +780,7 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
         {
             Debug.Log($"[Agent AI] {entity.name} has died. Logging death...");
 
-            AddReward(-1.5f);  // Zmniejszona kara za śmierć, aby była mniej surowa
+            AddReward(-1.5f);
 
             if (agentLogger != null)
             {
@@ -836,11 +792,11 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
             if (ShouldEndEpisode())
             {
                 Debug.Log($"[Agent {name}] Agent has died, but all objectives are complete. Ending episode.");
-                EndAgentEpisode(); // Zakończenie epizodu, jeśli wszystkie cele zostały spełnione
+                EndAgentEpisode();
             }
             else
             {
-                Revive(); // Ożywienie agenta bez kończenia epizodu
+                Revive();
             }
         }
     }
@@ -855,7 +811,7 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
         entity.Teleport(spawnPosition, Quaternion.identity);
 
         entity.SetCollidersEnabled(true);
-        agentLogger?.ResetAgentDeathLog();  // Reset flagi po odrodzeniu agenta
+        agentLogger?.ResetAgentDeathLog();
 
         Debug.Log($"[Agent {name}] Revived with {entity.stats.health} HP at {spawnPosition}.");
     }
@@ -886,7 +842,7 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
 
     void Update()
     {
-        if (!entity.isAgent) return; // Tylko Agent AI może się poruszać tutaj
+        if (!entity.isAgent) return;
         //Debug.Log($"[Agent {name}] Velocity: {entity.velocity}, MoveSpeed: {entity.moveSpeed}");
         var statsManager = GetComponent<EntityStatsManager>();
     if (statsManager != null)
@@ -897,7 +853,7 @@ private const float stuckDistanceThreshold = 0.1f; // Minimalny ruch, żeby nie 
         CheckInteractionTimeout();
         CheckInactivityPenalty();
 
-        if (Time.frameCount % 30 == 0) // Log every 30 frames
+        if (Time.frameCount % 30 == 0)
         {
             // Debug.Log($"Frame: {Time.frameCount}, StepCount: {Academy.Instance.StepCount}");
         }
