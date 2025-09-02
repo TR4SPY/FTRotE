@@ -17,9 +17,11 @@ using PLAYERTWO.ARPGProject;
         [Tooltip("References the toggle that controls the post-processing state.")]
         public Toggle postProcessing;
 
+/*
         [Header("References")]
         [Tooltip("The Volume component controlling post-processing effects.")]
         public Volume postProcessingVolume;
+*/
 
         [Header("Navigation Buttons")]
         public Button backButton;
@@ -76,7 +78,7 @@ using PLAYERTWO.ARPGProject;
             postProcessing.onValueChanged.AddListener(m_settings.SetPostProcessing);
         }
 */
-
+/*
         protected virtual void InitializePostProcessing()
         {
             // Ustaw początkowy stan Toggle zgodnie z aktualnym ustawieniem
@@ -99,6 +101,13 @@ using PLAYERTWO.ARPGProject;
             // Włącz/wyłącz Volume
             if (postProcessingVolume != null)
                 postProcessingVolume.enabled = isEnabled;
+        }
+*/
+
+        protected virtual void InitializePostProcessing()
+        {
+            postProcessing.isOn = m_settings.GetPostProcessing();
+            postProcessing.onValueChanged.AddListener(m_settings.SetPostProcessing);
         }
 
         public void BackButton()

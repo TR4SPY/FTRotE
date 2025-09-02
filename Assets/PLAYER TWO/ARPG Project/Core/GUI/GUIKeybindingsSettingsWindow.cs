@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
+using System;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -13,12 +15,24 @@ namespace PLAYERTWO.ARPGProject
         [Header("Navigation Buttons")]
         public Button backButton;
 
+        [Serializable]
+        public class RebindButton
+        {
+            public string actionName;
+            public int bindingIndex;
+            public Button button;
+        }
+
+        [Header("Rebindable Actions")]
+        public RebindButton[] rebindButtons;
+
         protected GameSettings m_settings => GameSettings.instance;
 
         protected override void Start()
         {
             base.Start();
             InitializeMovementSetting();
+            InitializeRebindButtons();
 
             if (backButton != null)
                 backButton.onClick.AddListener(BackButton);
@@ -36,6 +50,65 @@ namespace PLAYERTWO.ARPGProject
                 movementSettingSlider.value = m_settings.GetMovementSetting();
                 movementSettingSlider.onValueChanged.AddListener(m_settings.SetMovementSetting);
             }
+        }
+        
+        protected virtual void InitializeRebindButtons()
+        {
+            if (rebindButtons == null || m_settings == null || m_settings.inputActions == null)
+                return;
+
+            foreach (var rb in rebindButtons)
+            {
+                if (rb.button == null)
+                    continue;
+
+                UpdateBindingDisplay(rb);
+                rb.button.onClick.AddListener(() => StartRebind(rb));
+            }
+        }
+
+        protected virtual void UpdateBindingDisplay(RebindButton rb)
+        {
+            if (rb.button == null)
+                return;
+
+            var action = m_settings.inputActions?.FindAction(rb.actionName, true);
+            var text = rb.button.GetComponentInChildren<Text>();
+            if (action == null || text == null)
+            {
+                if (text != null)
+                    text.text = "N/A";
+                return;
+            }
+
+            var display = action.GetBindingDisplayString(rb.bindingIndex);
+            text.text = display;
+        }
+
+        protected virtual void StartRebind(RebindButton rb)
+        {
+            var action = m_settings.inputActions?.FindAction(rb.actionName, true);
+            if (action == null)
+                return;
+
+            rb.button.interactable = false;
+            rb.button.GetComponentInChildren<Text>().text = "...";
+
+            action.PerformInteractiveRebinding(rb.bindingIndex)
+                .OnComplete(operation =>
+                {
+                    operation.Dispose();
+                    rb.button.interactable = true;
+                    UpdateBindingDisplay(rb);
+                    m_settings.SaveBindings();
+                })
+                .OnCancel(operation =>
+                {
+                    operation.Dispose();
+                    rb.button.interactable = true;
+                    UpdateBindingDisplay(rb);
+                })
+                .Start();
         }
 
         protected virtual void OnDisable() => m_settings?.Save();

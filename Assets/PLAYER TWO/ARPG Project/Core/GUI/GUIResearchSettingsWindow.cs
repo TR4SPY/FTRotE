@@ -21,7 +21,7 @@ using PLAYERTWO.ARPGProject;
             base.Start();
 
             InitializeSaveLogs();
-            saveLogsToggle.onValueChanged.AddListener(OnSaveLogsToggleChanged);
+            // saveLogsToggle.onValueChanged.AddListener(OnSaveLogsToggleChanged);
 
             if (backButton != null)
             {
@@ -44,6 +44,7 @@ using PLAYERTWO.ARPGProject;
         protected virtual void InitializeSaveLogs()
         {
             saveLogsToggle.isOn = m_settings.GetSaveLogs();
+            OnSaveLogsToggleChanged(saveLogsToggle.isOn);
             saveLogsToggle.onValueChanged.AddListener(OnSaveLogsToggleChanged);
         }
 

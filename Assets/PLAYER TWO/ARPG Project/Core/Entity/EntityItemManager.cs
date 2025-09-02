@@ -65,7 +65,7 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("The chance of decreasing the durability points of the equipped items after receiving damage.")]
         public float onDamageDecreaseChance = 0.1f;
 
-        [Tooltip("The amount of durability points lost after receiving a damage.")]
+        [Tooltip("Multiplier applied to the base durability loss (10% of damage received).")]
         public int onDamageDecreaseAmount = 1;
 
         [Tooltip("Multiplier applied to durability loss when damage is caused by a skill.")]
@@ -76,8 +76,8 @@ namespace PLAYERTWO.ARPGProject
 
         [Tooltip("Maximum number of durability reductions allowed per frame.")]
         public int maxDurabilityChecksPerFrame = 1;
-
-        [Tooltip("Additional durability loss per enemy level above the entity's level.")]
+        
+        [Tooltip("Durability loss multiplier per level difference between attacker and entity.")]
         public float durabilityThreatMultiplier = 0.1f;
 
         protected GameObject m_rightHandObject;
@@ -93,12 +93,15 @@ namespace PLAYERTWO.ARPGProject
 
         protected Dictionary<string, GameObject> m_entityPieces = new();
 
+        protected Dictionary<ItemInstance, float> m_pendingDurabilityLoss = new();
+
         protected List<ItemInstance> m_consumables = new();
 
         protected Dictionary<ItemInstance, Coroutine> m_miscTimers = new();
         protected Dictionary<ItemInstance, (ItemSlots slot, HashSet<Buff> buffs)> m_miscBuffs = new();
         protected Dictionary<ItemInstance, Action> m_miscBreakHandlers = new();
         protected EntityBuffManager m_buffManager;
+
 
         protected float m_nextDurabilityMultiplier = 1f;
         
@@ -720,18 +723,24 @@ namespace PLAYERTWO.ARPGProject
                 }
             }
 
+            float levelMultiplier = 1f;
+            if (origin != null && origin.stats != null && entity.stats != null)
+            {
+                int levelDiff = origin.stats.level - entity.stats.level;
+                levelMultiplier = Mathf.Max(0f, 1f + levelDiff * durabilityThreatMultiplier);
+            }
+
             int equipped = m_items.Values.Count(i => i != null);
             if (equipped == 0)
                 return;
 
-            int rawLoss = onDamageDecreaseAmount * amount;
-            int totalLoss = Mathf.Max(
-                1,
-                Mathf.CeilToInt(rawLoss * (1f - magicResistanceFactor) * currentMultiplier * threatFactor)
-            );
-
+            float rawLoss = amount * 0.1f * onDamageDecreaseAmount;
+            float totalLoss = rawLoss * (1f - magicResistanceFactor) * currentMultiplier * threatFactor * levelMultiplier;
             totalLoss = Mathf.Min(totalLoss, maxDurabilityLossPerHit);
-            int lossPerItem = Mathf.CeilToInt((float)totalLoss / equipped);
+            if (totalLoss <= 0f)
+                return;
+
+            float lossPerItem = totalLoss / equipped;
 
             foreach (var kv in m_items)
             {
@@ -739,7 +748,17 @@ namespace PLAYERTWO.ARPGProject
                 if (itemInstance == null)
                     continue;
 
-                itemInstance.ApplyDamage(lossPerItem);
+                if (!m_pendingDurabilityLoss.ContainsKey(itemInstance))
+                    m_pendingDurabilityLoss[itemInstance] = 0f;
+
+                m_pendingDurabilityLoss[itemInstance] += lossPerItem;
+
+                int intLoss = Mathf.FloorToInt(m_pendingDurabilityLoss[itemInstance]);
+                if (intLoss > 0)
+                {
+                    itemInstance.ApplyDamage(intLoss);
+                    m_pendingDurabilityLoss[itemInstance] -= intLoss;
+                }
             }
         }
 

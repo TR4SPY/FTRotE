@@ -160,6 +160,7 @@ MonoBehaviour:
   - {fileID: 2214114482141136062, guid: fd8b3eabf84db914c8de1083b6f45bcc, type: 3}
   - {fileID: 7112130279391419210, guid: d5d91230d7da09c4798855268d260252, type: 3}
   - {fileID: 6355741063253607790, guid: 14acde0b2f64fb3428891252a4421c54, type: 3}
+  maxEntities: 20
 --- !u!65 &7859327497766132135
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -250,7 +251,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4557299271764837647, guid: 32b48a48f5f39f8469991f3148ec4c84, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5050565227917167009, guid: 32b48a48f5f39f8469991f3148ec4c84, type: 3}
       propertyPath: m_RootOrder

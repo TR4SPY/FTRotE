@@ -12,6 +12,9 @@ namespace PLAYERTWO.ARPGProject
         public GUIWindow uiSettingsWindow;
         public GUIWindow researchSettingsWindow;
         public GUIWindow keybindingsSettingsWindow;
+        public GUIWindow gameplaySettingsWindow;
+        public GUIWindow languageSettingsWindow;
+        public GUIWindow accessibilitySettingsWindow;
 
         [Header("Main Settings Menu")]
         public GameObject mainSettings;
@@ -22,6 +25,9 @@ namespace PLAYERTWO.ARPGProject
         public Button uiSettingsButton;
         public Button researchSettingsButton;
         public Button keybindingsSettingsButton;
+        public Button gameplaySettingsButton;
+        public Button languageSettingsButton;
+        public Button accessibilitySettingsButton;
 
         protected override void Start()
         {
@@ -37,10 +43,12 @@ namespace PLAYERTWO.ARPGProject
                 graphicsSettingsButton.onClick.AddListener(ShowGraphicsSettings);
             else
                 Debug.LogError("[Settings] Graphics Settings Button is NULL! Assign it in the Inspector.");
+
             if (uiSettingsButton != null)
                 uiSettingsButton.onClick.AddListener(ShowUISettings);
             else
                 Debug.LogError("[Settings] UI Settings Button is NULL! Assign it in the Inspector.");
+
             if (researchSettingsButton != null)
                 researchSettingsButton.onClick.AddListener(ShowResearchSettings);
             else
@@ -50,6 +58,21 @@ namespace PLAYERTWO.ARPGProject
                 keybindingsSettingsButton.onClick.AddListener(ShowKeybindingsSettings);
             else
                 Debug.LogError("[Settings] Keybindings Settings Button is NULL! Assign it in the Inspector.");
+
+            if (gameplaySettingsButton != null)
+                gameplaySettingsButton.onClick.AddListener(ShowGameplaySettings);
+            else
+                Debug.LogError("[Settings] Gameplay Settings Button is NULL! Assign it in the Inspector.");
+
+            if (languageSettingsButton != null)
+                languageSettingsButton.onClick.AddListener(ShowLanguageSettings);
+            else
+                Debug.LogError("[Settings] Language Settings Button is NULL! Assign it in the Inspector.");
+
+            if (accessibilitySettingsButton != null)
+                accessibilitySettingsButton.onClick.AddListener(ShowAccessibilitySettings);
+            else
+                Debug.LogError("[Settings] Accessibility Settings Button is NULL! Assign it in the Inspector.");
         }
 
         /// <summary>
@@ -61,10 +84,19 @@ namespace PLAYERTWO.ARPGProject
         }
 
         /// <summary>
+        /// Hides the main settings menu.
+        /// </summary>
+        private void HideMainSettings()
+        {
+            mainSettings.SetActive(false);
+        }
+
+        /// <summary>
         /// Otwiera ustawienia dźwięku.
         /// </summary>
         public void ShowSoundSettings()
         {
+            HideMainSettings();
             soundSettingsWindow.Show();
         }
 
@@ -73,6 +105,7 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         public void ShowGraphicsSettings()
         {
+            HideMainSettings();
             graphicsSettingsWindow.Show();
         }
 
@@ -81,6 +114,7 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         public void ShowUISettings()
         {
+            HideMainSettings();
             uiSettingsWindow.Show();
         }
 
@@ -89,6 +123,7 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         public void ShowResearchSettings()
         {
+            HideMainSettings();
             researchSettingsWindow.Show();
         }
 
@@ -97,7 +132,35 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         public void ShowKeybindingsSettings()
         {
+            HideMainSettings();
             keybindingsSettingsWindow.Show();
+        }
+
+        /// <summary>
+        /// Opens the gameplay settings window.
+        /// </summary>
+        public void ShowGameplaySettings()
+        {
+            HideMainSettings();
+            gameplaySettingsWindow.Show();
+        }
+
+        /// <summary>
+        /// Opens the language settings window.
+        /// </summary>
+        public void ShowLanguageSettings()
+        {
+            HideMainSettings();
+            languageSettingsWindow.Show();
+        }
+
+        /// <summary>
+        /// Opens the accessibility settings window.
+        /// </summary>
+        public void ShowAccessibilitySettings()
+        {
+            HideMainSettings();
+            accessibilitySettingsWindow.Show();
         }
     }
 }

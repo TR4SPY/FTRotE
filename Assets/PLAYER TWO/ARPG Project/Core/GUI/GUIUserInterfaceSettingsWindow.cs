@@ -15,7 +15,9 @@ public class GUIUserInterfaceSettingsWindow : GUIWindow
 
         public Toggle difficultyToggle;
         public Toggle damageTextToggle;
+        public Toggle overlayChatToggle;
         public TMP_Dropdown difficultyDropdown;
+        public Slider enemyHpBarSlider;
 
         protected GameSettings m_settings => GameSettings.instance;
 
@@ -53,6 +55,16 @@ public class GUIUserInterfaceSettingsWindow : GUIWindow
                 Debug.LogError("[Settings] Damage Text Toggle is NULL! Assign it in the Inspector.");
             }
 
+            if (overlayChatToggle != null)
+            {
+                overlayChatToggle.isOn = m_settings.GetOverlayChatAlwaysOnTop();
+                overlayChatToggle.onValueChanged.AddListener(OnOverlayChatToggleChanged);
+            }
+            else
+            {
+                Debug.LogError("[Settings] Overlay Chat Toggle is NULL! Assign it in the Inspector.");
+            }
+
             if (difficultyDropdown != null)
             {
                 difficultyDropdown.ClearOptions();
@@ -70,6 +82,19 @@ public class GUIUserInterfaceSettingsWindow : GUIWindow
             {
                 Debug.LogError("[Settings] Difficulty Dropdown is NULL! Assign it in the Inspector.");
             }
+            
+            if (enemyHpBarSlider != null)
+            {
+                enemyHpBarSlider.wholeNumbers = true;
+                enemyHpBarSlider.minValue = 0;
+                enemyHpBarSlider.maxValue = 2;
+                enemyHpBarSlider.value = m_settings.GetEnemyHealthBarOption();
+                enemyHpBarSlider.onValueChanged.AddListener(OnEnemyHpBarSliderChanged);
+            }
+            else
+            {
+                Debug.LogError("[Settings] Enemy HP Bar Slider is NULL! Assign it in the Inspector.");
+            }
         }
 
         protected virtual void OnDisable() => m_settings?.Save();
@@ -83,13 +108,22 @@ public class GUIUserInterfaceSettingsWindow : GUIWindow
         private void OnDifficultyToggleChanged(bool isOn)
         {
             m_settings.SetDisplayDifficulty(isOn);
-            m_settings.ToggleDifficultyText();
             UpdateDropdownVisibility();
+        }
+
+        private void OnEnemyHpBarSliderChanged(float option)
+        {
+            m_settings.SetEnemyHealthBarOption(option);
         }
         
         private void OnDamageTextToggleChanged(bool isOn)
         {
             m_settings.SetDisplayDamageText(isOn);
+        }
+        
+        private void OnOverlayChatToggleChanged(bool isOn)
+        {
+            m_settings.SetOverlayChatAlwaysOnTop(isOn);
         }
 
         private void OnDifficultyDropdownChanged(int option)

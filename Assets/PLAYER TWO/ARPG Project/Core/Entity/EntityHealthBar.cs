@@ -17,6 +17,7 @@ namespace PLAYERTWO.ARPGProject
             InitializeEntity();
             InitializeHealthBar();
             InitializeCallbacks();
+            ApplySettings();
         }
 
         protected virtual void InitializeEntity()
@@ -46,9 +47,11 @@ namespace PLAYERTWO.ARPGProject
             m_entity.onDie.AddListener(
                 () => GUIHealthBarManager.instance.RemoveHealthBar(m_healthBar)
             );
-            m_entity.stats.onHealthChanged.AddListener(
-                () => m_healthBar.SetHealth(m_entity.stats.GetHealthPercent())
-            );
+            m_entity.stats.onHealthChanged.AddListener(() =>
+            {
+                m_healthBar.SetHealth(m_entity.stats.GetHealthPercent());
+                ApplySettings();
+            });
         }
 
         protected virtual void OnDisable()
@@ -60,7 +63,31 @@ namespace PLAYERTWO.ARPGProject
         protected virtual void OnEnable()
         {
             if (m_healthBar)
-                m_healthBar.gameObject.SetActive(true);
+                ApplySettings();
+        }
+
+        public void ApplySettings()
+        {
+            if (m_healthBar == null)
+                return;
+
+            if (!gameObject.CompareTag(GameTags.Enemy))
+                return;
+
+            var option = GameSettings.instance?.GetEnemyHealthBarOption() ?? 2;
+
+            switch (option)
+            {
+                case 0:
+                    m_healthBar.gameObject.SetActive(false);
+                    break;
+                case 1:
+                    m_healthBar.gameObject.SetActive(m_entity.stats.GetHealthPercent() < 0.99f);
+                    break;
+                default:
+                    m_healthBar.gameObject.SetActive(true);
+                    break;
+            }
         }
     }
 }

@@ -61,15 +61,67 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 86721430308175872
-    m_Localized: Accept
+    m_Localized: ACCEPT
     m_Metadata:
       m_Items: []
   - m_Id: 86721492262240256
-    m_Localized: Cancel
+    m_Localized: DECLINE
     m_Metadata:
       m_Items: []
   - m_Id: 86723081911844864
     m_Localized: Type your message...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86746356016660480
+    m_Localized: Class
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86746631334969344
+    m_Localized: Level
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86746806711402496
+    m_Localized: Experience
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86747021606567936
+    m_Localized: Points
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86747174283427840
+    m_Localized: Energy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86747172756701184
+    m_Localized: Vitality
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86747171167059968
+    m_Localized: Dexterity
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86747168923107328
+    m_Localized: Strength
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86748914701484032
+    m_Localized: CANCEL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86748917092237312
+    m_Localized: APPLY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86749877940174848
+    m_Localized: This Quest is Complete
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86750110719852544
+    m_Localized: CANCEL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86750458477985792
+    m_Localized: COMPLETE
     m_Metadata:
       m_Items: []
   references:

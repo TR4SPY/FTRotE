@@ -112,6 +112,13 @@ namespace PLAYERTWO.ARPGProject
 
         protected System.Action updateHandler;
 
+        /// <summary>
+        /// Holds the base text for class restrictions so seal tooltip updates
+        /// can rebuild the final message without duplicating lines on repeated
+        /// hovers.
+        /// </summary>
+        protected string m_baseClassRestrictionText = "";
+
         protected virtual void InitializeEntity() => m_entity = Level.instance.player;
 
         protected virtual void InitializeCanvasGroup()
@@ -178,7 +185,10 @@ namespace PLAYERTWO.ARPGProject
             else
             {
                 if (classRestrictionsText != null)
+                {
                     classRestrictionsText.text = "";
+                    m_baseClassRestrictionText = "";
+                }
             }
 
             UpdateSealTooltip();
@@ -455,6 +465,9 @@ namespace PLAYERTWO.ARPGProject
         {
             if (classRestrictionsText == null)
                 return;
+            // reset previous text to avoid residual data
+            classRestrictionsText.text = "";
+            m_baseClassRestrictionText = "";
 
             var allPossible = Enum.GetValues(typeof(CharacterClassRestrictions))
                 .Cast<CharacterClassRestrictions>()
@@ -519,9 +532,12 @@ namespace PLAYERTWO.ARPGProject
             }
             else
             {
-                classRestrictionsText.text = result;
+                classRestrictionsText.text = result.TrimEnd('\n');
             }
+
+            m_baseClassRestrictionText = classRestrictionsText.text;
         }
+
 
         protected virtual void UpdateSealTooltip()
         {
@@ -548,10 +564,11 @@ namespace PLAYERTWO.ARPGProject
             if (lines.Count > 0)
             {
                 classRestrictionsText.gameObject.SetActive(true);
-                string existing = classRestrictionsText.text;
-                if (!string.IsNullOrEmpty(existing))
-                    existing += "\n";
-                classRestrictionsText.text = existing + string.Join("\n", lines);
+                string text = m_baseClassRestrictionText;
+                if (!string.IsNullOrEmpty(text))
+                    text += "\n";
+                text += string.Join("\n", lines);
+                classRestrictionsText.text = text;
             }
         }
 

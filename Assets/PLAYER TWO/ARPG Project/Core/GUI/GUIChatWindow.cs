@@ -25,6 +25,8 @@ namespace PLAYERTWO.ARPGProject
         {
             base.Start();
 
+            overlayController?.RegisterChatWindow(this);
+
             // Debug.Log("[GUIChatWindow] Start()");
 
             if (inputField)
@@ -59,6 +61,12 @@ namespace PLAYERTWO.ARPGProject
         {
             // Debug.Log("[Chat] RemoveFocus()");
             inputField?.DeactivateInputField();
+        }
+        
+        protected override void OnClose()
+        {
+            base.OnClose();
+            overlayController?.RestoreChatPosition();
         }
 
         public void ClearOverlayLog()

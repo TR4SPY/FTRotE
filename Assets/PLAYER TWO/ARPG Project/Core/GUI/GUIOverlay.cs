@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace PLAYERTWO.ARPGProject
 {
-    public class GUIOverlay : MonoBehaviour
+    public class GUIOverlay : MonoBehaviour, IPointerDownHandler
     {
         [Tooltip("Message life time (within overlay) in seconds.")]
         public float messageLifetime = 5f;
@@ -19,6 +20,35 @@ namespace PLAYERTWO.ARPGProject
 
         private readonly Dictionary<GameObject, OverlayEntry> messages = new();
         private readonly HashSet<GameObject> hoveredMessages = new();
+        private RectTransform rect;
+        private GameSettings m_settings => GameSettings.instance;
+        private bool m_prevAlwaysOnTop;
+        private int m_prevSiblingIndex;
+        private GUIChatWindow m_chatWindow;
+
+        void Awake()
+        {
+            rect = GetComponent<RectTransform>();
+        }
+
+        void Start()
+        {
+            m_prevAlwaysOnTop = m_settings != null && m_settings.GetOverlayChatAlwaysOnTop();
+            if (!m_prevAlwaysOnTop)
+            {
+                rect.SetAsFirstSibling();
+            }
+        }
+
+        void OnEnable()
+        {
+            GUIWindow.onWindowFocused += HandleWindowFocused;
+        }
+
+        void OnDisable()
+        {
+            GUIWindow.onWindowFocused -= HandleWindowFocused;
+        }
 
         void Update()
         {
@@ -38,6 +68,61 @@ namespace PLAYERTWO.ARPGProject
                     entry.fadeCoroutine = StartCoroutine(FadeAndDestroy(entry));
                 }
             }
+        }
+
+        void LateUpdate()
+        {
+            bool alwaysOnTop = m_settings != null && m_settings.GetOverlayChatAlwaysOnTop();
+
+            if (alwaysOnTop)
+            {
+                rect.SetAsLastSibling();
+            }
+            else if (m_prevAlwaysOnTop != alwaysOnTop)
+            {
+                rect.SetAsFirstSibling();
+            }
+
+            m_prevAlwaysOnTop = alwaysOnTop;
+        }
+
+        private void HandleWindowFocused(GUIWindow window)
+        {
+            bool alwaysOnTop = m_settings != null && m_settings.GetOverlayChatAlwaysOnTop();
+            if (alwaysOnTop)
+            {
+                rect.SetAsLastSibling();
+                return;
+            }
+
+            if (window == m_chatWindow)
+            {
+                m_prevSiblingIndex = rect.GetSiblingIndex();
+                rect.SetAsLastSibling();
+            }
+            else
+            {
+                rect.SetAsFirstSibling();
+            }
+        }
+
+        public void RegisterChatWindow(GUIChatWindow chatWindow)
+        {
+            m_chatWindow = chatWindow;
+            m_prevSiblingIndex = rect.GetSiblingIndex();
+        }
+
+        public void RestoreChatPosition()
+        {
+            if (m_settings != null && m_settings.GetOverlayChatAlwaysOnTop())
+                return;
+
+            rect.SetSiblingIndex(m_prevSiblingIndex);
+        }
+
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            rect.SetAsLastSibling();
         }
 
         public void FadeMessage(GameObject obj)

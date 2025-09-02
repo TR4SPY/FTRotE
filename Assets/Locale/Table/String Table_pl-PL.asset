@@ -59,15 +59,67 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 86721430308175872
-    m_Localized: Akceptuje
+    m_Localized: AKCEPTUJE
     m_Metadata:
       m_Items: []
   - m_Id: 86721492262240256
-    m_Localized: Rezygnuje
+    m_Localized: ODMAWIAM
     m_Metadata:
       m_Items: []
   - m_Id: 86723081911844864
     m_Localized: "Wpisz wiadomo\u015B\u0107..."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86746356016660480
+    m_Localized: Klasa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86746631334969344
+    m_Localized: Poziom
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86746806711402496
+    m_Localized: "Do\u015Bwiadczenie"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86747021606567936
+    m_Localized: Punkty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86747174283427840
+    m_Localized: Energia
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86747168923107328
+    m_Localized: "Si\u0142a"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86747171167059968
+    m_Localized: "Zr\u0119czno\u015B\u0107"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86747172756701184
+    m_Localized: "Witalno\u015B\u0107"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86748914701484032
+    m_Localized: ODRZUCAM
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86748917092237312
+    m_Localized: ZATWIERDZAM
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86749877940174848
+    m_Localized: "To zadanie zosta\u0142o Uko\u0144czone"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86750110719852544
+    m_Localized: "REZYGNUJ\u0118"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86750458477985792
+    m_Localized: "UKO\u0143CZ"
     m_Metadata:
       m_Items: []
   references:

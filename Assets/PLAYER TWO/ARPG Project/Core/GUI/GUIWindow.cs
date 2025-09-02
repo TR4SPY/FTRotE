@@ -27,6 +27,8 @@ namespace PLAYERTWO.ARPGProject
         protected RectTransform m_rect;
         protected Entity m_player;
 
+        public static event System.Action<GUIWindow> onWindowFocused;
+
         protected const float k_toggleDelay = 0.1f;
 
         protected RectTransform rect
@@ -74,6 +76,7 @@ namespace PLAYERTWO.ARPGProject
             m_audio.PlayUiEffect(openClip);
             gameObject.SetActive(true);
             rect.SetAsLastSibling();
+            onWindowFocused?.Invoke(this);
             OnOpen();
             onOpen.Invoke();
         }
@@ -98,8 +101,12 @@ namespace PLAYERTWO.ARPGProject
         protected virtual void OnOpen() { }
         protected virtual void OnClose() { }
 
-        public void OnPointerDown(PointerEventData eventData) => rect.SetAsLastSibling();
-
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            rect.SetAsLastSibling();
+            onWindowFocused?.Invoke(this);
+        }
+        
         protected virtual void Start()
         {
             m_player = Level.instance.player;

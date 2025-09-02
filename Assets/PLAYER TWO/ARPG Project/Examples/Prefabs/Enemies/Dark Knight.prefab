@@ -180,10 +180,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   level: 55
-  strength: 87
-  dexterity: 49
-  vitality: 47
-  energy: 45
+  strength: 97
+  dexterity: 59
+  vitality: 57
+  energy: 55
   alwaysUseBaseComboStats: 0
   baseMaxCombos: 3
   baseTimeToStopCombo: 1
@@ -227,6 +227,9 @@ MonoBehaviour:
   onDamageDecreaseChance: 0.1
   onDamageDecreaseAmount: 1
   skillDurabilityMultiplier: 0.5
+  maxDurabilityLossPerHit: 5
+  maxDurabilityChecksPerFrame: 1
+  durabilityThreatMultiplier: 0.1
 --- !u!114 &4372661219983096063
 MonoBehaviour:
   m_ObjectHideFlags: 0

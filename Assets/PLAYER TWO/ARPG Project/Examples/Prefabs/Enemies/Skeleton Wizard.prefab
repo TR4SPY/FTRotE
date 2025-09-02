@@ -357,7 +357,7 @@ MonoBehaviour:
   strength: 17
   dexterity: 20
   vitality: 20
-  energy: 25
+  energy: 35
   alwaysUseBaseComboStats: 0
   baseMaxCombos: 1
   baseTimeToStopCombo: 1
@@ -486,6 +486,9 @@ MonoBehaviour:
   onDamageDecreaseChance: 0.1
   onDamageDecreaseAmount: 1
   skillDurabilityMultiplier: 0.5
+  maxDurabilityLossPerHit: 5
+  maxDurabilityChecksPerFrame: 1
+  durabilityThreatMultiplier: 0.1
 --- !u!114 &7112130279391419211
 MonoBehaviour:
   m_ObjectHideFlags: 0
