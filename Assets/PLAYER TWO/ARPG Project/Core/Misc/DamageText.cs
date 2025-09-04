@@ -33,6 +33,7 @@ namespace PLAYERTWO.ARPGProject
 
         public static List<DamageText> activeTexts = new List<DamageText>();
 
+
         private void Awake()
         {
             if (!GameSettings.instance.GetDisplayDamageText())
@@ -42,6 +43,8 @@ namespace PLAYERTWO.ARPGProject
             }
 
             activeTexts.Add(this);
+            if (damageText)
+                damageText.fontSize = GameSettings.instance.GetDamageTextSize();
         }
 
         private void OnDestroy()
@@ -67,8 +70,21 @@ namespace PLAYERTWO.ARPGProject
         /// <param name="critical">If true, the Damage Text uses the critical damage settings.</param>
         public virtual void SetText(int damage, bool critical)
         {
-            damageText.text = damage > 0 ? damage.ToString() : missText;
+            damageText.text = damage > 0 ? FormatDamage(damage) : missText;
             damageText.color = GetColor(damage, critical);
+        }
+
+        protected string FormatDamage(int damage)
+        {
+            if (GameSettings.instance.GetDamageNumberMode() == (int)GameSettings.DamageNumberMode.Abbreviated)
+            {
+                if (damage >= 1000000)
+                    return (damage / 1000000f).ToString("0.#") + "M";
+                if (damage >= 1000)
+                    return (damage / 1000f).ToString("0.#") + "K";
+            }
+
+            return damage.ToString();
         }
 
         protected virtual Color GetColor(int damage, bool critical)
@@ -87,6 +103,15 @@ namespace PLAYERTWO.ARPGProject
 
             m_lifeTime += Time.deltaTime;
             transform.position += Vector3.up * Time.deltaTime;
+        }
+        
+        public static void UpdateAllFontSizes(int size)
+        {
+            foreach (var text in activeTexts)
+            {
+                if (text != null && text.damageText)
+                    text.damageText.fontSize = size;
+            }
         }
     }
 }

@@ -80,6 +80,9 @@ namespace PLAYERTWO.ARPGProject
             SetIcon(buff?.buff?.icon);
             Visible(buff != null);
 
+            if (keyText)
+                keyText.fontSize = GameSettings.instance.GetBuffTextSize();
+
             StopPulse();
 
             if (buff != null && frame)

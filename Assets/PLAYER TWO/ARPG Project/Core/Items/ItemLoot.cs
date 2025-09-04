@@ -79,6 +79,10 @@ namespace PLAYERTWO.ARPGProject
 
                     var jewelDrop = Instantiate(m_itemPrefab, position, Quaternion.identity);
                     jewelDrop.SetItem(jewelItem);
+
+                    var jewelCue = GameSettings.instance?.jewelDropAudioCue;
+                    if (jewelCue)
+                        GameAudio.instance?.PlayEffect(jewelCue);
                     return;
                 }
             }
@@ -114,6 +118,13 @@ namespace PLAYERTWO.ARPGProject
 
             var collectible = Instantiate(m_itemPrefab, position, Quaternion.identity);
             collectible.SetItem(item);
+
+            if (item.data != null && item.data.rarity >= Item.Rarity.Rare)
+            {
+                var rareCue = GameSettings.instance?.rareDropAudioCue;
+                if (rareCue)
+                    GameAudio.instance?.PlayEffect(rareCue);
+            }
         }
 
         protected virtual void InstantiateMoney(Vector3 position)

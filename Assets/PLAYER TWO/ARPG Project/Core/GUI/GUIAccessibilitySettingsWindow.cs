@@ -13,6 +13,8 @@ namespace PLAYERTWO.ARPGProject
         public Toggle colorblindFilterToggle;
         public Toggle largeTextToggle;
         public Toggle subtitlesToggle;
+        public Toggle highContrastToggle;
+        public Slider flashReductionSlider;
 
         protected GameSettings m_settings => GameSettings.instance;
 
@@ -54,6 +56,29 @@ namespace PLAYERTWO.ARPGProject
             {
                 Debug.LogError("[Settings] Subtitles Toggle is NULL! Assign it in the Inspector.");
             }
+
+            if (highContrastToggle != null)
+            {
+                highContrastToggle.isOn = m_settings.GetHighContrastUI();
+                highContrastToggle.onValueChanged.AddListener(OnHighContrastToggleChanged);
+            }
+            else
+            {
+                Debug.LogError("[Settings] High Contrast Toggle is NULL! Assign it in the Inspector.");
+            }
+
+            if (flashReductionSlider != null)
+            {
+                flashReductionSlider.minValue = 0;
+                flashReductionSlider.maxValue = 2;
+                flashReductionSlider.wholeNumbers = true;
+                flashReductionSlider.value = m_settings.GetFlashReductionLevel();
+                flashReductionSlider.onValueChanged.AddListener(OnFlashReductionChanged);
+            }
+            else
+            {
+                Debug.LogError("[Settings] Flash Reduction Slider is NULL! Assign it in the Inspector.");
+            }
         }
 
         protected virtual void OnDisable() => m_settings?.Save();
@@ -77,6 +102,16 @@ namespace PLAYERTWO.ARPGProject
         private void OnSubtitlesToggleChanged(bool isOn)
         {
             m_settings.SetSubtitlesEnabled(isOn);
+        }
+        
+        private void OnHighContrastToggleChanged(bool isOn)
+        {
+            m_settings.SetHighContrastUI(isOn);
+        }
+
+        private void OnFlashReductionChanged(float value)
+        {
+            m_settings.SetFlashReductionLevel((int)value);
         }
 
         public void BackButton()

@@ -233,7 +233,13 @@ namespace PLAYERTWO.ARPGProject
             var cw = GUIWindowsManager.instance?.chatWindow;
             string time = StringUtils.StringWithColor($"[{DateTime.Now:HH:mm}]", GameColors.SlateGray);
             string prefix = StringUtils.StringWithColorAndStyle("You:", GameColors.LightBlue, bold: true);
-            string formatted = $"{time} {prefix} {text}";
+            string displayText = text;
+            if (GameSettings.instance != null && GameSettings.instance.GetBlockProfanity())
+            {
+                displayText = FilterProfanity(displayText);
+            }
+
+            string formatted = $"{time} {prefix} {displayText}";
 
             // cw?.AddMessageToLog(formatted);
             cw?.AddOverlayMessage(formatted);
@@ -290,6 +296,18 @@ namespace PLAYERTWO.ARPGProject
             messageHistory.Add(formatted);
             if (cw != null && messageHistory.Count > cw.overlayMaxMessages)
                 messageHistory.RemoveAt(0);
+        }
+
+        private string FilterProfanity(string input)
+        {
+            var banned = new[] { "badword" };
+            string result = input;
+            foreach (var word in banned)
+            {
+                var pattern = Regex.Escape(word);
+                result = Regex.Replace(result, pattern, new string('*', word.Length), RegexOptions.IgnoreCase);
+            }
+            return result;
         }
 
         public static List<string> BuildStatsLines(EntityStatsManager stats)
@@ -748,6 +766,40 @@ namespace PLAYERTWO.ARPGProject
                             cw.StartCoroutine(RemoveAfterDelay(msg, 5f));
                         }
 
+                        break;
+                    }
+                    
+                case "invite":
+                    {
+                        if (parts.Length >= 2)
+                        {
+                            bool success = PartyManager.instance?.Invite(parts[1], false) ?? false;
+                            string message = success ?
+                                $"Party invite sent to {parts[1]}." :
+                                $"Party invite to {parts[1]} blocked by settings.";
+                            AddSystemMessage(StringUtils.StringWithColor(message, GameColors.Gray));
+                        }
+                        else
+                        {
+                            AddSystemMessage(StringUtils.StringWithColor("Usage: /invite [player]", GameColors.Gray));
+                        }
+                        break;
+                    }
+
+                case "trade":
+                    {
+                        if (parts.Length >= 2)
+                        {
+                            TradeManager.instance?.RequestTrade(parts[1]);
+                            string message = $"Trade request sent to {parts[1]}.";
+                            if (GameSettings.instance != null && GameSettings.instance.GetTradeConfirmations())
+                                message += " Awaiting confirmation.";
+                            AddSystemMessage(StringUtils.StringWithColor(message, GameColors.Gray));
+                        }
+                        else
+                        {
+                            AddSystemMessage(StringUtils.StringWithColor("Usage: /trade [player]", GameColors.Gray));
+                        }
                         break;
                     }
 

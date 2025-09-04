@@ -96,16 +96,34 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void PlayDamageParticle(bool critical)
         {
+            float mult = GameSettings.instance ? GameSettings.instance.GetFlashReductionMultiplier() : 1f;
+
             if (critical)
             {
                 if (criticalDamageParticle)
+                {
+                    var main = criticalDamageParticle.main;
+                    if (main.startColor.mode == ParticleSystemGradientMode.Color)
+                    {
+                        Color c = main.startColor.color * mult;
+                        main.startColor = new ParticleSystem.MinMaxGradient(c);
+                    }
                     criticalDamageParticle.Play();
+                }
 
                 return;
             }
 
             if (damageParticle)
+            {
+                var main = damageParticle.main;
+                if (main.startColor.mode == ParticleSystemGradientMode.Color)
+                {
+                    Color c = main.startColor.color * mult;
+                    main.startColor = new ParticleSystem.MinMaxGradient(c);
+                }
                 damageParticle.Play();
+            }
         }
 
         protected virtual void PlayDamageAudio(bool critical)
@@ -142,7 +160,7 @@ namespace PLAYERTWO.ARPGProject
         protected virtual IEnumerator FlashColorRoutine(Material material)
         {
             var elapsedTime = 0f;
-            var flashColor = damageColor;
+            var flashColor = damageColor * (GameSettings.instance ? GameSettings.instance.GetFlashReductionMultiplier() : 1f);
             Color initialColor = Color.white;
 
             if (material.HasProperty("_Color"))

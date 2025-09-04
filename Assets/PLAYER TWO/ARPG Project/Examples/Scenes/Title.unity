@@ -5145,7 +5145,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 94128309}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0.956498, z: 0, w: 0.2917388}
+  m_LocalRotation: {x: 0, y: -0.94146216, z: 0, w: 0.33711872}
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -18456,6 +18456,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  FogUnderwater: 0
   FogStartDistance:
     serializedVersion: 2
     m_Curve:
@@ -24296,6 +24297,8 @@ MonoBehaviour:
     m_distanceMaskSquareRoundness: 0.25
     m_collisionMaskExpanded: 1
     m_collisionMasks: []
+    m_allPolyMasks: []
+    m_selectedPolyMaskObject: {fileID: 0}
     m_erosionMaskOutput: 0
     m_erosionSimScale: 9
     m_erosionHydroTimeDelta: 0.05
@@ -24320,6 +24323,9 @@ MonoBehaviour:
     m_erosionShowRiverBankUI: 0
     m_smoothVerticality: 0
     m_smoothBlurRadius: 1
+    m_curvatureBlurAmount: 0.001
+    m_curvatureWorldUnits: -1
+    m_curvatureIntensity: 0.7
     m_textureMaskSpawnRuleGUID: 
     m_concavity: 1
     m_concavityFeatureSize: 10
@@ -28635,6 +28641,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  m_todFogUnderwater: 0
   m_todFogStartDistance:
     serializedVersion: 2
     m_Curve:
@@ -29340,14 +29347,14 @@ MonoBehaviour:
   m_snowingHeight: 60
   m_snowFadeHeight: 50
   m_snowDuration: 0
-  m_snowWaitTime: 223.15454
+  m_snowWaitTime: 145.21335
   m_snowSampleStrength: 0
   m_savedSnowingHeight: 66.47059
   m_enableRain: 1
   m_rainIntensity: 0
   m_rainSampleStrength: 0
   m_rainDuration: 0
-  m_rainWaitTime: 180.15009
+  m_rainWaitTime: 194.71835
   m_thunderLightColor: {r: 0, g: 0.6313726, b: 1, a: 1}
   m_thunderLightIntensity: 2
   m_thunderAudioSources:
@@ -29718,7 +29725,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1363076298}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.8631537, z: 0, w: -0.5049413}
+  m_LocalRotation: {x: 0, y: 0.7821139, z: 0, w: -0.6231355}
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -30013,6 +30020,8 @@ MonoBehaviour:
     m_distanceMaskSquareRoundness: 0.25
     m_collisionMaskExpanded: 1
     m_collisionMasks: []
+    m_allPolyMasks: []
+    m_selectedPolyMaskObject: {fileID: 0}
     m_erosionMaskOutput: 0
     m_erosionSimScale: 9
     m_erosionHydroTimeDelta: 0.05
@@ -30037,6 +30046,9 @@ MonoBehaviour:
     m_erosionShowRiverBankUI: 0
     m_smoothVerticality: 0
     m_smoothBlurRadius: 1
+    m_curvatureBlurAmount: 0.001
+    m_curvatureWorldUnits: -1
+    m_curvatureIntensity: 0.7
     m_textureMaskSpawnRuleGUID: 
     m_concavity: 1
     m_concavityFeatureSize: 10
@@ -36180,7 +36192,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1960832360}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0.36532843, z: 0, w: -0.93087876}
+  m_LocalRotation: {x: 0, y: -0.4525322, z: 0, w: -0.8917481}
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -36357,7 +36369,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 996639750028847107, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.0008413214
+      value: -0.00005499028
       objectReference: {fileID: 0}
     - target: {fileID: 1650209087616716296, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
       propertyPath: m_AnchorMax.y
@@ -37271,6 +37283,7 @@ PrefabInstance:
     m_RemovedGameObjects:
     - {fileID: 4910925357627822733, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
     - {fileID: 5348125062625095581, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
+    - {fileID: 5215218145616161892, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 44c5a184aa9cfbf43aee4ad9e4205861, type: 3}
@@ -37463,6 +37476,8 @@ MonoBehaviour:
     m_distanceMaskSquareRoundness: 0.25
     m_collisionMaskExpanded: 1
     m_collisionMasks: []
+    m_allPolyMasks: []
+    m_selectedPolyMaskObject: {fileID: 0}
     m_erosionMaskOutput: 0
     m_erosionSimScale: 9
     m_erosionHydroTimeDelta: 0.05
@@ -37487,6 +37502,9 @@ MonoBehaviour:
     m_erosionShowRiverBankUI: 0
     m_smoothVerticality: 0
     m_smoothBlurRadius: 1
+    m_curvatureBlurAmount: 0.001
+    m_curvatureWorldUnits: -1
+    m_curvatureIntensity: 0.7
     m_textureMaskSpawnRuleGUID: 
     m_concavity: 1
     m_concavityFeatureSize: 10
@@ -37787,7 +37805,7 @@ MonoBehaviour:
   m_loadingBoundsRegular:
     m_Center:
       x: 0
-      y: 0
+      y: 61.636566162109375
       z: 0
     m_Extents:
       x: 0
@@ -37796,7 +37814,7 @@ MonoBehaviour:
   m_loadingBoundsImpostor:
     m_Center:
       x: 0
-      y: 0
+      y: 61.636566162109375
       z: 0
     m_Extents:
       x: 0
@@ -37819,6 +37837,15 @@ MonoBehaviour:
   m_minRefreshMS: 100
   m_maxRefreshMS: 5000
   m_followTransform: 1
+  m_frustumCamera: {fileID: 0}
+  m_drawLoadRanges: 1
+  m_drawUpdateRanges: 0
+  m_updateBoundsRegularColor: {r: 1, g: 0, b: 0, a: 1}
+  m_updateBoundsImpostorColor: {r: 1, g: 1, b: 1, a: 1}
+  m_regularLoadRangeActiveColor: {r: 1, g: 0, b: 1, a: 1}
+  m_impostorLoadRangeActiveColor: {r: 0, g: 1, b: 0, a: 1}
+  m_regularLoadRangeInActiveColor: {r: 0, g: 0, b: 0, a: 1}
+  m_impostorLoadRangeInActiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
 --- !u!4 &96937503735812380
 Transform:
   m_ObjectHideFlags: 0
@@ -38421,6 +38448,15 @@ MonoBehaviour:
   m_minRefreshMS: 100
   m_maxRefreshMS: 5000
   m_followTransform: 1
+  m_frustumCamera: {fileID: 0}
+  m_drawLoadRanges: 1
+  m_drawUpdateRanges: 0
+  m_updateBoundsRegularColor: {r: 1, g: 0, b: 0, a: 1}
+  m_updateBoundsImpostorColor: {r: 1, g: 1, b: 1, a: 1}
+  m_regularLoadRangeActiveColor: {r: 1, g: 0, b: 1, a: 1}
+  m_impostorLoadRangeActiveColor: {r: 0, g: 1, b: 0, a: 1}
+  m_regularLoadRangeInActiveColor: {r: 0, g: 0, b: 0, a: 1}
+  m_impostorLoadRangeInActiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
 --- !u!114 &616528304726439678
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -38483,6 +38519,15 @@ MonoBehaviour:
   m_minRefreshMS: 100
   m_maxRefreshMS: 5000
   m_followTransform: 1
+  m_frustumCamera: {fileID: 0}
+  m_drawLoadRanges: 1
+  m_drawUpdateRanges: 0
+  m_updateBoundsRegularColor: {r: 1, g: 0, b: 0, a: 1}
+  m_updateBoundsImpostorColor: {r: 1, g: 1, b: 1, a: 1}
+  m_regularLoadRangeActiveColor: {r: 1, g: 0, b: 1, a: 1}
+  m_impostorLoadRangeActiveColor: {r: 0, g: 1, b: 0, a: 1}
+  m_regularLoadRangeInActiveColor: {r: 0, g: 0, b: 0, a: 1}
+  m_impostorLoadRangeInActiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
 --- !u!1001 &656768416025203326
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -40565,6 +40610,7 @@ MonoBehaviour:
     m_maskMapRemapMin: {x: 0, y: 0, z: 0, w: 0}
     m_specularColor: {r: 0, g: 0, b: 0, a: 0}
     m_channelRemapFoldedOut: 0
+    m_currentLayer: {fileID: 0}
   m_treeResourcePrototypeBeingDrawn:
     m_name: 
     m_desktopPrefab: {fileID: 0}
@@ -40943,6 +40989,8 @@ MonoBehaviour:
       m_distanceMaskSquareRoundness: 0.25
       m_collisionMaskExpanded: 1
       m_collisionMasks: []
+      m_allPolyMasks: []
+      m_selectedPolyMaskObject: {fileID: 0}
       m_erosionMaskOutput: 0
       m_erosionSimScale: 9
       m_erosionHydroTimeDelta: 0.05
@@ -40967,6 +41015,9 @@ MonoBehaviour:
       m_erosionShowRiverBankUI: 0
       m_smoothVerticality: 0
       m_smoothBlurRadius: 1
+      m_curvatureBlurAmount: 0.001
+      m_curvatureWorldUnits: -1
+      m_curvatureIntensity: 0.7
       m_textureMaskSpawnRuleGUID: 
       m_concavity: 1
       m_concavityFeatureSize: 10
@@ -41187,6 +41238,7 @@ MonoBehaviour:
     m_maskMapRemapMin: {x: 0, y: 0, z: 0, w: 0}
     m_specularColor: {r: 0, g: 0, b: 0, a: 0}
     m_channelRemapFoldedOut: 0
+    m_currentLayer: {fileID: 0}
   m_treeResourcePrototypeBeingDrawn:
     m_name: 
     m_desktopPrefab: {fileID: 0}
@@ -41565,6 +41617,8 @@ MonoBehaviour:
       m_distanceMaskSquareRoundness: 0.25
       m_collisionMaskExpanded: 1
       m_collisionMasks: []
+      m_allPolyMasks: []
+      m_selectedPolyMaskObject: {fileID: 0}
       m_erosionMaskOutput: 0
       m_erosionSimScale: 9
       m_erosionHydroTimeDelta: 0.05
@@ -41589,6 +41643,9 @@ MonoBehaviour:
       m_erosionShowRiverBankUI: 0
       m_smoothVerticality: 0
       m_smoothBlurRadius: 1
+      m_curvatureBlurAmount: 0.001
+      m_curvatureWorldUnits: -1
+      m_curvatureIntensity: 0.7
       m_textureMaskSpawnRuleGUID: 
       m_concavity: 1
       m_concavityFeatureSize: 10
@@ -41813,7 +41870,7 @@ MonoBehaviour:
   m_loadingBoundsRegular:
     m_Center:
       x: 0
-      y: 0
+      y: 61.636566162109375
       z: 0
     m_Extents:
       x: 0
@@ -41822,7 +41879,7 @@ MonoBehaviour:
   m_loadingBoundsImpostor:
     m_Center:
       x: 0
-      y: 0
+      y: 61.636566162109375
       z: 0
     m_Extents:
       x: 0
@@ -41845,6 +41902,15 @@ MonoBehaviour:
   m_minRefreshMS: 100
   m_maxRefreshMS: 5000
   m_followTransform: 1
+  m_frustumCamera: {fileID: 0}
+  m_drawLoadRanges: 1
+  m_drawUpdateRanges: 0
+  m_updateBoundsRegularColor: {r: 1, g: 0, b: 0, a: 1}
+  m_updateBoundsImpostorColor: {r: 1, g: 1, b: 1, a: 1}
+  m_regularLoadRangeActiveColor: {r: 1, g: 0, b: 1, a: 1}
+  m_impostorLoadRangeActiveColor: {r: 0, g: 1, b: 0, a: 1}
+  m_regularLoadRangeInActiveColor: {r: 0, g: 0, b: 0, a: 1}
+  m_impostorLoadRangeInActiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
 --- !u!1001 &2541847046559591689
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -41978,6 +42044,15 @@ MonoBehaviour:
   m_minRefreshMS: 100
   m_maxRefreshMS: 5000
   m_followTransform: 1
+  m_frustumCamera: {fileID: 0}
+  m_drawLoadRanges: 1
+  m_drawUpdateRanges: 0
+  m_updateBoundsRegularColor: {r: 1, g: 0, b: 0, a: 1}
+  m_updateBoundsImpostorColor: {r: 1, g: 1, b: 1, a: 1}
+  m_regularLoadRangeActiveColor: {r: 1, g: 0, b: 1, a: 1}
+  m_impostorLoadRangeActiveColor: {r: 0, g: 1, b: 0, a: 1}
+  m_regularLoadRangeInActiveColor: {r: 0, g: 0, b: 0, a: 1}
+  m_impostorLoadRangeInActiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
 --- !u!1001 &2647927509550293676
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -42927,7 +43002,7 @@ MonoBehaviour:
   m_loadingBoundsRegular:
     m_Center:
       x: 0
-      y: 0
+      y: 61.636566162109375
       z: 0
     m_Extents:
       x: 0
@@ -42936,7 +43011,7 @@ MonoBehaviour:
   m_loadingBoundsImpostor:
     m_Center:
       x: 0
-      y: 0
+      y: 61.636566162109375
       z: 0
     m_Extents:
       x: 0
@@ -42959,6 +43034,15 @@ MonoBehaviour:
   m_minRefreshMS: 100
   m_maxRefreshMS: 5000
   m_followTransform: 1
+  m_frustumCamera: {fileID: 0}
+  m_drawLoadRanges: 1
+  m_drawUpdateRanges: 0
+  m_updateBoundsRegularColor: {r: 1, g: 0, b: 0, a: 1}
+  m_updateBoundsImpostorColor: {r: 1, g: 1, b: 1, a: 1}
+  m_regularLoadRangeActiveColor: {r: 1, g: 0, b: 1, a: 1}
+  m_impostorLoadRangeActiveColor: {r: 0, g: 1, b: 0, a: 1}
+  m_regularLoadRangeInActiveColor: {r: 0, g: 0, b: 0, a: 1}
+  m_impostorLoadRangeInActiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
 --- !u!1001 &3274425571469532875
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -43191,7 +43275,7 @@ MonoBehaviour:
   m_loadingBoundsRegular:
     m_Center:
       x: 0
-      y: 0
+      y: 61.636566162109375
       z: 0
     m_Extents:
       x: 0
@@ -43200,7 +43284,7 @@ MonoBehaviour:
   m_loadingBoundsImpostor:
     m_Center:
       x: 0
-      y: 0
+      y: 61.636566162109375
       z: 0
     m_Extents:
       x: 0
@@ -43223,6 +43307,15 @@ MonoBehaviour:
   m_minRefreshMS: 100
   m_maxRefreshMS: 5000
   m_followTransform: 1
+  m_frustumCamera: {fileID: 0}
+  m_drawLoadRanges: 1
+  m_drawUpdateRanges: 0
+  m_updateBoundsRegularColor: {r: 1, g: 0, b: 0, a: 1}
+  m_updateBoundsImpostorColor: {r: 1, g: 1, b: 1, a: 1}
+  m_regularLoadRangeActiveColor: {r: 1, g: 0, b: 1, a: 1}
+  m_impostorLoadRangeActiveColor: {r: 0, g: 1, b: 0, a: 1}
+  m_regularLoadRangeInActiveColor: {r: 0, g: 0, b: 0, a: 1}
+  m_impostorLoadRangeInActiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
 --- !u!1001 &3489890087893112070
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -43457,6 +43550,7 @@ MonoBehaviour:
     m_maskMapRemapMin: {x: 0, y: 0, z: 0, w: 0}
     m_specularColor: {r: 0, g: 0, b: 0, a: 0}
     m_channelRemapFoldedOut: 0
+    m_currentLayer: {fileID: 0}
   m_treeResourcePrototypeBeingDrawn:
     m_name: 
     m_desktopPrefab: {fileID: 0}
@@ -43835,6 +43929,8 @@ MonoBehaviour:
       m_distanceMaskSquareRoundness: 0.25
       m_collisionMaskExpanded: 1
       m_collisionMasks: []
+      m_allPolyMasks: []
+      m_selectedPolyMaskObject: {fileID: 0}
       m_erosionMaskOutput: 0
       m_erosionSimScale: 9
       m_erosionHydroTimeDelta: 0.05
@@ -43859,6 +43955,9 @@ MonoBehaviour:
       m_erosionShowRiverBankUI: 0
       m_smoothVerticality: 0
       m_smoothBlurRadius: 1
+      m_curvatureBlurAmount: 0.001
+      m_curvatureWorldUnits: -1
+      m_curvatureIntensity: 0.7
       m_textureMaskSpawnRuleGUID: 
       m_concavity: 1
       m_concavityFeatureSize: 10
@@ -44174,6 +44273,7 @@ MonoBehaviour:
     m_maskMapRemapMin: {x: 0, y: 0, z: 0, w: 0}
     m_specularColor: {r: 0, g: 0, b: 0, a: 0}
     m_channelRemapFoldedOut: 0
+    m_currentLayer: {fileID: 0}
   m_treeResourcePrototypeBeingDrawn:
     m_name: 
     m_desktopPrefab: {fileID: 0}
@@ -44552,6 +44652,8 @@ MonoBehaviour:
       m_distanceMaskSquareRoundness: 0.25
       m_collisionMaskExpanded: 1
       m_collisionMasks: []
+      m_allPolyMasks: []
+      m_selectedPolyMaskObject: {fileID: 0}
       m_erosionMaskOutput: 0
       m_erosionSimScale: 9
       m_erosionHydroTimeDelta: 0.05
@@ -44576,6 +44678,9 @@ MonoBehaviour:
       m_erosionShowRiverBankUI: 0
       m_smoothVerticality: 0
       m_smoothBlurRadius: 1
+      m_curvatureBlurAmount: 0.001
+      m_curvatureWorldUnits: -1
+      m_curvatureIntensity: 0.7
       m_textureMaskSpawnRuleGUID: 
       m_concavity: 1
       m_concavityFeatureSize: 10
@@ -45519,6 +45624,8 @@ MonoBehaviour:
     m_distanceMaskSquareRoundness: 0.25
     m_collisionMaskExpanded: 1
     m_collisionMasks: []
+    m_allPolyMasks: []
+    m_selectedPolyMaskObject: {fileID: 0}
     m_erosionMaskOutput: 0
     m_erosionSimScale: 9
     m_erosionHydroTimeDelta: 0.05
@@ -45543,6 +45650,9 @@ MonoBehaviour:
     m_erosionShowRiverBankUI: 0
     m_smoothVerticality: 0
     m_smoothBlurRadius: 1
+    m_curvatureBlurAmount: 0.001
+    m_curvatureWorldUnits: -1
+    m_curvatureIntensity: 0.7
     m_textureMaskSpawnRuleGUID: 
     m_concavity: 1
     m_concavityFeatureSize: 10
@@ -46776,7 +46886,7 @@ MonoBehaviour:
   m_loadingBoundsRegular:
     m_Center:
       x: 0
-      y: 0
+      y: 61.636566162109375
       z: 0
     m_Extents:
       x: 0
@@ -46785,7 +46895,7 @@ MonoBehaviour:
   m_loadingBoundsImpostor:
     m_Center:
       x: 0
-      y: 0
+      y: 61.636566162109375
       z: 0
     m_Extents:
       x: 0
@@ -46808,6 +46918,15 @@ MonoBehaviour:
   m_minRefreshMS: 100
   m_maxRefreshMS: 5000
   m_followTransform: 1
+  m_frustumCamera: {fileID: 0}
+  m_drawLoadRanges: 1
+  m_drawUpdateRanges: 0
+  m_updateBoundsRegularColor: {r: 1, g: 0, b: 0, a: 1}
+  m_updateBoundsImpostorColor: {r: 1, g: 1, b: 1, a: 1}
+  m_regularLoadRangeActiveColor: {r: 1, g: 0, b: 1, a: 1}
+  m_impostorLoadRangeActiveColor: {r: 0, g: 1, b: 0, a: 1}
+  m_regularLoadRangeInActiveColor: {r: 0, g: 0, b: 0, a: 1}
+  m_impostorLoadRangeInActiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
 --- !u!1001 &5006862753238429488
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -47260,6 +47379,7 @@ MonoBehaviour:
     m_maskMapRemapMin: {x: 0, y: 0, z: 0, w: 0}
     m_specularColor: {r: 0, g: 0, b: 0, a: 0}
     m_channelRemapFoldedOut: 0
+    m_currentLayer: {fileID: 0}
   m_treeResourcePrototypeBeingDrawn:
     m_name: 
     m_desktopPrefab: {fileID: 0}
@@ -47638,6 +47758,8 @@ MonoBehaviour:
       m_distanceMaskSquareRoundness: 0.25
       m_collisionMaskExpanded: 1
       m_collisionMasks: []
+      m_allPolyMasks: []
+      m_selectedPolyMaskObject: {fileID: 0}
       m_erosionMaskOutput: 0
       m_erosionSimScale: 9
       m_erosionHydroTimeDelta: 0.05
@@ -47662,6 +47784,9 @@ MonoBehaviour:
       m_erosionShowRiverBankUI: 0
       m_smoothVerticality: 0
       m_smoothBlurRadius: 1
+      m_curvatureBlurAmount: 0.001
+      m_curvatureWorldUnits: -1
+      m_curvatureIntensity: 0.7
       m_textureMaskSpawnRuleGUID: 
       m_concavity: 1
       m_concavityFeatureSize: 10
@@ -47816,6 +47941,15 @@ MonoBehaviour:
   m_minRefreshMS: 100
   m_maxRefreshMS: 5000
   m_followTransform: 1
+  m_frustumCamera: {fileID: 0}
+  m_drawLoadRanges: 1
+  m_drawUpdateRanges: 0
+  m_updateBoundsRegularColor: {r: 1, g: 0, b: 0, a: 1}
+  m_updateBoundsImpostorColor: {r: 1, g: 1, b: 1, a: 1}
+  m_regularLoadRangeActiveColor: {r: 1, g: 0, b: 1, a: 1}
+  m_impostorLoadRangeActiveColor: {r: 0, g: 1, b: 0, a: 1}
+  m_regularLoadRangeInActiveColor: {r: 0, g: 0, b: 0, a: 1}
+  m_impostorLoadRangeInActiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
 --- !u!114 &5347041976882011693
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -48209,6 +48343,7 @@ MonoBehaviour:
     m_maskMapRemapMin: {x: 0, y: 0, z: 0, w: 0}
     m_specularColor: {r: 0, g: 0, b: 0, a: 0}
     m_channelRemapFoldedOut: 0
+    m_currentLayer: {fileID: 0}
   m_treeResourcePrototypeBeingDrawn:
     m_name: 
     m_desktopPrefab: {fileID: 0}
@@ -48587,6 +48722,8 @@ MonoBehaviour:
       m_distanceMaskSquareRoundness: 0.25
       m_collisionMaskExpanded: 1
       m_collisionMasks: []
+      m_allPolyMasks: []
+      m_selectedPolyMaskObject: {fileID: 0}
       m_erosionMaskOutput: 0
       m_erosionSimScale: 9
       m_erosionHydroTimeDelta: 0.05
@@ -48611,6 +48748,9 @@ MonoBehaviour:
       m_erosionShowRiverBankUI: 0
       m_smoothVerticality: 0
       m_smoothBlurRadius: 1
+      m_curvatureBlurAmount: 0.001
+      m_curvatureWorldUnits: -1
+      m_curvatureIntensity: 0.7
       m_textureMaskSpawnRuleGUID: 
       m_concavity: 1
       m_concavityFeatureSize: 10
@@ -49605,6 +49745,7 @@ MonoBehaviour:
     m_maskMapRemapMin: {x: 0, y: 0, z: 0, w: 0}
     m_specularColor: {r: 0, g: 0, b: 0, a: 0}
     m_channelRemapFoldedOut: 0
+    m_currentLayer: {fileID: 0}
   m_treeResourcePrototypeBeingDrawn:
     m_name: 
     m_desktopPrefab: {fileID: 0}
@@ -49983,6 +50124,8 @@ MonoBehaviour:
       m_distanceMaskSquareRoundness: 0.25
       m_collisionMaskExpanded: 1
       m_collisionMasks: []
+      m_allPolyMasks: []
+      m_selectedPolyMaskObject: {fileID: 0}
       m_erosionMaskOutput: 0
       m_erosionSimScale: 9
       m_erosionHydroTimeDelta: 0.05
@@ -50007,6 +50150,9 @@ MonoBehaviour:
       m_erosionShowRiverBankUI: 0
       m_smoothVerticality: 0
       m_smoothBlurRadius: 1
+      m_curvatureBlurAmount: 0.001
+      m_curvatureWorldUnits: -1
+      m_curvatureIntensity: 0.7
       m_textureMaskSpawnRuleGUID: 
       m_concavity: 1
       m_concavityFeatureSize: 10
@@ -51940,7 +52086,7 @@ MonoBehaviour:
   m_loadingBoundsRegular:
     m_Center:
       x: 0
-      y: 0
+      y: 61.636566162109375
       z: 0
     m_Extents:
       x: 0
@@ -51949,7 +52095,7 @@ MonoBehaviour:
   m_loadingBoundsImpostor:
     m_Center:
       x: 0
-      y: 0
+      y: 61.636566162109375
       z: 0
     m_Extents:
       x: 0
@@ -51972,6 +52118,15 @@ MonoBehaviour:
   m_minRefreshMS: 100
   m_maxRefreshMS: 5000
   m_followTransform: 1
+  m_frustumCamera: {fileID: 0}
+  m_drawLoadRanges: 1
+  m_drawUpdateRanges: 0
+  m_updateBoundsRegularColor: {r: 1, g: 0, b: 0, a: 1}
+  m_updateBoundsImpostorColor: {r: 1, g: 1, b: 1, a: 1}
+  m_regularLoadRangeActiveColor: {r: 1, g: 0, b: 1, a: 1}
+  m_impostorLoadRangeActiveColor: {r: 0, g: 1, b: 0, a: 1}
+  m_regularLoadRangeInActiveColor: {r: 0, g: 0, b: 0, a: 1}
+  m_impostorLoadRangeInActiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
 --- !u!1001 &7763653884801953967
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -53063,6 +53218,7 @@ MonoBehaviour:
     m_maskMapRemapMin: {x: 0, y: 0, z: 0, w: 0}
     m_specularColor: {r: 0, g: 0, b: 0, a: 0}
     m_channelRemapFoldedOut: 0
+    m_currentLayer: {fileID: 0}
   m_treeResourcePrototypeBeingDrawn:
     m_name: 
     m_desktopPrefab: {fileID: 0}
@@ -53441,6 +53597,8 @@ MonoBehaviour:
       m_distanceMaskSquareRoundness: 0.25
       m_collisionMaskExpanded: 1
       m_collisionMasks: []
+      m_allPolyMasks: []
+      m_selectedPolyMaskObject: {fileID: 0}
       m_erosionMaskOutput: 0
       m_erosionSimScale: 9
       m_erosionHydroTimeDelta: 0.05
@@ -53465,6 +53623,9 @@ MonoBehaviour:
       m_erosionShowRiverBankUI: 0
       m_smoothVerticality: 0
       m_smoothBlurRadius: 1
+      m_curvatureBlurAmount: 0.001
+      m_curvatureWorldUnits: -1
+      m_curvatureIntensity: 0.7
       m_textureMaskSpawnRuleGUID: 
       m_concavity: 1
       m_concavityFeatureSize: 10
@@ -54499,10 +54660,13 @@ MonoBehaviour:
       z: 250
   m_centerSceneViewLoadingOn: 1
   m_lastUsedGUID: aa91e9a717a772c77bf750a5ad13c619
+  m_manualLoadedRegularIndices: 
+  m_manualLoadedImpostorIndices: 
   m_sceneViewLoadDelay: 0
   m_allFloatingPointFixMembers: []
   m_allWorldSpaceParticleSystems: []
   m_loadingScreen: {fileID: 0}
+  m_assumeGridLayout: 1
   m_unloadUnusedAssetsRuntime: 1
   m_unloadUnusedAssetsEditor: 1
   m_autoTerrainStitching: 1
@@ -54532,6 +54696,7 @@ MonoBehaviour:
   m_showSceneViewEditButttons: 0
   m_confirmOnSceneViewDelete: 1
   m_copyPrototypesForNewTerrainTiles: 1
+  m_showSelectLoaderManagerButton: 1
   m_showLockSceneViewLoadingButton: 1
   m_terrainSceneStorage: {fileID: 11400000, guid: aa91e9a717a772c77bf750a5ad13c619, type: 2}
 --- !u!1001 &9129222301466800081

@@ -78,8 +78,10 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("Quest item name colors.")]
         public Color questItemColor = GameColors.Gold;
 
+        protected GameSettings m_settings => GameSettings.instance;
+
         [Tooltip("Is quest item name bold?")]
-        public bool isBold = true; // Opcja do ustawienia bold w inspektorze
+        public bool isBold = true;
 
         [Tooltip("Invalid text colors.")]
         public Color invalidColor = new(1, 0, 0, 1);
@@ -1015,16 +1017,25 @@ namespace PLAYERTWO.ARPGProject
             if (comparisonText == null || m_item == null)
                 return;
 
-            var pressed = Keyboard.current != null &&
+            int mode = m_settings ? m_settings.GetItemCompareMode() : 0;
+            bool pressed = Keyboard.current != null &&
                 (Keyboard.current.leftShiftKey.isPressed || Keyboard.current.rightShiftKey.isPressed);
 
-            if (pressed && !m_showComparison && gameObject.activeSelf && m_item.IsEquippable())
+            bool shouldShow = mode switch
+            {
+                (int)GameSettings.ItemCompareMode.HoldShift => pressed,
+                (int)GameSettings.ItemCompareMode.Always => true,
+                (int)GameSettings.ItemCompareMode.Never => false,
+                _ => pressed
+            };
+
+            if (shouldShow && !m_showComparison && gameObject.activeSelf && m_item.IsEquippable())
             {
                 comparisonText.text = BuildFullComparisonText();
                 comparisonText.gameObject.SetActive(true);
                 m_showComparison = true;
             }
-            else if (!pressed && m_showComparison)
+            else if (!shouldShow && m_showComparison)
             {
                 comparisonText.gameObject.SetActive(false);
                 comparisonText.text = string.Empty;

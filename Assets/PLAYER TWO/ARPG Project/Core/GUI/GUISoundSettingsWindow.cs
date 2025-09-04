@@ -18,6 +18,12 @@ public class GUISoundSettingsWindow : GUIWindow
         [Tooltip("References the ui effects volume slider.")]
         public Slider uiVolume;
 
+        [Tooltip("References the output device dropdown.")]
+        public TMP_Dropdown outputDevice;
+
+        [Tooltip("References the toggle controlling mute on focus loss.")]
+        public Toggle muteOnFocusLoss;
+
         [Header("Navigation Buttons")]
         public Button backButton;
 
@@ -30,6 +36,8 @@ public class GUISoundSettingsWindow : GUIWindow
             InitializeMusicVolume();
             InitializeEffectsVolume();
             InitializeUIEffectsVolume();
+            InitializeOutputDevice();
+            InitializeMuteOnFocusLoss();
 
             if (backButton != null)
             {
@@ -65,6 +73,24 @@ public class GUISoundSettingsWindow : GUIWindow
         {
             uiVolume.value = m_settings.GetUIEffectsVolume();
             uiVolume.onValueChanged.AddListener(m_settings.SetUIEffectsVolume);
+        }
+
+        protected virtual void InitializeOutputDevice()
+        {
+            if (outputDevice == null)
+                return;
+            outputDevice.ClearOptions();
+            outputDevice.AddOptions(m_settings.GetOutputDevices());
+            outputDevice.value = m_settings.GetOutputDevice();
+            outputDevice.onValueChanged.AddListener(m_settings.SetOutputDevice);
+        }
+
+        protected virtual void InitializeMuteOnFocusLoss()
+        {
+            if (muteOnFocusLoss == null)
+                return;
+            muteOnFocusLoss.isOn = m_settings.GetMuteOnFocusLoss();
+            muteOnFocusLoss.onValueChanged.AddListener(m_settings.SetMuteOnFocusLoss);
         }
 
         public void BackButton()

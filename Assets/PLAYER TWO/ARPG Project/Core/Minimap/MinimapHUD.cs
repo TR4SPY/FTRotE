@@ -121,7 +121,10 @@ namespace PLAYERTWO.ARPGProject
         {
             InitializeTarget();
             SetTexture(Minimap.instance.minimapTexture);
-            Rescale(initialZoom);
+            float scale = GameSettings.instance ? GameSettings.instance.GetMinimapSize() : initialZoom;
+            Rescale(scale);
+            if (GameSettings.instance)
+                rotateWithTarget = GameSettings.instance.GetMinimapRotation();
 
             m_iconRoutine = StartCoroutine(UpdateIconsRoutine());
 
