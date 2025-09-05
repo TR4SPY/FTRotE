@@ -404,10 +404,15 @@ namespace PLAYERTWO.ARPGProject
             }
         }
 
-        public void OpenQuestDialog()
+        public void OpenQuestDialog(int currentPage)
         {
             var current = CurrentQuest();
             if (!current) return;
+
+            if (GUIWindowsManager.instance.dialogWindow != null)
+            {
+                GUIWindowsManager.instance.dialogWindow.SetCurrentPage(currentPage);
+            }
 
             if (Game.instance.quests.ContainsQuest(current))
                 GUIWindowsManager.instance.quest.SetQuestFromLog(current);

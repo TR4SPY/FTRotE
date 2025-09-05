@@ -218,6 +218,11 @@ namespace AI_DDA.Assets.Scripts
             lastCombatEventTime = Time.time;
 
             enemiesDefeated++;
+            BestiaryManager.Instance?.RegisterKill(entity);
+
+            var faction = entity != null ? entity.GetComponent<FactionMember>()?.faction ?? Faction.None : Faction.None;
+            ReputationManager.Instance?.Adjust(faction, -5);
+
             // Debug.Log($"{actor} defeated an enemy! Total: {enemiesDefeated}");
             UpdatePlayerType();
             achievementManager?.CheckAchievements(this);
@@ -268,18 +273,20 @@ namespace AI_DDA.Assets.Scripts
             }
         }
 
-        public void LogNpcInteraction(Entity entity)
+        public void LogNpcInteraction(Entity entity, Faction faction = Faction.None)
         {
             string actor = GetActor(entity);
             npcInteractions++;
+            ReputationManager.Instance?.Adjust(faction, 1);
             // Debug.Log($"{actor} interacted with an NPC! Total: {npcInteractions}");
             UpdatePlayerType();
             achievementManager?.CheckAchievements(this);
         }
 
-        public void LogQuestCompleted()
+        public void LogQuestCompleted(Faction faction = Faction.None)
         {
             questsCompleted++;
+            ReputationManager.Instance?.Adjust(faction, 5);
             // Debug.Log($"Quest completed! Total: {questsCompleted}");
             UpdatePlayerType();
             achievementManager?.CheckAchievements(this);
@@ -327,6 +334,17 @@ namespace AI_DDA.Assets.Scripts
 
             unlockedAchievements = new List<string>(characterInstance.unlockedAchievements); 
             int achievementCount = unlockedAchievements.Count;
+
+            if (characterInstance.reputation != null && ReputationManager.Instance != null)
+            {
+                var dict = new Dictionary<Faction, int>();
+                foreach (var kvp in characterInstance.reputation)
+                {
+                    if (System.Enum.TryParse(kvp.Key, out Faction faction))
+                        dict[faction] = kvp.Value;
+                }
+                ReputationManager.Instance.Load(dict);
+            }
 
             /* 
                 Debug.Log($"Loaded Player Behavior Logs for {characterInstance.name}: " +
@@ -412,6 +430,15 @@ namespace AI_DDA.Assets.Scripts
                 writer.WriteLine($"Current Difficulty Multiplier: {difficultyMultiplier}");
                 writer.WriteLine($"Player Type based on questionnaire: {characterInstance.playerType}");
                 writer.WriteLine($"Current Dynamic Player Type: {currentDynamicPlayerType}");
+
+                var reps = ReputationManager.Instance?.GetAllReputations();
+                if (reps != null)
+                {
+                    foreach (var kvp in reps)
+                    {
+                        writer.WriteLine($"{kvp.Key} Reputation: {kvp.Value}");
+                    }
+                }
             }
             // Debug.Log($"Logs saved to: {filePath}");
         }

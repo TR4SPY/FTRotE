@@ -9,8 +9,8 @@ namespace PLAYERTWO.ARPGProject
     {
         public List<CharacterSerializer> characters = new List<CharacterSerializer>();
         public InventorySerializer[] stashes;
+        public BankAccountSerializer[] bankAccounts;
 
-        // Globalne mnożniki trudności
         public float dexterityMultiplier = 1.0f;
         public float strengthMultiplier = 1.0f;
         public float vitalityMultiplier = 1.0f;
@@ -18,7 +18,6 @@ namespace PLAYERTWO.ARPGProject
 
         public GameSerializer(Game game)
         {
-            // Pobierz aktualny stan DifficultyManager
             if (DifficultyManager.Instance != null)
             {
                 dexterityMultiplier = DifficultyManager.Instance.CurrentDexterityMultiplier;
@@ -31,6 +30,7 @@ namespace PLAYERTWO.ARPGProject
 
             InitializeCharacters(game.characters);
             InitializeStashes(game.stash);
+            InitializeBank(game.bank);
         }
 
         protected virtual void InitializeCharacters(List<CharacterInstance> characters)
@@ -48,6 +48,16 @@ namespace PLAYERTWO.ARPGProject
             for (int i = 0; i < stashes.Length; i++)
             {
                 stashes[i] = new InventorySerializer(stash.GetInventory(i));
+            }
+        }
+        
+        protected virtual void InitializeBank(GameBank bank)
+        {
+            bankAccounts = new BankAccountSerializer[bank.amount];
+
+            for (int i = 0; i < bankAccounts.Length; i++)
+            {
+                bankAccounts[i] = new BankAccountSerializer(bank.GetAccount(i));
             }
         }
 

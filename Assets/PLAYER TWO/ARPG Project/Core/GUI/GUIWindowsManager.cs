@@ -41,6 +41,12 @@ namespace PLAYERTWO.ARPGProject
         [Tooltip("A reference to the GUI Crafting Recipies.")]
         public GUIWindow craftingRecipiesWindow;
 
+        [Tooltip("A reference to the GUI Cartography.")]
+        public GUIWindow cartographWindow;
+
+        [Tooltip("A reference to the GUI Alchemy window.")]
+        public GUIWindow alchemyWindow;
+
         [Tooltip("A reference to all GUI Windows in the game.")]
         private List<GUIWindow> windows;
 
@@ -52,6 +58,9 @@ namespace PLAYERTWO.ARPGProject
 
         [Tooltip("A reference to the Stash Window.")]
         public GUIWindow stashWindow;
+
+        [Tooltip("A reference to the GUI Bank.")]
+        public GUIWindow bankWindow;
 
         [Tooltip("A reference to the GUI Merchant.")]
         public GUIWindow merchantWindow;
@@ -141,11 +150,29 @@ namespace PLAYERTWO.ARPGProject
             if (!merchantWindow) return null;
             return merchantWindow.GetComponent<GUIMerchant>();
         }
+        
+        public GUIBank GetBank()
+        {
+            if (!bankWindow) return null;
+            return bankWindow.GetComponent<GUIBank>();
+        }
 
         public GUICraftman GetCraftman()
         {
             if (!craftmanWindow) return null;
             return craftmanWindow.GetComponent<GUICraftman>();
+        }
+
+        public GUICartography GetCartography()
+        {
+            if (!cartographWindow) return null;
+            return cartographWindow.GetComponent<GUICartography>();
+        }
+
+        public GUIAlchemist GetAlchemy()
+        {
+            if (!alchemyWindow) return null;
+            return alchemyWindow.GetComponent<GUIAlchemist>();
         }
 
         public GUIGuildmaster GetGuildmaster() => guildmasterWindow;

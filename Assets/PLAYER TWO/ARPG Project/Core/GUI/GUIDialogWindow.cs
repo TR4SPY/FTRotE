@@ -82,7 +82,7 @@ namespace AI_DDA.Assets.Scripts
 
             string playerType = Game.instance.currentCharacter.currentDynamicPlayerType;
             var questGiver = currentNPC?.GetComponent<QuestGiver>();
-            List<Dialog.DialogOption> availableOptions = currentDialog.GetFilteredOptions(currentPageIndex, playerType, questGiver);
+            List<DialogOption> availableOptions = currentDialog.GetFilteredOptions(currentPageIndex, playerType, questGiver);
 
             for (int i = 0; i < optionButtons.Length; i++)
             {
@@ -107,8 +107,14 @@ namespace AI_DDA.Assets.Scripts
             }
         }
 
-        private void ExecuteOption(Dialog.DialogOption option)
+        private void ExecuteOption(DialogOption option)
         {
+            var character = Game.instance.currentCharacter;
+            if (option.nextPageIndex != -1 && character != null)
+            {
+                character.SetDialogPathChoice(currentPageIndex, option.nextPageIndex);
+            }
+
             switch (option.action)
             {
                 case Dialog.DialogAction.OpenQuests:
@@ -121,6 +127,10 @@ namespace AI_DDA.Assets.Scripts
 
                 case Dialog.DialogAction.OpenCrafting:
                     OpenCraftmanWindow();
+                    break;
+                    
+                case Dialog.DialogAction.OpenAlchemyWindow:
+                    OpenAlchemyWindow();
                     break;
 
                 case Dialog.DialogAction.OpenBlacksmith:
@@ -144,7 +154,7 @@ namespace AI_DDA.Assets.Scripts
                     break;
 
                 case Dialog.DialogAction.SetSpecialCondition:
-                    var character = Game.instance.currentCharacter;
+                   // var character = Game.instance.currentCharacter;
                     character.SetSpecialCondition(option.specialConditionToSet);
 
                     var entity = character.Entity;
@@ -188,8 +198,12 @@ namespace AI_DDA.Assets.Scripts
                     }
                     ContinueDialog(option.nextPageIndex);
                     break;
+
+                case Dialog.DialogAction.OpenBank:
+                    OpenBankWindow();
+                    break;
                 
-                    case Dialog.DialogAction.OpenSpecialization:
+                case Dialog.DialogAction.OpenSpecialization:
                     OpenSpecializationWindow();
                     break;
 
@@ -223,6 +237,11 @@ namespace AI_DDA.Assets.Scripts
             }
 
             currentDialog.SetPathChoice(currentPageIndex, targetPageIndex);
+            var character = Game.instance.currentCharacter;
+            if (character != null)
+            {
+                character.SetDialogPathChoice(currentPageIndex, targetPageIndex);
+            }
             currentPageIndex = targetPageIndex;
 
             while (!currentDialog.ShouldShowPage(npcID, currentPageIndex))
@@ -257,7 +276,7 @@ namespace AI_DDA.Assets.Scripts
                 return;
             }
 
-            questGiver.OpenQuestDialog();
+            questGiver.OpenQuestDialog(currentPageIndex);
         }
 
         private void OpenMerchantWindow()
@@ -282,6 +301,17 @@ namespace AI_DDA.Assets.Scripts
             craftman.OpenCraftingService();
         }
 
+        private void OpenAlchemyWindow()
+        {
+            if (!(currentNPC is Alchemist alchemist))
+            {
+                Debug.LogError("[AI-DDA] Błąd: currentNPC nie jest Alchemistem!");
+                return;
+            }
+
+            alchemist.OpenAlchemyService();
+        }
+
         private void OpenGuildmasterWindow()
         {
             if (!(currentNPC is Guildmaster guildmaster))
@@ -302,6 +332,18 @@ namespace AI_DDA.Assets.Scripts
             }
             
             blacksmith.OpenBlackSmithService(player);
+        }
+
+        private void OpenBankWindow()
+        {
+            var manager = GUIWindowsManager.instance;
+            if (manager == null || manager.bankWindow == null)
+            {
+                Debug.LogError("[AI-DDA] Błąd: bankWindow nie jest przypisane w GUIWindowsManager!");
+                return;
+            }
+
+            manager.bankWindow.Show();
         }
 
         public void OpenExclusiveWindow()
@@ -363,7 +405,7 @@ namespace AI_DDA.Assets.Scripts
             GUIWindowsManager.instance.exclusiveWindow.SetQuest(specQuest);
         }
 
-        private void SetPlayerTypeIcon(Dialog.DialogOption option, Image iconImage)
+        private void SetPlayerTypeIcon(DialogOption option, Image iconImage)
         {
             iconImage.gameObject.SetActive(false);
 
@@ -392,6 +434,11 @@ namespace AI_DDA.Assets.Scripts
         public void Refresh()
         {
             SetupDialog();
+        }
+        
+        public void SetCurrentPage(int page)
+        {
+            currentPageIndex = page;
         }
 
         public void Close()

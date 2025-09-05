@@ -1,12 +1,9 @@
 //  ZMODYFIKOWANO 31 GRUDNIA 2024
 
 using System;
-
 using System.Collections.Generic;
-
 using UnityEngine;
-
-
+using AI_DDA.Assets.Scripts;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -18,6 +15,14 @@ namespace PLAYERTWO.ARPGProject
     }
 
     [System.Serializable]
+    public struct ReputationEntry
+    {
+        public string faction;
+        public int value;
+    }
+
+
+    [System.Serializable]
     public class CharacterSerializer
     {
         public Dictionary<int, int> selectedDialogPaths = new Dictionary<int, int>();
@@ -25,12 +30,14 @@ namespace PLAYERTWO.ARPGProject
 
         public List<SpecializationEntry> selectedSpecializations = new List<SpecializationEntry>();
         public List<SpecializationEntry> specializationSkillPoints = new List<SpecializationEntry>();
+        public List<ReputationEntry> reputationEntries = new List<ReputationEntry>();
 
         public List<string> unlockedAchievements;
         public List<string> visitedZones = new List<string>();
 
         public List<int> activatedWaypoints = new List<int>();
         public List<int> unlockedSpecializationTiers = new List<int>();
+        public List<BestiaryEntry> bestiaryEntries = new List<BestiaryEntry>();
 
         public UnitySerializer.Vector3 position;
         public UnitySerializer.Vector3 rotation;
@@ -118,6 +125,8 @@ namespace PLAYERTWO.ARPGProject
             playerType = character.playerType;
             currentDynamicPlayerType = character.currentDynamicPlayerType;
             totalPlayTime = character.totalPlayTime;
+            
+            bestiaryEntries = character.bestiary != null ? new List<BestiaryEntry>(character.bestiary.Values) : new List<BestiaryEntry>();
 
             storylineCompleted = character.storylineCompleted;
             questionnaireCompleted = character.questionnaireCompleted;
@@ -125,6 +134,15 @@ namespace PLAYERTWO.ARPGProject
 
             guildName = character.guildName;
             guildCrestData = character.guildCrestData;
+
+            if (character.reputation != null)
+            {
+                foreach (var kvp in character.reputation)
+                {
+                    reputationEntries.Add(new ReputationEntry { faction = kvp.Key, value = kvp.Value });
+                }
+            }
+
             
             if (character.specializations != null)
             {
@@ -159,8 +177,10 @@ namespace PLAYERTWO.ARPGProject
                 viewedDialogPages[entry.Key] = new List<int>(entry.Value);
             }
 
-            selectedDialogPaths = character.viewedDialogPages.Count == 0 ? new Dictionary<int, int>() : new Dictionary<int, int>(character.selectedDialogPaths);
-        
+            selectedDialogPaths = character.selectedDialogPaths != null
+                ? new Dictionary<int, int>(character.selectedDialogPaths)
+                : new Dictionary<int, int>();
+
             if (!Enum.TryParse(character.specialCondition.ToString(), out Affinity validCondition))
             {
                 validCondition = Affinity.None;
@@ -175,6 +195,10 @@ namespace PLAYERTWO.ARPGProject
             var serializer = JsonUtility.FromJson<CharacterSerializer>(json);
             if (serializer.unlockedSpecializationTiers == null)
                 serializer.unlockedSpecializationTiers = new List<int>();
+            if (serializer.bestiaryEntries == null)
+                serializer.bestiaryEntries = new List<BestiaryEntry>();
+            if (serializer.reputationEntries == null)
+                serializer.reputationEntries = new List<ReputationEntry>();
             return serializer;
         }
     }

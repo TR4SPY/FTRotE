@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using TMPro;
 using System.Linq;
+using AI_DDA.Assets.Scripts;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -59,7 +60,9 @@ namespace PLAYERTWO.ARPGProject
         };
 
         public Dictionary<string, HashSet<int>> viewedDialogPages = new Dictionary<string, HashSet<int>>();
+        public Dictionary<string, int> reputation = new Dictionary<string, int>();
         public Dictionary<int, int> selectedDialogPaths = new Dictionary<int, int>();
+        public Dictionary<int, BestiaryEntry> bestiary = new Dictionary<int, BestiaryEntry>();
 
         public HashSet<string> visitedZones = new HashSet<string>();
         public HashSet<int> activatedWaypoints = new HashSet<int>();
@@ -413,6 +416,10 @@ namespace PLAYERTWO.ARPGProject
                     ? new HashSet<int>(serializer.activatedWaypoints)
                     : new HashSet<int>(),
 
+                bestiary = serializer.bestiaryEntries != null
+                    ? serializer.bestiaryEntries.ToDictionary(e => e.enemyId, e => e)
+                    : new Dictionary<int, BestiaryEntry>(),
+
                 unlockedAchievements = serializer.unlockedAchievements != null
                     ? new List<string>(serializer.unlockedAchievements)
                     : new List<string>(),
@@ -448,6 +455,11 @@ namespace PLAYERTWO.ARPGProject
                 }
             }
 
+            if (serializer.selectedDialogPaths != null)
+            {
+                characterInstance.selectedDialogPaths = new Dictionary<int, int>(serializer.selectedDialogPaths);
+            }
+
             if (!Enum.TryParse(serializer.specialCondition, out Affinity parsedCondition))
             {
                 Debug.LogError($"[AI-DDA] Błąd wczytywania specialCondition: {serializer.specialCondition}. Ustawiono 'None'.");
@@ -468,6 +480,15 @@ namespace PLAYERTWO.ARPGProject
             characterInstance.guildName = serializer.guildName;
             characterInstance.guildCrestData = serializer.guildCrestData;
             characterInstance.guildCrest = DecodeSprite(serializer.guildCrestData);
+
+            if (serializer.reputationEntries != null)
+            {
+                characterInstance.reputation = serializer.reputationEntries.ToDictionary(e => e.faction, e => e.value);
+            }
+            else
+            {
+                characterInstance.reputation = new Dictionary<string, int>();
+            }
 
             return characterInstance;
         }

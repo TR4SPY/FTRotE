@@ -721,7 +721,7 @@ namespace PLAYERTWO.ARPGProject
                 var aoType = urpAssembly.GetType("UnityEngine.Rendering.Universal.AmbientOcclusion") ??
                              urpAssembly.GetType("UnityEngine.Rendering.Universal.ScreenSpaceAmbientOcclusion");
 
-                if (aoType != null && postProcessingVolume.profile.TryGet(aoType, out var component))
+                if (aoType != null && postProcessingVolume.profile.TryGet(aoType, out VolumeComponent component))
                 {
                     component.active = value;
                 }

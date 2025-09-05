@@ -123,6 +123,12 @@ namespace PLAYERTWO.ARPGProject
                     var questCount = charData.quests?.quests?.Count ?? 0;
                     Debug.Log($"[GameSave] Loaded character '{m_currentCharacter.name}' unlockedSpecializationTiers=[{tiers}] quests={questCount}");
 
+                    if (charData.bestiaryEntries != null)
+                    {
+                        m_currentCharacter.bestiary = charData.bestiaryEntries.ToDictionary(e => e.enemyId, e => e);
+                        BestiaryManager.Instance?.SetEntries(m_currentCharacter.bestiary);
+                    }
+
                     if (m_currentCharacter.specializations != null && charData.unlockedSpecializationTiers != null)
                     {
                         m_currentCharacter.specializations.SetUnlockedTiers(charData.unlockedSpecializationTiers);
@@ -353,8 +359,19 @@ namespace PLAYERTWO.ARPGProject
 
             character.playerType = QuestionnaireManager.Instance?.playerType ?? "Undefined";
             character.currentDynamicPlayerType = PlayerBehaviorLogger.Instance?.currentDynamicPlayerType ?? "Unknown";
+            
+            if (ReputationManager.Instance != null)
+            {
+                character.reputation = new Dictionary<string, int>();
+                foreach (var kvp in ReputationManager.Instance.GetAllReputations())
+                {
+                    character.reputation[kvp.Key.ToString()] = kvp.Value;
+                }
+            }
 
             // Debug.Log($"Saved Player Behavior Logs for {character.name} | AchievementsUnlocked={achievementsUnlocked}");
+            if (BestiaryManager.Instance != null)
+                character.bestiary = new Dictionary<int, BestiaryEntry>(BestiaryManager.Instance.GetEntries());        
         }
 
         protected virtual void SaveJSON()

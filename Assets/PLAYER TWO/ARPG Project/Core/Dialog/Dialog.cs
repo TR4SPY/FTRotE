@@ -1,0 +1,147 @@
+using System;
+using UnityEngine;
+using System.Collections.Generic;
+using PLAYERTWO.ARPGProject;
+
+namespace AI_DDA.Assets.Scripts
+{
+    [CreateAssetMenu(fileName = "NewDialog", menuName = "Game/Dialog")]
+    public class Dialog : ScriptableObject
+    {
+        public enum DialogAction
+        {
+            None = 0, 
+            OpenQuests = 1,
+            OpenShop = 2,
+            OpenCrafting = 3,
+            OpenBlacksmith = 4,
+            ContinueDialog = 5,
+            Exclusive = 6,
+            OpenClassUpgrade = 7,
+            SetSpecialCondition = 8,
+            OpenGuildmaster = 9,
+            GiveBuff = 10,
+            GiveDebuff = 11,
+            OpenSpecialization = 12,
+            OpenAlchemyWindow = 13,
+            OpenBank = 14
+        }
+
+        public List<DialogNode> pages = new List<DialogNode>();
+        public string dialogTitle;
+        private Dictionary<int, int> selectedPaths = new Dictionary<int, int>();
+        private int lastPathChoice = -1;
+        
+        public bool ShouldShowPage(string npcID, int pageIndex)
+        {
+            var character = Game.instance.currentCharacter;
+            if (character == null) return false;
+
+            var currentPage = pages[pageIndex];
+
+            Debug.Log($"[ShouldShowPage] NPC_ID={npcID}, pageIndex={pageIndex}, showOnce={currentPage.showOnce}, " +
+                    $"alreadyViewed={character.HasViewedDialogPage(npcID, pageIndex)}");
+
+            if (currentPage.isSpecial)
+            {
+                if (string.IsNullOrEmpty(currentPage.specialCondition)) return false;
+                
+                if (!Enum.TryParse<Affinity>(currentPage.specialCondition, out Affinity pageCondition) || character.specialCondition != pageCondition)
+                {
+                    return false;
+                }
+            }
+
+            return !currentPage.showOnce || !character.HasViewedDialogPage(npcID, pageIndex);
+        }
+
+        public void SetPathChoice(int fromPage, int toPage)
+        {
+            selectedPaths[fromPage] = toPage;
+            lastPathChoice = toPage;
+        }
+
+        public int GetNextPageFromPath(int currentPage)
+        {
+            return selectedPaths.ContainsKey(currentPage) ? selectedPaths[currentPage] : -1;
+        }
+
+        public int GetLastPathChoice()
+        {
+            Debug.Log($"[Dialog] lastPathChoice przed resetem: {lastPathChoice}");
+
+            return lastPathChoice;
+        }
+
+        public void ResetPathChoices()
+        {
+            selectedPaths.Clear();
+            lastPathChoice = -1;
+        }
+
+        public List<DialogOption> GetFilteredOptions(int pageIndex, string playerType, QuestGiver questGiver)
+        {
+            List<DialogOption> filteredOptions = new List<DialogOption>();
+
+            if (pageIndex >= pages.Count) return filteredOptions;
+
+            foreach (var option in pages[pageIndex].options)
+            {
+                bool isAllowed = true;
+
+                if (option.isForSocializer && playerType != "Socializer") isAllowed = false;
+                if (option.isForAchiever && playerType != "Achiever") isAllowed = false;
+                if (option.isForExplorer && playerType != "Explorer") isAllowed = false;
+                if (option.isForKiller && playerType != "Killer") isAllowed = false;
+
+                if (option.action == DialogAction.OpenClassUpgrade)
+                {
+                    if (questGiver == null || questGiver.CurrentClassUpgradeQuest() == null)
+                    {
+                        Debug.LogWarning("[Dialog] Nie znaleziono QuestGivera.");
+                        isAllowed = false;
+                    }
+                    else
+                    {
+                        var upgradeQuest = questGiver.CurrentClassUpgradeQuest();
+                        if (upgradeQuest == null)
+                        {
+                            Debug.Log("[Dialog] Brak dostępnego Class Upgrade Questa.");
+                        }
+                        else
+                        {
+                            Debug.Log($"[Dialog] Znaleziono Class Upgrade Quest: {upgradeQuest.title}");
+                        }
+
+                        isAllowed = upgradeQuest != null;
+                    }
+                }
+                else if (option.action == DialogAction.OpenSpecialization)
+                {
+                    if (questGiver == null || questGiver.CurrentSpecializationQuest() == null)
+                    {
+                        Debug.LogWarning("[Dialog] Nie znaleziono QuestGivera.");
+                        isAllowed = false;
+                    }
+                    else
+                    {
+                        var specQuest = questGiver.CurrentSpecializationQuest();
+                        isAllowed = specQuest != null;
+                    }
+                }
+
+                if (option.hideIfAlreadyInGuild && !string.IsNullOrEmpty(Game.instance.currentCharacter.guildName))
+                {
+                    continue;
+                }
+
+                if (isAllowed)
+                {
+                    filteredOptions.Add(option);
+                    if (filteredOptions.Count >= 4) break;
+                }
+            }
+            return filteredOptions;
+        }
+    }
+}

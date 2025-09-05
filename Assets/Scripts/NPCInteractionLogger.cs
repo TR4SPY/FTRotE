@@ -35,12 +35,14 @@ namespace AI_DDA.Assets.Scripts
                 return;
             }
 
+            var faction = GetComponent<FactionMember>()?.faction ?? Faction.None;
+
             if (isPlayer)
             {
                 var entity = other.GetComponent<Entity>();
                 if (entity != null)
                 {
-                    PlayerBehaviorLogger.Instance.LogNpcInteraction(entity);
+                    PlayerBehaviorLogger.Instance.LogNpcInteraction(entity, faction);
                     Debug.Log($"Player interacted with NPC: {npcName}");
                 }
                 else
@@ -54,7 +56,7 @@ namespace AI_DDA.Assets.Scripts
                 var entity = other.GetComponent<Entity>();
                 if (entity != null)
                 {
-                    PlayerBehaviorLogger.Instance.LogNpcInteraction(entity);
+                    PlayerBehaviorLogger.Instance.LogNpcInteraction(entity, faction);
                     Debug.Log($"AI Agent interacted with NPC: {npcName}");
                 }
                 else

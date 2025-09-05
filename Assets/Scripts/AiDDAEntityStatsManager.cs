@@ -15,7 +15,7 @@ namespace AI_DDA.Assets.Scripts
         public static AiDDAEntityStatsManager Instance { get; private set; }
         private Dictionary<string, float> DifficultyMultipliers = new Dictionary<string, float>();
 
-        void Awake()
+        protected override void Awake()
         {
             if (Instance == null)
             {

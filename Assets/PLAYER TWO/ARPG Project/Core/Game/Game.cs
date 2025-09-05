@@ -96,6 +96,7 @@ namespace PLAYERTWO.ARPGProject
         public UnityEvent<int> onCharacterChanged;
 
         protected GameStash m_stash;
+        protected GameBank m_bank;
         protected bool m_gameLoaded;
         protected int m_currentCharacterId = -1;
 
@@ -141,6 +142,17 @@ namespace PLAYERTWO.ARPGProject
                     m_stash = GetComponent<GameStash>();
 
                 return m_stash;
+            }
+        }
+
+        public GameBank bank
+        {
+            get
+            {
+                if (!m_bank)
+                    m_bank = GetComponent<GameBank>();
+
+                return m_bank;
             }
         }
 
@@ -269,6 +281,7 @@ namespace PLAYERTWO.ARPGProject
                 .ToList();
 
             stash.LoadData(data.stashes);
+            bank.LoadData(data.bankAccounts);
             onDataLoaded?.Invoke();
             currentCharacter.specializations?.NotifyTierChange();
         }
