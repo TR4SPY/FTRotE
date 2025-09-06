@@ -113,7 +113,7 @@ namespace PLAYERTWO.ARPGProject
                 return;
 
             window.Toggle();
-            Game.instance.quests.AddQuest(quest);
+            Game.instance.quests?.AddQuest(quest);
         }
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace PLAYERTWO.ARPGProject
                 return;
 
             window.Toggle();
-            Game.instance.quests.RemoveQuest(quest);
+            Game.instance.quests?.RemoveQuest(quest);
         }
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace PLAYERTWO.ARPGProject
                 return;
             }
 
-            Game.instance.quests.CompleteManualQuest(quest);
+            Game.instance.quests?.CompleteManualQuest(quest);
             window.Toggle();
         }
 
@@ -323,7 +323,9 @@ namespace PLAYERTWO.ARPGProject
             if (rewards == null || quest == null)
                 return;
 
-            bool isAccepted = Game.instance.quests.TryGetQuest(quest, out var instance);
+            var manager = Game.instance.quests;
+            QuestInstance instance = null;
+            bool isAccepted = manager != null && manager.TryGetQuest(quest, out instance);
 
             int baseExp = quest.experience;
             int finalExp = isAccepted ? instance.FinalExperience : quest.GetTotalExperience();
@@ -444,7 +446,8 @@ namespace PLAYERTWO.ARPGProject
             EventTrigger.Entry entryEnter = new EventTrigger.Entry { eventID = EventTriggerType.PointerEnter };
             entryEnter.callback.AddListener((eventData) =>
             {
-                if (Game.instance.quests.TryGetQuest(quest, out var instance))
+                var manager = Game.instance.quests;
+                if (manager != null && manager.TryGetQuest(quest, out var instance))
                 {
                     int currentProgress = instance.progress;
                     int finalProgress = instance.GetFinalTargetProgress();
@@ -474,10 +477,11 @@ namespace PLAYERTWO.ARPGProject
         }
 
         protected virtual void UpdateButtons()
-
         {
             if (!quest)
                 return;
+
+            var manager = Game.instance.quests;
 
             if (completeText == null)
 
@@ -489,7 +493,8 @@ namespace PLAYERTWO.ARPGProject
                 logActions.SetActive(isLogFallback);
                 giverActions.SetActive(!isLogFallback);
                 cancel.gameObject.SetActive(true);
-                cancel.interactable = Game.instance.quests.TryGetQuest(quest, out var questInstance) && !questInstance.completed;
+                QuestInstance questInstance = null;
+                cancel.interactable = manager != null && manager.TryGetQuest(quest, out questInstance) && !questInstance.completed;
                 complete.gameObject.SetActive(false);
 
                 return;
@@ -498,10 +503,10 @@ namespace PLAYERTWO.ARPGProject
             logActions.SetActive(openedFromLog);
             giverActions.SetActive(!openedFromLog);
 
-            bool isAccepted = Game.instance.quests.TryGetQuest(quest, out var instance);
+            QuestInstance instance = null;
+            bool isAccepted = manager != null && manager.TryGetQuest(quest, out instance);
             bool isCompleted = isAccepted && instance.completed;
             bool readyForCompletion = false;
-
             if (isAccepted)
             {
                 int finalTarget = instance.GetFinalTargetProgress();

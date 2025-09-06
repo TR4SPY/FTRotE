@@ -132,7 +132,7 @@ namespace PLAYERTWO.ARPGProject
                 return;
             }
 
-            Game.instance.quests.CompleteManualQuest(quest);
+            Game.instance.quests?.CompleteManualQuest(quest);
             window.Toggle();
         }
 
@@ -174,7 +174,8 @@ namespace PLAYERTWO.ARPGProject
             if (rewards == null || quest == null)
                 return;
 
-            if (Game.instance.quests.TryGetQuest(quest, out var instance))
+            var manager = Game.instance.quests;
+            if (manager != null && manager.TryGetQuest(quest, out var instance))
             {
                 int finalExp = instance.FinalExperience;
                 int finalCoins = instance.FinalCoins;
@@ -250,7 +251,8 @@ namespace PLAYERTWO.ARPGProject
             EventTrigger.Entry entryEnter = new EventTrigger.Entry { eventID = EventTriggerType.PointerEnter };
             entryEnter.callback.AddListener((eventData) =>
             {
-                if (Game.instance.quests.TryGetQuest(quest, out var instance))
+                var manager = Game.instance.quests;
+                if (manager != null && manager.TryGetQuest(quest, out var instance))
                 {
                     int currentProgress = instance.progress;
                     int finalProgress = instance.GetFinalTargetProgress();
@@ -283,7 +285,8 @@ namespace PLAYERTWO.ARPGProject
             if (!quest)
                 return;
 
-            var isLog = Game.instance.quests.ContainsQuest(quest);
+            var manager = Game.instance.quests;
+            var isLog = manager != null && manager.ContainsQuest(quest);
             logActions.SetActive(isLog);
             giverActions.SetActive(!isLog);
 

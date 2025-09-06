@@ -119,7 +119,8 @@ namespace PLAYERTWO.ARPGProject
                 if (!alreadyLoaded)
                 {
                     alreadyLoaded = true;
-                    LoadGameData();
+                    var index = m_currentCharacterId >= 0 ? (int?)m_currentCharacterId : null;
+                    LoadGameData(index);
                 }
 
                 if (characters.Count == 0)
@@ -132,7 +133,7 @@ namespace PLAYERTWO.ARPGProject
             }
         }
 
-        public QuestsManager quests => currentCharacter.quests.manager;
+        public QuestsManager quests => currentCharacter?.quests?.manager;
 
         public GameStash stash
         {
@@ -256,7 +257,7 @@ namespace PLAYERTWO.ARPGProject
         /// Loads the Game data from the memory.
         /// </summary>
 
-        public virtual void LoadGameData()
+        public virtual void LoadGameData(int? selectedCharacterIndex = null)
         {
             if (m_gameLoaded)
                 return;
@@ -267,7 +268,7 @@ namespace PLAYERTWO.ARPGProject
             // references when deserializing.  Accessing the singleton forces its
             // Awake() to run which registers all Specializations.
             var _ = GameDatabase.instance;
-            var data = GameSave.instance.Load();
+            var data = GameSave.instance.Load(selectedCharacterIndex);
             Debug.Log($"[Game] GameSave.Load returned {(data == null ? "null" : $"{data.characters?.Count ?? 0} characters")}");
 
             m_gameLoaded = true;
@@ -283,30 +284,44 @@ namespace PLAYERTWO.ARPGProject
             if (characters.Count == 0)
                 Debug.LogWarning("[Game] No characters found. Prompting character creation.");
 
-            stash.LoadData(data.stashes);
-            bank.LoadData(data.bankAccounts);
+            GameSave.instance.ApplySelectedCharacterData();
+
+            if (stash != null)
+                stash.LoadData(data.stashes);
+            else
+                Debug.LogWarning("[Game] GameStash component missing. Stash data not loaded.");
+
+            if (bank != null)
+                bank.LoadData(data.bankAccounts);
+            else
+                Debug.LogWarning("[Game] GameBank component missing. Bank data not loaded.");
             onDataLoaded?.Invoke();
-            currentCharacter.specializations?.NotifyTierChange();
+
+            if (!selectedCharacterIndex.HasValue && characters.Count > 0)
+                characters[0].specializations?.NotifyTierChange();
         }
 
         /// <summary>
         /// Reloads the Game data from the memory.
         /// </summary>
-        public virtual void ReloadGameData()
+        public virtual void ReloadGameData(int? selectedCharacterIndex = null)
         {
             m_gameLoaded = false;
-            LoadGameData();
+            var index = selectedCharacterIndex ?? (m_currentCharacterId >= 0 ? m_currentCharacterId : (int?)null);
+            LoadGameData(index);
         }
 
         protected override void Initialize()
         {
-            LoadGameData();
+            var index = m_currentCharacterId >= 0 ? (int?)m_currentCharacterId : null;
+            LoadGameData(index);
 
             if (characters.Count == 0)
             {
                 Debug.LogWarning("[Game] No characters found after loading data. Opening character creation.");
                 var selector = Object.FindFirstObjectByType<UICharacterSelection>();
                 selector?.ToggleCharacterCreation();
+        
                 return;
             }
 

@@ -19,9 +19,12 @@ namespace PLAYERTWO.ARPGProject
 
         public virtual void AddQuestProgression()
         {
-            Game.instance.quests.AddProgress(enemyKey);
-
             var questManager = Game.instance.quests;
+            if (questManager == null)
+                return;
+
+            questManager.AddProgress(enemyKey);
+
             foreach (var quest in questManager.list)
             {
                 if (

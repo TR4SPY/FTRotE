@@ -25,7 +25,8 @@ namespace PLAYERTWO.ARPGProject
         {
             if (!other.CompareTag(GameTags.Player)) return;
 
-            m_manager.Trigger(quest);
+            var manager = m_manager;
+            manager?.Trigger(quest);
         }
     }
 }

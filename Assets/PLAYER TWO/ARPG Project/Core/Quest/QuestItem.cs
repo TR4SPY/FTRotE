@@ -16,8 +16,12 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void InitializeCallbacks()
         {
-            Game.instance.quests.onQuestAdded += _ => HandleActive();
-            Game.instance.quests.onQuestRemoved += _ => HandleActive();
+            var manager = Game.instance.quests;
+            if (manager == null)
+                return;
+
+            manager.onQuestAdded += _ => HandleActive();
+            manager.onQuestRemoved += _ => HandleActive();
         }
 
         protected virtual void HandleActive()
@@ -30,7 +34,11 @@ namespace PLAYERTWO.ARPGProject
             if (!interactive)
                 return;
 
-            foreach (var quest in Game.instance.quests.list)
+            var manager = Game.instance.quests;
+            if (manager == null)
+                return;
+
+            foreach (var quest in manager.list)
             {
                 if (!quest.HasProgress())
                     continue;
@@ -47,7 +55,7 @@ namespace PLAYERTWO.ARPGProject
                 return;
 
             gameObject.SetActive(false);
-            Game.instance.quests.AddProgress(itemKey);
+            Game.instance.quests?.AddProgress(itemKey);
         }
 
         protected override void Start()

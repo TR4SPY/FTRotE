@@ -15,6 +15,9 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void InitializeCallbacks()
         {
+            if (quests == null)
+                return;
+
             quests.onQuestAdded += onQuestAdded.Invoke;
             quests.onProgressChanged += onProgressChanged.Invoke;
             quests.onQuestCompleted += onQuestCompleted.Invoke;

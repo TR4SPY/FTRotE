@@ -56,16 +56,27 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void InitializeCallbacks()
         {
-            m_manager.onQuestAdded += OnQuestAdded;
-            m_manager.onQuestCompleted += OnQuestCompleted;
-            m_manager.onQuestRemoved += OnQuestRemoved;
+            var manager = m_manager;
+            if (manager == null)
+                return;
+
+            manager.onQuestAdded += OnQuestAdded;
+            manager.onQuestCompleted += OnQuestCompleted;
+            manager.onQuestRemoved += OnQuestRemoved;
         }
 
         public virtual void InitializeStates()
         {
+            var manager = m_manager;
+            if (manager == null)
+            {
+                ChangeStateTo(State.None);
+                return;
+            }
+
             QuestInstance instance;
             var completedQuests = quests.Count(quest =>
-                m_manager.TryGetQuest(quest, out instance) && instance.completed
+                manager.TryGetQuest(quest, out instance) && instance.completed
             );
 
             if (completedQuests == quests.Length)
@@ -75,7 +86,7 @@ namespace PLAYERTWO.ARPGProject
             }
 
             var state = quests.Any(quest =>
-                m_manager.TryGetQuest(quest, out instance) && !instance.completed
+                manager.TryGetQuest(quest, out instance) && !instance.completed
             )
                 ? State.QuestInProgress
                 : State.QuestAvailable;
@@ -88,18 +99,21 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         public virtual Quest CurrentQuest()
         {
+            var manager = m_manager;
+            if (manager == null)
+                return null;
+
             foreach (var quest in quests)
             {
                 if (!IsQuestEligible(quest))
                     continue;
 
-                if (!m_manager.TryGetQuest(quest, out var instance) || !instance.completed)
+                if (!manager.TryGetQuest(quest, out var instance) || !instance.completed)
                     return quest;
             }
 
             return null;
         }
-
 
         public bool HasQuest(Quest quest)
         {
@@ -177,6 +191,10 @@ namespace PLAYERTWO.ARPGProject
             int maxLevel = Game.instance.maxLevel;
             Debug.Log($"[ClassUpgrade] Level: {currentLevel}, Max: {maxLevel}, Class: {currentClass}");
 
+            var manager = Game.instance.quests;
+            if (manager == null)
+                return null;
+
             var allQuests = quests.Concat(additionalQuests);
             foreach (var quest in allQuests)
             {
@@ -199,8 +217,8 @@ namespace PLAYERTWO.ARPGProject
                     continue;
                 }
 
-                if (!Game.instance.quests.ContainsQuest(quest) || 
-                    (Game.instance.quests.TryGetQuest(quest, out var q) && !q.completed))
+                if (!manager.ContainsQuest(quest) ||
+                    (manager.TryGetQuest(quest, out var q) && !q.completed))
                 {
                     Debug.Log($"[ClassUpgrade] Zwracam questa: {quest.title}");
                     return quest;
@@ -213,6 +231,10 @@ namespace PLAYERTWO.ARPGProject
 
         public Quest CurrentSpecializationQuest()
         {
+            var manager = Game.instance.quests;
+            if (manager == null)
+                return null;
+
             var allQuests = quests.Concat(additionalQuests);
             foreach (var quest in allQuests)
             {
@@ -222,15 +244,15 @@ namespace PLAYERTWO.ARPGProject
                 if (!IsQuestEligible(quest))
                     continue;
 
-                if (!Game.instance.quests.ContainsQuest(quest) ||
-                    (Game.instance.quests.TryGetQuest(quest, out var q) && !q.completed))
+                if (!manager.ContainsQuest(quest) ||
+                    (manager.TryGetQuest(quest, out var q) && !q.completed))
                     return quest;
             }
 
             return null;
         }
 
-     protected void CheckClassUpgradeQuestAvailability()
+        protected void CheckClassUpgradeQuestAvailability()
         {
             var quest = CurrentClassUpgradeQuest();
             if (quest == null)
@@ -280,12 +302,14 @@ namespace PLAYERTWO.ARPGProject
 
         private bool InQuestsManager(Quest q)
         {
-            return Game.instance.quests.ContainsQuest(q);
+            var manager = Game.instance.quests;
+            return manager != null && manager.ContainsQuest(q);
         }
 
         private bool IsQuestCompleted(Quest q)
         {
-            if (Game.instance.quests.TryGetQuest(q, out var instance))
+            var manager = Game.instance.quests;
+            if (manager != null && manager.TryGetQuest(q, out var instance))
                 return instance.completed;
             return false;
         }
@@ -335,7 +359,8 @@ namespace PLAYERTWO.ARPGProject
                 return;
             }
 
-            if (!Game.instance.quests.TryGetQuest(currentQuest, out var instance))
+            var manager = Game.instance.quests;
+            if (manager == null || !manager.TryGetQuest(currentQuest, out var instance))
             {
                 Debug.LogWarning("[Quest] Brak instancji questa dla gracza.");
                 return;
@@ -351,8 +376,8 @@ namespace PLAYERTWO.ARPGProject
 
                     if (instance.IsFullyCompleted())
                     {
-                        Debug.Log($"[Quest] ✅ Quest zakończony: {instance.data.title}");
-                        Game.instance.quests.CompleteQuest(instance);
+                        Debug.Log($"[Quest] Quest zakończony: {instance.data.title}");
+                        manager.CompleteQuest(instance);
                     }
                 }
                 else
@@ -362,8 +387,8 @@ namespace PLAYERTWO.ARPGProject
             }
             else
             {
-                Debug.Log($"[Quest] ✅ Quest zakończony: {currentQuest.title}");
-                Game.instance.quests.CompleteQuest(instance);
+                Debug.Log($"[Quest] Quest zakończony: {currentQuest.title}");
+                manager.CompleteQuest(instance);
             }
         }
 
@@ -383,11 +408,9 @@ namespace PLAYERTWO.ARPGProject
                 return;
             }
 
-            // Logowanie interakcji przy użyciu Collidera
             var interactionLogger = GetComponent<NpcInteractionLogger>();
             if (interactionLogger != null)
             {
-                // Pobierz Collider gracza lub Agenta AI
                 var collider = entity.GetComponent<Collider>();
                 if (collider != null)
                 {
@@ -414,7 +437,8 @@ namespace PLAYERTWO.ARPGProject
                 GUIWindowsManager.instance.dialogWindow.SetCurrentPage(currentPage);
             }
 
-            if (Game.instance.quests.ContainsQuest(current))
+            var manager = Game.instance.quests;
+            if (manager != null && manager.ContainsQuest(current))
                 GUIWindowsManager.instance.quest.SetQuestFromLog(current);
             else
                 GUIWindowsManager.instance.quest.SetQuest(current);

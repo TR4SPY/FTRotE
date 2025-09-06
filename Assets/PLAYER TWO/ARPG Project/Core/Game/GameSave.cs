@@ -31,6 +31,9 @@ namespace PLAYERTWO.ARPGProject
         protected CharacterInstance m_currentCharacter => m_game.currentCharacter;
         public int lastSavedNPCID = 0;
 
+        private CharacterSerializer m_selectedCharacterData;
+        private int? m_loadedCharacterIndex;
+
         protected override void Initialize()
         { 
             base.Initialize();
@@ -92,7 +95,7 @@ namespace PLAYERTWO.ARPGProject
             }
         }
 
-        public virtual GameSerializer Load()
+        public virtual GameSerializer Load(int? selectedCharacterIndex = null)
         {
             Game.instance.lastNPCID = lastSavedNPCID;
 
@@ -113,38 +116,57 @@ namespace PLAYERTWO.ARPGProject
                     break;
             }
 
-            if (data != null && m_currentCharacter != null)
+            m_loadedCharacterIndex = selectedCharacterIndex;
+            m_selectedCharacterData = null;
+
+            if (data != null && selectedCharacterIndex.HasValue &&
+                data.characters != null &&
+                selectedCharacterIndex.Value >= 0 &&
+                selectedCharacterIndex.Value < data.characters.Count)
             {
-                var currentId = GameDatabase.instance.GetElementId<Character>(m_currentCharacter.data);
-                var charData = data.characters.FirstOrDefault(c => c.characterId == currentId);
-                if (charData != null)
-                {
-                    var tiers = charData.unlockedSpecializationTiers != null
-                        ? string.Join(",", charData.unlockedSpecializationTiers)
-                        : "None";
-                    var questCount = charData.quests?.quests?.Count ?? 0;
-                    Debug.Log($"[GameSave] Loaded character '{m_currentCharacter.name}' unlockedSpecializationTiers=[{tiers}] quests={questCount}");
-
-                    if (charData.bestiaryEntries != null)
-                    {
-                        m_currentCharacter.bestiary = charData.bestiaryEntries
-                            .GroupBy(e => e.enemyId)
-                            .ToDictionary(g => g.Key, g => ConvertToBestiaryEntry(g.First()));
-                        BestiaryManager.Instance?.SetEntries(m_currentCharacter.bestiary);
-                    }
-
-                    if (m_currentCharacter.specializations != null && charData.unlockedSpecializationTiers != null)
-                    {
-                        m_currentCharacter.specializations.SetUnlockedTiers(charData.unlockedSpecializationTiers);
-                        Debug.Log($"[GameSave] Applied specialization tiers to character '{m_currentCharacter.name}'");
-                    }
-                }
+                m_selectedCharacterData = data.characters[selectedCharacterIndex.Value];
             }
 
-            if (m_currentCharacter?.Entity != null)
-                m_currentCharacter.Entity.items.RevalidateEquippedItems();
-
             return data;
+        }
+
+        public void ApplySelectedCharacterData()
+        {
+            if (!m_loadedCharacterIndex.HasValue || m_selectedCharacterData == null)
+                return;
+
+            var index = m_loadedCharacterIndex.Value;
+            var characters = Game.instance.characters;
+            if (index < 0 || index >= characters.Count)
+                return;
+
+            var character = characters[index];
+            var charData = m_selectedCharacterData;
+
+            var tiers = charData.unlockedSpecializationTiers != null
+                ? string.Join(",", charData.unlockedSpecializationTiers)
+                : "None";
+            var questCount = charData.quests?.quests?.Count ?? 0;
+            Debug.Log($"[GameSave] Loaded character '{character.name}' unlockedSpecializationTiers=[{tiers}] quests={questCount}");
+
+            if (charData.bestiaryEntries != null)
+            {
+                character.bestiary = charData.bestiaryEntries
+                    .GroupBy(e => e.enemyId)
+                    .ToDictionary(g => g.Key, g => ConvertToBestiaryEntry(g.First()));
+                BestiaryManager.Instance?.SetEntries(character.bestiary);
+            }
+
+            if (character.specializations != null && charData.unlockedSpecializationTiers != null)
+            {
+                character.specializations.SetUnlockedTiers(charData.unlockedSpecializationTiers);
+                Debug.Log($"[GameSave] Applied specialization tiers to character '{character.name}'");
+            }
+
+            character.specializations?.NotifyTierChange();
+
+            if (character?.Entity != null)
+                character.Entity.items.RevalidateEquippedItems();
         }
         
         private static BestiaryEntry ConvertToBestiaryEntry(BestiaryEntrySaveData data)
