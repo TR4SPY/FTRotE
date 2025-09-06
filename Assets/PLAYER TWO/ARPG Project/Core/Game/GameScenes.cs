@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections;
 using AI_DDA.Assets.Scripts;
+using System;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -106,10 +107,39 @@ namespace PLAYERTWO.ARPGProject
         /// <param name="loadingSprite">The sprite to display on the loading screen.</param>
         public virtual void LoadScene(string scene, bool setAsCharacterScene = false, Sprite loadingSprite = null)
         {
-            if (Game.instance.bank != null && Game.instance.stash != null && Game.instance.characters.Count > 0)
-                GameSave.instance.Save();
+            var saveTriggered = Game.instance.characters.Count > 0;
+            Debug.Log($"[GameScenes] LoadScene savingTriggered={saveTriggered}");
 
-            Game.instance.ReloadGameData();
+            var beforeReload = Game.instance.characters.Count;
+            var saveSuccessful = false;
+
+            if (saveTriggered)
+            {
+                try
+                {
+                    GameSave.instance.Save();
+                    saveSuccessful = true;
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"[GameScenes] Failed to save: {ex}");
+                }
+            }
+
+            if (saveSuccessful)
+            {
+                Game.instance.ReloadGameData();
+                var afterReload = Game.instance.characters.Count;
+                if (beforeReload != afterReload)
+                    Debug.Log($"[GameScenes] ReloadGameData changed character count from {beforeReload} to {afterReload}");
+                else
+                    Debug.Log($"[GameScenes] ReloadGameData character count unchanged ({beforeReload})");
+            }
+            else
+            {
+                Debug.Log("[GameScenes] ReloadGameData skipped (save unsuccessful)");
+            }
+
             GameAudio.instance.PlayEffect(loadStartClip);
             Fader.instance.FadeOut(() => StartCoroutine(LoadSceneRoutine(scene, setAsCharacterScene)));
             SetLoadingScreen(loadingSprite);
@@ -117,26 +147,21 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual IEnumerator LoadSceneRoutine(string scene, bool setAsCharacterScene)
         {
-            // 1. Rozpoczynamy asynchroniczne wczytywanie sceny
             var operation = SceneManager.LoadSceneAsync(scene);
             loadingScreen.SetActive(true);
 
-            // 2. Czekamy, aż scene się w pełni załaduje
             while (!operation.isDone)
             {
                 loadingSlider.value = operation.progress;
                 yield return null;
             }
 
-            // 3. Jeśli ma to być główna scena dla postaci - ustawiamy
             if (setAsCharacterScene)
                 Game.instance.currentCharacter.currentScene = scene;
 
-            // (opcjonalnie) Teleport gracza w zaplanowane miejsce
             TeleportPlayer();
             ClearNextSceneCoordinates();
 
-            // Schowaj loading screen i odpal fadeIn, dźwięki itp.
             loadingScreen.SetActive(false);
             Fader.instance.FadeIn();
             GameAudio.instance.PlayEffect(loadFinishClip);

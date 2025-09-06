@@ -35,14 +35,19 @@ namespace PLAYERTWO.ARPGProject
         private int? m_loadedCharacterIndex;
 
         protected override void Initialize()
-        { 
+        {
             base.Initialize();
             DontDestroyOnLoad(gameObject);
         }
 
         public virtual void Save()
         {
+            var characters = m_game.characters;
+            var chosenIndex = characters.IndexOf(m_currentCharacter);
+            Debug.Log($"[GameSave] Save start: characterCount={characters.Count} chosenIndex={chosenIndex}");
+
             lastSavedNPCID = Game.instance.lastNPCID;
+
 
             if (Level.instance == null)
             {
@@ -93,10 +98,15 @@ namespace PLAYERTWO.ARPGProject
                     SavePlayerPrefs();
                     break;
             }
+
+            Debug.Log($"[GameSave] Save end: characterCount={characters.Count} chosenIndex={chosenIndex}");
         }
 
         public virtual GameSerializer Load(int? selectedCharacterIndex = null)
         {
+            var preLoadCount = m_game.characters?.Count ?? 0;
+            Debug.Log($"[GameSave] Load start: characterCount={preLoadCount} chosenIndex={selectedCharacterIndex}");
+
             Game.instance.lastNPCID = lastSavedNPCID;
 
             GameSerializer data = null;
@@ -126,6 +136,8 @@ namespace PLAYERTWO.ARPGProject
             {
                 m_selectedCharacterData = data.characters[selectedCharacterIndex.Value];
             }
+
+            Debug.Log($"[GameSave] Load end: characterCount={data?.characters?.Count ?? 0} chosenIndex={selectedCharacterIndex}");
 
             return data;
         }
