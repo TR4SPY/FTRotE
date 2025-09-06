@@ -267,7 +267,7 @@ namespace PLAYERTWO.ARPGProject
             // references when deserializing.  Accessing the singleton forces its
             // Awake() to run which registers all Specializations.
             var _ = GameDatabase.instance;
-            var data = GameSave.instance.Load(m_currentCharacterId);
+            var data = GameSave.instance.Load();
             Debug.Log($"[Game] GameSave.Load returned {(data == null ? "null" : $"{data.characters?.Count ?? 0} characters")}");
 
             m_gameLoaded = true;
