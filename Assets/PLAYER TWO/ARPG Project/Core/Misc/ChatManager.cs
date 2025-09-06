@@ -365,8 +365,13 @@ namespace PLAYERTWO.ARPGProject
             string[] parts = commandLine.Split(' ');
             string cmd = parts[0].ToLower();
 
-            var character = Game.instance.currentCharacter;
-            var inventory = character.inventory;
+            var character = Game.instance?.currentCharacter;
+            var inventory = character?.inventory;
+            if (character == null || inventory == null)
+            {
+                Debug.LogWarning("[ChatManager] No current character available. Command processing aborted.");
+                return;
+            }
 
             switch (cmd)
             {

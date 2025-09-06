@@ -106,7 +106,9 @@ namespace PLAYERTWO.ARPGProject
         /// <param name="loadingSprite">The sprite to display on the loading screen.</param>
         public virtual void LoadScene(string scene, bool setAsCharacterScene = false, Sprite loadingSprite = null)
         {
-            GameSave.instance.Save();
+            if (Game.instance.bank != null && Game.instance.stash != null && Game.instance.characters.Count > 0)
+                GameSave.instance.Save();
+
             Game.instance.ReloadGameData();
             GameAudio.instance.PlayEffect(loadStartClip);
             Fader.instance.FadeOut(() => StartCoroutine(LoadSceneRoutine(scene, setAsCharacterScene)));

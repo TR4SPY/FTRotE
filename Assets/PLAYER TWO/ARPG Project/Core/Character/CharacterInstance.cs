@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using System.Linq;
 using AI_DDA.Assets.Scripts;
+using UnityEngine.Localization;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -417,7 +418,7 @@ namespace PLAYERTWO.ARPGProject
                     : new HashSet<int>(),
 
                 bestiary = serializer.bestiaryEntries != null
-                    ? serializer.bestiaryEntries.ToDictionary(e => e.enemyId, e => e)
+                    ? serializer.bestiaryEntries.ToDictionary(e => e.enemyId, e => ConvertToBestiaryEntry(e))
                     : new Dictionary<int, BestiaryEntry>(),
 
                 unlockedAchievements = serializer.unlockedAchievements != null
@@ -491,6 +492,33 @@ namespace PLAYERTWO.ARPGProject
             }
 
             return characterInstance;
+        }
+
+        private static BestiaryEntry ConvertToBestiaryEntry(BestiaryEntrySaveData data)
+        {
+            var prefabList = GameDatabase.instance?.enemies;
+            Sprite icon = null;
+            string enemyName = $"Enemy_{data.enemyId}";
+
+            if (prefabList != null && data.enemyId >= 0 && data.enemyId < prefabList.Count)
+            {
+                var prefab = prefabList[data.enemyId];
+                if (prefab != null)
+                {
+                    enemyName = prefab.name;
+                    icon = prefab.GetComponentInChildren<SpriteRenderer>()?.sprite;
+                }
+            }
+
+            return new BestiaryEntry
+            {
+                enemyId = data.enemyId,
+                name = new LocalizedString { TableEntryReference = enemyName },
+                description = new LocalizedString { TableEntryReference = $"{enemyName}_Description" },
+                icon = icon,
+                encounters = data.encounters,
+                kills = data.kills
+            };
         }
 
         public void SetGuild(string name, Sprite crest, TMP_SpriteAsset crestAsset = null)

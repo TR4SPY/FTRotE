@@ -35,6 +35,12 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void InitializePlayer()
         {
+            if (currentCharacter == null)
+            {
+                Debug.LogWarning("[Level] No current character available. Skipping player initialization.");
+                return;
+            }
+
             if (Physics.Raycast(playerOrigin.position, Vector3.down, out var hit))
             {
                 player = currentCharacter.Instantiate();
@@ -59,11 +65,17 @@ namespace PLAYERTWO.ARPGProject
         private IEnumerator RestoreVitalsNextFrame()
         {
             yield return null;
-            currentCharacter.RestoreSavedVitals();
+            currentCharacter?.RestoreSavedVitals();
         }
 
         protected virtual void RestoreState()
         {
+            if (currentCharacter == null)
+            {
+                Debug.LogWarning("[Level] No current character available. Skipping state restore.");
+                return;
+            }
+
             if (!currentCharacter.scenes.TryGetScene(currentScene.name, out var scene)) return;
 
             UpdateTrackedEntities();
@@ -139,8 +151,15 @@ namespace PLAYERTWO.ARPGProject
             }
         }
 
-        protected virtual void EvaluateQuestScene() =>
-            Game.instance.quests?.ReachedScene(currentScene.name);
+        protected virtual void EvaluateQuestScene()
+        {
+            var character = Game.instance?.currentCharacter;
+            var manager = character?.quests?.manager;
+            if (manager != null)
+            {
+                manager.ReachedScene(currentScene.name);
+            }
+        }
             
         protected override void Initialize()
         {

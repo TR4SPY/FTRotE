@@ -15,4 +15,17 @@ namespace AI_DDA.Assets.Scripts
         public int encounters;
         public int kills;
     }
+
+    /// <summary>
+    /// Lightweight representation of a BestiaryEntry used for save data.
+    /// Contains only primitive fields to simplify serialization.
+    /// </summary>
+    [Serializable]
+    public class BestiaryEntrySaveData
+    {
+        public int enemyId;
+        public int encounters;
+        public int kills;
+    }
+
 }

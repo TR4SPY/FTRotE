@@ -267,18 +267,21 @@ namespace PLAYERTWO.ARPGProject
             // references when deserializing.  Accessing the singleton forces its
             // Awake() to run which registers all Specializations.
             var _ = GameDatabase.instance;
-            var data = GameSave.instance.Load();
-
-            // Debug.Log($"[Game] Loaded {data?.characters.Count ?? 0} characters from save."); //  DEBUG - In case of issues with currentCharacter ID
+            var data = GameSave.instance.Load(m_currentCharacterId);
+            Debug.Log($"[Game] GameSave.Load returned {(data == null ? "null" : $"{data.characters?.Count ?? 0} characters")}");
 
             m_gameLoaded = true;
-            
+
             if (data == null)
                 return;
 
             characters = data
                 .characters.Select(c => CharacterInstance.CreateFromSerializer(c))
                 .ToList();
+            Debug.Log($"[Game] characters.Count after load = {characters.Count}");
+
+            if (characters.Count == 0)
+                Debug.LogWarning("[Game] No characters found. Prompting character creation.");
 
             stash.LoadData(data.stashes);
             bank.LoadData(data.bankAccounts);
@@ -298,6 +301,15 @@ namespace PLAYERTWO.ARPGProject
         protected override void Initialize()
         {
             LoadGameData();
+
+            if (characters.Count == 0)
+            {
+                Debug.LogWarning("[Game] No characters found after loading data. Opening character creation.");
+                var selector = Object.FindFirstObjectByType<UICharacterSelection>();
+                selector?.ToggleCharacterCreation();
+                return;
+            }
+
             DontDestroyOnLoad(gameObject);
         }
 

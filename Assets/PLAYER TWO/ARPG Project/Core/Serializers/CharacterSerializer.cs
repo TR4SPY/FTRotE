@@ -38,7 +38,7 @@ namespace PLAYERTWO.ARPGProject
 
         public List<int> activatedWaypoints = new List<int>();
         public List<int> unlockedSpecializationTiers = new List<int>();
-        public List<BestiaryEntry> bestiaryEntries = new List<BestiaryEntry>();
+        public List<BestiaryEntrySaveData> bestiaryEntries = new List<BestiaryEntrySaveData>();
 
         public UnitySerializer.Vector3 position;
         public UnitySerializer.Vector3 rotation;
@@ -128,8 +128,16 @@ namespace PLAYERTWO.ARPGProject
             totalPlayTime = character.totalPlayTime;
             
             bestiaryEntries = character.bestiary != null
-                ? character.bestiary.Values.OrderBy(e => e.enemyId).ToList()
-                : new List<BestiaryEntry>();
+                ? character.bestiary.Values
+                    .OrderBy(e => e.enemyId)
+                    .Select(e => new BestiaryEntrySaveData
+                    {
+                        enemyId = e.enemyId,
+                        encounters = e.encounters,
+                        kills = e.kills
+                    })
+                    .ToList()
+                : new List<BestiaryEntrySaveData>();
 
             storylineCompleted = character.storylineCompleted;
             questionnaireCompleted = character.questionnaireCompleted;
@@ -199,7 +207,7 @@ namespace PLAYERTWO.ARPGProject
             if (serializer.unlockedSpecializationTiers == null)
                 serializer.unlockedSpecializationTiers = new List<int>();
             if (serializer.bestiaryEntries == null)
-                serializer.bestiaryEntries = new List<BestiaryEntry>();
+                serializer.bestiaryEntries = new List<BestiaryEntrySaveData>();
             if (serializer.reputationEntries == null)
                 serializer.reputationEntries = new List<ReputationEntry>();
             return serializer;

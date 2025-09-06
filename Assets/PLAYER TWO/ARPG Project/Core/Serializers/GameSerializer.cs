@@ -43,6 +43,12 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void InitializeStashes(GameStash stash)
         {
+            if (stash == null)
+            {
+                stashes = new InventorySerializer[0];
+                return;
+            }
+
             stashes = new InventorySerializer[stash.amount];
 
             for (int i = 0; i < stashes.Length; i++)
@@ -50,9 +56,15 @@ namespace PLAYERTWO.ARPGProject
                 stashes[i] = new InventorySerializer(stash.GetInventory(i));
             }
         }
-        
+
         protected virtual void InitializeBank(GameBank bank)
         {
+            if (bank == null)
+            {
+                bankAccounts = new BankAccountSerializer[0];
+                return;
+            }
+
             bankAccounts = new BankAccountSerializer[bank.amount];
 
             for (int i = 0; i < bankAccounts.Length; i++)

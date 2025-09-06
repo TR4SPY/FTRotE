@@ -120,10 +120,19 @@ namespace PLAYERTWO.ARPGProject
             GUIWindowsManager.instance.waypointsWindow.Show();
         }
 
+
+
         private void GiveDiscoveryReward(Entity player)
         {
             if (player == null || player.stats == null || player.inventory == null)
                 return;
+
+            var character = Game.instance?.currentCharacter;
+            if (character == null)
+            {
+                Debug.LogWarning("[Waypoint] No current character available. Discovery reward skipped.");
+                return;
+            }
 
             string playerType = Game.instance.currentCharacter.currentDynamicPlayerType;
             int finalExp = 0;
@@ -160,7 +169,12 @@ namespace PLAYERTWO.ARPGProject
 
         protected void LogWaypointDiscovery(Collider other = null)
         {
-            var character = Game.instance.currentCharacter;
+            var character = Game.instance?.currentCharacter;
+            if (character == null)
+            {
+                Debug.LogWarning("[Waypoint] No current character available. Cannot log waypoint discovery.");
+                return;
+            }
             CharacterClassRestrictions playerClass = CharacterClassRestrictions.None;
             PlayerType playerTypeEnum = PlayerType.None;
             if (character != null)

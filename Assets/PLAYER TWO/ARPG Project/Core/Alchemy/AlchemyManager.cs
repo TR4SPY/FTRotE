@@ -18,7 +18,14 @@ namespace PLAYERTWO.ARPGProject
 
         public override bool TryCraft(List<ItemInstance> inputItems, ref ItemInstance result, ref string failReason)
         {
-            var character = Game.instance.currentCharacter;
+            var character = Game.instance?.currentCharacter;
+            if (character == null || Level.instance?.player == null)
+            {
+                Debug.LogWarning("[AlchemyManager] No current character available. Crafting aborted.");
+                failReason = "No character";
+                return false;
+            }
+
             var inventory = character.inventory;
             var playerInventory = Level.instance.player.inventory.instance;
 

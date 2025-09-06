@@ -1,9 +1,11 @@
 using UnityEngine;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization;
 using AI_DDA.Assets.Scripts;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.Localization;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -127,7 +129,7 @@ namespace PLAYERTWO.ARPGProject
                     {
                         m_currentCharacter.bestiary = charData.bestiaryEntries
                             .GroupBy(e => e.enemyId)
-                            .ToDictionary(g => g.Key, g => g.First());
+                            .ToDictionary(g => g.Key, g => ConvertToBestiaryEntry(g.First()));
                         BestiaryManager.Instance?.SetEntries(m_currentCharacter.bestiary);
                     }
 
@@ -143,6 +145,33 @@ namespace PLAYERTWO.ARPGProject
                 m_currentCharacter.Entity.items.RevalidateEquippedItems();
 
             return data;
+        }
+        
+        private static BestiaryEntry ConvertToBestiaryEntry(BestiaryEntrySaveData data)
+        {
+            var prefabList = GameDatabase.instance?.enemies;
+            Sprite icon = null;
+            string enemyName = $"Enemy_{data.enemyId}";
+
+            if (prefabList != null && data.enemyId >= 0 && data.enemyId < prefabList.Count)
+            {
+                var prefab = prefabList[data.enemyId];
+                if (prefab != null)
+                {
+                    enemyName = prefab.name;
+                    icon = prefab.GetComponentInChildren<SpriteRenderer>()?.sprite;
+                }
+            }
+
+            return new BestiaryEntry
+            {
+                enemyId = data.enemyId,
+                name = new LocalizedString { TableEntryReference = enemyName },
+                description = new LocalizedString { TableEntryReference = $"{enemyName}_Description" },
+                icon = icon,
+                encounters = data.encounters,
+                kills = data.kills
+            };
         }
 
         protected virtual void SaveBinary()
@@ -181,9 +210,13 @@ namespace PLAYERTWO.ARPGProject
 
                     return data;
                 }
+                catch (SerializationException ex)
+                {
+                    Debug.LogError($"[GameSave] Serialization error loading game data from '{path}': {ex}");
+                }
                 catch (System.Exception ex)
                 {
-                    Debug.LogError($"Error loading game data: {ex.Message}");
+                    Debug.LogError($"[GameSave] Error loading game data from '{path}': {ex}");
                 }
             }
 
