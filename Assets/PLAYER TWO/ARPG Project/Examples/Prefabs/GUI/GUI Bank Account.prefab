@@ -89,7 +89,7 @@ GameObject:
   - component: {fileID: 309617276089381712}
   - component: {fileID: 6786901209549713870}
   m_Layer: 5
-  m_Name: Name
+  m_Name: Percentage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -155,7 +155,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 7% over One Day
+  m_Text: 7%
 --- !u!114 &6786901209549713870
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -516,6 +516,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9051780705113894404}
   - component: {fileID: 3495705650780515839}
+  - component: {fileID: 903847768552750871}
   m_Layer: 5
   m_Name: GUI Bank Account
   m_TagString: Untagged
@@ -574,6 +575,23 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &903847768552750871
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1516911172086903901}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a75c884e7c52af29a924b9dca461975, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nameText: {fileID: 2080138197449249175}
+  offerText: {fileID: 4650310961057228551}
+  valueText: {fileID: 309617276089381712}
+  timeText: {fileID: 2599579807833698973}
+  withdrawButton: {fileID: 6902534897607725490}
 --- !u!1 &2124270728319069820
 GameObject:
   m_ObjectHideFlags: 0
@@ -2011,7 +2029,7 @@ GameObject:
   - component: {fileID: 9008402504871951632}
   - component: {fileID: 4386057369133929209}
   m_Layer: 5
-  m_Name: Account
+  m_Name: Yield
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

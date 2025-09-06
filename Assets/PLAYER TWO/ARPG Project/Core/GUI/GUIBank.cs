@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace PLAYERTWO.ARPGProject
@@ -16,24 +14,27 @@ namespace PLAYERTWO.ARPGProject
         [Header("Offers")]
         public GameObject offersPanel;
         public RectTransform offersContent;
-        public OfferItem offerItemPrefab;
+        public GUIBankOffer offerPrefab;
         public Button offersBackButton;
 
         [Header("Accounts")]
         public GameObject accountsPanel;
-        public RectTransform accountsContent;
-        public AccountItem accountItemPrefab;
+        public GUIBankAccount[] accountSlots;
+        public Button newAccountButton;
         public Button accountsBackButton;
 
         [Header("New Account")]
         public GameObject newAccountPanel;
-        public InputField depositField;
+        public InputField depositSolmireField;
+        public InputField depositLunarisField;
+        public InputField depositAmberlingsField;
         public InputField accountNameField;
         public Button confirmButton;
         public Button newAccountBackButton;
+        public Button resetButton;
 
         private SavingOffer m_selectedOffer;
-        private readonly List<AccountItem> m_accountItems = new();
+        // private readonly List<GUIBankAccount> m_accounts = new();
 
         protected EntityInventory m_playerInventory => Level.instance.player.inventory;
 
@@ -43,8 +44,14 @@ namespace PLAYERTWO.ARPGProject
             if (checkAccountsButton) checkAccountsButton.onClick.AddListener(ShowAccounts);
             if (offersBackButton) offersBackButton.onClick.AddListener(BackToMenu);
             if (accountsBackButton) accountsBackButton.onClick.AddListener(BackToMenu);
+            if (newAccountButton) newAccountButton.onClick.AddListener(ShowOffers);
             if (newAccountBackButton) newAccountBackButton.onClick.AddListener(BackToMenu);
             if (confirmButton) confirmButton.onClick.AddListener(ConfirmInvest);
+            if (resetButton) resetButton.onClick.AddListener(ResetNewAccountInputs);
+            foreach (var slot in accountSlots)
+            {
+                if (slot) slot.gameObject.SetActive(false);
+            }
 
             BackToMenu();
         }
@@ -74,7 +81,20 @@ namespace PLAYERTWO.ARPGProject
             offersPanel.SetActive(false);
             newAccountPanel.SetActive(false);
             accountsPanel.SetActive(true);
-            RefreshAccounts();
+            //RefreshAccounts();
+
+            var accounts = BankManager.instance.accounts;
+            for (int i = 0; i < accountSlots.Length; i++)
+            {
+                var slot = accountSlots[i];
+                bool active = i < accounts.Count;
+                slot.gameObject.SetActive(active);
+                if (active)
+                {
+                    int index = i;
+                    slot.Set(accounts[i], () => OnWithdraw(index));
+                }
+            }
         }
 
         protected virtual void PopulateOffers()
@@ -84,34 +104,35 @@ namespace PLAYERTWO.ARPGProject
 
             foreach (var offer in BankManager.instance.offers)
             {
-                var item = Instantiate(offerItemPrefab, offersContent);
+                var item = Instantiate(offerPrefab, offersContent);
                 item.Set(offer, () => OnSelectOffer(offer));
             }
         }
 
+/*
         protected virtual void RefreshAccounts()
         {
             foreach (Transform child in accountsContent)
                 Destroy(child.gameObject);
-            m_accountItems.Clear();
+            m_accounts.Clear();
 
             var accounts = BankManager.instance.accounts;
             for (int i = 0; i < accounts.Count; i++)
             {
                 int index = i;
                 var acc = accounts[i];
-                var item = Instantiate(accountItemPrefab, accountsContent);
+                var item = Instantiate(accountPrefab, accountsContent);
                 item.Set(acc, () => OnWithdraw(index));
-                m_accountItems.Add(item);
+                m_accounts.Add(item);
             }
         }
+*/
 
         protected virtual void OnSelectOffer(SavingOffer offer)
         {
             if (!BankManager.instance.HasAvailableSlot) return;
             m_selectedOffer = offer;
-            if (depositField) depositField.text = string.Empty;
-            if (accountNameField) accountNameField.text = string.Empty;
+            ResetNewAccountInputs();
             offersPanel.SetActive(false);
             newAccountPanel.SetActive(true);
         }
@@ -119,7 +140,19 @@ namespace PLAYERTWO.ARPGProject
         protected virtual void ConfirmInvest()
         {
             if (m_selectedOffer == null) return;
-            if (!int.TryParse(depositField.text, out int deposit) || deposit <= 0) return;
+            int solmire = 0;
+            int lunaris = 0;
+            int amberlings = 0;
+
+            if (depositSolmireField) int.TryParse(depositSolmireField.text, out solmire);
+            if (depositLunarisField) int.TryParse(depositLunarisField.text, out lunaris);
+            if (depositAmberlingsField) int.TryParse(depositAmberlingsField.text, out amberlings);
+
+            int deposit = Currency.ConvertToAmberlings(solmire, CurrencyType.Solmire)
+                        + Currency.ConvertToAmberlings(lunaris, CurrencyType.Lunaris)
+                        + Currency.ConvertToAmberlings(amberlings, CurrencyType.Amberlings);
+
+            if (deposit <= 0) return;
             if (m_playerInventory.instance.currency.GetTotalAmberlings() < deposit) return;
             if (!BankManager.instance.HasAvailableSlot) return;
 
@@ -129,7 +162,15 @@ namespace PLAYERTWO.ARPGProject
             BankManager.instance.OpenAccount(name, deposit, m_selectedOffer);
 
             BackToMenu();
-            RefreshAccounts();
+            // RefreshAccounts();
+        }
+
+        protected virtual void ResetNewAccountInputs()
+        {
+            if (depositSolmireField) depositSolmireField.text = "0";
+            if (depositLunarisField) depositLunarisField.text = "0";
+            if (depositAmberlingsField) depositAmberlingsField.text = "0";
+            if (accountNameField) accountNameField.text = string.Empty;
         }
 
         protected virtual void OnWithdraw(int index)
@@ -138,7 +179,8 @@ namespace PLAYERTWO.ARPGProject
             if (value > 0)
             {
                 m_playerInventory.instance.AddMoney(value);
-                RefreshAccounts();
+                // RefreshAccounts();
+                ShowAccounts();
             }
         }
 
@@ -147,58 +189,21 @@ namespace PLAYERTWO.ARPGProject
             if (accountsPanel && accountsPanel.activeSelf)
             {
                 var accounts = BankManager.instance.accounts;
-                for (int i = 0; i < accounts.Count && i < m_accountItems.Count; i++)
+/*
+                for (int i = 0; i < accounts.Count && i < m_accounts.Count; i++)
                 {
-                    m_accountItems[i].UpdateTime(accounts[i]);
+                    m_accounts[i].UpdateTime(accounts[i]);
                 }
-            }
-        }
+*/
 
-        [System.Serializable]
-        public class OfferItem : MonoBehaviour
-        {
-            public Text nameText;
-            public Text rateText;
-            public Text durationText;
-            public Button selectButton;
-
-            public void Set(SavingOffer offer, UnityAction onSelect)
-            {
-                if (nameText) nameText.text = offer.offerName;
-                if (rateText) rateText.text = $"{offer.interestRate:P0}";
-                if (durationText) durationText.text = $"{offer.durationHours:0}h";
-                if (selectButton)
+                int activeCount = Mathf.Min(accountSlots.Length, accounts.Count);
+                for (int i = 0; i < activeCount; i++)
                 {
-                    selectButton.onClick.RemoveAllListeners();
-                    selectButton.onClick.AddListener(onSelect);
+                    if (accountSlots[i].gameObject.activeSelf)
+                    {
+                        accountSlots[i].UpdateTime(accounts[i]);
+                    }
                 }
-            }
-        }
-
-        [System.Serializable]
-        public class AccountItem : MonoBehaviour
-        {
-            public Text nameText;
-            public Text valueText;
-            public Text timeText;
-            public Button withdrawButton;
-
-            public void Set(BankManager.InvestmentAccount account, UnityAction onWithdraw)
-            {
-                if (nameText) nameText.text = account.name;
-                if (withdrawButton)
-                {
-                    withdrawButton.onClick.RemoveAllListeners();
-                    withdrawButton.onClick.AddListener(onWithdraw);
-                }
-                UpdateTime(account);
-            }
-
-            public void UpdateTime(BankManager.InvestmentAccount account)
-            {
-                if (valueText) valueText.text = Currency.FormatCurrencyString(account.CurrentValue);
-                if (timeText) timeText.text = account.Matured ? "Ready!" : $"{account.RemainingTime:0}s";
-                if (withdrawButton) withdrawButton.interactable = account.Matured;
             }
         }
     }
