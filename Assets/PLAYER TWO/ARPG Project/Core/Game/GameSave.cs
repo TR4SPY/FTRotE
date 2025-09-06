@@ -211,10 +211,20 @@ namespace PLAYERTWO.ARPGProject
         protected virtual void SaveBinary()
         {
             var path = GetFilePath();
+            var fullPath = Path.GetFullPath(path);
             var data = new GameSerializer(m_game);
             var formatter = new BinaryFormatter();
-            using var stream = new FileStream(path, FileMode.Create);
-            formatter.Serialize(stream, data);
+            try
+            {
+                using var stream = new FileStream(path, FileMode.Create);
+                formatter.Serialize(stream, data);
+
+                Debug.Log($"[GameSave] Saved binary game data to '{fullPath}': charCount={stream.Position}");
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"[GameSave] Error saving game data to '{fullPath}': {ex.Message}\n{ex.StackTrace}");
+            }
 
             // Debug.Log($"Saved DifficultyManager: Dexterity={data.dexterityMultiplier}, Strength={data.strengthMultiplier}, Vitality={data.vitalityMultiplier}, Energy={data.energyMultiplier}");
         }
@@ -222,11 +232,14 @@ namespace PLAYERTWO.ARPGProject
         protected virtual GameSerializer LoadBinary()
         {
             var path = GetFilePath();
+            var fullPath = Path.GetFullPath(path);
 
             if (File.Exists(path))
             {
                 var formatter = new BinaryFormatter();
                 using var stream = new FileStream(path, FileMode.Open);
+
+                Debug.Log($"[GameSave] Loading binary game data from '{fullPath}': charCount={stream.Length}");
 
                 try
                 {
@@ -246,11 +259,11 @@ namespace PLAYERTWO.ARPGProject
                 }
                 catch (SerializationException ex)
                 {
-                    Debug.LogError($"[GameSave] Serialization error loading game data from '{path}': {ex}");
+                    Debug.LogError($"[GameSave] Serialization error loading game data from '{fullPath}': {ex.Message}\n{ex.StackTrace}");
                 }
                 catch (System.Exception ex)
                 {
-                    Debug.LogError($"[GameSave] Error loading game data from '{path}': {ex}");
+                    Debug.LogError($"[GameSave] Error loading game data from '{fullPath}': {ex.Message}\n{ex.StackTrace}");
                 }
             }
 

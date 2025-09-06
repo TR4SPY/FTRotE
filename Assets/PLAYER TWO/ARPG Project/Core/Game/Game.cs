@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -315,6 +316,16 @@ namespace PLAYERTWO.ARPGProject
         {
             var index = m_currentCharacterId >= 0 ? (int?)m_currentCharacterId : null;
             LoadGameData(index);
+
+            var activeScene = SceneManager.GetActiveScene().name;
+            if (characters.Count == 0 && activeScene != "Main" && activeScene != "Title")
+            {
+                var defaultClass = GameDatabase.instance.characters.FirstOrDefault();
+                var classId = GameDatabase.instance.GetElementId(defaultClass);
+                CreateCharacter("Player", classId);
+                GameSave.instance.Save();     // persist the new character
+                Debug.Log("[Game] Auto-created default Player (Knight).");
+            }
 
             if (characters.Count == 0)
             {
