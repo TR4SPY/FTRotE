@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using AI_DDA.Assets.Scripts;
 
@@ -17,7 +18,7 @@ namespace PLAYERTWO.ARPGProject
     [System.Serializable]
     public struct ReputationEntry
     {
-        public string faction;
+        public Faction faction;
         public int value;
     }
 
@@ -126,7 +127,9 @@ namespace PLAYERTWO.ARPGProject
             currentDynamicPlayerType = character.currentDynamicPlayerType;
             totalPlayTime = character.totalPlayTime;
             
-            bestiaryEntries = character.bestiary != null ? new List<BestiaryEntry>(character.bestiary.Values) : new List<BestiaryEntry>();
+            bestiaryEntries = character.bestiary != null
+                ? character.bestiary.Values.OrderBy(e => e.enemyId).ToList()
+                : new List<BestiaryEntry>();
 
             storylineCompleted = character.storylineCompleted;
             questionnaireCompleted = character.questionnaireCompleted;

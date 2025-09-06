@@ -46,7 +46,7 @@ namespace PLAYERTWO.ARPGProject
             if (m_alchemist.inventories == null)
                 return;
 
-            if (m_alchemist.inventories.TryGetValue(m_alchemist.section.title, out var inventory))
+            if (m_alchemist.inventories.TryGetValue(m_alchemist.alchemySection.title, out var inventory))
             {
                 m_section = Instantiate(sectionPrefab, sectionContainer);
                 m_section.SetInventory(inventory);
@@ -214,6 +214,64 @@ namespace PLAYERTWO.ARPGProject
             }
 
             craftingText.text = result;
+        }
+
+        public void Craft()
+        {
+            if (m_section == null)
+            {
+                craftingText.text = "No alchemy section found.";
+                GameAudio.instance?.PlayDeniedSound();
+                return;
+            }
+
+            var guiItems = m_section.GetComponentsInChildren<GUIItem>().ToList();
+            var craftItems = guiItems.Select(i => i.item).Where(i => i != null).ToList();
+
+            if (!craftItems.Any())
+            {
+                craftingText.text = "You haven't placed any items for alchemy.";
+                GameAudio.instance?.PlayDeniedSound();
+                return;
+            }
+
+            if (!canCraft)
+            {
+                craftingText.text = "Crafting is not available with current combination.";
+                GameAudio.instance?.PlayDeniedSound();
+                return;
+            }
+
+            ItemInstance resultItem = null;
+            string failReason = "";
+            bool success = craftingManager.TryCraft(craftItems, ref resultItem, ref failReason);
+
+            foreach (var guiItem in guiItems)
+            {
+                m_section.TryRemove(guiItem);
+                Destroy(guiItem.gameObject);
+            }
+
+            m_section.UpdateSlots();
+
+            if (resultSlot.item != null)
+                resultSlot.Unequip();
+
+            if (resultItem != null)
+            {
+                var guiResult = GUI.instance.CreateGUIItem(resultItem, resultSlot.transform as RectTransform);
+                resultSlot.Equip(guiResult);
+            }
+
+            if (!success)
+            {
+                craftingText.text = failReason;
+                GameAudio.instance?.PlayDeniedSound();
+            }
+            else
+            {
+                craftingText.text = "Craft successful!";
+            }
         }
     }
 }

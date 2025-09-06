@@ -10,10 +10,6 @@ using System.Collections.Generic;
 public class GUIUserInterfaceSettingsWindow : GUIWindow
     {
         [Header("UI Settings")]
-
-        [Header("Navigation Buttons")]
-        public Button backButton;
-
         public Toggle difficultyToggle;
         public Toggle damageTextToggle;
         public Toggle overlayChatToggle;
@@ -33,6 +29,9 @@ public class GUIUserInterfaceSettingsWindow : GUIWindow
         public TMP_Dropdown partyInviteDropdown;
         public TMP_Dropdown damageNumberModeDropdown;
         public TMP_Dropdown itemCompareModeDropdown;
+
+        [Header("Navigation Buttons")]
+        public Button backButton;
 
         protected GameSettings m_settings => GameSettings.instance;
 

@@ -337,15 +337,9 @@ namespace AI_DDA.Assets.Scripts
 
             if (characterInstance.reputation != null && ReputationManager.Instance != null)
             {
-                var dict = new Dictionary<Faction, int>();
-                foreach (var kvp in characterInstance.reputation)
-                {
-                    if (System.Enum.TryParse(kvp.Key, out Faction faction))
-                        dict[faction] = kvp.Value;
-                }
-                ReputationManager.Instance.Load(dict);
+                ReputationManager.Instance.Load(characterInstance.reputation);
             }
-
+            
             /* 
                 Debug.Log($"Loaded Player Behavior Logs for {characterInstance.name}: " +
                     $"Deaths={playerDeaths}, Defeated={enemiesDefeated}, " +

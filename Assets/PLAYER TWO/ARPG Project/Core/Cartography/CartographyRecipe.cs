@@ -1,9 +1,12 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "NewCartographyRecipe", menuName = "PLAYER TWO/ARPG Project/Cartography/Recipe")]
-public class CartographyRecipe : ScriptableObject
+namespace PLAYERTWO.ARPGProject
 {
-    public PLAYERTWO.ARPGProject.Item fragmentItem;
-    public int requiredFragments = 5;
-    public PLAYERTWO.ARPGProject.Item resultMap;
+    [CreateAssetMenu(fileName = "NewCartographyRecipe", menuName = "PLAYER TWO/ARPG Project/Cartography/Recipe")]
+    public class CartographyRecipe : ScriptableObject
+    {
+        public Item fragmentItem;
+        public int requiredFragments = 5;
+        public Item resultMap;
+    }
 }

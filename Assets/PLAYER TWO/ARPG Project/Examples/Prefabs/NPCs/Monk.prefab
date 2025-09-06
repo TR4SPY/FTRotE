@@ -164,7 +164,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 702b06df4808fd6bba52fb827801bff3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  npcName: Monk
+  npcName: MONK
 --- !u!1001 &80027077090686531
 PrefabInstance:
   m_ObjectHideFlags: 0

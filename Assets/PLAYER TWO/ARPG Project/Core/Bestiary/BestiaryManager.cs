@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using PLAYERTWO.ARPGProject;
+using UnityEngine.Localization;
 
 namespace AI_DDA.Assets.Scripts
 {
@@ -26,23 +27,55 @@ namespace AI_DDA.Assets.Scripts
         private Dictionary<int, BestiaryEntry> _entries = new Dictionary<int, BestiaryEntry>();
         public IReadOnlyDictionary<int, BestiaryEntry> Entries => _entries;
 
+        private int GetEnemyId(Entity entity)
+        {
+            if (entity == null) return -1;
+
+            var db = GameDatabase.instance;
+            if (db == null || db.enemies == null)
+                return -1;
+
+            string cleanName = entity.name.Replace("(Clone)", "").Trim();
+            for (int i = 0; i < db.enemies.Count; i++)
+            {
+                var prefab = db.enemies[i];
+                if (prefab != null && prefab.name == cleanName)
+                    return i;
+            }
+
+            return -1;
+        }
+
         public void RegisterEncounter(Entity entity)
         {
-            if (entity == null) return;
-            int id = entity.GetInstanceID();
+            int id = GetEnemyId(entity);
+            if (id < 0) return;
+
             if (!_entries.TryGetValue(id, out var entry))
             {
-                entry = new BestiaryEntry { enemyId = id };
+                var prefab = GameDatabase.instance.enemies[id];
+                string enemyName = prefab != null ? prefab.name : entity.name.Replace("(Clone)", "").Trim();
+
+                entry = new BestiaryEntry
+                {
+                    enemyId = id,
+                    name = new LocalizedString { TableEntryReference = enemyName },
+                    description = new LocalizedString { TableEntryReference = $"{enemyName}_Description" },
+                    icon = prefab?.GetComponentInChildren<SpriteRenderer>()?.sprite
+                };
                 _entries[id] = entry;
             }
+
             entry.encounters++;
         }
 
         public void RegisterKill(Entity entity)
         {
-            if (entity == null) return;
+            int id = GetEnemyId(entity);
+            if (id < 0) return;
+
             RegisterEncounter(entity);
-            int id = entity.GetInstanceID();
+
             if (_entries.TryGetValue(id, out var entry))
             {
                 entry.kills++;

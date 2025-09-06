@@ -6,15 +6,15 @@ namespace PLAYERTWO.ARPGProject
     [AddComponentMenu("PLAYER TWO/ARPG Project/GUI/GUI Accessibility Settings Window")]
     public class GUIAccessibilitySettingsWindow : GUIWindow
     {
-        [Header("Navigation Buttons")]
-        public Button backButton;
-
         [Header("Accessibility Options")]
         public Toggle colorblindFilterToggle;
         public Toggle largeTextToggle;
         public Toggle subtitlesToggle;
         public Toggle highContrastToggle;
         public Slider flashReductionSlider;
+
+        [Header("Navigation Buttons")]
+        public Button backButton;
 
         protected GameSettings m_settings => GameSettings.instance;
 

@@ -125,7 +125,9 @@ namespace PLAYERTWO.ARPGProject
 
                     if (charData.bestiaryEntries != null)
                     {
-                        m_currentCharacter.bestiary = charData.bestiaryEntries.ToDictionary(e => e.enemyId, e => e);
+                        m_currentCharacter.bestiary = charData.bestiaryEntries
+                            .GroupBy(e => e.enemyId)
+                            .ToDictionary(g => g.Key, g => g.First());
                         BestiaryManager.Instance?.SetEntries(m_currentCharacter.bestiary);
                     }
 
@@ -362,11 +364,7 @@ namespace PLAYERTWO.ARPGProject
             
             if (ReputationManager.Instance != null)
             {
-                character.reputation = new Dictionary<string, int>();
-                foreach (var kvp in ReputationManager.Instance.GetAllReputations())
-                {
-                    character.reputation[kvp.Key.ToString()] = kvp.Value;
-                }
+                character.reputation = new Dictionary<Faction, int>(ReputationManager.Instance.GetAllReputations());
             }
 
             // Debug.Log($"Saved Player Behavior Logs for {character.name} | AchievementsUnlocked={achievementsUnlocked}");

@@ -118,7 +118,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 702b06df4808fd6bba52fb827801bff3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  npcName: Another Monk
+  npcName: MONK - BROTHER ILVYR
 --- !u!114 &7370606505055552536
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -156,7 +156,9 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3229325632576676323, guid: fdf7362be5317794fa99f5f54c4cb76d, type: 3}
       propertyPath: m_Text
-      value: Monk
+      value: 'Brother Ilvyr
+
+        Monk'
       objectReference: {fileID: 0}
     - target: {fileID: 3229325632779371516, guid: fdf7362be5317794fa99f5f54c4cb76d, type: 3}
       propertyPath: m_RootOrder

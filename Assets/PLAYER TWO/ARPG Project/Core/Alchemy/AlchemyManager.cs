@@ -16,7 +16,7 @@ namespace PLAYERTWO.ARPGProject
             }
         }
 
-        public new bool TryCraft(List<ItemInstance> inputItems, ref ItemInstance result, ref string failReason)
+        public override bool TryCraft(List<ItemInstance> inputItems, ref ItemInstance result, ref string failReason)
         {
             var character = Game.instance.currentCharacter;
             var inventory = character.inventory;

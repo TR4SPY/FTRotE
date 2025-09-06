@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: -6928232174557125954}
   - component: {fileID: -7216128773366485493}
   - component: {fileID: 7399124025929745388}
+  - component: {fileID: -5684175985194008276}
   m_Layer: 0
   m_Name: Merchant
   m_TagString: Untagged
@@ -27,6 +28,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7399124025929745386}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -36,7 +38,6 @@ Transform:
   - {fileID: 3327976606108399397}
   - {fileID: 1312991046088824438}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7399124025929745389
 MonoBehaviour:
@@ -55,8 +56,10 @@ MonoBehaviour:
       m_Calls: []
   interactOnce: 0
   disableOnInteract: 0
+  CanAgentInteract: 0
   animator: {fileID: 0}
   interactClip: {fileID: 0}
+  uniqueNPCID: 
   rows: 12
   columns: 7
   buyBackTitle: BUY BACK
@@ -65,96 +68,185 @@ MonoBehaviour:
     items:
     - data: {fileID: 11400000, guid: 4cb46060deb33ae4aa017fdadc88eeae, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: 5cf83e0ed05e81641bdc02abc92de27f, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: c1a513f5b99edca4ba6554fd3529d7c2, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: 9cb964af1fa5b3c4c82335cc71f9deb0, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: 77840b5ddf0cd2b4f8d2c802c8e4b660, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: f22f499c2ce172c49a19b59020c71cb7, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: baca1f95bcc4f90468af7a025f5ef14d, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: 9fd42222a630ed440af116f32360df93, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: ee2abf50e21d4c940bd7ca25b12b9194, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: 5b8922a9ddc64b846b581c03afe8c916, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: b5eabe5e653c87a48b3ec1bfe7f64ab7, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: 8a2041a6e0665fc42bb9d3b7b3d7c77a, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
   - title: ARMORS
     items:
     - data: {fileID: 11400000, guid: e8f97257528e6ef499e98f031294b208, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: 7a74949e05a1a0641ac2b6d86533424f, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: f296091cb8c51ec49af9a07c9acf9cc7, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: 77e91c522ce0e044492839c820e45489, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: 19679ddc8109d4348b5e60a8b5cdb2d6, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: db46f83771245ed46b9a49344dfce90d, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: 08579f3d1f05b254f86a8d4a1b328762, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: ea04913187e725a48b856e3730cf9615, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: 9f96dd20ed2edc2468d51ba39d9b805e, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: c9657b84acffdd6449a57c1dc5833fab, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
   - title: MISC
     items:
     - data: {fileID: 11400000, guid: a9d3393a671f7c441a74af4a81c00896, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: a9d3393a671f7c441a74af4a81c00896, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: a9d3393a671f7c441a74af4a81c00896, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: a9d3393a671f7c441a74af4a81c00896, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: a9d3393a671f7c441a74af4a81c00896, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: a9d3393a671f7c441a74af4a81c00896, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: a9d3393a671f7c441a74af4a81c00896, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: 7de6cdd817a59a0418b75bf32982c2a3, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: 7de6cdd817a59a0418b75bf32982c2a3, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: 7de6cdd817a59a0418b75bf32982c2a3, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: 7de6cdd817a59a0418b75bf32982c2a3, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: 7de6cdd817a59a0418b75bf32982c2a3, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: 7de6cdd817a59a0418b75bf32982c2a3, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: 7de6cdd817a59a0418b75bf32982c2a3, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: 1891084be3dec44468e25a27ddf19725, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: 7ae754aec48a6524ca1a493262ef3cc8, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: fe840a3f8cf742e48b08da8d45b27976, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: 8f6d25315d70c2641bc233a3555a8f84, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: dd9f097e7f5f7a0409d59dd82473d70f, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: 6a24c7be192eed148976993cb5a70431, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: d239df6556bc03b4ab99627b2746c457, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
     - data: {fileID: 11400000, guid: 2d27cd7af50d4df42a0a70f829f40e0b, type: 2}
       attributes: 0
+      itemLevel: 0
+      quantity: 1
+  assignedDialog: {fileID: 0}
 --- !u!114 &-6928232174557125954
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -209,16 +301,38 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7399124025929745386}
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
   m_IsTrigger: 0
+  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
+  serializedVersion: 3
   m_Size: {x: 2, y: 2, z: 2}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &-5684175985194008276
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7399124025929745386}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 702b06df4808fd6bba52fb827801bff3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  npcName: MERCHANT
 --- !u!1001 &216040406490969305
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 7399124025929745391}
     m_Modifications:
     - target: {fileID: 3229325632576676323, guid: fdf7362be5317794fa99f5f54c4cb76d, type: 3}
@@ -278,6 +392,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fdf7362be5317794fa99f5f54c4cb76d, type: 3}
 --- !u!1 &3327976606108399396 stripped
 GameObject:
@@ -294,6 +411,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 7399124025929745391}
     m_Modifications:
     - target: {fileID: 1776620116237150747, guid: 3c64ec84109f23240a2ba4540a27845f, type: 3}
@@ -361,6 +479,9 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3c64ec84109f23240a2ba4540a27845f, type: 3}
 --- !u!4 &1312991046088824438 stripped
 Transform:
@@ -372,6 +493,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 7399124025929745391}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 2cccc873213ec63488b503574e22761b, type: 3}
@@ -423,6 +545,12 @@ PrefabInstance:
       value: Merchant
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2cccc873213ec63488b503574e22761b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7399124026086751728}
   m_SourcePrefab: {fileID: 100100000, guid: 2cccc873213ec63488b503574e22761b, type: 3}
 --- !u!4 &6999791620641447056 stripped
 Transform:
@@ -436,7 +564,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
 --- !u!95 &7399124026086751728
 Animator:
-  serializedVersion: 5
+  serializedVersion: 7
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -450,6 +578,7 @@ Animator:
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1

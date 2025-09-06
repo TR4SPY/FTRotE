@@ -1,168 +1,205 @@
-using UnityEngine;
-using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
 
 namespace PLAYERTWO.ARPGProject
 {
     [AddComponentMenu("PLAYER TWO/ARPG Project/GUI/GUI Bank")]
     public class GUIBank : MonoBehaviour
     {
-        [System.Serializable]
-        public class Account
-        {
-            public string name;
-            public Currency currency = new();
-            [Tooltip("Interest rate applied when claiming interest.")]
-            public float interestRate = 0.05f;
-            [Tooltip("Time in seconds between interest claims.")]
-            public float interestInterval = 60f;
-            [HideInInspector] public float lastClaimTime;
+        [Header("Main Menu")]
+        public GameObject mainMenu;
+        public Button investButton;
+        public Button checkAccountsButton;
 
-            public bool CanClaim => Time.time >= lastClaimTime + interestInterval;
-            public float RemainingTime => Mathf.Max(0f, (lastClaimTime + interestInterval) - Time.time);
-
-            public int ClaimInterest()
-            {
-                if (!CanClaim) return 0;
-                int reward = Mathf.FloorToInt(currency.GetTotalAmberlings() * interestRate);
-                currency.AddAmberlings(reward);
-                lastClaimTime = Time.time;
-                return reward;
-            }
-        }
+        [Header("Offers")]
+        public GameObject offersPanel;
+        public RectTransform offersContent;
+        public OfferItem offerItemPrefab;
+        public Button offersBackButton;
 
         [Header("Accounts")]
-        public Account[] accounts;
+        public GameObject accountsPanel;
+        public RectTransform accountsContent;
+        public AccountItem accountItemPrefab;
+        public Button accountsBackButton;
 
-        [Header("UI References")]
-        public Dropdown accountDropdown;
-        public InputField depositSolmireField;
-        public InputField depositLunarisField;
-        public InputField depositAmberlingsField;
-        public InputField withdrawSolmireField;
-        public InputField withdrawLunarisField;
-        public InputField withdrawAmberlingsField;
-        public Button depositButton;
-        public Button withdrawButton;
-        public Text timeRemainingText;
-        public Button claimButton;
+        [Header("New Account")]
+        public GameObject newAccountPanel;
+        public InputField depositField;
+        public InputField accountNameField;
+        public Button confirmButton;
+        public Button newAccountBackButton;
 
-        protected GUIWindow m_window;
+        private SavingOffer m_selectedOffer;
+        private readonly List<AccountItem> m_accountItems = new();
+
         protected EntityInventory m_playerInventory => Level.instance.player.inventory;
-
-        protected Account currentAccount
-        {
-            get
-            {
-                if (accounts == null || accounts.Length == 0) return null;
-                int index = Mathf.Clamp(accountDropdown.value, 0, accounts.Length - 1);
-                return accounts[index];
-            }
-        }
 
         protected virtual void Start()
         {
-            InitializeWindow();
-            InitializeDropdown();
-            InitializeActions();
-            UpdateTime();
+            if (investButton) investButton.onClick.AddListener(ShowOffers);
+            if (checkAccountsButton) checkAccountsButton.onClick.AddListener(ShowAccounts);
+            if (offersBackButton) offersBackButton.onClick.AddListener(BackToMenu);
+            if (accountsBackButton) accountsBackButton.onClick.AddListener(BackToMenu);
+            if (newAccountBackButton) newAccountBackButton.onClick.AddListener(BackToMenu);
+            if (confirmButton) confirmButton.onClick.AddListener(ConfirmInvest);
+
+            BackToMenu();
         }
 
-        protected virtual void InitializeWindow()
+        protected virtual void BackToMenu()
         {
-            m_window = GetComponentInParent<GUIWindow>();
+            if (mainMenu) mainMenu.SetActive(true);
+            if (offersPanel) offersPanel.SetActive(false);
+            if (accountsPanel) accountsPanel.SetActive(false);
+            if (newAccountPanel) newAccountPanel.SetActive(false);
         }
 
-        protected virtual void InitializeDropdown()
+        protected virtual void ShowOffers()
         {
-            if (!accountDropdown) return;
-            accountDropdown.ClearOptions();
-            var options = new List<Dropdown.OptionData>();
-            if (accounts != null)
+            if (!BankManager.instance) return;
+            mainMenu.SetActive(false);
+            accountsPanel.SetActive(false);
+            newAccountPanel.SetActive(false);
+            offersPanel.SetActive(true);
+            PopulateOffers();
+        }
+
+        protected virtual void ShowAccounts()
+        {
+            if (!BankManager.instance) return;
+            mainMenu.SetActive(false);
+            offersPanel.SetActive(false);
+            newAccountPanel.SetActive(false);
+            accountsPanel.SetActive(true);
+            RefreshAccounts();
+        }
+
+        protected virtual void PopulateOffers()
+        {
+            foreach (Transform child in offersContent)
+                Destroy(child.gameObject);
+
+            foreach (var offer in BankManager.instance.offers)
             {
-                foreach (var acc in accounts)
-                    options.Add(new Dropdown.OptionData(acc.name));
+                var item = Instantiate(offerItemPrefab, offersContent);
+                item.Set(offer, () => OnSelectOffer(offer));
             }
-            accountDropdown.AddOptions(options);
-            accountDropdown.onValueChanged.AddListener(_ => UpdateTime());
         }
 
-        protected virtual void InitializeActions()
+        protected virtual void RefreshAccounts()
         {
-            if (depositButton) depositButton.onClick.AddListener(OnDeposit);
-            if (withdrawButton) withdrawButton.onClick.AddListener(OnWithdraw);
-            if (claimButton) claimButton.onClick.AddListener(OnClaim);
+            foreach (Transform child in accountsContent)
+                Destroy(child.gameObject);
+            m_accountItems.Clear();
+
+            var accounts = BankManager.instance.accounts;
+            for (int i = 0; i < accounts.Count; i++)
+            {
+                int index = i;
+                var acc = accounts[i];
+                var item = Instantiate(accountItemPrefab, accountsContent);
+                item.Set(acc, () => OnWithdraw(index));
+                m_accountItems.Add(item);
+            }
         }
 
-        protected virtual int ParseFields(InputField sol, InputField lun, InputField amb)
+        protected virtual void OnSelectOffer(SavingOffer offer)
         {
-            int total = 0;
-            if (sol && int.TryParse(sol.text, out int s) && s > 0)
-                total += Currency.ConvertToAmberlings(s, CurrencyType.Solmire);
-            if (lun && int.TryParse(lun.text, out int l) && l > 0)
-                total += Currency.ConvertToAmberlings(l, CurrencyType.Lunaris);
-            if (amb && int.TryParse(amb.text, out int a) && a > 0)
-                total += a;
-            return total;
+            if (!BankManager.instance.HasAvailableSlot) return;
+            m_selectedOffer = offer;
+            if (depositField) depositField.text = string.Empty;
+            if (accountNameField) accountNameField.text = string.Empty;
+            offersPanel.SetActive(false);
+            newAccountPanel.SetActive(true);
         }
 
-        protected virtual void ClearFields(InputField sol, InputField lun, InputField amb)
+        protected virtual void ConfirmInvest()
         {
-            if (sol) sol.text = "0";
-            if (lun) lun.text = "0";
-            if (amb) amb.text = "0";
+            if (m_selectedOffer == null) return;
+            if (!int.TryParse(depositField.text, out int deposit) || deposit <= 0) return;
+            if (m_playerInventory.instance.currency.GetTotalAmberlings() < deposit) return;
+            if (!BankManager.instance.HasAvailableSlot) return;
+
+            string name = string.IsNullOrEmpty(accountNameField.text) ? "Account" : accountNameField.text;
+
+            m_playerInventory.instance.SpendMoney(deposit);
+            BankManager.instance.OpenAccount(name, deposit, m_selectedOffer);
+
+            BackToMenu();
+            RefreshAccounts();
         }
 
-        protected virtual void OnDeposit()
+        protected virtual void OnWithdraw(int index)
         {
-            var account = currentAccount;
-            if (account == null) return;
-            int amount = ParseFields(depositSolmireField, depositLunarisField, depositAmberlingsField);
-            if (amount <= 0) return;
-            if (m_playerInventory.instance.currency.GetTotalAmberlings() < amount) return;
-
-            m_playerInventory.instance.SpendMoney(amount);
-            account.currency.AddAmberlings(amount);
-
-            ClearFields(depositSolmireField, depositLunarisField, depositAmberlingsField);
-        }
-
-        protected virtual void OnWithdraw()
-        {
-            var account = currentAccount;
-            if (account == null) return;
-            int amount = ParseFields(withdrawSolmireField, withdrawLunarisField, withdrawAmberlingsField);
-            if (amount <= 0) return;
-            if (account.currency.GetTotalAmberlings() < amount) return;
-
-            account.currency.RemoveAmberlings(amount);
-            m_playerInventory.instance.AddMoney(amount);
-
-            ClearFields(withdrawSolmireField, withdrawLunarisField, withdrawAmberlingsField);
-        }
-
-        protected virtual void UpdateTime()
-        {
-            var account = currentAccount;
-            if (!timeRemainingText || account == null) return;
-            float remaining = account.RemainingTime;
-            timeRemainingText.text = remaining > 0f ? $"{remaining:0}s" : "Ready!";
-            if (claimButton) claimButton.interactable = account.CanClaim;
+            int value = BankManager.instance.Withdraw(index);
+            if (value > 0)
+            {
+                m_playerInventory.instance.AddMoney(value);
+                RefreshAccounts();
+            }
         }
 
         protected virtual void Update()
         {
-            UpdateTime();
+            if (accountsPanel && accountsPanel.activeSelf)
+            {
+                var accounts = BankManager.instance.accounts;
+                for (int i = 0; i < accounts.Count && i < m_accountItems.Count; i++)
+                {
+                    m_accountItems[i].UpdateTime(accounts[i]);
+                }
+            }
         }
 
-        protected virtual void OnClaim()
+        [System.Serializable]
+        public class OfferItem : MonoBehaviour
         {
-            var account = currentAccount;
-            if (account == null || !account.CanClaim) return;
-            int reward = account.ClaimInterest();
-            if (reward > 0)
-                m_playerInventory.instance.AddMoney(reward);
-            UpdateTime();
+            public Text nameText;
+            public Text rateText;
+            public Text durationText;
+            public Button selectButton;
+
+            public void Set(SavingOffer offer, UnityAction onSelect)
+            {
+                if (nameText) nameText.text = offer.offerName;
+                if (rateText) rateText.text = $"{offer.interestRate:P0}";
+                if (durationText) durationText.text = $"{offer.durationHours:0}h";
+                if (selectButton)
+                {
+                    selectButton.onClick.RemoveAllListeners();
+                    selectButton.onClick.AddListener(onSelect);
+                }
+            }
+        }
+
+        [System.Serializable]
+        public class AccountItem : MonoBehaviour
+        {
+            public Text nameText;
+            public Text valueText;
+            public Text timeText;
+            public Button withdrawButton;
+
+            public void Set(BankManager.InvestmentAccount account, UnityAction onWithdraw)
+            {
+                if (nameText) nameText.text = account.name;
+                if (withdrawButton)
+                {
+                    withdrawButton.onClick.RemoveAllListeners();
+                    withdrawButton.onClick.AddListener(onWithdraw);
+                }
+                UpdateTime(account);
+            }
+
+            public void UpdateTime(BankManager.InvestmentAccount account)
+            {
+                if (valueText) valueText.text = Currency.FormatCurrencyString(account.CurrentValue);
+                if (timeText) timeText.text = account.Matured ? "Ready!" : $"{account.RemainingTime:0}s";
+                if (withdrawButton) withdrawButton.interactable = account.Matured;
+            }
         }
     }
 }

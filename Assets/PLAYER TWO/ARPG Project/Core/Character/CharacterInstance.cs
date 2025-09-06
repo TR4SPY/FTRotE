@@ -60,7 +60,7 @@ namespace PLAYERTWO.ARPGProject
         };
 
         public Dictionary<string, HashSet<int>> viewedDialogPages = new Dictionary<string, HashSet<int>>();
-        public Dictionary<string, int> reputation = new Dictionary<string, int>();
+        public Dictionary<Faction, int> reputation = new Dictionary<Faction, int>();
         public Dictionary<int, int> selectedDialogPaths = new Dictionary<int, int>();
         public Dictionary<int, BestiaryEntry> bestiary = new Dictionary<int, BestiaryEntry>();
 
@@ -487,7 +487,7 @@ namespace PLAYERTWO.ARPGProject
             }
             else
             {
-                characterInstance.reputation = new Dictionary<string, int>();
+                characterInstance.reputation = new Dictionary<Faction, int>();
             }
 
             return characterInstance;

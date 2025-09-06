@@ -70,8 +70,8 @@ namespace PLAYERTWO.ARPGProject
             {
                 DifficultyManager.Instance.CurrentDexterityMultiplier = dexterityMultiplier;
                 DifficultyManager.Instance.CurrentStrengthMultiplier = strengthMultiplier;
-                vitalityMultiplier = DifficultyManager.Instance.CurrentVitalityMultiplier;
-                energyMultiplier = DifficultyManager.Instance.CurrentEnergyMultiplier;
+                DifficultyManager.Instance.CurrentVitalityMultiplier = vitalityMultiplier;
+                DifficultyManager.Instance.CurrentEnergyMultiplier = energyMultiplier;
 
                 Debug.Log($"Loaded DifficultyManager: Dexterity={dexterityMultiplier}, Strength={strengthMultiplier}, Vitality={vitalityMultiplier}, Energy={energyMultiplier}");
             }

@@ -379,7 +379,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 702b06df4808fd6bba52fb827801bff3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  npcName: Craftman
+  npcName: CRAFTMAN
 --- !u!114 &8181650032057763982
 MonoBehaviour:
   m_ObjectHideFlags: 0

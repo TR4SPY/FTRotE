@@ -44,15 +44,13 @@ using TMPro;
         public Toggle motionBlur;
         public Slider gamma;
 
-        [Header("Apply/Revert")]
+        [Header("Navigation Buttons")]
+        public Button backButton;
         public Button applyButton;
         public GameObject confirmDialog;
         public TMP_Text confirmCountdownText;
         public Button confirmButton;
         public Button revertButton;
-
-        [Header("Navigation Buttons")]
-        public Button backButton;
 
         protected GameSettings m_settings => GameSettings.instance;
 

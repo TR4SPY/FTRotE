@@ -33,7 +33,7 @@ namespace PLAYERTWO.ARPGProject
             };
         }
 
-        public bool TryCraft(List<ItemInstance> inputItems, ref ItemInstance result, ref string failReason)
+        public virtual bool TryCraft(List<ItemInstance> inputItems, ref ItemInstance result, ref string failReason)
         {
             var character = Game.instance.currentCharacter;
             var inventory = character.inventory;
@@ -414,7 +414,7 @@ namespace PLAYERTWO.ARPGProject
         {
             return customRules.FirstOrDefault(rule => rule.Matches(inputItems));
         }
-        private void ConsumeIngredients(List<ItemInstance> input, CraftingRecipe recipe)
+        protected void ConsumeIngredients(List<ItemInstance> input, CraftingRecipe recipe)
         {
             foreach (var ingredient in recipe.ingredients)
             {
