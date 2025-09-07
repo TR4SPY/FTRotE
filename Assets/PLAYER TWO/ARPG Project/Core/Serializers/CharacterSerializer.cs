@@ -127,8 +127,8 @@ namespace PLAYERTWO.ARPGProject
             currentDynamicPlayerType = character.currentDynamicPlayerType;
             totalPlayTime = character.totalPlayTime;
             
-            bestiaryEntries = character.bestiary != null
-                ? character.bestiary.Values
+            bestiaryEntries = character.bestiarySaveData != null && character.bestiarySaveData.Count > 0
+                ? character.bestiarySaveData
                     .OrderBy(e => e.enemyId)
                     .Select(e => new BestiaryEntrySaveData
                     {
@@ -137,7 +137,17 @@ namespace PLAYERTWO.ARPGProject
                         kills = e.kills
                     })
                     .ToList()
-                : new List<BestiaryEntrySaveData>();
+                : character.bestiary != null
+                    ? character.bestiary.Values
+                        .OrderBy(e => e.enemyId)
+                        .Select(e => new BestiaryEntrySaveData
+                        {
+                            enemyId = e.enemyId,
+                            encounters = e.encounters,
+                            kills = e.kills
+                        })
+                        .ToList()
+                    : new List<BestiaryEntrySaveData>();
 
             storylineCompleted = character.storylineCompleted;
             questionnaireCompleted = character.questionnaireCompleted;

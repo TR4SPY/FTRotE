@@ -64,6 +64,7 @@ namespace PLAYERTWO.ARPGProject
         public Dictionary<Faction, int> reputation = new Dictionary<Faction, int>();
         public Dictionary<int, int> selectedDialogPaths = new Dictionary<int, int>();
         public Dictionary<int, BestiaryEntry> bestiary = new Dictionary<int, BestiaryEntry>();
+        public List<BestiaryEntrySaveData> bestiarySaveData = new List<BestiaryEntrySaveData>();
 
         public HashSet<string> visitedZones = new HashSet<string>();
         public HashSet<int> activatedWaypoints = new HashSet<int>();
@@ -420,6 +421,9 @@ namespace PLAYERTWO.ARPGProject
                 bestiary = serializer.bestiaryEntries != null
                     ? serializer.bestiaryEntries.ToDictionary(e => e.enemyId, e => ConvertToBestiaryEntry(e))
                     : new Dictionary<int, BestiaryEntry>(),
+                bestiarySaveData = serializer.bestiaryEntries != null
+                    ? new List<BestiaryEntrySaveData>(serializer.bestiaryEntries)
+                    : new List<BestiaryEntrySaveData>(),
 
                 unlockedAchievements = serializer.unlockedAchievements != null
                     ? new List<string>(serializer.unlockedAchievements)

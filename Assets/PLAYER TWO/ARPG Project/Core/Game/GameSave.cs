@@ -166,7 +166,12 @@ namespace PLAYERTWO.ARPGProject
                 character.bestiary = charData.bestiaryEntries
                     .GroupBy(e => e.enemyId)
                     .ToDictionary(g => g.Key, g => ConvertToBestiaryEntry(g.First()));
+                character.bestiarySaveData = new List<BestiaryEntrySaveData>(charData.bestiaryEntries);
                 BestiaryManager.Instance?.SetEntries(character.bestiary);
+            }
+            else
+            {
+                character.bestiarySaveData = new List<BestiaryEntrySaveData>();
             }
 
             if (character.specializations != null && charData.unlockedSpecializationTiers != null)
@@ -449,7 +454,15 @@ namespace PLAYERTWO.ARPGProject
 
             // Debug.Log($"Saved Player Behavior Logs for {character.name} | AchievementsUnlocked={achievementsUnlocked}");
             if (BestiaryManager.Instance != null)
-                character.bestiary = new Dictionary<int, BestiaryEntry>(BestiaryManager.Instance.GetEntries());        
+                character.bestiarySaveData = BestiaryManager.Instance.GetEntries()
+                    .Values
+                    .Select(e => new BestiaryEntrySaveData
+                    {
+                        enemyId = e.enemyId,
+                        encounters = e.encounters,
+                        kills = e.kills
+                    })
+                    .ToList();     
         }
 
         protected virtual void SaveJSON()
