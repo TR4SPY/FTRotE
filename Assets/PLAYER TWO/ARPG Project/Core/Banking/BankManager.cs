@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -83,6 +84,45 @@ namespace PLAYERTWO.ARPGProject
             int value = account.CurrentValue;
             m_accounts.RemoveAt(index);
             return value;
+        }
+
+
+        public BankAccountSerializer[] GetSerializedAccounts()
+        {
+            var result = new BankAccountSerializer[m_accounts.Count];
+
+            for (int i = 0; i < m_accounts.Count; i++)
+            {
+                var account = m_accounts[i];
+                int offerIndex = offers.IndexOf(account.offer);
+                result[i] = new BankAccountSerializer(account, offerIndex);
+            }
+
+            return result;
+        }
+
+        public void LoadAccounts(BankAccountSerializer[] data)
+        {
+            m_accounts.Clear();
+
+            if (data == null)
+                return;
+
+            foreach (var serialized in data)
+            {
+                if (serialized.offerIndex < 0 || serialized.offerIndex >= offers.Count)
+                    continue;
+
+                var account = new InvestmentAccount
+                {
+                    name = serialized.name,
+                    offer = offers[serialized.offerIndex],
+                    principal = serialized.principal,
+                    startUtc = new DateTime(serialized.startUtcTicks, DateTimeKind.Utc)
+                };
+
+                m_accounts.Add(account);
+            }
         }
     }
 }

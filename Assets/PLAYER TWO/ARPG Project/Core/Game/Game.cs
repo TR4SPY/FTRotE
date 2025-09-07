@@ -296,6 +296,16 @@ namespace PLAYERTWO.ARPGProject
                 bank.LoadData(data.bankAccounts);
             else
                 Debug.LogWarning("[Game] GameBank component missing. Bank data not loaded.");
+
+            if (bank != null)
+                bank.LoadData(data.bankAccounts);
+            else
+                Debug.LogWarning("[Game] GameBank component missing. Bank data not loaded.");
+
+            if (BankManager.instance != null)
+                BankManager.instance.LoadAccounts(data.investmentAccounts);
+            else
+                Debug.LogWarning("[Game] BankManager component missing. Investment accounts not loaded.");
             onDataLoaded?.Invoke();
 
             if (!selectedCharacterIndex.HasValue && characters.Count > 0)

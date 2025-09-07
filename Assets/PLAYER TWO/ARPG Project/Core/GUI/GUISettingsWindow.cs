@@ -32,6 +32,7 @@ namespace PLAYERTWO.ARPGProject
         protected override void Start()
         {
             base.Start();
+            DetachSettingsWindows();
             ShowMainSettings();
             
             if (soundSettingsButton != null)
@@ -76,19 +77,43 @@ namespace PLAYERTWO.ARPGProject
         }
 
         /// <summary>
-        /// Pokazuje menu główne i ukrywa wszystkie okna ustawień.
+        /// Shows the main settings menu and hides any sub windows.
         /// </summary>
         public void ShowMainSettings()
         {
             mainSettings.SetActive(true);
+
+            soundSettingsWindow?.Hide();
+            graphicsSettingsWindow?.Hide();
+            uiSettingsWindow?.Hide();
+            researchSettingsWindow?.Hide();
+            keybindingsSettingsWindow?.Hide();
+            gameplaySettingsWindow?.Hide();
+            languageSettingsWindow?.Hide();
+            accessibilitySettingsWindow?.Hide();
         }
 
         /// <summary>
-        /// Hides the main settings menu.
+        /// Hides only the main settings menu, keeping sub-window parents active.
         /// </summary>
         private void HideMainSettings()
         {
             mainSettings.SetActive(false);
+        }
+
+        private void DetachSettingsWindows()
+        {
+            if (!mainSettings) return;
+            var parent = mainSettings.transform.parent;
+
+            soundSettingsWindow?.transform.SetParent(parent, false);
+            graphicsSettingsWindow?.transform.SetParent(parent, false);
+            uiSettingsWindow?.transform.SetParent(parent, false);
+            researchSettingsWindow?.transform.SetParent(parent, false);
+            keybindingsSettingsWindow?.transform.SetParent(parent, false);
+            gameplaySettingsWindow?.transform.SetParent(parent, false);
+            languageSettingsWindow?.transform.SetParent(parent, false);
+            accessibilitySettingsWindow?.transform.SetParent(parent, false);
         }
 
         /// <summary>

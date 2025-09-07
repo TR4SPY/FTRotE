@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -48,9 +49,36 @@ namespace PLAYERTWO.ARPGProject
             if (newAccountBackButton) newAccountBackButton.onClick.AddListener(BackToMenu);
             if (confirmButton) confirmButton.onClick.AddListener(ConfirmInvest);
             if (resetButton) resetButton.onClick.AddListener(ResetNewAccountInputs);
-            foreach (var slot in accountSlots)
+            if (depositSolmireField) AddInputFieldListeners(depositSolmireField);
+            if (depositLunarisField) AddInputFieldListeners(depositLunarisField);
+            if (depositAmberlingsField) AddInputFieldListeners(depositAmberlingsField);
+            if (accountNameField) AddInputFieldListeners(accountNameField);
+
+            if ((accountSlots == null || accountSlots.Length == 0) && accountsPanel)
             {
-                if (slot) slot.gameObject.SetActive(false);
+                accountSlots = accountsPanel.GetComponentsInChildren<GUIBankAccount>(true);
+            }
+
+            bool hasNull = false;
+            if (accountSlots == null || accountSlots.Length == 0)
+            {
+                Debug.LogWarning($"{nameof(GUIBank)}: accountSlots array is empty.");
+            }
+            else
+            {
+                foreach (var slot in accountSlots)
+                {
+                    if (slot)
+                    {
+                        slot.gameObject.SetActive(false);
+                    }
+                    else
+                    {
+                        hasNull = true;
+                    }
+                }
+                if (hasNull)
+                    Debug.LogWarning($"{nameof(GUIBank)}: accountSlots contains null elements.");
             }
 
             BackToMenu();
@@ -171,6 +199,34 @@ namespace PLAYERTWO.ARPGProject
             if (depositLunarisField) depositLunarisField.text = "0";
             if (depositAmberlingsField) depositAmberlingsField.text = "0";
             if (accountNameField) accountNameField.text = string.Empty;
+        }
+
+        protected virtual void AddInputFieldListeners(InputField field)
+        {
+            var trigger = field.GetComponent<EventTrigger>();
+            if (!trigger) trigger = field.gameObject.AddComponent<EventTrigger>();
+
+            var selectEntry = new EventTrigger.Entry { eventID = EventTriggerType.Select };
+            selectEntry.callback.AddListener(_ => OnInputFieldSelect());
+            trigger.triggers.Add(selectEntry);
+
+            var deselectEntry = new EventTrigger.Entry { eventID = EventTriggerType.Deselect };
+            deselectEntry.callback.AddListener(_ => OnInputFieldDeselect());
+            trigger.triggers.Add(deselectEntry);
+
+            field.onEndEdit.AddListener(_ => OnInputFieldDeselect());
+        }
+
+        protected virtual void OnInputFieldSelect()
+        {
+            Game.instance.gameplayActions?.Disable();
+            Game.instance.guiActions?.Disable();
+        }
+
+        protected virtual void OnInputFieldDeselect()
+        {
+            Game.instance.gameplayActions?.Enable();
+            Game.instance.guiActions?.Enable();
         }
 
         protected virtual void OnWithdraw(int index)

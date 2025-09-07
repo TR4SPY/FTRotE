@@ -44,7 +44,7 @@ Animator:
   m_GameObject: {fileID: 392113782771988974}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: b53c8dcaba88c204a898b17ea1b57305, type: 3}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 22100000, guid: c7d7ba97e565a4543908af9b412e919e, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
@@ -262,7 +262,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9032545719652403289}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -271,7 +271,7 @@ Transform:
   - {fileID: 2077853386607119370}
   - {fileID: 5155271724458303351}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: -144.343, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3679280288823894613
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -284,7 +284,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 343275122e2268e47b5b0ff18c1935d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  iconSprite: {fileID: -1290855366162983238, guid: 0390df3b808315746af1899229176af6, type: 3}
+  iconSprite: {fileID: 1047501041, guid: 4f522b6a295935e6b87df64acb1f37f0, type: 3}
   initialVisibility: 1
   initialSize: {x: 32, y: 40}
   rotationOffset: 0
@@ -304,9 +304,9 @@ MonoBehaviour:
   onSetHighlight:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 2077853386607119371}
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: 
+        m_MethodName: SetActive
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -473,6 +473,11 @@ PrefabInstance:
 --- !u!4 &2077853386607119370 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3229325632779371516, guid: fdf7362be5317794fa99f5f54c4cb76d, type: 3}
+  m_PrefabInstance: {fileID: 3460693232402272246}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2077853386607119371 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3229325632779371517, guid: fdf7362be5317794fa99f5f54c4cb76d, type: 3}
   m_PrefabInstance: {fileID: 3460693232402272246}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6858110065855116652

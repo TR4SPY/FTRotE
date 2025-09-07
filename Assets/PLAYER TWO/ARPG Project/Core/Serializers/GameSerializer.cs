@@ -10,6 +10,7 @@ namespace PLAYERTWO.ARPGProject
         public List<CharacterSerializer> characters = new List<CharacterSerializer>();
         public InventorySerializer[] stashes;
         public BankAccountSerializer[] bankAccounts;
+        public BankAccountSerializer[] investmentAccounts;
 
         public float dexterityMultiplier = 1.0f;
         public float strengthMultiplier = 1.0f;
@@ -31,6 +32,7 @@ namespace PLAYERTWO.ARPGProject
             InitializeCharacters(game.characters);
             InitializeStashes(game.stash);
             InitializeBank(game.bank);
+            InitializeInvestmentAccounts(BankManager.instance);
         }
 
         protected virtual void InitializeCharacters(List<CharacterInstance> characters)
@@ -71,6 +73,17 @@ namespace PLAYERTWO.ARPGProject
             {
                 bankAccounts[i] = new BankAccountSerializer(bank.GetAccount(i));
             }
+        }
+
+        protected virtual void InitializeInvestmentAccounts(BankManager bank)
+        {
+            if (bank == null)
+            {
+                investmentAccounts = new BankAccountSerializer[0];
+                return;
+            }
+
+            investmentAccounts = bank.GetSerializedAccounts();
         }
 
         /// <summary>

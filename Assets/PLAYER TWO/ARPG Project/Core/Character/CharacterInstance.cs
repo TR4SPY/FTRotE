@@ -71,6 +71,8 @@ namespace PLAYERTWO.ARPGProject
 
         public List<string> unlockedAchievements = new List<string>();
 
+        public BankAccountSerializer[] bankAccounts = new BankAccountSerializer[0];
+
         public event Action onBuffsRestored;
 
         [System.NonSerialized] public Sprite guildCrest;

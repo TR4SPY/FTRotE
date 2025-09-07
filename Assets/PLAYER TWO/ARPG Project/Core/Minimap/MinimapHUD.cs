@@ -49,7 +49,10 @@ namespace PLAYERTWO.ARPGProject
             float z = rotationOffset;
             if (rotateWithTarget)
                 z = target.eulerAngles.y;
-            minimap.rectTransform.eulerAngles = new Vector3(0f, 0f, z);
+
+            var euler = new Vector3(0f, 0f, z);
+            minimap.rectTransform.eulerAngles = euler;
+            container.eulerAngles = euler;
         }
 
         protected virtual void UpdateIcons()
@@ -69,15 +72,16 @@ namespace PLAYERTWO.ARPGProject
                 Vector2 offset = uvPosition * minimapSize * (Vector2)scale;
                 localPos *= minimapSize * (Vector2)scale;
 
+                Vector2 relativePos = localPos - offset;
+                icon.image.transform.localPosition = relativePos;
+
                 if (icon.rotateWithOwner)
                 {
-                    iconEuler.z -= icon.owner.eulerAngles.y - rotationOffset;
-                    if (rotateWithTarget)
-                        iconEuler.z += container.eulerAngles.z - rotationOffset;
+                    float globalRotation = icon.rotationOffset - icon.owner.eulerAngles.y;
+                    iconEuler.z = globalRotation - container.eulerAngles.z;
                 }
 
-                icon.image.transform.localPosition = localPos - offset;
-                icon.image.transform.eulerAngles = iconEuler;
+                icon.image.transform.localEulerAngles = iconEuler;
             }
         }
 
