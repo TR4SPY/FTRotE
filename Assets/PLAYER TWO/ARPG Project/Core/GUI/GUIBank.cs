@@ -21,6 +21,7 @@ namespace PLAYERTWO.ARPGProject
         [Header("Accounts")]
         public GameObject accountsPanel;
         public GUIBankAccount[] accountSlots;
+        public Toggle[] accountToggles;
         public Button newAccountButton;
         public Button accountsBackButton;
 
@@ -81,6 +82,34 @@ namespace PLAYERTWO.ARPGProject
                     Debug.LogWarning($"{nameof(GUIBank)}: accountSlots contains null elements.");
             }
 
+            hasNull = false;
+            if (accountToggles == null || accountToggles.Length == 0)
+            {
+                Debug.LogWarning($"{nameof(GUIBank)}: accountToggles array is empty.");
+            }
+            else
+            {
+                if (accountSlots != null && accountToggles.Length != accountSlots.Length)
+                {
+                    Debug.LogWarning($"{nameof(GUIBank)}: accountToggles length does not match accountSlots length.");
+                }
+                for (int i = 0; i < accountToggles.Length; i++)
+                {
+                    var toggle = accountToggles[i];
+                    if (toggle)
+                    {
+                        toggle.gameObject.SetActive(false);
+                        toggle.interactable = false;
+                    }
+                    else
+                    {
+                        hasNull = true;
+                    }
+                }
+                if (hasNull)
+                    Debug.LogWarning($"{nameof(GUIBank)}: accountToggles contains null elements.");
+            }
+
             BackToMenu();
         }
 
@@ -112,15 +141,27 @@ namespace PLAYERTWO.ARPGProject
             //RefreshAccounts();
 
             var accounts = BankManager.instance.accounts;
-            for (int i = 0; i < accountSlots.Length; i++)
+            int length = Mathf.Max(accountSlots.Length, accountToggles != null ? accountToggles.Length : 0);
+            for (int i = 0; i < length; i++)
             {
-                var slot = accountSlots[i];
+                var slot = i < accountSlots.Length ? accountSlots[i] : null;
+                var toggle = (accountToggles != null && i < accountToggles.Length) ? accountToggles[i] : null;
                 bool active = i < accounts.Count;
-                slot.gameObject.SetActive(active);
-                if (active)
+
+                if (slot)
                 {
-                    int index = i;
-                    slot.Set(accounts[i], () => OnWithdraw(index));
+                    slot.gameObject.SetActive(active);
+                    if (active)
+                    {
+                        int index = i;
+                        slot.Set(accounts[i], () => OnWithdraw(index));
+                    }
+                }
+
+                if (toggle)
+                {
+                    toggle.gameObject.SetActive(active);
+                    toggle.interactable = active;
                 }
             }
         }

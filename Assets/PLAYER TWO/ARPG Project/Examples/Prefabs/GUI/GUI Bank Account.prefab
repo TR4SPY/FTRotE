@@ -590,6 +590,9 @@ MonoBehaviour:
   nameText: {fileID: 2080138197449249175}
   offerText: {fileID: 4650310961057228551}
   valueText: {fileID: 309617276089381712}
+  solmireText: {fileID: 6010361211273627705}
+  lunarisText: {fileID: 6912859481900293921}
+  amberlingsText: {fileID: 5501203849326346068}
   timeText: {fileID: 2599579807833698973}
   withdrawButton: {fileID: 6902534897607725490}
 --- !u!1 &2124270728319069820

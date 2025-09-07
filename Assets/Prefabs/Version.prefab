@@ -79,7 +79,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: v.0.50C | 020925 (pre-alpha)
+  m_Text: v.0.61C | 070925 (pre-alpha)
 --- !u!114 &529317158019882954
 MonoBehaviour:
   m_ObjectHideFlags: 0
