@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   offerName: Gain 7% over 1 Day
   durationHours: 24
-  interestRate: 7
+  interestRate: 0.07

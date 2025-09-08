@@ -19,9 +19,11 @@ namespace PLAYERTWO.ARPGProject
         public Button withdrawButton;
 
         private Coroutine m_updateRoutine;
+        private BankManager.InvestmentAccount m_account;
 
         public void Set(BankManager.InvestmentAccount account, UnityAction onWithdraw)
         {
+            m_account = account;
             if (nameText) nameText.text = account.name;
             if (offerText && account.offer)
                 offerText.text = account.offer.offerName;
@@ -34,8 +36,11 @@ namespace PLAYERTWO.ARPGProject
             }
 
             UpdateTime(account);
-            if (m_updateRoutine != null) StopCoroutine(m_updateRoutine);
-            m_updateRoutine = StartCoroutine(UpdateTimeRoutine(account));
+            if (gameObject.activeInHierarchy)
+            {
+                if (m_updateRoutine != null) StopCoroutine(m_updateRoutine);
+                m_updateRoutine = StartCoroutine(UpdateTimeRoutine(m_account));
+            }
         }
 
         public void UpdateTime(BankManager.InvestmentAccount account)
@@ -68,6 +73,14 @@ namespace PLAYERTWO.ARPGProject
 
             string dayPart = days > 0 ? $"{days} {(days == 1 ? "Day" : "Days")}, " : string.Empty;
             return $"{dayPart}{hours:00} Hrs, {minutes:00} Min, {secs:00} Sec";
+        }
+        
+        private void OnEnable()
+        {
+            if (m_account != null && m_updateRoutine == null)
+            {
+                m_updateRoutine = StartCoroutine(UpdateTimeRoutine(m_account));
+            }
         }
 
         private void OnDisable()

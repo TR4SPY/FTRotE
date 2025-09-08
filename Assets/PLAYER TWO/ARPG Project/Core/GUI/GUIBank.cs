@@ -22,6 +22,7 @@ namespace PLAYERTWO.ARPGProject
         public GameObject accountsPanel;
         public GUIBankAccount[] accountSlots;
         public Toggle[] accountToggles;
+        public GameObject emptyText;
         public Button newAccountButton;
         public Button accountsBackButton;
 
@@ -31,6 +32,9 @@ namespace PLAYERTWO.ARPGProject
         public InputField depositLunarisField;
         public InputField depositAmberlingsField;
         public InputField accountNameField;
+        public Text offerNameText;
+        public Text offerRateText;
+        public Text offerDurationText;
         public Button confirmButton;
         public Button newAccountBackButton;
         public Button resetButton;
@@ -141,16 +145,20 @@ namespace PLAYERTWO.ARPGProject
             //RefreshAccounts();
 
             var accounts = BankManager.instance.accounts;
+            bool hasAccounts = accounts.Count > 0;
+
+            if (emptyText) emptyText.SetActive(!hasAccounts);
+
             int length = Mathf.Max(accountSlots.Length, accountToggles != null ? accountToggles.Length : 0);
             for (int i = 0; i < length; i++)
             {
                 var slot = i < accountSlots.Length ? accountSlots[i] : null;
                 var toggle = (accountToggles != null && i < accountToggles.Length) ? accountToggles[i] : null;
-                bool active = i < accounts.Count;
+                bool active = hasAccounts && i < accounts.Count;
 
                 if (slot)
                 {
-                    slot.gameObject.SetActive(active);
+                    slot.gameObject.SetActive(active && i == 0);
                     if (active)
                     {
                         int index = i;
@@ -162,6 +170,13 @@ namespace PLAYERTWO.ARPGProject
                 {
                     toggle.gameObject.SetActive(active);
                     toggle.interactable = active;
+                    toggle.isOn = active && i == 0;
+                    toggle.onValueChanged.RemoveAllListeners();
+                    if (active && slot)
+                    {
+                        var slotRef = slot;
+                        toggle.onValueChanged.AddListener(isOn => slotRef.gameObject.SetActive(isOn));
+                    }
                 }
             }
         }
@@ -202,6 +217,9 @@ namespace PLAYERTWO.ARPGProject
             if (!BankManager.instance.HasAvailableSlot) return;
             m_selectedOffer = offer;
             ResetNewAccountInputs();
+            if (offerNameText) offerNameText.text = offer.offerName;
+            if (offerRateText) offerRateText.text = $"{offer.interestRate:P0}";
+            if (offerDurationText) offerDurationText.text = $"{offer.durationHours:0}h";
             offersPanel.SetActive(false);
             newAccountPanel.SetActive(true);
         }
