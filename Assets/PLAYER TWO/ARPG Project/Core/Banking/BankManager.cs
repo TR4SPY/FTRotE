@@ -49,9 +49,21 @@ namespace PLAYERTWO.ARPGProject
         private const int MaxAccounts = 5;
         public bool HasAvailableSlot => m_accounts.Count < MaxAccounts;
 
+        public static int GetMinimumDeposit(SavingOffer offer)
+        {
+            if (offer == null || offer.interestRate <= 0f) return 0;
+            return Mathf.CeilToInt(1f / offer.interestRate);
+        }
+
         public bool OpenAccount(string playerAccountName, int principal, SavingOffer offer)
         {
             if (!HasAvailableSlot || offer == null)
+            {
+                return false;
+            }
+            
+            int minimum = GetMinimumDeposit(offer);
+            if (principal < minimum)
             {
                 return false;
             }

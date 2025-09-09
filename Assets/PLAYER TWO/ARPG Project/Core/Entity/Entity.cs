@@ -806,7 +806,12 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void HandleAutoCollect(Collider other)
         {
-            if (!autoCollectItems || !other.CompareTag(GameTags.Collectible) ||
+            bool autoLoot = autoCollectItems;
+
+            if (GameSettings.instance != null && GameSettings.instance.GetAutoLoot())
+                autoLoot = true;
+
+            if (!autoLoot || !other.CompareTag(GameTags.Collectible) ||
                 Time.time < m_lastAutoCollectTime + autoCollectCoolDown)
                 return;
 

@@ -12,6 +12,8 @@ public class GUIUserInterfaceSettingsWindow : GUIWindow
         [Header("UI Settings")]
         public Toggle difficultyToggle;
         public Toggle damageTextToggle;
+        public Toggle guildNameToggle;
+        public Toggle playerInfoToggle;
         public Toggle overlayChatToggle;
         public Toggle showLatencyToggle;
         public Toggle tradeConfirmationsToggle;
@@ -23,6 +25,7 @@ public class GUIUserInterfaceSettingsWindow : GUIWindow
         public Slider buffTextSizeSlider;
         public Slider damageTextSizeSlider;
         public Slider cursorSizeSlider;
+        public Slider uiScaleSlider;
 
         public TMP_Dropdown difficultyDropdown;
         public TMP_Dropdown privacyStatusDropdown;
@@ -67,6 +70,26 @@ public class GUIUserInterfaceSettingsWindow : GUIWindow
             else
             {
                 Debug.LogError("[Settings] Damage Text Toggle is NULL! Assign it in the Inspector.");
+            }
+
+            if (guildNameToggle != null)
+            {
+                guildNameToggle.isOn = m_settings.GetDisplayGuildName();
+                guildNameToggle.onValueChanged.AddListener(OnGuildNameToggleChanged);
+            }
+            else
+            {
+                Debug.LogError("[Settings] Guild Name Toggle is NULL! Assign it in the Inspector.");
+            }
+
+            if (playerInfoToggle != null)
+            {
+                playerInfoToggle.isOn = m_settings.GetDisplayPlayerInfo();
+                playerInfoToggle.onValueChanged.AddListener(OnPlayerInfoToggleChanged);
+            }
+            else
+            {
+                Debug.LogError("[Settings] Player Info Toggle is NULL! Assign it in the Inspector.");
             }
 
             if (overlayChatToggle != null)
@@ -196,15 +219,27 @@ public class GUIUserInterfaceSettingsWindow : GUIWindow
             if (damageTextSizeSlider != null)
             {
                 damageTextSizeSlider.wholeNumbers = true;
-                damageTextSizeSlider.value = m_settings.GetDamageTextSize();
-                damageTextSizeSlider.onValueChanged.AddListener(v => m_settings.SetDamageTextSize((int)v));
+                damageTextSizeSlider.minValue = 0;
+                damageTextSizeSlider.maxValue = m_settings.FontSizeCount - 1;
+                damageTextSizeSlider.value = m_settings.GetDamageTextSizeIndex();
+                damageTextSizeSlider.onValueChanged.AddListener(v =>
+                {
+                    int size = m_settings.IndexToFontSize((int)v);
+                    m_settings.SetDamageTextSize(size);
+                });
             }
 
             if (buffTextSizeSlider != null)
             {
                 buffTextSizeSlider.wholeNumbers = true;
-                buffTextSizeSlider.value = m_settings.GetBuffTextSize();
-                buffTextSizeSlider.onValueChanged.AddListener(v => m_settings.SetBuffTextSize((int)v));
+                buffTextSizeSlider.minValue = 0;
+                buffTextSizeSlider.maxValue = m_settings.FontSizeCount - 1;
+                buffTextSizeSlider.value = m_settings.GetBuffTextSizeIndex();
+                buffTextSizeSlider.onValueChanged.AddListener(v =>
+                {
+                    int size = m_settings.IndexToFontSize((int)v);
+                    m_settings.SetBuffTextSize(size);
+                });
             }
 
             if (itemCompareModeDropdown != null)
@@ -219,6 +254,12 @@ public class GUIUserInterfaceSettingsWindow : GUIWindow
             {
                 cursorSizeSlider.value = m_settings.GetCursorSize();
                 cursorSizeSlider.onValueChanged.AddListener(m_settings.SetCursorSize);
+            }
+
+            if (uiScaleSlider != null)
+            {
+                uiScaleSlider.value = m_settings.GetUIScale();
+                uiScaleSlider.onValueChanged.AddListener(m_settings.SetUIScale);
             }
         }
 
@@ -246,6 +287,16 @@ public class GUIUserInterfaceSettingsWindow : GUIWindow
             m_settings.SetDisplayDamageText(isOn);
         }
         
+        private void OnGuildNameToggleChanged(bool isOn)
+        {
+            m_settings.SetDisplayGuildName(isOn);
+        }
+
+        private void OnPlayerInfoToggleChanged(bool isOn)
+        {
+            m_settings.SetDisplayPlayerInfo(isOn);
+        }
+
         private void OnOverlayChatToggleChanged(bool isOn)
         {
             m_settings.SetOverlayChatAlwaysOnTop(isOn);

@@ -35,11 +35,15 @@ namespace PLAYERTWO.ARPGProject
         public Text offerNameText;
         public Text offerRateText;
         public Text offerDurationText;
+
+        [Tooltip("Displays the minimum deposit required for the selected offer.")]
+        public Text minimumValueText;
         public Button confirmButton;
         public Button newAccountBackButton;
         public Button resetButton;
 
         private SavingOffer m_selectedOffer;
+        private int m_minimumDeposit;
         // private readonly List<GUIBankAccount> m_accounts = new();
 
         protected EntityInventory m_playerInventory => Level.instance.player.inventory;
@@ -128,6 +132,12 @@ namespace PLAYERTWO.ARPGProject
         protected virtual void ShowOffers()
         {
             if (!BankManager.instance) return;
+            if (!BankManager.instance.HasAvailableSlot)
+            {
+                ShowMaximumAccountsWarning();
+                return;
+            }
+
             mainMenu.SetActive(false);
             accountsPanel.SetActive(false);
             newAccountPanel.SetActive(false);
@@ -214,12 +224,20 @@ namespace PLAYERTWO.ARPGProject
 
         protected virtual void OnSelectOffer(SavingOffer offer)
         {
+            if (!BankManager.instance.HasAvailableSlot)
+            {
+                ShowMaximumAccountsWarning();
+                return;
+            }
+
             if (!BankManager.instance.HasAvailableSlot) return;
             m_selectedOffer = offer;
+            m_minimumDeposit = BankManager.GetMinimumDeposit(offer);
             ResetNewAccountInputs();
             if (offerNameText) offerNameText.text = offer.offerName;
             if (offerRateText) offerRateText.text = $"{offer.interestRate:P0}";
             if (offerDurationText) offerDurationText.text = $"{offer.durationHours:0}h";
+            if (minimumValueText) minimumValueText.text = Currency.FormatCurrencyString(m_minimumDeposit);
             offersPanel.SetActive(false);
             newAccountPanel.SetActive(true);
         }
@@ -240,8 +258,23 @@ namespace PLAYERTWO.ARPGProject
                         + Currency.ConvertToAmberlings(amberlings, CurrencyType.Amberlings);
 
             if (deposit <= 0) return;
+            if (deposit < m_minimumDeposit)
+            {
+                var info = GUIWindowsManager.instance?.GetInformation();
+                if (info != null)
+                {
+                    string minText = Currency.FormatCurrencyString(m_minimumDeposit);
+                    info.SetInformation("Investment Too Low", $"The investment is too low! You have to invest at least {minText}.");
+                    info.GetComponent<GUIWindow>()?.Show();
+                }
+                return;
+            }
             if (m_playerInventory.instance.currency.GetTotalAmberlings() < deposit) return;
-            if (!BankManager.instance.HasAvailableSlot) return;
+            if (!BankManager.instance.HasAvailableSlot)
+            {
+                ShowMaximumAccountsWarning();
+                return;
+            }
 
             string name = string.IsNullOrEmpty(accountNameField.text) ? "Account" : accountNameField.text;
 
@@ -250,6 +283,16 @@ namespace PLAYERTWO.ARPGProject
 
             BackToMenu();
             // RefreshAccounts();
+        }
+
+        protected virtual void ShowMaximumAccountsWarning()
+        {
+            var info = GUIWindowsManager.instance?.GetInformation();
+            if (info != null)
+            {
+                info.SetInformation("Maximum Accounts Reached", "You have reached maximum number of active accounts in our bank as a normal customer. Please, wait until at least one of them fullfil.");
+                info.GetComponent<GUIWindow>()?.Show();
+            }
         }
 
         protected virtual void ResetNewAccountInputs()

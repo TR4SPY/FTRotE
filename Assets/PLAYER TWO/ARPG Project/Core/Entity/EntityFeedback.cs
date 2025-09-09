@@ -193,25 +193,31 @@ namespace PLAYERTWO.ARPGProject
         public void ShowDifficultyChange(DifficultyText.MessageType messageType)
         {
             if (isDisplayingDifficultyChange) return;
+
             isDisplayingDifficultyChange = true;
             StartCoroutine(ResetDisplayFlag());
 
             if (m_entity == null || m_entity.stats == null) 
                 return;
+
             if (m_entity.isDead) 
                 return;
+
             if (DifficultyManager.Instance == null)
             {
                 Debug.LogError("[AI-DDA] DifficultyManager instance is NULL!");
                 return;
             }
 
-            int difficultyOption = GameSettings.instance.GetDifficultyTextOption(); 
+            int difficultyOption = GameSettings.instance.GetDifficultyTextOption();
             bool showOverEnemies = (difficultyOption == 0);
             bool showOverPlayer  = (difficultyOption == 1);
             if (showOverEnemies && !m_entity.CompareTag("Entity/Enemy"))
                 return;
             if (showOverPlayer && !m_entity.CompareTag("Entity/Player"))
+                return;
+
+            if (showOverPlayer && DifficultyText.activeTexts.Exists(t => t && t.target == transform))
                 return;
 
             if (difficultyText == null)
@@ -222,11 +228,31 @@ namespace PLAYERTWO.ARPGProject
 
             Vector3 origin = transform.position + new Vector3(0, 2f, 0);
             var instance = Instantiate(difficultyText, origin, Quaternion.identity);
-
             if (instance.TryGetComponent(out DifficultyText text))
             {
-                text.target = transform; 
+                text.target = transform;
                 text.SetMessageType(messageType);
+
+                if (difficultyOption == 1)
+                {
+                    string[] messages = null;
+                    switch (messageType)
+                    {
+                        case DifficultyText.MessageType.DifficultyDecreased:
+                        case DifficultyText.MessageType.BuffUp:
+                            messages = text.positivePlayerMessages;
+                            break;
+                        case DifficultyText.MessageType.DifficultyIncreased:
+                        case DifficultyText.MessageType.WeakenUp:
+                            messages = text.negativePlayerMessages;
+                            break;
+                    }
+
+                    if (messages != null && messages.Length > 0)
+                    {
+                        text.difficultyText.text = messages[Random.Range(0, messages.Length)];
+                    }
+                }
                 Debug.Log($"[AI-DDA] DifficultyText instantiated at {origin} for {gameObject.name}");
             }
             else

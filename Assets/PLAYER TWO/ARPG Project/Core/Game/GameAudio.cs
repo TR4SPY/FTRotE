@@ -190,6 +190,22 @@ namespace PLAYERTWO.ARPGProject
         }
 
         /// <summary>
+        /// Plays a voice clip and displays a subtitle while it plays.
+        /// </summary>
+        /// <param name="clip">The voice clip to play.</param>
+        /// <param name="subtitle">Text to show while the clip plays.</param>
+        public virtual void PlayVoiceWithSubtitle(AudioClip clip, string subtitle)
+        {
+            PlayEffect(clip);
+
+            if (!string.IsNullOrEmpty(subtitle) && GameSettings.instance && GameSettings.instance.GetSubtitlesEnabled())
+            {
+                float duration = clip ? clip.length : 3f;
+                GUISubtitles.instance?.Show(subtitle, duration);
+            }
+        }
+
+        /// <summary>
         /// Plays te denied sound using the effects Audio Source.
         /// </summary>
         public virtual void PlayDeniedSound() => PlayEffect(deniedClip);

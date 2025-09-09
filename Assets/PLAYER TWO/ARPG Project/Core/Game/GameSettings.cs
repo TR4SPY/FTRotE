@@ -62,7 +62,6 @@ namespace PLAYERTWO.ARPGProject
         protected int m_currentOutputDevice;
         protected int m_currentFlashReductionLevel;
 
-        protected bool m_currentFullScreen;
         protected bool m_currentPostProcessing;
         protected bool m_currentCameraShake;
         protected bool m_currentAutoLoot;
@@ -73,6 +72,7 @@ namespace PLAYERTWO.ARPGProject
         protected bool m_currentMotionBlur;
         protected bool m_currentMuteOnFocusLoss;
         protected bool m_currentHighContrastUI;
+        protected bool m_currentVSync;
 
         protected float m_currentMusicVolume;
         protected float m_currentEffectsVolume;
@@ -81,11 +81,14 @@ namespace PLAYERTWO.ARPGProject
         protected float m_currentGamma;
 
         protected string m_currentLanguage;
-
+        
         public InputActionAsset inputActions;
 
+        protected FullScreenMode m_currentScreenMode;
+
         protected const string k_resolutionKey = "settings/resolution";
-        protected const string k_fullScreenKey = "settings/fullScreen";
+        protected const string k_screenModeKey = "settings/screenMode";
+        protected const string k_vSyncKey = "settings/vSync";
         protected const string k_postProcessingKey = "settings/postProcessing";
         protected const string k_musicVolumeKey = "settings/musicVolume";
         protected const string k_effectsVolumeKey = "settings/effectsVolume";
@@ -113,6 +116,7 @@ namespace PLAYERTWO.ARPGProject
         protected const string k_buffTextSizeKey = "settings/buffTextSize";
         protected const string k_itemCompareModeKey = "settings/itemCompareMode";
         protected const string k_cursorSizeKey = "settings/cursorSize";
+        protected const string k_uiScaleKey = "settings/uiScale";
         protected const string k_monitorKey = "settings/monitor";
         protected const string k_maxFpsKey = "settings/maxFps";
         protected const string k_hdrKey = "settings/hdr";
@@ -130,9 +134,33 @@ namespace PLAYERTWO.ARPGProject
         protected const string k_muteOnFocusLossKey = "settings/muteOnFocusLoss";
         protected const string k_highContrastKey = "settings/highContrastUI";
         protected const string k_flashReductionKey = "settings/flashReduction";
+        protected const string k_displayPlayerInfoKey = "settings/displayPlayerInfo";
+
+        private static readonly int[] k_fontSizeTable = { 12, 14, 16, 18, 20, 22 };
+        private const int k_defaultFontSizeIndex = 1;
+
+        public int IndexToFontSize(int index)
+        {
+            index = Mathf.Clamp(index, 0, k_fontSizeTable.Length - 1);
+            return k_fontSizeTable[index];
+        }
+
+        public int FontSizeToIndex(int size)
+        {
+            for (int i = 0; i < k_fontSizeTable.Length; i++)
+            {
+                if (k_fontSizeTable[i] == size)
+                    return i;
+            }
+            return k_defaultFontSizeIndex;
+        }
+
+        public int FontSizeCount => k_fontSizeTable.Length;
 
         public bool GetDisplayDifficulty() => PlayerPrefs.GetInt("DisplayDifficulty", 1) == 1;
         public bool GetDisplayDamageText() => PlayerPrefs.GetInt("DisplayDamageText", 1) == 1;
+        public bool GetDisplayGuildName() => PlayerPrefs.GetInt("DisplayGuildName", 1) == 1;
+        public bool GetDisplayPlayerInfo() => PlayerPrefs.GetInt(k_displayPlayerInfoKey, 1) == 1;
         public bool GetOverlayChatAlwaysOnTop() => PlayerPrefs.GetInt(k_overlayChatOnTopKey, 1) == 1;
         public bool GetColorblindMode() => PlayerPrefs.GetInt(k_colorblindKey, 0) == 1;
         public bool GetLargeText() => PlayerPrefs.GetInt(k_largeTextKey, 0) == 1;
@@ -141,12 +169,15 @@ namespace PLAYERTWO.ARPGProject
 
         public int GetDifficultyTextOption() => PlayerPrefs.GetInt("DifficultyTextOption", 0);
         public int GetDamageNumberMode() => PlayerPrefs.GetInt(k_damageNumberModeKey, 0);
-        public int GetDamageTextSize() => PlayerPrefs.GetInt(k_damageTextSizeKey, 14);
-        public int GetBuffTextSize() => PlayerPrefs.GetInt(k_buffTextSizeKey, 14);
+        public int GetDamageTextSizeIndex() => PlayerPrefs.GetInt(k_damageTextSizeKey, k_defaultFontSizeIndex);
+        public int GetBuffTextSizeIndex() => PlayerPrefs.GetInt(k_buffTextSizeKey, k_defaultFontSizeIndex);
+        public int GetDamageTextSize() => IndexToFontSize(GetDamageTextSizeIndex());
+        public int GetBuffTextSize() => IndexToFontSize(GetBuffTextSizeIndex());
         public int GetItemCompareMode() => PlayerPrefs.GetInt(k_itemCompareModeKey, 0);
 
         public float GetMinimapSize() => PlayerPrefs.GetFloat(k_minimapSizeKey, 1f);
         public float GetCursorSize() => PlayerPrefs.GetFloat(k_cursorSizeKey, 1f);
+        public float GetUIScale() => PlayerPrefs.GetFloat(k_uiScaleKey, 1f);
 
         protected GameAudio m_audio => GameAudio.instance;
 
@@ -277,7 +308,9 @@ namespace PLAYERTWO.ARPGProject
         public virtual List<string> GetLanguages() => LocalizationSettings.AvailableLocales.Locales.Select(locale => locale.LocaleName).ToList();
         public virtual List<string> GetMonitors() => Display.displays.Select((d, i) => $"Monitor {i + 1}").ToList();
         public virtual List<string> GetQualityPresets() => QualitySettings.names.ToList();
-        
+
+        public virtual FullScreenMode GetScreenMode() => m_currentScreenMode;
+       
         public virtual int GetMonitor() => m_currentMonitor;
         public virtual int GetQualityPreset() => m_currentQualityPreset;
         public virtual int GetAntiAliasing() => m_currentAntiAliasing;
@@ -291,7 +324,11 @@ namespace PLAYERTWO.ARPGProject
         public virtual bool GetBloom() => m_currentBloom;
         public virtual bool GetDepthOfField() => m_currentDepthOfField;
         public virtual bool GetMotionBlur() => m_currentMotionBlur;
-        public virtual bool GetFullScreen() => Screen.fullScreen;
+        public virtual bool GetVSync() => m_currentVSync;
+        public virtual bool GetFullScreen() =>
+            m_currentScreenMode != FullScreenMode.Windowed &&
+            m_currentScreenMode != FullScreenMode.MaximizedWindow;
+
         public virtual bool GetPostProcessing() => m_postProcess?.value ?? false;
         public virtual bool GetCameraShake() => m_currentCameraShake;
         public virtual bool GetAutoLoot() => m_currentAutoLoot;
@@ -408,6 +445,18 @@ namespace PLAYERTWO.ARPGProject
             DamageText.ToggleAll(value);
         }
 
+        public void SetDisplayGuildName(bool value)
+        {
+            PlayerPrefs.SetInt("DisplayGuildName", value ? 1 : 0);
+            PlayerPrefs.Save();
+        }
+
+        public void SetDisplayPlayerInfo(bool value)
+        {
+            PlayerPrefs.SetInt(k_displayPlayerInfoKey, value ? 1 : 0);
+            PlayerPrefs.Save();
+        }
+
         public void SetMinimapSize(float value)
         {
             PlayerPrefs.SetFloat(k_minimapSizeKey, value);
@@ -433,14 +482,16 @@ namespace PLAYERTWO.ARPGProject
 
         public void SetDamageTextSize(int size)
         {
-            PlayerPrefs.SetInt(k_damageTextSizeKey, size);
+            int index = FontSizeToIndex(size);
+            PlayerPrefs.SetInt(k_damageTextSizeKey, index);
             PlayerPrefs.Save();
             DamageText.UpdateAllFontSizes(size);
         }
 
         public void SetBuffTextSize(int size)
         {
-            PlayerPrefs.SetInt(k_buffTextSizeKey, size);
+            int index = FontSizeToIndex(size);
+            PlayerPrefs.SetInt(k_buffTextSizeKey, index);
             PlayerPrefs.Save();
 
             foreach (var slot in Object.FindObjectsByType<GUIBuffSlot>(FindObjectsSortMode.None))
@@ -462,6 +513,14 @@ namespace PLAYERTWO.ARPGProject
             PlayerPrefs.Save();
         }
 
+        public void SetUIScale(float value)
+        {
+            PlayerPrefs.SetFloat(k_uiScaleKey, value);
+            PlayerPrefs.Save();
+
+            var scale = GetLargeText() ? 1.25f * value : value;
+            ApplyTextScale(scale);
+        }
         public void SetColorblindMode(bool value)
         {
             PlayerPrefs.SetInt(k_colorblindKey, value ? 1 : 0);
@@ -475,7 +534,7 @@ namespace PLAYERTWO.ARPGProject
             PlayerPrefs.SetInt(k_largeTextKey, value ? 1 : 0);
             PlayerPrefs.Save();
 
-            ApplyTextScale(value ? 1.25f : 1f);
+            ApplyTextScale((value ? 1.25f : 1f) * GetUIScale());
         }
 
         public void SetSubtitlesEnabled(bool value)
@@ -527,6 +586,7 @@ namespace PLAYERTWO.ARPGProject
         public void ApplyFlashReductionLevel(int level)
         {
             Shader.SetGlobalFloat("_FlashReduction", GetFlashReductionMultiplier());
+            FlashReduction.ApplyAll();
         }
 
         public void ApplyColorblindMode(bool enabled)
@@ -546,6 +606,7 @@ namespace PLAYERTWO.ARPGProject
         public void ApplySubtitles(bool enabled)
         {
             Debug.Log($"[GameSettings] Subtitles {(enabled ? "enabled" : "disabled")}");
+            GUISubtitles.instance?.SetVisible(enabled);
         }
 
         public int GetEnemyHealthBarOption() => PlayerPrefs.GetInt(k_enemyHealthBarOptionKey, 2);
@@ -584,10 +645,21 @@ namespace PLAYERTWO.ARPGProject
             m_currentResolution = option;
         }
 
+        public virtual void SetScreenMode(FullScreenMode mode)
+        {
+            Screen.fullScreenMode = mode;
+            m_currentScreenMode = mode;
+        }
+
         public virtual void SetFullScreen(bool value)
         {
-            Screen.fullScreen = value;
-            m_currentFullScreen = value;
+            SetScreenMode(value ? FullScreenMode.ExclusiveFullScreen : FullScreenMode.Windowed);
+        }
+
+        public virtual void SetVSync(bool value)
+        {
+            QualitySettings.vSyncCount = value ? 1 : 0;
+            m_currentVSync = value;
         }
 
 /*
@@ -647,6 +719,7 @@ namespace PLAYERTWO.ARPGProject
         public virtual void SetCameraShake(bool value)
         {
             m_currentCameraShake = value;
+            EntityCamera.Instance?.SetShakeEnabled(value);
         }
 
         public virtual void SetAutoLoot(bool value)
@@ -805,14 +878,14 @@ namespace PLAYERTWO.ARPGProject
         public virtual void Save()
         {
             PlayerPrefs.SetInt(k_resolutionKey, m_currentResolution);
-            PlayerPrefs.SetInt(k_fullScreenKey, m_currentFullScreen ? 1 : 0);
+            PlayerPrefs.SetInt(k_screenModeKey, (int)m_currentScreenMode);
             PlayerPrefs.SetInt(k_postProcessingKey, m_currentPostProcessing ? 1 : 0);
             PlayerPrefs.SetInt(k_movementSettingKey, m_currentMovementSetting);
 
             PlayerPrefs.SetInt("DisplayDifficulty", GetDisplayDifficulty() ? 1 : 0);
             PlayerPrefs.SetInt("DifficultyTextOption", GetDifficultyTextOption());
             PlayerPrefs.SetInt("DisplayDamageText", GetDisplayDamageText() ? 1 : 0);
-            PlayerPrefs.SetInt(k_overlayChatOnTopKey, GetOverlayChatAlwaysOnTop() ? 1 : 0);
+            PlayerPrefs.SetInt("DisplayGuildName", GetDisplayGuildName() ? 1 : 0);
 
             PlayerPrefs.SetInt(k_cameraShakeKey, m_currentCameraShake ? 1 : 0);
             PlayerPrefs.SetInt(k_autoLootKey, m_currentAutoLoot ? 1 : 0);
@@ -830,8 +903,8 @@ namespace PLAYERTWO.ARPGProject
             PlayerPrefs.SetInt(k_minimapRotationKey, GetMinimapRotation() ? 1 : 0);
 
             PlayerPrefs.SetInt(k_damageNumberModeKey, GetDamageNumberMode());
-            PlayerPrefs.SetInt(k_damageTextSizeKey, GetDamageTextSize());
-            PlayerPrefs.SetInt(k_buffTextSizeKey, GetBuffTextSize());
+            PlayerPrefs.SetInt(k_damageTextSizeKey, GetDamageTextSizeIndex());
+            PlayerPrefs.SetInt(k_buffTextSizeKey, GetBuffTextSizeIndex());
             PlayerPrefs.SetInt(k_itemCompareModeKey, GetItemCompareMode());
 
             PlayerPrefs.SetInt(k_monitorKey, m_currentMonitor);
@@ -854,6 +927,10 @@ namespace PLAYERTWO.ARPGProject
             PlayerPrefs.SetInt(k_highContrastKey, GetHighContrastUI() ? 1 : 0);
             PlayerPrefs.SetInt(k_flashReductionKey, GetFlashReductionLevel());
 
+            PlayerPrefs.SetInt(k_overlayChatOnTopKey, GetOverlayChatAlwaysOnTop() ? 1 : 0);
+            PlayerPrefs.SetInt(k_displayPlayerInfoKey, GetDisplayPlayerInfo() ? 1 : 0);
+            PlayerPrefs.SetInt(k_vSyncKey, m_currentVSync ? 1 : 0);
+
             PlayerPrefs.SetFloat(k_musicVolumeKey, m_currentMusicVolume);
             PlayerPrefs.SetFloat(k_effectsVolumeKey, m_currentEffectsVolume);
             PlayerPrefs.SetFloat(k_uiEffectsVolumeKey, m_currentUiEffectsVolume);
@@ -861,6 +938,7 @@ namespace PLAYERTWO.ARPGProject
 
             PlayerPrefs.SetFloat(k_minimapSizeKey, GetMinimapSize());
             PlayerPrefs.SetFloat(k_cursorSizeKey, GetCursorSize());
+            PlayerPrefs.SetFloat(k_uiScaleKey, GetUIScale());
             PlayerPrefs.SetFloat(k_gammaKey, m_currentGamma);
 
             PlayerPrefs.SetString(k_languageKey, m_currentLanguage);
@@ -892,7 +970,8 @@ namespace PLAYERTWO.ARPGProject
             var initialResolution = (int)ResolutionOption.Maximum;
 #endif
             var resolution = PlayerPrefs.GetInt(k_resolutionKey, initialResolution);
-            var fullScreen = PlayerPrefs.GetInt(k_fullScreenKey, Screen.fullScreen ? 1 : 0);
+            var screenMode = PlayerPrefs.GetInt(k_screenModeKey, (int)Screen.fullScreenMode);
+            var vSync = PlayerPrefs.GetInt(k_vSyncKey, QualitySettings.vSyncCount > 0 ? 1 : 0);
             var postProcessing = PlayerPrefs.GetInt(k_postProcessingKey, 1);
             var musicVolume = PlayerPrefs.GetFloat(k_musicVolumeKey, m_audio.initialMusicVolume);
             var effectsVolume = PlayerPrefs.GetFloat(k_effectsVolumeKey, m_audio.initialEffectsVolume);
@@ -915,10 +994,11 @@ namespace PLAYERTWO.ARPGProject
             var minimapSize = PlayerPrefs.GetFloat(k_minimapSizeKey, 1f);
             var minimapRotation = PlayerPrefs.GetInt(k_minimapRotationKey, 1) == 1;
             var damageNumberMode = PlayerPrefs.GetInt(k_damageNumberModeKey, 0);
-            var damageTextSize = PlayerPrefs.GetInt(k_damageTextSizeKey, 14);
-            var buffTextSize = PlayerPrefs.GetInt(k_buffTextSizeKey, 14);
+            var damageTextSizeIndex = PlayerPrefs.GetInt(k_damageTextSizeKey, k_defaultFontSizeIndex);
+            var buffTextSizeIndex = PlayerPrefs.GetInt(k_buffTextSizeKey, k_defaultFontSizeIndex);
             var itemCompareMode = PlayerPrefs.GetInt(k_itemCompareModeKey, 0);
             var cursorSize = PlayerPrefs.GetFloat(k_cursorSizeKey, 1f);
+            var uiScale = PlayerPrefs.GetFloat(k_uiScaleKey, 1f);
             var monitor = PlayerPrefs.GetInt(k_monitorKey, 0);
             var maxFps = PlayerPrefs.GetInt(k_maxFpsKey, Application.targetFrameRate);
             var hdr = PlayerPrefs.GetInt(k_hdrKey, 0);
@@ -938,7 +1018,8 @@ namespace PLAYERTWO.ARPGProject
             var flashReduction = PlayerPrefs.GetInt(k_flashReductionKey, 0);
 
             SetResolution(resolution);
-            SetFullScreen(fullScreen == 1);
+            SetScreenMode((FullScreenMode)screenMode);
+            SetVSync(vSync == 1);
             SetPostProcessing(postProcessing == 1);
             SetMusicVolume(musicVolume);
             SetEffectsVolume(effectsVolume);
@@ -960,10 +1041,11 @@ namespace PLAYERTWO.ARPGProject
             SetMinimapSize(minimapSize);
             SetMinimapRotation(minimapRotation);
             SetDamageNumberMode(damageNumberMode);
-            SetDamageTextSize(damageTextSize);
-            SetBuffTextSize(buffTextSize);
+            SetDamageTextSize(IndexToFontSize(damageTextSizeIndex));
+            SetBuffTextSize(IndexToFontSize(buffTextSizeIndex));
             SetItemCompareMode(itemCompareMode);
             SetCursorSize(cursorSize);
+            SetUIScale(uiScale);
             SetMonitor(monitor);
             SetMaxFPS(maxFps);
             SetHDR(hdr == 1);
@@ -987,6 +1069,8 @@ namespace PLAYERTWO.ARPGProject
 
             bool displayDifficulty = PlayerPrefs.GetInt("DisplayDifficulty", 1) == 1;
             bool displayDamageText = PlayerPrefs.GetInt("DisplayDamageText", 1) == 1;
+            bool displayGuildName = PlayerPrefs.GetInt("DisplayGuildName", 1) == 1;
+            bool displayPlayerInfo = PlayerPrefs.GetInt(k_displayPlayerInfoKey, 1) == 1;
             int difficultyTextOption = PlayerPrefs.GetInt("DifficultyTextOption", 0);
             bool overlayChatOnTop = PlayerPrefs.GetInt(k_overlayChatOnTopKey, 1) == 1;
 
@@ -994,6 +1078,8 @@ namespace PLAYERTWO.ARPGProject
 
             SetDisplayDifficulty(displayDifficulty);
             SetDisplayDamageText(displayDamageText);
+            SetDisplayGuildName(displayGuildName);
+            SetDisplayPlayerInfo(displayPlayerInfo);
             SetDifficultyTextOption(difficultyTextOption);
             SetOverlayChatAlwaysOnTop(overlayChatOnTop);
             UpdateDifficultyTextTarget();

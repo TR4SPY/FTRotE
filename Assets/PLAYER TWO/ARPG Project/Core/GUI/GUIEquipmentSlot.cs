@@ -33,15 +33,30 @@ namespace PLAYERTWO.ARPGProject
 
         public override void Equip(GUIItem guiItem)
         {
-            if (guiItem && (!base.item || m_inventory.TryAutoInsert(base.item)))
-            {
-                Unequip();
-                m_entity.items.TryEquip(guiItem.item, slot);
-                base.Equip(guiItem);
+            if (!guiItem) return;
 
-                guiItem.SetPreviewActive(true);
-                m_cachedRot = null;
+            if (!m_entity.items.TryEquip(guiItem.item, slot))
+            {
+                GameAudio.instance.PlayDeniedSound();
+                return;
             }
+
+            if (base.item)
+            {
+                if (!m_inventory.TryAutoInsert(base.item))
+                {
+                    m_entity.items.TryEquip(base.item.item, slot);
+                    GameAudio.instance.PlayDeniedSound();
+                    return;
+                }
+
+                base.Unequip();
+            }
+
+            base.Equip(guiItem);
+
+            guiItem.SetPreviewActive(true);
+            m_cachedRot = null;
         }
 
         public override void Unequip()

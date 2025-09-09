@@ -35,9 +35,15 @@ namespace PLAYERTWO.ARPGProject
 
         public void SetNametag(string playerName, int level, string guild = "", string className = "")
         {
-            characterText.text = StringUtils.StringWithColorAndStyle($"{playerName} (Lv.{level})", GameColors.White, bold: true);
+            bool showInfo = GameSettings.instance == null || GameSettings.instance.GetDisplayPlayerInfo();
 
-            if (!string.IsNullOrEmpty(guild))
+            if (showInfo)
+                characterText.text = StringUtils.StringWithColorAndStyle($"{playerName} (Lv.{level})", GameColors.White, bold: true);
+            else
+                characterText.text = StringUtils.StringWithColorAndStyle(playerName, GameColors.White, bold: true);
+
+            bool showGuild = !string.IsNullOrEmpty(guild) && (GameSettings.instance == null || GameSettings.instance.GetDisplayGuildName());
+            if (showGuild)
             {
                 guildText.gameObject.SetActive(true);
                 guildText.text = StringUtils.StringWithColorAndStyle($"< {guild} >", GameColors.White, bold: true);
@@ -65,7 +71,7 @@ namespace PLAYERTWO.ARPGProject
 
             }
 
-            if (!string.IsNullOrEmpty(className))
+            if (!string.IsNullOrEmpty(className) && showInfo)
             {
                 classText.gameObject.SetActive(true);
                 classText.text = StringUtils.StringWithColor(className, GameColors.White);

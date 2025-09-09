@@ -17,6 +17,13 @@ namespace PLAYERTWO.ARPGProject
         public Color buffColor     = Color.green;
         public Color weakenColor   = Color.red;
 
+        [Header("Player Messages")]
+        [Tooltip("Messages displayed above the player for positive events.")]
+        public string[] positivePlayerMessages;
+
+        [Tooltip("Messages displayed above the player for negative events.")]
+        public string[] negativePlayerMessages;
+
         [Tooltip("Time (seconds) before destroying this object.")]
         public float lifetime = 2f;
 

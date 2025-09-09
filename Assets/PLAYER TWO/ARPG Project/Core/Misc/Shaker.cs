@@ -17,6 +17,7 @@ namespace PLAYERTWO.ARPGProject
         public float shakeMagnitude = 0.15f;
 
         protected Vector3 originalPosition;
+        protected bool shakeEnabled = true;
 
         protected virtual void Awake()
         {
@@ -28,10 +29,20 @@ namespace PLAYERTWO.ARPGProject
         /// </summary>
         public virtual void Shake()
         {
-            if (!gameObject.activeSelf) return;
+            if (!gameObject.activeSelf || !shakeEnabled) return;
 
             StopAllCoroutines();
             StartCoroutine(ShakeCoroutine());
+        }
+
+        public virtual void SetShakeEnabled(bool enabled)
+        {
+            shakeEnabled = enabled;
+            if (!enabled && target != null)
+            {
+                StopAllCoroutines();
+                target.localPosition = originalPosition;
+            }
         }
 
         protected IEnumerator ShakeCoroutine()

@@ -730,17 +730,15 @@ namespace PLAYERTWO.ARPGProject
                 levelMultiplier = Mathf.Max(0f, 1f + levelDiff * durabilityThreatMultiplier);
             }
 
-            int equipped = m_items.Values.Count(i => i != null);
-            if (equipped == 0)
-                return;
-
             float rawLoss = amount * 0.1f * onDamageDecreaseAmount;
             float totalLoss = rawLoss * (1f - magicResistanceFactor) * currentMultiplier * threatFactor * levelMultiplier;
             totalLoss = Mathf.Min(totalLoss, maxDurabilityLossPerHit);
             if (totalLoss <= 0f)
                 return;
 
-            float lossPerItem = totalLoss / equipped;
+            ItemInstance shield = null;
+            List<ItemInstance> armorPieces = new();
+            List<ItemInstance> otherItems = new();
 
             foreach (var kv in m_items)
             {
@@ -748,6 +746,50 @@ namespace PLAYERTWO.ARPGProject
                 if (itemInstance == null)
                     continue;
 
+                if (itemInstance.IsShield())
+                {
+                    shield = itemInstance;
+                }
+                else if (kv.Key == ItemSlots.Helm || kv.Key == ItemSlots.Chest || kv.Key == ItemSlots.Pants ||
+                         kv.Key == ItemSlots.Gloves || kv.Key == ItemSlots.Boots)
+                {
+                    armorPieces.Add(itemInstance);
+                }
+                else
+                {
+                    otherItems.Add(itemInstance);
+                }
+            }
+
+            List<ItemInstance> targets;
+            if (shield != null && shield.durability > 0)
+            {
+                targets = new List<ItemInstance> { shield };
+            }
+            else
+            {
+                var validArmors = armorPieces.Where(a => a.durability > 0).ToList();
+                if (validArmors.Count > 0)
+                {
+                    targets = validArmors;
+                }
+                else
+                {
+                    targets = otherItems.Where(o => o.durability > 0).ToList();
+                }
+            }
+
+            if (targets.Count == 0)
+                return;
+
+            var keysToRemove = m_pendingDurabilityLoss.Keys.Where(k => !targets.Contains(k)).ToList();
+            foreach (var key in keysToRemove)
+                m_pendingDurabilityLoss.Remove(key);
+
+            float lossPerItem = totalLoss / targets.Count;
+
+            foreach (var itemInstance in targets)
+            {
                 if (!m_pendingDurabilityLoss.ContainsKey(itemInstance))
                     m_pendingDurabilityLoss[itemInstance] = 0f;
 

@@ -759,16 +759,20 @@ namespace PLAYERTWO.ARPGProject
 
             if (m_item.IsWeapon() && equipped.IsWeapon())
             {
-                var min = m_item.GetWeapon().minDamage - equipped.GetWeapon().minDamage;
-                var max = m_item.GetWeapon().maxDamage - equipped.GetWeapon().maxDamage;
+                var newDmg = m_item.GetDamage();
+                var eqDmg = equipped.GetDamage();
+                var min = newDmg.min - eqDmg.min;
+                var max = newDmg.max - eqDmg.max;
                 if (min != 0 || max != 0)
                     lines.Add($"Damage: {FormatDelta(min)} ~ {FormatDelta(max)}");
 
                 var atk = m_item.GetWeapon().attackSpeed - equipped.GetWeapon().attackSpeed;
                 AddIfDifferent(lines, "Attack Speed", atk);
 
-                var mMin = m_item.GetWeapon().minMagicDamage - equipped.GetWeapon().minMagicDamage;
-                var mMax = m_item.GetWeapon().maxMagicDamage - equipped.GetWeapon().maxMagicDamage;
+                var newMagic = m_item.GetMagicDamage();
+                var eqMagic = equipped.GetMagicDamage();
+                var mMin = newMagic.min - eqMagic.min;
+                var mMax = newMagic.max - eqMagic.max;
                 if (mMin != 0 || mMax != 0)
                     lines.Add($"Magic Damage: {FormatDelta(mMin)} ~ {FormatDelta(mMax)}");
 
@@ -800,19 +804,7 @@ namespace PLAYERTWO.ARPGProject
             }
             else if ((m_item.IsArmor() || m_item.IsShield()) && (equipped.IsArmor() || equipped.IsShield()))
             {
-                int def = 0;
-                if (m_item.IsArmor())
-                    def += m_item.GetArmor().defense;
-                if (m_item.IsShield())
-                    def += m_item.GetShield().defense;
-
-                int eqDef = 0;
-                if (equipped.IsArmor())
-                    eqDef += equipped.GetArmor().defense;
-                if (equipped.IsShield())
-                    eqDef += equipped.GetShield().defense;
-
-                AddIfDifferent(lines, "Defense", def - eqDef);
+                AddIfDifferent(lines, "Defense", m_item.GetDefense() - equipped.GetDefense());
 
                 int newRes = m_item.GetAdditionalMagicResistance();
                 int eqRes = equipped.GetAdditionalMagicResistance();
@@ -885,12 +877,17 @@ namespace PLAYERTWO.ARPGProject
 
                 if (item.IsWeapon())
                 {
+                    var dmg = item.GetDamage();
+                    eqMin += dmg.min;
+                    eqMax += dmg.max;
+
                     var w = item.GetWeapon();
-                    eqMin += w.minDamage;
-                    eqMax += w.maxDamage;
                     eqAtk += w.attackSpeed;
-                    eqMagMin += w.minMagicDamage;
-                    eqMagMax += w.maxMagicDamage;
+
+                    var mag = item.GetMagicDamage();
+                    eqMagMin += mag.min;
+                    eqMagMax += mag.max;
+
                     if (item.data is ItemBlade b) eqRes += b.magicResistance;
                     if (item.data is ItemBow bw) eqRes += bw.magicResistance;
                     if (w.magicElement != MagicElement.None) eqElements.Add(w.magicElement);
@@ -918,22 +915,24 @@ namespace PLAYERTWO.ARPGProject
                     eqElemRes[element] = eqElemRes.ContainsKey(element) ? eqElemRes[element] + val : val;
                 }
             }
-
+            
             Accumulate(left);
             Accumulate(right);
 
             if (m_item.IsWeapon())
             {
-                var w = m_item.GetWeapon();
-                int dMin = w.minDamage - eqMin;
-                int dMax = w.maxDamage - eqMax;
+                var dmg = m_item.GetDamage();
+                int dMin = dmg.min - eqMin;
+                int dMax = dmg.max - eqMax;
                 if (dMin != 0 || dMax != 0)
                     lines.Add($"Damage: {FormatDelta(dMin)} ~ {FormatDelta(dMax)}");
 
+                var w = m_item.GetWeapon();
                 AddIfDifferent(lines, "Attack Speed", w.attackSpeed - eqAtk);
 
-                int mMin = w.minMagicDamage - eqMagMin;
-                int mMax = w.maxMagicDamage - eqMagMax;
+                var mag = m_item.GetMagicDamage();
+                int mMin = mag.min - eqMagMin;
+                int mMax = mag.max - eqMagMax;
                 if (mMin != 0 || mMax != 0)
                     lines.Add($"Magic Damage: {FormatDelta(mMin)} ~ {FormatDelta(mMax)}");
 

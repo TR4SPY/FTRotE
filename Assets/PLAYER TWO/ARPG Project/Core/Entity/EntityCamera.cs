@@ -48,6 +48,10 @@ namespace PLAYERTWO.ARPGProject
 
         protected Entity m_entity;
 
+        [Header("Shake Settings")]
+        [Tooltip("Controls camera shaking.")]
+        public Shaker shaker;
+
         public static EntityCamera Instance { get; private set; }
 
         protected virtual void Awake()
@@ -59,6 +63,8 @@ namespace PLAYERTWO.ARPGProject
             }
 
             Instance = this;
+            if (shaker == null)
+                shaker = GetComponent<Shaker>();
         }
 
         protected virtual void InitializeEntity()
@@ -80,6 +86,11 @@ namespace PLAYERTWO.ARPGProject
         public void SetTarget(Entity entity)
         {
             m_entity = entity;
+        }
+
+        public void SetShakeEnabled(bool enabled)
+        {
+            shaker?.SetShakeEnabled(enabled);
         }
 
         protected virtual void InitializeActions()
@@ -203,6 +214,8 @@ namespace PLAYERTWO.ARPGProject
             InitializeActions();
             InitializeActionsCallbacks();
             Reset();
+            if (GameSettings.instance != null)
+                SetShakeEnabled(GameSettings.instance.GetCameraShake());
         }
 
         protected virtual void LateUpdate()

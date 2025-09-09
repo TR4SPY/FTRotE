@@ -13,8 +13,11 @@ using TMPro;
         [Tooltip("References the dropdown used to display the game's resolutions.")]
         public TMP_Dropdown resolution;
 
-        [Tooltip("References the toggle that controls the full screen state.")]
-        public Toggle fullScreen;
+        [Tooltip("References the dropdown that controls the screen mode.")]
+        public TMP_Dropdown screenModeDropdown;
+
+        [Tooltip("References the toggle that controls VSync.")]
+        public Toggle vSyncToggle;
 
         [Tooltip("References the monitor selection dropdown.")]
         public TMP_Dropdown monitor;
@@ -57,16 +60,49 @@ using TMPro;
         private bool m_reverting;
 
         protected int m_pendingResolution;
-        protected bool m_pendingFullScreen;
+        protected FullScreenMode m_pendingScreenMode;
+        protected bool m_pendingVSync;
+        protected int m_pendingMonitor;
+        protected int m_pendingMaxFPS;
+        protected bool m_pendingHDR;
+        protected bool m_pendingPostProcessing;
+        protected int m_pendingQualityPreset;
+        protected int m_pendingAntiAliasing;
+        protected int m_pendingShadows;
+        protected int m_pendingTextureQuality;
+        protected int m_pendingAnisotropic;
+        protected bool m_pendingAmbientOcclusion;
+        protected bool m_pendingBloom;
+        protected bool m_pendingDepthOfField;
+        protected bool m_pendingMotionBlur;
+        protected float m_pendingGamma;
+
         protected int m_previousResolution;
-        protected bool m_previousFullScreen;
+        protected FullScreenMode m_previousScreenMode;
+        protected bool m_previousVSync;
+        protected int m_previousMonitor;
+        protected int m_previousMaxFPS;
+        protected bool m_previousHDR;
+        protected bool m_previousPostProcessing;
+        protected int m_previousQualityPreset;
+        protected int m_previousAntiAliasing;
+        protected int m_previousShadows;
+        protected int m_previousTextureQuality;
+        protected int m_previousAnisotropic;
+        protected bool m_previousAmbientOcclusion;
+        protected bool m_previousBloom;
+        protected bool m_previousDepthOfField;
+        protected bool m_previousMotionBlur;
+        protected float m_previousGamma;
+
         protected Coroutine m_revertCoroutine;
 
         protected override void Start()
         {
             base.Start();
             InitializeResolution();
-            InitializeFullScreen();
+            InitializeVSync();
+            InitializeScreenMode();
             InitializeMonitor();
             InitializeMaxFps();
             InitializeHDR();
@@ -121,11 +157,56 @@ using TMPro;
 #endif
         }
 
-        protected virtual void InitializeFullScreen()
+        protected virtual void InitializeScreenMode()
         {
-            m_pendingFullScreen = m_settings.GetFullScreen();
-            fullScreen.isOn = m_pendingFullScreen;
-            fullScreen.onValueChanged.AddListener(v => m_pendingFullScreen = v);
+            if (screenModeDropdown == null) return;
+
+            var options = new List<string> { "Full Screen", "Windowed", "Borderless" };
+            screenModeDropdown.ClearOptions();
+            screenModeDropdown.AddOptions(options);
+
+            m_pendingScreenMode = m_settings.GetScreenMode();
+            screenModeDropdown.value = ModeToIndex(m_pendingScreenMode);
+            screenModeDropdown.onValueChanged.AddListener(v => m_pendingScreenMode = IndexToMode(v));
+        }
+
+        protected virtual void InitializeVSync()
+        {
+            if (vSyncToggle == null) return;
+            m_pendingVSync = m_settings.GetVSync();
+            vSyncToggle.isOn = m_pendingVSync;
+            vSyncToggle.onValueChanged.AddListener(v => m_pendingVSync = v);
+        }
+
+        protected int ModeToIndex(FullScreenMode mode)
+        {
+            switch (mode)
+            {
+                case FullScreenMode.ExclusiveFullScreen:
+                    return 0;
+                case FullScreenMode.FullScreenWindow:
+                    return 2;
+                case FullScreenMode.Windowed:
+                case FullScreenMode.MaximizedWindow:
+                    return 1;
+                default:
+                    return 0;
+            }
+        }
+
+        protected FullScreenMode IndexToMode(int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    return FullScreenMode.ExclusiveFullScreen;
+                case 1:
+                    return FullScreenMode.Windowed;
+                case 2:
+                    return FullScreenMode.FullScreenWindow;
+                default:
+                    return FullScreenMode.Windowed;
+            }
         }
 
         protected virtual void InitializeMonitor()
@@ -265,10 +346,41 @@ using TMPro;
         protected virtual void ApplyDisplaySettings()
         {
             m_previousResolution = m_settings.GetResolution();
-            m_previousFullScreen = m_settings.GetFullScreen();
+            m_previousScreenMode = m_settings.GetScreenMode();
+            m_previousVSync = m_settings.GetVSync();
+            m_previousMonitor = m_settings.GetMonitor();
+            m_previousMaxFPS = m_settings.GetMaxFPS();
+            m_previousHDR = m_settings.GetHDR();
+            m_previousPostProcessing = m_settings.GetPostProcessing();
+            m_previousQualityPreset = m_settings.GetQualityPreset();
+            m_previousAntiAliasing = m_settings.GetAntiAliasing();
+            m_previousShadows = m_settings.GetShadows();
+            m_previousTextureQuality = m_settings.GetTextureQuality();
+            m_previousAnisotropic = m_settings.GetAnisotropicFiltering();
+            m_previousAmbientOcclusion = m_settings.GetAmbientOcclusion();
+            m_previousBloom = m_settings.GetBloom();
+            m_previousDepthOfField = m_settings.GetDepthOfField();
+            m_previousMotionBlur = m_settings.GetMotionBlur();
+            m_previousGamma = m_settings.GetGamma();
 
             m_settings.SetResolution(m_pendingResolution);
-            m_settings.SetFullScreen(m_pendingFullScreen);
+            m_settings.SetScreenMode(m_pendingScreenMode);
+            m_settings.SetVSync(m_pendingVSync);
+            m_settings.SetMonitor(m_pendingMonitor);
+            m_settings.SetMaxFPS(m_pendingMaxFPS);
+            m_settings.SetHDR(m_pendingHDR);
+            m_settings.SetPostProcessing(m_pendingPostProcessing);
+            m_settings.SetQualityPreset(m_pendingQualityPreset);
+            int[] aaValues = { 0, 2, 4, 8 };
+            m_settings.SetAntiAliasing(aaValues[m_pendingAntiAliasing]);
+            m_settings.SetShadows(m_pendingShadows);
+            m_settings.SetTextureQuality(m_pendingTextureQuality);
+            m_settings.SetAnisotropicFiltering(m_pendingAnisotropic);
+            m_settings.SetAmbientOcclusion(m_pendingAmbientOcclusion);
+            m_settings.SetBloom(m_pendingBloom);
+            m_settings.SetDepthOfField(m_pendingDepthOfField);
+            m_settings.SetMotionBlur(m_pendingMotionBlur);
+            m_settings.SetGamma(m_pendingGamma);
 
             if (confirmDialog != null) confirmDialog.SetActive(true);
             if (m_revertCoroutine != null) StopCoroutine(m_revertCoroutine);
@@ -298,15 +410,132 @@ using TMPro;
         public void RevertResolution()
         {
             if (m_revertCoroutine != null) StopCoroutine(m_revertCoroutine);
+
             m_settings.SetResolution(m_previousResolution);
-            m_settings.SetFullScreen(m_previousFullScreen);
+            m_settings.SetScreenMode(m_previousScreenMode);
+            m_settings.SetVSync(m_previousVSync);
+            m_settings.SetMonitor(m_previousMonitor);
+            m_settings.SetMaxFPS(m_previousMaxFPS);
+            m_settings.SetHDR(m_previousHDR);
+            m_settings.SetPostProcessing(m_previousPostProcessing);
+            m_settings.SetQualityPreset(m_previousQualityPreset);
+            m_settings.SetAntiAliasing(m_previousAntiAliasing);
+            m_settings.SetShadows(m_previousShadows);
+            m_settings.SetTextureQuality(m_previousTextureQuality);
+            m_settings.SetAnisotropicFiltering(m_previousAnisotropic);
+            m_settings.SetAmbientOcclusion(m_previousAmbientOcclusion);
+            m_settings.SetBloom(m_previousBloom);
+            m_settings.SetDepthOfField(m_previousDepthOfField);
+            m_settings.SetMotionBlur(m_previousMotionBlur);
+            m_settings.SetGamma(m_previousGamma);
+
+            resolution.SetValueWithoutNotify(m_previousResolution);
+            m_pendingResolution = m_previousResolution;
+            if (screenModeDropdown != null)
+            {
+                screenModeDropdown.SetValueWithoutNotify(ModeToIndex(m_previousScreenMode));
+                m_pendingScreenMode = m_previousScreenMode;
+            }
+            if (vSyncToggle != null)
+            {
+                vSyncToggle.SetIsOnWithoutNotify(m_previousVSync);
+                m_pendingVSync = m_previousVSync;
+            }
+            if (monitor != null)
+            {
+                monitor.SetValueWithoutNotify(m_previousMonitor);
+                m_pendingMonitor = m_previousMonitor;
+            }
+            if (maxFps != null)
+            {
+                var options = new List<string> { "30", "60", "120", "144", "240", "Unlimited" };
+                int index = options.Count - 1;
+                if (m_previousMaxFPS > 0)
+                {
+                    var str = m_previousMaxFPS.ToString();
+                    index = options.IndexOf(str);
+                    if (index < 0) index = options.Count - 1;
+                }
+                maxFps.SetValueWithoutNotify(index);
+                m_pendingMaxFPS = m_previousMaxFPS;
+            }
+            if (hdr != null)
+            {
+                hdr.SetIsOnWithoutNotify(m_previousHDR);
+                m_pendingHDR = m_previousHDR;
+            }
+            if (postProcessing != null)
+            {
+                postProcessing.SetIsOnWithoutNotify(m_previousPostProcessing);
+                m_pendingPostProcessing = m_previousPostProcessing;
+            }
+            if (qualityPreset != null)
+            {
+                qualityPreset.SetValueWithoutNotify(m_previousQualityPreset);
+                m_pendingQualityPreset = m_previousQualityPreset;
+            }
+            if (antiAliasing != null)
+            {
+                int index = 0;
+                switch (m_previousAntiAliasing)
+                {
+                    case 2: index = 1; break;
+                    case 4: index = 2; break;
+                    case 8: index = 3; break;
+                }
+                antiAliasing.SetValueWithoutNotify(index);
+                m_pendingAntiAliasing = index;
+            }
+            if (shadows != null)
+            {
+                shadows.SetValueWithoutNotify(m_previousShadows);
+                m_pendingShadows = m_previousShadows;
+            }
+            if (textureQuality != null)
+            {
+                textureQuality.SetValueWithoutNotify(m_previousTextureQuality);
+                m_pendingTextureQuality = m_previousTextureQuality;
+            }
+            if (anisotropic != null)
+            {
+                anisotropic.SetValueWithoutNotify(m_previousAnisotropic);
+                m_pendingAnisotropic = m_previousAnisotropic;
+            }
+            if (ambientOcclusion != null)
+            {
+                ambientOcclusion.SetIsOnWithoutNotify(m_previousAmbientOcclusion);
+                m_pendingAmbientOcclusion = m_previousAmbientOcclusion;
+            }
+            if (bloom != null)
+            {
+                bloom.SetIsOnWithoutNotify(m_previousBloom);
+                m_pendingBloom = m_previousBloom;
+            }
+            if (depthOfField != null)
+            {
+                depthOfField.SetIsOnWithoutNotify(m_previousDepthOfField);
+                m_pendingDepthOfField = m_previousDepthOfField;
+            }
+            if (motionBlur != null)
+            {
+                motionBlur.SetIsOnWithoutNotify(m_previousMotionBlur);
+                m_pendingMotionBlur = m_previousMotionBlur;
+            }
+            if (gamma != null)
+            {
+                gamma.SetValueWithoutNotify(m_previousGamma);
+                m_pendingGamma = m_previousGamma;
+            }
+
             if (confirmDialog != null) confirmDialog.SetActive(false);
         }
 
+
         protected virtual void InitializePostProcessing()
         {
-            postProcessing.isOn = m_settings.GetPostProcessing();
-            postProcessing.onValueChanged.AddListener(m_settings.SetPostProcessing);
+            m_pendingPostProcessing = m_settings.GetPostProcessing();
+            postProcessing.isOn = m_pendingPostProcessing;
+            postProcessing.onValueChanged.AddListener(v => m_pendingPostProcessing = v);
         }
 
         protected virtual void OnResolutionChanged(int option)
@@ -314,7 +543,7 @@ using TMPro;
             if (m_reverting) return;
 
             int previousResolution = m_settings.GetResolution();
-            bool previousFullScreen = m_settings.GetFullScreen();
+            var previousScreenMode = m_settings.GetScreenMode();
 
             m_settings.SetResolution(option);
 
@@ -323,26 +552,26 @@ using TMPro;
                 m_reverting = true;
                 m_settings.SetResolution(previousResolution);
                 resolution.SetValueWithoutNotify(previousResolution);
-                m_settings.SetFullScreen(previousFullScreen);
-                fullScreen.SetIsOnWithoutNotify(previousFullScreen);
+                m_settings.SetScreenMode(previousScreenMode);
+                screenModeDropdown.SetValueWithoutNotify(ModeToIndex(previousScreenMode));
                 m_reverting = false;
             });
         }
 
-        protected virtual void OnFullScreenChanged(bool value)
+        protected virtual void OnScreenModeChanged(int value)
         {
             if (m_reverting) return;
 
-            bool previousFullScreen = m_settings.GetFullScreen();
+            var previousScreenMode = m_settings.GetScreenMode();
             int previousResolution = m_settings.GetResolution();
 
-            m_settings.SetFullScreen(value);
+            m_settings.SetScreenMode(IndexToMode(value));
 
             ShowApplyRevert(() => m_settings.Save(), () =>
             {
                 m_reverting = true;
-                m_settings.SetFullScreen(previousFullScreen);
-                fullScreen.SetIsOnWithoutNotify(previousFullScreen);
+                m_settings.SetScreenMode(previousScreenMode);
+                screenModeDropdown.SetValueWithoutNotify(ModeToIndex(previousScreenMode));
                 m_settings.SetResolution(previousResolution);
                 resolution.SetValueWithoutNotify(previousResolution);
                 m_reverting = false;
