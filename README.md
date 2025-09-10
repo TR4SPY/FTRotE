@@ -1,7 +1,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Tests-Passing-brightgreen?style=flat-square" alt="Tests" />
-  <img src="https://img.shields.io/badge/Version-0.60B%2B-informational?style=flat-square" alt="Version" />
+  <img src="https://img.shields.io/badge/Version-0.64C%2B-informational?style=flat-square" alt="Version" />
   <img src="https://img.shields.io/badge/Build-June%202025-lightgrey?style=flat-square" alt="Build" />
   <img src="https://img.shields.io/badge/Unity-6000.0.25f1-blue?style=flat-square" alt="Unity" />
   <img src="https://img.shields.io/badge/License-Restricted-red?style=flat-square" alt="License" />
@@ -67,6 +67,21 @@ The project is built upon a heavily modified version of the **ARPG Project** ass
 - **Bartle’s Player Type Profiling**: Combines initial questionnaire with continuous in-game behavioral analysis to determine player type.
 - **AI-Driven Game Adjustment**: Game world adapts dynamically in response to AI difficulty predictions.
 - **Experimental Data Collection**: System logs player behavior and AI activity for academic analysis.
+  
+### **Gameplay Systems**
+- **Crafting**: item enhancement via recipes and custom rules.
+- **Alchemy**: potion crafting with catalyst bonuses.
+- **Inventory & Items**: item handling, equipment, and stack management.
+- **Quests**: quest givers, triggers, stages, and rewards.
+- **Skills & Specializations**: skill definitions, augments, and specialization trees.
+- **Party, Factions & Guilds**: group mechanics and reputation systems.
+- **Trade & Banking**: merchants and currency storage/investments.
+- **Achievements & Collectibles**: achievement conditions and collectible tracking.
+- **Bestiary & Minimap/Cartography**: enemy cataloging and map discovery.
+- **Waypoints & Zones**: fast travel markers and region segmentation.
+- **Buffs**: temporary stat modifiers and status effects.
+- **Player Types & Enemy AI**: profiling systems and behavior logic for opponents.
+- **Class Upgrades**: advanced class progression paths.
 
 ---
 
