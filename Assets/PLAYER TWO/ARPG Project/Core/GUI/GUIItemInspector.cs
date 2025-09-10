@@ -109,6 +109,7 @@ namespace PLAYERTWO.ARPGProject
         protected ItemInstance m_item;
         protected GUIItem m_guiItem;
         protected bool m_showComparison;
+        protected ItemInstance m_lastComparisonItem;
 
         protected Entity m_entity;
 
@@ -1028,11 +1029,12 @@ namespace PLAYERTWO.ARPGProject
                 _ => pressed
             };
 
-            if (shouldShow && !m_showComparison && gameObject.activeSelf && m_item.IsEquippable())
+            if (shouldShow && (!m_showComparison || m_lastComparisonItem != m_item) && gameObject.activeSelf && m_item.IsEquippable())
             {
                 comparisonText.text = BuildFullComparisonText();
                 comparisonText.gameObject.SetActive(true);
                 m_showComparison = true;
+                m_lastComparisonItem = m_item;
             }
             else if (!shouldShow && m_showComparison)
             {

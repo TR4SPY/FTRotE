@@ -1,4 +1,5 @@
 using UnityEngine;
+using AI_DDA.Assets.Scripts;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -163,6 +164,13 @@ namespace PLAYERTWO.ARPGProject
                 {
                     entity.inventory.instance.TryAddItem(item.CreateItemInstance());
                 }
+            }
+
+            if (ReputationManager.Instance != null &&
+                data.reputationFaction != Faction.None &&
+                data.reputationReward != 0)
+            {
+                ReputationManager.Instance.Adjust(data.reputationFaction, data.reputationReward);
             }
         }
 

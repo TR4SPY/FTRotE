@@ -99,8 +99,8 @@ namespace PLAYERTWO.ARPGProject
                 quest.Reward(Level.instance.player);
 
             quest.Complete();
-
-            PlayerBehaviorLogger.Instance?.LogQuestCompleted();
+            
+            PlayerBehaviorLogger.Instance?.LogQuestCompleted(quest.data.reputationFaction);
 
             onQuestCompleted?.Invoke(quest);
 

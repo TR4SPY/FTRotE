@@ -269,7 +269,18 @@ namespace PLAYERTWO.ARPGProject
                 }
                 return;
             }
-            if (m_playerInventory.instance.currency.GetTotalAmberlings() < deposit) return;
+            
+            if (m_playerInventory.instance.currency.GetTotalAmberlings() < deposit)
+            {
+                var info = GUIWindowsManager.instance?.GetInformation();
+                if (info != null)
+                {
+                    info.SetInformation("Insufficient Funds", "I’m afraid you don’t have sufficient funds for that deposit. Please, only invest what you truly own and can comfortably set aside.");
+                    info.GetComponent<GUIWindow>()?.Show();
+                }
+                return;
+            }
+
             if (!BankManager.instance.HasAvailableSlot)
             {
                 ShowMaximumAccountsWarning();

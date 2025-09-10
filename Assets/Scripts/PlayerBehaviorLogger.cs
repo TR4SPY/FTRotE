@@ -286,7 +286,7 @@ namespace AI_DDA.Assets.Scripts
         public void LogQuestCompleted(Faction faction = Faction.None)
         {
             questsCompleted++;
-            ReputationManager.Instance?.Adjust(faction, 5);
+            // ReputationManager.Instance?.Adjust(faction, 5);
             // Debug.Log($"Quest completed! Total: {questsCompleted}");
             UpdatePlayerType();
             achievementManager?.CheckAchievements(this);

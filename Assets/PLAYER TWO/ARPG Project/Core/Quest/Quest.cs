@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using AI_DDA.Assets.Scripts;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -55,6 +56,12 @@ namespace PLAYERTWO.ARPGProject
 
         [Tooltip("The items gained by completing this Quest.")]
         public QuestItemReward[] items;
+
+        [Header("Reputation Settings")]
+        [Tooltip("Faction affected by this quest.")]
+        public AI_DDA.Assets.Scripts.Faction reputationFaction = AI_DDA.Assets.Scripts.Faction.None;
+        [Tooltip("Reputation gained on completion.")]
+        public int reputationReward = 0;
 
         [Header("Progression Settings")]
         [Tooltip("The name of the destination scene used when the completing mode is 'Reach Scene.'")]
