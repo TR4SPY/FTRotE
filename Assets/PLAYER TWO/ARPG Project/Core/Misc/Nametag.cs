@@ -17,6 +17,11 @@ namespace PLAYERTWO.ARPGProject
         [Header("Offsets")]
         public Vector3 worldOffset = new Vector3(0, 2f, 0);
 
+        private void Start()
+        {
+            transform.localScale = Vector3.one;
+        }
+
         private void LateUpdate()
         {
             if (target != null)
@@ -26,9 +31,11 @@ namespace PLAYERTWO.ARPGProject
                 var cam = Camera.main;
                 if (cam != null)
                 {
+                    /*
                     float distance = Vector3.Distance(transform.position, cam.transform.position);
                     float scaleFactor = distance * 0.05f;
                     transform.localScale = Vector3.one * scaleFactor;
+                    */
                 }
             }
         }

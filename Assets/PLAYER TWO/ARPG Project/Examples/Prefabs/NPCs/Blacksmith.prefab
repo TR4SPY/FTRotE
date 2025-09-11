@@ -185,7 +185,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 278075ee8d11b30dfa9e227ac69ccb14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  faction: 0
+  faction: 1
 --- !u!1001 &2274933448513112578
 PrefabInstance:
   m_ObjectHideFlags: 0

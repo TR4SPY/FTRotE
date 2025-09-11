@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 3552628372634861350}
   - component: {fileID: 3244250906818003430}
   - component: {fileID: 7370606505055552536}
+  - component: {fileID: 5238585761214234909}
   m_Layer: 0
   m_Name: Another Monk
   m_TagString: Untagged
@@ -146,6 +147,19 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   assignedDialog: {fileID: 0}
+--- !u!114 &5238585761214234909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3552628372634861344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 278075ee8d11b30dfa9e227ac69ccb14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  faction: 10
 --- !u!1001 &80027077090686531
 PrefabInstance:
   m_ObjectHideFlags: 0

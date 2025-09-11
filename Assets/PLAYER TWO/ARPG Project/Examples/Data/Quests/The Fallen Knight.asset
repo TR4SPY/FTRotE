@@ -20,16 +20,30 @@ MonoBehaviour:
   objective: Defeat Dark Knight
   targetProgress: 1
   completingMode: 1
+  allowLogCompletion: 0
   experience: 10000
   coins: 10000
   items: []
+  reputationFaction: 0
+  reputationReward: 0
   destinationScene: 
   progressKey: dark_knight
   requiredItem:
     data: {fileID: 0}
     attributes: 0
+    elements: 0
+    amount: 1
   returnToNPC: 
   requiresManualCompletion: 0
+  questType: 0
+  requiredClass: 0
+  requireMaxLevel: 0
+  isMultiStage: 0
+  stages: []
+  forKiller: 0
+  forAchiever: 0
+  forExplorer: 0
+  forSocializer: 0
   killerMultiplier: 1.5
   killerGoldMultiplier: 1.1
   killerExpMultiplier: 0.8

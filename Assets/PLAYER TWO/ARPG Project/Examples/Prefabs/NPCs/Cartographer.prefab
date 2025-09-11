@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: -7216128773366485493}
   - component: {fileID: 7399124025929745388}
   - component: {fileID: -5684175985194008276}
+  - component: {fileID: 5953474802388299706}
   m_Layer: 0
   m_Name: Cartographer
   m_TagString: Untagged
@@ -327,6 +328,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   npcName: CARTOGRAPHER
+--- !u!114 &5953474802388299706
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7399124025929745386}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 278075ee8d11b30dfa9e227ac69ccb14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  faction: 26
 --- !u!1001 &216040406490969305
 PrefabInstance:
   m_ObjectHideFlags: 0

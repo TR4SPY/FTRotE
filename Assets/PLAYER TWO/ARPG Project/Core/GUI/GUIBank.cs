@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using TMPro;
 
 namespace PLAYERTWO.ARPGProject
 {
@@ -36,6 +37,13 @@ namespace PLAYERTWO.ARPGProject
         public Text offerRateText;
         public Text offerDurationText;
 
+        [Header("Total Proceeds Display")]
+        public Transform totalProceedsContainer;
+        public GameObject priceTagPrefab;
+        public Sprite solmireIcon;
+        public Sprite lunarisIcon;
+        public Sprite amberlingsIcon;
+
         [Tooltip("Displays the minimum deposit required for the selected offer.")]
         public Text minimumValueText;
         public Button confirmButton;
@@ -58,9 +66,22 @@ namespace PLAYERTWO.ARPGProject
             if (newAccountBackButton) newAccountBackButton.onClick.AddListener(BackToMenu);
             if (confirmButton) confirmButton.onClick.AddListener(ConfirmInvest);
             if (resetButton) resetButton.onClick.AddListener(ResetNewAccountInputs);
-            if (depositSolmireField) AddInputFieldListeners(depositSolmireField);
-            if (depositLunarisField) AddInputFieldListeners(depositLunarisField);
-            if (depositAmberlingsField) AddInputFieldListeners(depositAmberlingsField);
+            if (depositSolmireField)
+            {
+                AddInputFieldListeners(depositSolmireField);
+                depositSolmireField.onValueChanged.AddListener(_ => UpdateTotalProceeds());
+            }
+            if (depositLunarisField)
+            {
+                AddInputFieldListeners(depositLunarisField);
+                depositLunarisField.onValueChanged.AddListener(_ => UpdateTotalProceeds());
+            }
+            if (depositAmberlingsField)
+            {
+                AddInputFieldListeners(depositAmberlingsField);
+                depositAmberlingsField.onValueChanged.AddListener(_ => UpdateTotalProceeds());
+            }
+
             if (accountNameField) AddInputFieldListeners(accountNameField);
 
             if ((accountSlots == null || accountSlots.Length == 0) && accountsPanel)
@@ -119,6 +140,7 @@ namespace PLAYERTWO.ARPGProject
             }
 
             BackToMenu();
+            UpdateTotalProceeds();
         }
 
         protected virtual void BackToMenu()
@@ -240,6 +262,7 @@ namespace PLAYERTWO.ARPGProject
             if (minimumValueText) minimumValueText.text = Currency.FormatCurrencyString(m_minimumDeposit);
             offersPanel.SetActive(false);
             newAccountPanel.SetActive(true);
+            UpdateTotalProceeds();
         }
 
         protected virtual void ConfirmInvest()
@@ -312,6 +335,76 @@ namespace PLAYERTWO.ARPGProject
             if (depositLunarisField) depositLunarisField.text = "0";
             if (depositAmberlingsField) depositAmberlingsField.text = "0";
             if (accountNameField) accountNameField.text = string.Empty;
+            UpdateTotalProceeds();
+        }
+
+        private const long MaxTotalAmberlings = int.MaxValue;
+        private const long MaxSolmireDeposit = MaxTotalAmberlings / 100000L;
+        private const long MaxLunarisDeposit = MaxTotalAmberlings / 100L;
+
+        protected virtual void UpdateTotalProceeds()
+        {
+            if (!totalProceedsContainer || !priceTagPrefab) return;
+
+            foreach (Transform child in totalProceedsContainer)
+            {
+                Destroy(child.gameObject);
+            }
+
+            long solmire = ParseAndClamp(depositSolmireField, MaxSolmireDeposit);
+            long lunaris = ParseAndClamp(depositLunarisField, MaxLunarisDeposit);
+            long amberlings = ParseAndClamp(depositAmberlingsField, MaxTotalAmberlings);
+
+            long deposit = solmire * 100000L
+                         + lunaris * 100L
+                         + amberlings;
+            if (deposit > MaxTotalAmberlings)
+            {
+                deposit = MaxTotalAmberlings;
+            }
+
+            float rate = m_selectedOffer != null ? m_selectedOffer.interestRate : 0f;
+            long total = (long)System.Math.Round(deposit * (1.0 + rate));
+            if (total > MaxTotalAmberlings)
+            {
+                total = MaxTotalAmberlings;
+            }
+
+            Currency.SplitCurrency((int)total, out int totalSolmire, out int totalLunaris, out int totalAmberlings);
+            AddPriceTag(totalSolmire, solmireIcon);
+            AddPriceTag(totalLunaris, lunarisIcon);
+            AddPriceTag(totalAmberlings, amberlingsIcon);
+        }
+
+        private long ParseAndClamp(InputField field, long max)
+        {
+            if (!field) return 0;
+            if (!long.TryParse(field.text, out var value)) value = 0;
+            if (value > max)
+            {
+                value = max;
+                field.text = max.ToString();
+            }
+            else if (value < 0)
+            {
+                value = 0;
+                field.text = "0";
+            }
+            return value;
+        }
+
+        private void AddPriceTag(int amount, Sprite icon)
+        {
+            var go = Instantiate(priceTagPrefab, totalProceedsContainer);
+
+            var textObj = go.transform.Find("Name")?.GetComponent<Text>();
+            if (textObj) textObj.text = amount.ToString();
+
+            var iconObj = go.transform.Find("Icon")?.GetComponent<Image>();
+            if (iconObj)
+            {
+                iconObj.sprite = icon;
+            }
         }
 
         protected virtual void AddInputFieldListeners(InputField field)

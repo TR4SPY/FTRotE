@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 1851305697827949864}
   - component: {fileID: 4297063838814822503}
   - component: {fileID: -377105312460391991}
+  - component: {fileID: 7052951949707236884}
   m_Layer: 0
   m_Name: Guard
   m_TagString: Untagged
@@ -148,6 +149,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   npcName: GUARD
+--- !u!114 &7052951949707236884
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4297063838814822501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 278075ee8d11b30dfa9e227ac69ccb14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  faction: 26
 --- !u!1001 &2143384366498760203
 PrefabInstance:
   m_ObjectHideFlags: 0

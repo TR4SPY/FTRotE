@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 4297063838814822503}
   - component: {fileID: 7731965352775864055}
   - component: {fileID: 6067339981912940753}
+  - component: {fileID: 4671628697398245856}
   m_Layer: 0
   m_Name: Alchemist
   m_TagString: Untagged
@@ -189,6 +190,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   npcName: ALCHEMIST
+--- !u!114 &4671628697398245856
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4297063838814822501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 278075ee8d11b30dfa9e227ac69ccb14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  faction: 26
 --- !u!1001 &2143384366498760203
 PrefabInstance:
   m_ObjectHideFlags: 0
