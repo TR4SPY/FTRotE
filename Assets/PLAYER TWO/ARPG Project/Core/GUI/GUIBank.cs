@@ -70,16 +70,19 @@ namespace PLAYERTWO.ARPGProject
             {
                 AddInputFieldListeners(depositSolmireField);
                 depositSolmireField.onValueChanged.AddListener(_ => UpdateTotalProceeds());
+                depositSolmireField.characterLimit = MaxSolmireDeposit.ToString().Length;                
             }
             if (depositLunarisField)
             {
                 AddInputFieldListeners(depositLunarisField);
                 depositLunarisField.onValueChanged.AddListener(_ => UpdateTotalProceeds());
+                depositLunarisField.characterLimit = MaxLunarisDeposit.ToString().Length;
             }
             if (depositAmberlingsField)
             {
                 AddInputFieldListeners(depositAmberlingsField);
                 depositAmberlingsField.onValueChanged.AddListener(_ => UpdateTotalProceeds());
+                depositAmberlingsField.characterLimit = MaxTotalAmberlings.ToString().Length;
             }
 
             if (accountNameField) AddInputFieldListeners(accountNameField);
@@ -379,18 +382,18 @@ namespace PLAYERTWO.ARPGProject
         private long ParseAndClamp(InputField field, long max)
         {
             if (!field) return 0;
-            if (!long.TryParse(field.text, out var value)) value = 0;
-            if (value > max)
+            if (!long.TryParse(field.text, out var value))
             {
                 value = max;
                 field.text = max.ToString();
+                return value;
             }
-            else if (value < 0)
+            long clamped = System.Math.Clamp(value, 0, max);
+            if (clamped != value || field.text != clamped.ToString())
             {
-                value = 0;
-                field.text = "0";
+                field.text = clamped.ToString();
             }
-            return value;
+            return clamped;
         }
 
         private void AddPriceTag(int amount, Sprite icon)

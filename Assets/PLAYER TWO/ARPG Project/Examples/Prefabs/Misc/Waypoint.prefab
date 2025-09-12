@@ -4908,6 +4908,8 @@ MonoBehaviour:
   autoActive: 1
   activationRadius: 10
   title: New Waypoint
+  allowedClasses: 0
+  allowedPlayerTypes: 0
   achieverExpReward: 100
   achieverGoldReward: 100
   killerExpReward: 100
@@ -4928,7 +4930,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 343275122e2268e47b5b0ff18c1935d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  iconSprite: {fileID: 6621252853494989987, guid: 0390df3b808315746af1899229176af6, type: 3}
+  iconSprite: {fileID: -2248273014285675650, guid: 0390df3b808315746af1899229176af6, type: 3}
   initialVisibility: 1
   initialSize: {x: 40, y: 40}
   rotationOffset: 0

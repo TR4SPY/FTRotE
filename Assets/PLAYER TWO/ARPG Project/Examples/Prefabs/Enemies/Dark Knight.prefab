@@ -386,9 +386,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 343275122e2268e47b5b0ff18c1935d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  iconSprite: {fileID: 21300000, guid: 09142ae6dc0b8c648accbd0c8b2a8709, type: 3}
+  iconSprite: {fileID: 1852262764, guid: 0390df3b808315746af1899229176af6, type: 3}
   initialVisibility: 1
-  initialSize: {x: 16, y: 16}
+  initialSize: {x: 24, y: 24}
   rotationOffset: 0
   rotateWithOwner: 0
 --- !u!114 &8242363822416240650
