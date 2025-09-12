@@ -127,6 +127,16 @@ namespace AI_DDA.Assets.Scripts
         /// </summary>
         public static Sprite GetIcon(Faction faction)
         {
+            // Prefer a scene-level manager if one exists so designers can
+            // override icons without creating a FactionData asset.
+            if (FactionManager.Instance != null)
+            {
+                var sprite = FactionManager.Instance.GetIcon(faction);
+                if (sprite != null)
+                    return sprite;
+            }
+
+            // Fall back to the ScriptableObject data if available.
             return FactionData.Instance?.Get(faction)?.icon;
         }
     }
