@@ -70,7 +70,7 @@ namespace PLAYERTWO.ARPGProject
             {
                 AddInputFieldListeners(depositSolmireField);
                 depositSolmireField.onValueChanged.AddListener(_ => UpdateTotalProceeds());
-                depositSolmireField.characterLimit = MaxSolmireDeposit.ToString().Length;                
+                depositSolmireField.characterLimit = MaxSolmireDeposit.ToString().Length;               
             }
             if (depositLunarisField)
             {
@@ -354,6 +354,9 @@ namespace PLAYERTWO.ARPGProject
                 Destroy(child.gameObject);
             }
 
+            float rate = m_selectedOffer != null ? m_selectedOffer.interestRate : 0f;
+            long maxDeposit = (long)(MaxTotalAmberlings / (1.0 + rate));
+
             long solmire = ParseAndClamp(depositSolmireField, MaxSolmireDeposit);
             long lunaris = ParseAndClamp(depositLunarisField, MaxLunarisDeposit);
             long amberlings = ParseAndClamp(depositAmberlingsField, MaxTotalAmberlings);
@@ -361,12 +364,18 @@ namespace PLAYERTWO.ARPGProject
             long deposit = solmire * 100000L
                          + lunaris * 100L
                          + amberlings;
-            if (deposit > MaxTotalAmberlings)
+            if (deposit > maxDeposit)
             {
-                deposit = MaxTotalAmberlings;
+                deposit = maxDeposit;
+                Currency.SplitCurrency((int)deposit, out int depSolmire, out int depLunaris, out int depAmberlings);
+                if (depositSolmireField) depositSolmireField.SetTextWithoutNotify(depSolmire.ToString());
+                if (depositLunarisField) depositLunarisField.SetTextWithoutNotify(depLunaris.ToString());
+                if (depositAmberlingsField) depositAmberlingsField.SetTextWithoutNotify(depAmberlings.ToString());
+                solmire = depSolmire;
+                lunaris = depLunaris;
+                amberlings = depAmberlings;
             }
 
-            float rate = m_selectedOffer != null ? m_selectedOffer.interestRate : 0f;
             long total = (long)System.Math.Round(deposit * (1.0 + rate));
             if (total > MaxTotalAmberlings)
             {
@@ -382,17 +391,18 @@ namespace PLAYERTWO.ARPGProject
         private long ParseAndClamp(InputField field, long max)
         {
             if (!field) return 0;
-            if (!long.TryParse(field.text, out var value))
+            string text = field.text;
+            if (!long.TryParse(text, out var value))
             {
-                value = max;
-                field.text = max.ToString();
-                return value;
+                value = 0;
             }
+
             long clamped = System.Math.Clamp(value, 0, max);
-            if (clamped != value || field.text != clamped.ToString())
+            if (clamped != value || text != clamped.ToString())
             {
-                field.text = clamped.ToString();
+                field.SetTextWithoutNotify(clamped.ToString());
             }
+
             return clamped;
         }
 

@@ -60,15 +60,15 @@ namespace PLAYERTWO.ARPGProject
                 {
                     guildCrestImage.sprite = crest;
                     guildCrestImage.gameObject.SetActive(true);
-
-                    var layoutRoot = guildCrestImage.transform.parent as RectTransform;
-                    if (layoutRoot != null)
-                        LayoutRebuilder.ForceRebuildLayoutImmediate(layoutRoot);
                 }
                 else if (guildCrestImage != null)
                 {
                     guildCrestImage.gameObject.SetActive(false);
                 }
+
+                var layoutRoot = guildText.transform.parent as RectTransform;
+                if (layoutRoot != null)
+                    LayoutRebuilder.ForceRebuildLayoutImmediate(layoutRoot);
             }
             else
             {
