@@ -43,9 +43,9 @@ namespace PLAYERTWO.ARPGProject
           + Currency.ConvertToAmberlings(createCostLunaris, CurrencyType.Lunaris)
           + Currency.ConvertToAmberlings(createCostSolmire, CurrencyType.Solmire);
           
-        public static void CreateGuild(string name, Sprite crest, TMP_SpriteAsset crestAsset)
+        public static void CreateGuild(string name, Sprite crest, TMP_SpriteAsset crestAsset, Color backgroundColor)
         {
-            instance?.CreateInternal(name, crest, crestAsset);
+            instance?.CreateInternal(name, crest, crestAsset, backgroundColor);
         }
 
         public static void DeleteGuild()
@@ -63,12 +63,16 @@ namespace PLAYERTWO.ARPGProject
             return Game.instance?.currentCharacter?.GetGuildCrest();
         }
 
-        protected virtual void CreateInternal(string name, Sprite crest, TMP_SpriteAsset crestAsset)
+        public static Color GetCurrentGuildBackgroundColor()
+        {
+            return Game.instance?.currentCharacter?.guildBackgroundColor ?? Color.white;
+        }
+        protected virtual void CreateInternal(string name, Sprite crest, TMP_SpriteAsset crestAsset, Color backgroundColor)
         {
             var character = Game.instance?.currentCharacter;
             if (character != null)
             {
-                character.SetGuild(name, crest, crestAsset);
+                character.SetGuild(name, crest, crestAsset, backgroundColor);
                 if (character.Entity?.nametag != null)
                 {
                     character.Entity.nametag.SetNametag(character.name, character.stats.currentLevel, name, character.GetName());
@@ -84,7 +88,7 @@ namespace PLAYERTWO.ARPGProject
             if (character != null)
             {
                 string guild = character.guildName;
-                character.SetGuild(string.Empty, null, null);
+                character.SetGuild(string.Empty, null, null, default);
                 if (character.Entity?.nametag != null)
                 {
                     character.Entity.nametag.SetNametag(character.name, character.stats.currentLevel, string.Empty, character.GetName());

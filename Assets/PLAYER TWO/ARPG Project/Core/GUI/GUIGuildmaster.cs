@@ -28,6 +28,13 @@ namespace PLAYERTWO.ARPGProject
         public GameObject fileEntryPrefab;
         public GameObject scrollEntryPrefab;
 
+        [Header("Crest Background")]
+        [Tooltip("Image used to display the background colour behind the crest.")]
+        public Image backgroundFilling;
+
+        [Tooltip("Currently selected background colour for the guild crest.")]
+        public Color selectedBackgroundColor = Color.white;
+
         [Header("Preview & Actions")]
         public Image crestPreview;
         public Button resetButton;
@@ -49,6 +56,7 @@ namespace PLAYERTWO.ARPGProject
         private string m_selectedFile;
         private Sprite m_selectedSprite;
         private Sprite m_defaultPreviewSprite;
+        private Color m_defaultBackgroundColor = Color.white;
 
         protected Guildmaster m_guildmaster;
 
@@ -96,6 +104,13 @@ namespace PLAYERTWO.ARPGProject
             {
                 crestPreview.type = Image.Type.Simple;
                 crestPreview.preserveAspect = true;
+            }
+
+            if (backgroundFilling)
+            {
+                m_defaultBackgroundColor = backgroundFilling.color;
+                selectedBackgroundColor = m_defaultBackgroundColor;
+                backgroundFilling.color = selectedBackgroundColor;
             }
 
             OnFileToggleChanged(fileToggle?.isOn ?? true);
@@ -175,7 +190,7 @@ namespace PLAYERTWO.ARPGProject
                 return;
 
             inventory.SpendMoney(cost);
-            GuildManager.CreateGuild(guildName, crest, crestAsset);
+            GuildManager.CreateGuild(guildName, crest, crestAsset, selectedBackgroundColor);
             Hide();
         }
 
@@ -183,7 +198,9 @@ namespace PLAYERTWO.ARPGProject
         {
             if (guildNameInput) guildNameInput.text = string.Empty;
             if (crestPreview) crestPreview.sprite = m_defaultPreviewSprite;
-
+            if (backgroundFilling) backgroundFilling.color = m_defaultBackgroundColor;
+            
+            selectedBackgroundColor = m_defaultBackgroundColor;
             m_selectedFile = null;
             m_selectedSprite = null;
 
@@ -415,6 +432,14 @@ namespace PLAYERTWO.ARPGProject
             if (crestPreview)
                 crestPreview.sprite = sprite;
 
+            UpdateAcceptButton();
+        }
+
+        public void OnBackgroundColorChanged(Color color)
+        {
+            selectedBackgroundColor = color;
+            if (backgroundFilling)
+                backgroundFilling.color = color;
             UpdateAcceptButton();
         }
     }

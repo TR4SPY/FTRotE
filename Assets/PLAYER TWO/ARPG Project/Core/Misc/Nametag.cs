@@ -56,9 +56,11 @@ namespace PLAYERTWO.ARPGProject
                 guildText.text = StringUtils.StringWithColorAndStyle($"< {guild} >", GameColors.White, bold: true);
 
                 var crest = GuildManager.GetCurrentGuildCrest();
+                var backgroundColor = GuildManager.GetCurrentGuildBackgroundColor();
                 if (crest != null && guildCrestImage != null)
                 {
                     guildCrestImage.sprite = crest;
+                    guildCrestImage.color = backgroundColor;
                     guildCrestImage.gameObject.SetActive(true);
                 }
                 else if (guildCrestImage != null)

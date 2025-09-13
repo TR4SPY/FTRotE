@@ -27,6 +27,7 @@ namespace PLAYERTWO.ARPGProject
         public string currentDynamicPlayerType = "Unknown";
         public string guildName = "";
         public string guildCrestData = "";
+        public Color guildBackgroundColor = Color.white;
 
         public int savedHealth = -1;
         public int savedMana = -1;
@@ -487,6 +488,7 @@ namespace PLAYERTWO.ARPGProject
             characterInstance.guildName = serializer.guildName;
             characterInstance.guildCrestData = serializer.guildCrestData;
             characterInstance.guildCrest = DecodeSprite(serializer.guildCrestData);
+            characterInstance.guildBackgroundColor = serializer.guildBackgroundColor;
 
             if (serializer.reputationEntries != null)
             {
@@ -527,12 +529,13 @@ namespace PLAYERTWO.ARPGProject
             };
         }
 
-        public void SetGuild(string name, Sprite crest, TMP_SpriteAsset crestAsset = null)
+        public void SetGuild(string name, Sprite crest, TMP_SpriteAsset crestAsset = null, Color backgroundColor = default)
         {
             guildName = name;
             guildCrest = crest;
             guildCrestData = EncodeSprite(crest);
             guildCrestTMPAsset = crestAsset ?? CreateTMPAssetFromSprite(crest);
+            guildBackgroundColor = backgroundColor;
         }
 
         public Sprite GetGuildCrest()

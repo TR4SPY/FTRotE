@@ -79,6 +79,7 @@ namespace PLAYERTWO.ARPGProject
         public string specialCondition;
         public string guildName;
         public string guildCrestData;
+        public Color guildBackgroundColor;
 
         public bool questionnaireCompleted = false;
         public bool storylineCompleted = false;
@@ -155,7 +156,8 @@ namespace PLAYERTWO.ARPGProject
 
             guildName = character.guildName;
             guildCrestData = character.guildCrestData;
-
+            guildBackgroundColor = character.guildBackgroundColor;
+            
             if (character.reputation != null)
             {
                 foreach (var kvp in character.reputation)
